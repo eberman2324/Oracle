@@ -1,0 +1,155 @@
+https://docs.oracle.com/en/database/oracle/oracle-database/12.2/sutil/oracle-sql-loader-commands.html#GUID-CD662CD8-DAA7-4A30-BC84-546E4C40DB31
+
+https://docs.oracle.com/cd/B19306_01/server.102/b14215/ldr_params.htm
+
+https://www.foxinfotech.in/2018/07/sql-loader-control-file-examples.html
+
+https://www.oracle-dba-online.com/sql_loader.htm
+
+Home_Depot_Received_Daily.ttx
+
+
+BY X'09'
+X'9'
+
+FIELDS TERMINATED BY "~" OPTIONALLY ENCLOSED BY '"' TRAILING NULLCOLS
+ivr.ivr_thd_claims in ivdv01
+
+CREATE TABLE IVR.IVR_THD_CLAIMS
+(
+    CLAIM_NUMBER VARCHAR2(10)  NOT NULL,
+    LAST_NAME    VARCHAR2(50)      NULL,
+    FIRST_NAME   VARCHAR2(50)      NULL,
+    CLIENT_ID    NUMBER(*,0)       NULL,
+    COMPANY_NAME VARCHAR2(100)     NULL,
+    CONSTRAINT PK_IVR_THD_CLAIMS
+    PRIMARY KEY (CLAIM_NUMBER)
+        USING INDEX TABLESPACE USER_INDEX
+
+
+select * from IVR.IVR_THD_CLAIMS
+select * from IVR.IVR_THD_CLAIMS WHERE CLAIM_NUMBER in  (1,2,3)
+DELETE from IVR.IVR_THD_CLAIMS WHERE CLAIM_NUMBER in  (1,2,3);
+COMMIT;
+
+TRUNCATE TABLE IVR.IVR_THD_CLAIMS
+
+WTyo%!hLSxtUd9l
+S046262
+wkabivr
+tX2rI7LYw+JE1h5L:9N[-U`?X66^mI
+
+
+-rw-r-----    1 s046262  users          3098 Jan 10 09:05 Home_Depot_Received_Daily.ttx
+
+boraw1d
+
+/boraw1du101/IVDV01/sqlloader
+/boraw1du101/IVDV01/ivr_hig
+
+atnam1p
+/aetnaprod/backup/ivr_hig
+/aetnaprod/backup/sqlloader
+
+cd /aetnaprod/backup
+chown oracle.oradbaix ivr_hig 
+chmod g+w ivr_hig 
+
+
+
+Example command line
+else 
+    echo "$FILE does not exist"
+fi
+
+sqlldr userid=system/Z00mZ00m! control=ivr_hig.ctl log=ivr_hig.log 
+
+
+Scotts job puts the file there M-F at 7AM.  My job gets it M-F at 7:30AM
+
+Schedule M-F 8 AM
+0 Sun
+1 Mon
+2 Tue
+3 Wed
+4 Thu
+5 Fri
+6 Sat
++------------ minute (0-59)
+| +---------- hour (0-23)
+| | +-------- day of the month (1-31)
+| | | +------ month of the year (1-12)
+| | | | +---- day of the week (0-6 with 0=Sunday, ...)
+| | | | | +-- command to run
+v v v v v v
+
+0 23 * * 1-5 /workability/home/oracle/Refresh/Plans/run_uat.ksh
+0 08 * * 1-5 /ivr_hig_sqlloader.sh > /aetnaprod/backup/sqlloader/ivr_hig.stdout 2>&1
+
+
+Record 14: Rejected - Error on table IVR.IVR_THD_CLAIMS.
+ORA-00001: unique constraint (IVR.PK_IVR_THD_CLAIMS) violated
+
+
+******
+ERRCNT=`egrep 'error|ORA-|EXP-|IMP-|fatal' ${IMPLGFILE} | grep -c -v "No errors."`
+
+
+SQL*Loader-500: Unable to open file (/boraw1du101/IVDV01/ivr_hig/ivr_hig.csv)
+SQL*Loader-553: file not found
+SQL*Loader-509: System error: No such file or directory
+SQL*Loader-2026: the load was aborted because SQL Loader cannot continue.
+
+LOGFILE=${HOME}/aetna/db_admin/db_${ORACLE_SID}/export/impdp_schema_into_${ORACLE_SID}.log
+
+LOGFILE=ivr_hig.log
+ERR=`egrep 'Loader-|ORA-' ${LOGFILE} | grep -c -v "No errors."`
+
+
+if [ $ERRCNT -gt 0 ]; then
+   echo
+   echo "Step 12 - Error Importing ${SOURCEDB} Schema - ${ABORTMSG}"
+   mailx -s "Error In Step 12 - ${ABORTMSG}" ${MAILIDS} < ${IMPLGFILE}
+   exit 1
+fi
+**************
+
+00 14 * * 0-6 /boraw1du101/wkabdev2/datapump/hig_transfer.sh > /boraw1du101/wkabdev2/datapump/hig_transfer.stdout 2>&1
+FILEBASE=${ORACLE_SID}_hig_sync_${DATE}
+
+if [ -f "${IVRHIGFILE}" ]; then
+    mv ${IVRHIGFILE} ${IVRHIGFILE}_${DATE}
+fi
+
+
+
+mailx -s "${ORACLE_SID} Not Found In oratab - ${ABORTMSG}" ${MAILIDS} < ${LOGFILE}
+
+
+mail -s "IVR HIG File Load Successful" bermane@aetna.com < ivr_hig.log_20191217
+
+
+
+if [ -f $WORRIES -a -f $NO_WORRIES ]
+then
+   cat $WORK_FILE | fgrep -f $WORRIES | fgrep -v -f $NO_WORRIES | fgrep -v -f $F
+ERR_FILE > $NEW_FERR_FILE
+#   cat $WORK_FILE | egrep -f $WORRIES | egrep -v -f $NO_WORRIES | egrep -v -f $
+FERR_FILE > $NEW_FERR_FILE
+else
+     $MAILTO "Scan_Orafile In ${ORACLE_SID} Failed - Missing file:  Worries or No-Worries" $EMPTY_FILE $MAILTO_C
+
+fi
+
+if [ "$ERR" -eq 0 ]
+then
+   mail -s "IVR HIG File Load Successful" $DISTRIBUTION < ${LOGFILE} <<-EOF
+        #HIG Transfer Complete with $ERR.
+        #EOF
+else
+   mail -s "IVR HIG File Load Failed" $DISTRIBUTION < ${LOGFILE} <<-EOF
+        #IVR HIG File Load Complete with $ERR.
+        #EOF
+
+fi
+
