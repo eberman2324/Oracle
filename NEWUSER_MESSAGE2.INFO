@@ -1,0 +1,83 @@
+If you received access to HEDWPRD database, use that database to reset your password as instructed below, it also automatically resets password in HEDWPRD_RPT database. After that use only HEDWPRD_RPT for your database connections and queries.
+If you received access to HEPYPRD database, use that database to reset your password as instructed below, it also automatically resets password in HEPYPRD_RPT database. After that use only HEPYPRD_RPT for your database connections and queries.
+
+Oracle database users are requested to install the Oracle 19c (or newer) 64 bit Client Pack available from the AppStore.
+If you have not performed this installation as of yet, please do so before proceeding.
+
+Your initial temporary password has been pre-expired!
+
+You will be required to change the password on your first login attempt.
+
+Please change your password at your earliest convenience!  
+
+You can reset your password using the following:
+
+
+Option 1: From Oracle SQL Developer, do the following.
+
+Right-click on the connection.
+Select the "Reset Password..." option from the popup menu.
+In the subsequent dialog, enter the current password and the new password with confirmation.
+
+Click the OK button.
+
+
+Option 2: From Allround Automations PLSQL Developer, do the following.
+
+Under the Sessions  Menu, select  Change Password
+In the subsequent dialog, enter the current password and the new password with confirmation.
+
+Click the OK button.
+
+Option 3: ALTER USER Command
+
+Log on to the database as yourself, using any tool that can send SQL statements to the database.
+Try using sqlplus that you can invoke from your local laptop from command  prompt (type cmd in Windowss Search box)
+
+CONN my_user/MyPassword123@orcl
+Once connected, issue to the following ALTER USER command, specifying the new password.
+
+ALTER USER my_user IDENTIFIED BY MyNewPassword123;
+You don't need any additional privileges to change your own password.
+
+If you want to use special characters, remember to enclose the password in double quotes.
+        
+
+Please follow the below guidelines for changing your password.
+
+Oracle "Strong Password" Guidelines:
+
+New passwords: 
+	must have a minimum of 8 characters 
+	must NOT contain the users account name 
+	must contain at least one lower case character 
+	must contain at least one upper case character 
+	must contain at least one numeric character 
+	must contain at least one punctuation type character  [ie:  ),!,?,#,(,$,%,?,+,* ]
+	must be different from the previous password by at least 3 characters 
+
+Accounts will be locked upon 5 consecutive failed logon attempts.
+   (Accounts will stay locked for 5 minutes after that time.) 
+
+Passwords will expire after 90 days.  
+
+The grace period is set to 10 days.  This specifies the number of days AFTER the 
+grace period BEGINS during which a warning is issued and login is allowed.  
+If the password is not changed during the grace period, the password expires. 
+
+Password reuse time is set to 390 days. This specifies the number of days 
+before which a password cannot be reused. 
+
+Password reuse max value is set to 24.  This specifies the number of password changes 
+required before the current password can be reused.
+(These last 2 settings work in conjunction with each other.  A user can reuse the password 
+     after 390 days if the password has already been changed 24 times. )
+
+WARNING:  ALL logon attempts are audited in both non-production and production environments.
+
+Please do not share your password with anyone! 
+
+
+Thank You.
+
+Your Oracle Database Administration Team
