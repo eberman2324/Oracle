@@ -1,0 +1,362 @@
+-- Test first
+
+
+--Test
+Login to xhepydbw21d
+
+. oraenv
+HEPYDBA
+
+
+-- Create table if does not exist
+
+
+-- My original version
+CREATE TABLE DEV.MEDICATE_TEAM
+(
+     DEPT_NUM         NUMBER       NOT NULL,
+     DEPT_NAME        VARCHAR2(100)  NULL,
+     MANAGER           VARCHAR2(100)  NULL,
+     SUPERVISOR           VARCHAR2(100)  NULL,
+     SUPERVISOR_EMAIL           VARCHAR2(100)  NULL,
+     USER_ID            VARCHAR2(100)  NULL,
+     USER_NAME            VARCHAR2(100)  NULL,
+     USER_EMAIL            VARCHAR2(100)  NULL,
+     EFF_DT_FROM                   DATE              NULL,
+     EFF_DT_TO                   DATE              NULL
+)
+ORGANIZATION HEAP
+TABLESPACE DATA
+NOLOGGING
+PCTFREE 10
+PCTUSED 0
+INITRANS 1
+MAXTRANS 255
+STORAGE(BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCACHE
+NOROWDEPENDENCIES
+NO INMEMORY
+/
+
+
+
+-- Developers version
+
+
+    CREATE TABLE DEV.MEDICARE_TEAM 
+                 ( USER_ID                     VARCHAR2(10)   NOT NULL,
+                   DEPARTMENT_NUMBER           NUMBER(5)      NULL,                  
+                   DEPARTMENT_NAME             VARCHAR2(50)   NULL,
+                   MANAGER                     VARCHAR2(50)   NULL, 
+                   SUPERVISOR                  VARCHAR2(50)   NULL,
+                   SUPERVISOR_EMAIL_ADDRESS    VARCHAR2(50)   NULL, 
+                   USER_NAME                   VARCHAR2(50)   NULL,
+                   USER_EMAIL_ADDRESS          VARCHAR2(50)   NULL,
+                   EFFECTIVE_DATE_FROM         DATE           NULL,
+                   EFFECTIVE_DATE_TO           DATE           NULL
+                 ) 
+
+ORGANIZATION HEAP
+TABLESPACE DATA
+NOLOGGING
+PCTFREE 10
+PCTUSED 0
+INITRANS 1
+MAXTRANS 255
+STORAGE(BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCACHE
+NOROWDEPENDENCIES
+NO INMEMORY
+/
+
+
+ALTER TABLE DEV.MEDICARE_TEAM 
+    ADD CONSTRAINT MEDICARE_TEAM_IDX1
+    PRIMARY KEY (USER_ID)
+    USING INDEX TABLESPACE INDX
+                PCTFREE 10
+                INITRANS 2
+                MAXTRANS 255
+    LOGGING
+/
+
+
+(USER_ID,DEPARTMENT_NUMBER,DEPARTMENT_NAME,MANAGER,SUPERVISOR,SUPERVISOR_EMAIL_ADDRESS,USER_NAME,USER_EMAIL_ADDRESS,EFFECTIVE_DATE_FROM DATE "MM-DD-YYYY",EFFECTIVE_DATE_TO DATE "MM-DD-YYYY")
+
+
+
+cd /home/oracle/eb/sqlloader/MEDICARE_TEAM
+
+userid=A236120/Sep11#2020
+
+sqlldr control=MEDICARE_TEAM.ctl log=MEDICARE_TEAM_20201006.log 
+
+
+select *  from DEV.MEDICARE_TEAM
+
+#TRUNCATE TABLE DEV.MEDICARE_TEAM
+
+
+Login to xhedwdbm21p
+
+. oraenv
+HEDWPRD
+
+cd /home/oracle/eb/sqlloader
+
+mkdir MEDICARE_TEAM
+
+
+sqlplus / as sysdba
+
+-- Create table if does not exist
+
+
+
+
+
+    CREATE TABLE AE_CUSTOM.MEDICARE_TEAM 
+                 ( USER_ID                     VARCHAR2(10)   NOT NULL,
+                   DEPARTMENT_NUMBER           NUMBER(5)      NULL,                  
+                   DEPARTMENT_NAME             VARCHAR2(50)   NULL,
+                   MANAGER                     VARCHAR2(50)   NULL, 
+                   SUPERVISOR                  VARCHAR2(50)   NULL,
+                   SUPERVISOR_EMAIL_ADDRESS    VARCHAR2(50)   NULL, 
+                   USER_NAME                   VARCHAR2(50)   NULL,
+                   USER_EMAIL_ADDRESS          VARCHAR2(50)   NULL,
+                   EFFECTIVE_DATE_FROM         DATE           NULL,
+                   EFFECTIVE_DATE_TO           DATE           NULL
+                 ) 
+
+ORGANIZATION HEAP
+TABLESPACE AE_DATA
+NOLOGGING
+PCTFREE 10
+PCTUSED 0
+INITRANS 1
+MAXTRANS 255
+STORAGE(BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCACHE
+NOROWDEPENDENCIES
+NO INMEMORY
+/
+
+
+ALTER TABLE AE_CUSTOM.MEDICARE_TEAM 
+    ADD CONSTRAINT MEDICARE_TEAM_IDX1
+    PRIMARY KEY (USER_ID)
+    USING INDEX TABLESPACE AE_NDX
+                PCTFREE 10
+                INITRANS 2
+                MAXTRANS 255
+    LOGGING
+/
+
+
+
+
+
+*** Oct 2020
+
+1. Spreadsheet that was attached to DSR Save as MEDICARE_TEAM_20201006.csv (make sure it gets ~ delimited)
+
+2. FTP this MEDICARE_TEAM_20201006.csv over to /home/oracle/eb/sqlloader/MEDICARE_TEAM
+
+3. Change files references in MEDICARE_TEAM.ctl double check makere table has correct schema prefix.
+
+4. sqlplus / as sysdba
+
+   
+#TRUNCATE TABLE AE_CUSTOM.MEDICARE_TEAM;
+
+select count(*) from AE_CUSTOM.MEDICARE_TEAM;
+
+exit
+
+
+cd /home/oracle/eb/sqlloader/MEDICARE_TEAM
+userid=A236120/kBl25uEbwHac8?G
+
+sqlldr control=MEDICARE_TEAM.ctl log=MEDICARE_TEAM_20201006.log 
+
+
+
+************ HEDWQA***********
+
+
+Login to xhedwdbw21q
+
+. oraenv
+HEDWQA
+
+cd /home/oracle/eb/sqlloader
+
+mkdir MEDICARE_TEAM
+
+
+sqlplus / as sysdba
+
+-- Create table if does not exist
+
+
+
+
+
+    CREATE TABLE AE_CUSTOM.MEDICARE_TEAM 
+                 ( USER_ID                     VARCHAR2(10)   NOT NULL,
+                   DEPARTMENT_NUMBER           NUMBER(5)      NULL,                  
+                   DEPARTMENT_NAME             VARCHAR2(50)   NULL,
+                   MANAGER                     VARCHAR2(50)   NULL, 
+                   SUPERVISOR                  VARCHAR2(50)   NULL,
+                   SUPERVISOR_EMAIL_ADDRESS    VARCHAR2(50)   NULL, 
+                   USER_NAME                   VARCHAR2(50)   NULL,
+                   USER_EMAIL_ADDRESS          VARCHAR2(50)   NULL,
+                   EFFECTIVE_DATE_FROM         DATE           NULL,
+                   EFFECTIVE_DATE_TO           DATE           NULL
+                 ) 
+
+ORGANIZATION HEAP
+TABLESPACE AE_DATA
+NOLOGGING
+PCTFREE 10
+PCTUSED 0
+INITRANS 1
+MAXTRANS 255
+STORAGE(BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCACHE
+NOROWDEPENDENCIES
+NO INMEMORY
+/
+
+
+ALTER TABLE AE_CUSTOM.MEDICARE_TEAM 
+    ADD CONSTRAINT MEDICARE_TEAM_IDX1
+    PRIMARY KEY (USER_ID)
+    USING INDEX TABLESPACE AE_NDX
+                PCTFREE 10
+                INITRANS 2
+                MAXTRANS 255
+    LOGGING
+/
+
+
+
+
+
+*** Oct 2020
+
+1. Spreadsheet that was attached to DSR Save as MEDICARE_TEAM_20201006.csv (make sure it gets ~ delimited)
+
+2. FTP this MEDICARE_TEAM_20201006.csv over to /home/oracle/eb/sqlloader/MEDICARE_TEAM
+
+3. Change files references in MEDICARE_TEAM.ctl double check makere table has correct schema prefix.
+
+4. sqlplus / as sysdba
+
+   
+#TRUNCATE TABLE AE_CUSTOM.MEDICARE_TEAM;
+
+select count(*) from AE_CUSTOM.MEDICARE_TEAM;
+
+exit
+
+
+cd /home/oracle/eb/sqlloader/MEDICARE_TEAM
+userid=A236120/kBl25uEbwHac8?G
+
+sqlldr control=MEDICARE_TEAM.ctl log=MEDICARE_TEAM_20201006.log 
+
+
+
+
+*** Nov 11 2020 *******
+
+1. Spreadsheet that was attached to DSR Save as MEDICARE_TEAM_20201110.csv (make sure it gets ~ delimited)
+
+How to change excel spreadsheet to csv file with custom delimiter
+
+https://www.howtogeek.com/howto/21456/export-or-save-excel-files-with-pipe-or-other-delimiters-instead-of-commas/
+
+
+2. FTP this MEDICARE_TEAM_20201110.csv over to /home/oracle/eb/sqlloader/MEDICARE_TEAM
+
+3. Change files references in MEDICARE_TEAM.ctl double check makere table has correct schema prefix.
+
+4. sqlplus / as sysdba
+
+   
+#TRUNCATE TABLE AE_CUSTOM.MEDICARE_TEAM;
+
+select count(*) from AE_CUSTOM.MEDICARE_TEAM;
+
+exit
+
+
+cd /home/oracle/eb/sqlloader/MEDICARE_TEAM
+userid=A236120/kBl25uEbwHac8?G
+
+sqlldr control=MEDICARE_TEAM.ctl log=MEDICARE_TEAM_20201110.log 
+
+
+
+
+
+*** Jun 16 2022 *******
+
+1. Spreadsheet that was attached to DSR Save as MEDICARE_TEAM_20220615.csv (make sure it gets ~ delimited)
+
+How to change excel spreadsheet to csv file with custom delimiter
+
+https://www.howtogeek.com/howto/21456/export-or-save-excel-files-with-pipe-or-other-delimiters-instead-of-commas/
+
+
+2. FTP this MEDICARE_TEAM_20220615.csv over to /home/oracle/eb/sqlloader/MEDICARE_TEAM
+
+3. Change files references in MEDICARE_TEAM.ctl double check makere table has correct schema prefix.
+
+4. sqlplus / as sysdba
+
+   
+#TRUNCATE TABLE AE_CUSTOM.MEDICARE_TEAM;
+
+select count(*) from AE_CUSTOM.MEDICARE_TEAM;
+
+exit
+
+
+cd /home/oracle/eb/sqlloader/MEDICARE_TEAM
+userid=A236120/3x4M$hv?piajYf!
+
+sqlldr control=MEDICARE_TEAM.ctl log=MEDICARE_TEAM_20220615.log 
+
+
+
+****** latest control file examples ****
+
+OPTIONS (SKIP=1)
+LOAD DATA
+INFILE  '/home/oracle/eb/sqlloader/MEDICARE_TEAM/MEDICARE_TEAM_20220615.csv'
+BADFILE '/home/oracle/eb/sqlloader/MEDICARE_TEAM/MEDICARE_TEAM_20220615.bad'
+DISCARDFILE '/home/oracle/eb/sqlloader/MEDICARE_TEAM/MEDICARE_TEAM_20220615.dsc'
+APPEND INTO TABLE AE_CUSTOM.MEDICARE_TEAM
+FIELDS TERMINATED BY '~' OPTIONALLY ENCLOSED BY '"' TRAILING NULLCOLS
+(USER_ID,DEPARTMENT_NUMBER,DEPARTMENT_NAME,MANAGER,SUPERVISOR,SUPERVISOR_EMAIL_ADDRESS,USER_NAME,USER_EMAIL_ADDRESS,EFFECTIVE_DATE_FRO
+M DATE "MM-DD-YYYY",EFFECTIVE_DATE_TO DATE "MM-DD-YYYY")
+
+
+or
+
+
+OPTIONS (SKIP=1)
+LOAD DATA
+INFILE  '/home/oracle/eb/sqlloader/CODE/CODE_20210210_2.csv'
+BADFILE '/home/oracle/eb/sqlloader/CODE/CODE_20210210_2.bad'
+DISCARDFILE '/home/oracle/eb/sqlloader/CODE/CODE_20210210_2.dsc'
+APPEND INTO TABLE AE_CUSTOM.CODE
+FIELDS TERMINATED BY '~' OPTIONALLY ENCLOSED BY '"' TRAILING NULLCOLS
+(CODE)
+
