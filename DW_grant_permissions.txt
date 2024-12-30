@@ -1,9 +1,0 @@
-cd /home/oracle/tls/security
-grant_permissions.ksh
-
-Enter DataBase Name
-XXX
-
-Enter the number of days to look back from current date
-If hours, enter in format x/24 where x is the no. of hrs
-3/24
