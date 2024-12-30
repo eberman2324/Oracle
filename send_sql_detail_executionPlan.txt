@@ -1,5 +1,0 @@
-cd $SCRIPTS
-#modify email address
-vi send_sql_report.sh
-
-send_sql_report.sh HEPYSTS 8k4kamm4ds5yn
