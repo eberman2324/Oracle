@@ -1,0 +1,66 @@
+--This is for truncation BLOB tables that DBA does during Masking efforts
+
+-- TestConfig
+
+Login to xhepydbw24d
+
+HEPYTST
+
+cd /home/oracle/MCL
+
+
+!!! No longer need !!! change spool file name
+
+vi truncate_job.sql
+
+sqlplus / as sysdba
+
+truncate_job.sql
+
+
+
+
+
+
+scp truncate_job.sql xhepydbw23q:/home/oracle/MCL/truncate_job.sql
+
+
+-- UAT
+
+Login to xhepydbwu21q
+
+
+HEPYUAT
+
+cd /home/oracle/MCL
+
+
+!!! No longer need !!! change spool file name
+
+vi truncate_job.sql
+
+sqlplus / as sysdba
+
+truncate_job.sql
+
+
+
+set termout off
+col dt new_value dt
+select to_char(sysdate,'YYYYMMDD') dt from dual;
+set termout on
+
+spool truncate_job__${ORACLE_SID}.out_&dt
+
+scp truncate_job.sql xhepydbm21q:/home/oracle/MCL/truncate_job.sql
+
+
+
+
+
+
+
+cp truncate_job.sql /home/oracle/tls/blobs/truncate_job.sql
+
+
+scp truncate_job.sql xhepydbw24d:/home/oracle/MCL/truncate_job.sql

@@ -1,0 +1,2325 @@
+srvctl config database -d ${ORACLE_SID}_`hostname -s`
+
+srvctl config listener -l ${ORACLE_SID}
+
+srvctl stop database -d ${ORACLE_SID}_${SERVER_NAME}
+
+srvctl start database -d ${ORACLE_SID}_${SERVER_NAME}
+
+
+
+
+******************DROP/Remove Database**************************************
+
+
+   Run this if database in mount mode 
+
+     sqlplus / as sysdba
+ 
+     shutdown immediate;
+
+     startup mount restrict;
+
+     drop database;
+
+     exit
+
+     srvctl remove database -db ${ORACLE_SID}_`hostname -s`
+
+   End mount mode instructions
+
+   Confirm database configuration removed from Oracle Restart
+
+   srvctl config database -d ${ORACLE_SID}_`hostname -s`
+
+
+
+
+***********************************************************
+
+srvctl add database -db ${ORACLE_SID}_${SERVER_NAME} -oraclehome ${ORACLE_HOME}-spfile ${ORACLE_HOME}/dbs/spfile${ORACLE_SID}.ora -instance ${ORACLE_SID} -diskgroup "DATA_01,REDOA_01,REDOB_01" -role "PHYSICAL_STANDBY" -startoption "MOUNT"| tee -a $LOGFILE
+
+
+
+srvctl start database -db ${ORACLE_SID}_${SERVER_NAME} | tee -a $LOGFILE
+
+
+
+*********** HEPYPRD *******
+
+###ALTER SYSTEM SET sessions=3345 SCOPE=SPFILE;
+
+
+--currently processes = 1500
+---         sessions   = 2272
+
+Login to Primary: xhepydbm1p
+
+sqlplus / as sysdba
+alter system set processes=2500 scope=spfile;
+alter system set pga_aggregate_target=17G scope=spfile;
+alter system set pga_aggregate_limit=17G scope=spfile; 
+
+
+srvctl stop database -d HEPYPRD_xhepydbm1p
+
+srvctl start database -d HEPYPRD_xhepydbm1p
+
+Login to Primary: xhepydbw1p
+
+sqlplus / as sysdba
+
+alter system set processes=2500 scope=spfile;
+alter system set pga_aggregate_target=17G scope=spfile;
+alter system set pga_aggregate_limit=17G scope=spfile; 
+
+
+srvctl stop database -d HEPYPRD_xhepydbw1p
+
+srvctl start database -d HEPYPRD_xhepydbw1p
+
+
+
+
+*****HEDWMGR******
+
+Login to xhedwdbw25d
+
+. oraenv
+HEDWMGR
+
+
+
+alter system set sga_max_size=8G scope=spfile;
+alter system set sga_target=8G scope=spfile; 
+alter system set pga_aggregate_target=2G scope=spfile;
+ 
+
+
+srvctl stop database -d HEDWMGR_xhedwdbw25d
+
+srvctl start database -d HEDWMGR_xhedwdbw25d
+
+alter system reset pga_aggregate_limit scope=spfile;
+
+
+
+
+srvctl stop database -d HEDWMGR_xhedwdbw25d
+
+srvctl start database -d HEDWMGR_xhedwdbw25d
+
+
+
+****** HEDWQA2********************
+
+
+srvctl stop database -d HEDWQA2_xhedwdbw22q
+
+srvctl start database -d HEDWQA2_xhedwdbw22q
+
+
+****** HEPYSTS********************
+
+
+
+
+alter system set sga_max_size=64G scope=spfile;
+alter system set sga_target=64G scope=spfile; 
+alter system set pga_aggregate_target=34G scope=spfile;
+alter system reset pga_aggregate_limit scope=spfile;
+alter system set pga_aggregate_limit=51G scope=spfile;
+
+show parameter sga_max_size;
+show parameter sga_target;
+show parameter pga_aggregate_target;
+show parameter pga_aggregate_limit;
+
+srvctl stop database -d HEPYSTS_xhepydbw21s
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+
+--DEV3
+
+ALTER SYSTEM SET recyclebin = OFF SCOPE = SPFILE; 
+
+
+
+srvctl stop database -d HEPYDEV3_xhepydbw23d
+
+srvctl start database -d HEPYDEV3_xhepydbw23d
+
+
+
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+
+******************************
+
+
+Login to PY Primary: xhepydbm21p
+
+. oraenv
+HEPYPRD
+
+sqlplus / as sysdba
+alter system set sga_max_size=144G scope=spfile;
+alter system set sga_target=144G scope=spfile; 
+
+srvctl stop database -d HEPYPRD_xhepydbm21p
+
+srvctl start database -d HEPYPRD_xhepydbm21p
+
+sqlplus / as sysdba
+
+show parameter sga_
+
+Login to PY StandBy: xhepydbw21p
+
+. oraenv
+HEPYPRD
+
+
+sqlplus / as sysdba
+alter system set sga_max_size=144G scope=spfile;
+alter system set sga_target=144G scope=spfile; 
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+
+
+Login to DW Primary: xhedwdbm21p
+
+. oraenv
+HEDWPRD
+
+
+
+sqlplus / as sysdba
+alter system set sga_max_size=48G scope=spfile;
+alter system set sga_target=48G scope=spfile; 
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+sqlplus / as sysdba
+
+show parameter sga_
+Login to DW StandBy: xhedwdbw21p
+
+. oraenv
+HEDWPRD
+
+
+sqlplus / as sysdba
+alter system set sga_max_size=48G scope=spfile;
+alter system set sga_target=48G scope=spfile; 
+
+srvctl stop database -d HEDWPRD_xhedwdbw21p
+
+srvctl start database -d HEDWPRD_xhedwdbw21p
+
+
+
+***** HEPYSTS***
+--This change should take an effect on next restart
+alter system set db_files=1500 scope=spfile;
+
+
+
+**** HEPYQA3 ******
+
+alter system set sga_max_size=16G scope=spfile;
+alter system set sga_target=16G scope=spfile; 
+alter system set pga_aggregate_target=4G scope=spfile; 
+
+alter system reset pga_aggregate_limit scope=spfile;
+alter system set db_files=1500 scope=spfile;
+
+
+
+shutdown immediate;
+startup mount;
+alter database noarchivelog;
+alter database open;
+archive log list;
+
+
+
+srvctl stop database -d HEPYQA3_xhepydbw23q
+
+srvctl start database -d HEPYQA3_xhepydbw23q
+
+upgraded to 64 GB as SGA and 16 GB for PGA.
+
+
+alter system set sga_max_size=64G scope=spfile;
+alter system set sga_target=64G scope=spfile; 
+alter system set pga_aggregate_target=16G scope=spfile; 
+
+alter system set db_recovery_file_dest_size = 60G scope=BOTH;
+
+
+srvctl stop database -d HEPYQA3_xhepydbw23q
+
+srvctl start database -d HEPYQA3_xhepydbw23q
+
+
+Yes, once the memory has been added, we will need to double the huge page specification in /orastage/u177/number.hugepages.   Once that update is made, puppet will apply the change within the hour of the update.
+You can bounce the database to increase the SGA after the huge page allocation is made.
+
+
+
+********** HEPYMGR2*******
+
+Jean-Cluade needs to add the memory before bouncing the VM.  
+Once the memory is in place, the huge page specification will be adjusted.  
+Jean-Claude will then execute a puppet run rather than waiting for the scheduled puppet run which occurs once an hour.  
+Puppet will affect the huge page specification change.  Once the huge pages are in place, the VM can be bounced to pick up the CPU change and the database SGA/PGA changes.
+
+
+currently
+
+
+HOSTNAME:   xhepydbw26d.aetna.com
+
+Number of CPUs:  4
+   model name : Intel(R) Xeon(R) CPU E7-8891 v3 @ 2.80GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:          15885       11905         450         635        3529        3010
+Swap:         16383        1096       15287
+
+HUGE PAGES:
+HugePages_Total:    4404
+HugePages_Free:      306
+
+
+
+SQL> show parameter sga_max_size
+
+NAME                                 TYPE
+------------------------------------ ---------------------------------
+VALUE
+------------------------------
+sga_max_size                         big integer
+8G
+
+SQL> show parameter sga_target
+
+NAME                                 TYPE
+------------------------------------ ---------------------------------
+VALUE
+------------------------------
+sga_target                           big integer
+8G
+
+
+SQL> show parameter pga_aggregate_target
+
+NAME                                 TYPE
+------------------------------------ ---------------------------------
+VALUE
+------------------------------
+pga_aggregate_target                 big integer
+2G
+
+
+SQL> show parameter pga_aggregate_limit
+
+NAME                                 TYPE
+------------------------------------ -----------------
+VALUE
+------------------------------
+pga_aggregate_limit                  big integer
+7500M
+
+alter system set sga_max_size=16G scope=spfile;
+alter system set sga_target=16G scope=spfile; 
+alter system set pga_aggregate_target=4G scope=spfile; 
+alter system reset pga_aggregate_limit scope=spfile;
+
+
+srvctl stop database -d HEPYMGR2_xhepydbw26d
+
+srvctl start database -d HEPYMGR2_xhepydbw26d
+
+
+
+*********** HEPYPRD *******
+
+###ALTER SYSTEM SET sessions=3345 SCOPE=SPFILE;
+
+
+--currently processes = 1500
+---         sessions   = 2272
+
+Login to Primary: xhepydbm1p
+
+sqlplus / as sysdba
+alter system set processes=2800 scope=spfile;
+
+
+
+srvctl stop database -d HEPYPRD_xhepydbm1p
+
+srvctl start database -d HEPYPRD_xhepydbm1p mount
+
+Login to Standby: xhepydbw1p
+
+sqlplus / as sysdba
+
+alter system set processes=2800 scope=spfile;
+
+
+
+srvctl stop database -d HEPYPRD_xhepydbw1p
+
+srvctl start database -d HEPYPRD_xhepydbw1p
+
+
+
+***** HEPYQA2 *********
+
+
+alter system set sga_max_size=64G scope=spfile;
+alter system set sga_target=64G scope=spfile; 
+alter system set pga_aggregate_target=16G scope=spfile; 
+
+
+srvctl stop database -d HEPYQA2_xhepydbw22q
+
+srvctl start database -d HEPYQA2_xhepydbw22q
+
+
+
+***** HEDWQA2 *********
+
+
+
+
+
+srvctl stop database -d HEDWQA2_xhedwdbw22q
+
+srvctl start database -d HEDWQA2_xhedwdbw22q
+
+
+
+***********HEPYSTS*******************
+
+srvctl stop database -d HEPYSTS_xhepydbw21s
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+
+
+*****HEDWSTS************
+
+srvctl stop database -d HEDWSTS_xhedwdbw21s
+
+srvctl start database -d HEDWSTS_xhedwdbw21s
+
+
+
+***********HEPYMASK*******************
+
+srvctl stop database -d HEPYMASK_xhepydbm21q
+
+srvctl start database -d HEPYMASK_xhepydbm21q
+
+
+***********HEDWQA_RPT*******************
+
+srvctl stop database -d HEDWQA_xhedwdbm21q
+
+srvctl start database -d HEDWQA_xhedwdbm21q
+
+***********HEDWQA*******************
+
+srvctl stop database -d HEDWQA_xhedwdbw21q
+
+srvctl start database -d HEDWQA_xhedwdbw21q
+
+
+
+**********HEPYPRD************12/21/2020
+
+
+ALTER SYSTEM SET open_cursors = 64000 SCOPE=BOTH;
+
+
+****** How to change HEPYPRD Standby from Open to Mount *****
+
+srvctl modify database -d HEPYPRD_xhepydbw21p -startoption mount
+srvctl stop database -d HEPYPRD_xhepydbw21p
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+***** HEDWMGR2 ***
+
+srvctl stop database -d HEDWMGR2_xhedwdbw26d
+srvctl start database -d HEDWMGR2_xhedwdbw26d
+
+
+
+********
+
+***** APRPYMSK *********
+
+orig
+
+show parameter sga_max_size
+64G
+show parameter sga_target
+64G
+show parameter pga_aggregate_target
+16G
+
+alter system set sga_max_size=2G scope=spfile;
+alter system set sga_target=2G scope=spfile; 
+alter system set pga_aggregate_target=500M scope=spfile; 
+
+
+alter system set sga_max_size=4G scope=BOTH;
+alter system set sga_target=4G scope=spfile; 
+alter system set pga_aggregate_target=1G scope=spfile;
+
+
+
+srvctl stop database -d HEDWQA_xhedwdbm21q
+
+srvctl start database -d HEDWQA_xhedwdbm21q
+
+
+
+******* HEPYMGR******
+
+
+
+
+shutdown immediate;
+startup mount;
+alter database noarchivelog;
+alter database NOARCHIVELOG;
+alter database open;
+archive log list;
+
+
+********* HEDWPRD ****
+
+
+Login to DW Primary: xhedwdbm21p
+
+. oraenv
+HEDWPRD
+
+--settings prior to change
+show parameter sga_max_size
+48G
+show parameter sga_target
+48G
+show parameter pga_aggregate_target
+12G
+show parameter processes
+1500
+show parameter sessions
+2304
+
+sqlplus / as sysdba
+
+
+
+
+alter system set sga_max_size=92G scope=spfile;
+alter system set sga_target=92G scope=spfile; 
+alter system set pga_aggregate_target=24G scope=spfile; 
+alter system set pga_aggregate_limit=32G scope=spfile; 
+alter system set processes=3000 scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+sqlplus / as sysdba
+
+show parameter sga_
+Login to DW StandBy: xhedwdbw21p
+
+. oraenv
+HEDWPRD
+
+--settings prior to change
+show parameter sga_max_size
+48G
+show parameter sga_target
+48G
+show parameter pga_aggregate_target
+12G
+show parameter processes
+1500
+
+
+sqlplus / as sysdba
+alter system set sga_max_size=92G scope=spfile;
+alter system set sga_target=92G scope=spfile; 
+alter system set pga_aggregate_target=24G scope=spfile; 
+alter system set pga_aggregate_limit=32G scope=spfile; 
+alter system set processes=3000 scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbw21p
+
+srvctl start database -d HEDWPRD_xhedwdbw21p
+
+
+**** HEPYSTS ***
+
+srvctl stop database -d HEPYSTS_xhepydbw21s
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+
+
+** HEPYPRD 1/9/2022 Scalability  ***
+
+
+Login to Primary: xhepydbm21p
+
+sqlplus / as sysdba
+
+alter system set processes=8000 scope=spfile;
+
+
+
+srvctl stop database -d HEPYPRD_xhepydbm21p
+
+srvctl start database -d HEPYPRD_xhepydbm21p
+
+show parameter processes
+show parameter audit_trail
+alter system set audit_trail = none scope=spfile;
+
+
+Login to Standby: xhepydbw21p
+
+sqlplus / as sysdba
+
+alter system set processes=8000 scope=spfile;
+
+
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+show parameter processes
+
+
+
+************** HEPYDEV3 ****
+
+srvctl stop database -d HEPYDEV3_xhepydbw23d
+
+srvctl start database -d HEPYDEV3_xhepydbw23d
+
+
+************** HEDWQA2 ****
+
+srvctl stop database -d HEDWQA2_xhedwdbw22q
+
+srvctl start database -d HEDWQA2_xhedwdbw22q
+
+
+***** HEDWPRD *****
+
+Login to DW Primary: xhedwdbm21p
+
+. oraenv
+HEDWPRD
+
+
+
+sqlplus / as sysdba
+
+show parameter db_files
+
+alter system set db_files=1200 scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+sqlplus / as sysdba
+
+show parameter db_files
+
+
+Login to DW StandBy: xhedwdbw21p
+
+. oraenv
+HEDWPRD
+
+sqlplus / as sysdba
+
+show parameter db_files
+
+alter system set db_files=1200 scope=spfile;
+
+
+
+
+srvctl stop database -d HEDWPRD_xhedwdbw21p
+
+srvctl start database -d HEDWPRD_xhedwdbw21p
+
+
+************
+
+Login to Primary: xhepydbm21p
+
+sqlplus / as sysdba
+
+show parameter processes
+show parameter audit_trail
+alter system set audit_trail=NONE scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbm21p
+
+srvctl start database -d HEPYPRD_xhepydbm21p
+
+
+
+
+Login to Standby: xhepydbw21p
+
+sqlplus / as sysdba
+
+alter system set audit_trail=NONE scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+show parameter audit_trail
+
+
+**** QA1 PY
+
+Login: xhepydbw21q
+
+alter system set "_use_realfree_heap"=false scope=spfile;
+
+srvctl stop database -d HEPYQA_xhepydbw21q
+
+srvctl start database -d HEPYQA_xhepydbw21q
+
+show parameter _use_realfree_heap
+
+
+
+**** HEPYSTS ***
+
+alter system set sga_max_size=144G scope=spfile;
+
+alter system set sga_target=144G scope=spfile; 
+
+
+--alter system set pga_aggregate_target=24G scope=spfile; 
+--alter system set pga_aggregate_limit=32G scope=spfile; 
+
+srvctl stop database -d HEPYSTS_xhepydbw21s
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+
+**** HEPYPRD ******
+
+Login to xhepydbm21p
+
+. oraenv
+
+HEPYPRD
+
+
+
+alter system set "_use_realfree_heap"=false scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+
+
+********* HEPYSTS *******
+
+show parameter sga_max_size
+show parameter sga_target
+show parameter pga_aggregate_target
+show parameter pga_aggregate_limit
+show parameter processes
+show parameter audit_trail
+show parameter open_cursors
+show parameter session_cached_cursors
+
+alter system set sga_max_size=400G scope=spfile;
+alter system set sga_target=400G scope=spfile; 
+alter system set pga_aggregate_target=80G scope=spfile;
+--alter system set pga_aggregate_limit=160G scope=spfile;
+alter system set processes=8000 scope=spfile;
+ALTER SYSTEM SET open_cursors = 64000 SCOPE=BOTH;
+ALTER SYSTEM SET session_cached_cursors = 1500 SCOPE=BOTH;
+alter system set "_use_realfree_heap"=false scope=spfile;
+alter system set "_dbwr_stall_write_detection_interval" = 0;
+alter system set audit_trail=NONE scope=spfile;
+
+
+
+
+(done!) create pfile from spfile;
+
+srvctl stop database -d HEPYSTS_xhepydbw21s
+
+!! Save existing spfile first
+cd $DBS
+mv spfileHEPYSTS.ora spfileHEPYSTS.ora_20220804
+
+(done!) vi initHEPYSTS.ora
+
+
+sga_max_size=400G
+sga_target=400G 
+pga_aggregate_target=80G
+processes=8000
+open_cursors = 64000
+session_cached_cursors = 1500
+--pga_aggregate_limit=160G
+
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+check to make sure all ok. Database, parameters etc..
+
+
+CREATE SPFILE = '/orahome/u01/app/oracle/product/19.12.1/db_1/dbs/spfileHEPYSTS.ora'  FROM PFILE = '/orahome/u01/app/oracle/product/19.12.1/db_1/dbs/initHEPYSTS.ora';
+
+srvctl stop database -d HEPYSTS_xhepydbw21s
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+
+alter system set "_use_realfree_heap"=false scope=spfile;
+alter system set "_dbwr_stall_write_detection_interval" = 0;
+alter system set audit_trail=NONE scope=spfile;
+
+srvctl stop database -d HEPYSTS_xhepydbw21s
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+
+
+*******HEDWSTS********
+
+
+show parameter sga_max_size
+show parameter sga_target
+show parameter pga_aggregate_target
+show parameter pga_aggregate_limit
+show parameter processes
+show parameter audit_trail
+show parameter open_cursors
+show parameter session_cached_cursors
+
+alter system set sga_max_size=92G scope=spfile;
+alter system set sga_target=92G scope=spfile; 
+alter system set pga_aggregate_target=24G scope=spfile;
+--alter system set pga_aggregate_limit=48G scope=spfile;
+alter system set processes=3000 scope=spfile;
+ALTER SYSTEM SET open_cursors = 12000 SCOPE=BOTH;
+--ALTER SYSTEM SET session_cached_cursors = 50 SCOPE=BOTH;
+
+
+(done!) create pfile from spfile;
+
+srvctl stop database -d HEDWSTS_xhedwdbw21s
+
+!! Save existing spfile first
+cd $DBS
+mv spfileHEDWSTS.ora spfileHEDWSTS.ora_ori
+
+(done!) vi init. ora
+
+sga_max_size=92G
+sga_target=92G 
+pga_aggregate_target=24G
+processes=3000
+open_cursors = 12000
+--session_cached_cursors = 50
+--pga_aggregate_limit=48G
+
+
+srvctl start database -d HEDWSTS_xhedwdbw21s
+check to make sure all ok. Database, parameters etc..
+
+
+CREATE SPFILE = '/orahome/u01/app/oracle/product/19.12.1/db_1/dbs/spfileHEDWSTS.ora'  FROM PFILE = '/orahome/u01/app/oracle/product/19.12.1/db_1/dbs/initHEDWSTS.ora';
+
+srvctl stop database -d HEDWSTS_xhedwdbw21s
+
+srvctl start database -d HEDWSTS_xhedwdbw21s
+
+*********************************************
+
+srvctl stop listener -l HEDWMGR2
+srvctl start listener -l HEDWMGR2
+
+
+
+
+************ HEPYPRD Primary ( Nov 13 2022) ******
+
+--Before
+show parameter sga_max_size
+400G
+show parameter sga_target
+400G
+show parameter pga_aggregate_target
+80G
+show parameter pga_aggregate_limit
+160G
+
+
+Before 6 AM
+
+ps -ef |grep pmon
+ps -ef | grep tns
+
+--> check make sure both Primary and Standby databases are up post Linux OS patching
+--> if not startup.
+
+cd $SCRIPTS
+
+Enable_HAS.sh
+
+Around 9 AM
+
+--> After JC adds memory to VM and huge pages. Verify it should be 384012
+
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+
+--> currently 
+HEPYPRD> BOX.sh
+
+HOSTNAME:   xhepydbm1p.aetna.com
+
+Number of CPUs:  54
+   model name : Intel(R) Xeon(R) Platinum 8268 CPU @ 2.90GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:         749654      466966       17228          35      265459      280405
+Swap:         16383        3816       12567
+
+HUGE PAGES:
+HugePages_Total:   204808
+HugePages_Free:        9
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20221113
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20221113
+
+!! What
+alter system set sga_max_size=750G scope=spfile;
+alter system set sga_target=750G scope=spfile; 
+alter system set pga_aggregate_target=150G scope=spfile; 
+alter system set pga_aggregate_limit=300G scope=spfile;
+
+##alter system reset pga_aggregate_limit scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbm1p
+
+srvctl start database -d HEPYPRD_xhepydbm1p
+
+
+show parameter sga_max_size
+
+show parameter sga_target
+
+show parameter pga_aggregate_target
+
+show parameter pga_aggregate_limit
+
+
+************ HEPYPRD StandBy( Nov 16 2022) ******
+
+--Before
+show parameter sga_max_size
+400G
+show parameter sga_target
+400G
+show parameter pga_aggregate_target
+80G
+show parameter pga_aggregate_limit
+160G
+
+
+
+
+ps -ef |grep pmon
+ps -ef | grep tns
+
+--> check make sure both Primary and Standby databases are up post Linux OS patching
+--> if not startup.
+
+
+
+Around 9 AM
+
+--> After JC adds memory to VM and huge pages. Verify it should be 384012
+
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+
+--> currently 
+HEPYPRD> BOX.sh
+
+HOSTNAME:   xhepydbm1p.aetna.com
+
+Number of CPUs:  54
+   model name : Intel(R) Xeon(R) Platinum 8268 CPU @ 2.90GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:         749654      466966       17228          35      265459      280405
+Swap:         16383        3816       12567
+
+HUGE PAGES:
+HugePages_Total:   204808
+HugePages_Free:        9
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20221116
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20221116
+
+!! What
+alter system set sga_max_size=750G scope=spfile;
+alter system set sga_target=750G scope=spfile; 
+alter system set pga_aggregate_target=150G scope=spfile; 
+alter system set pga_aggregate_limit=300G scope=spfile;
+
+##alter system reset pga_aggregate_limit scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+
+show parameter sga_max_size
+
+show parameter sga_target
+
+show parameter pga_aggregate_target
+
+show parameter pga_aggregate_limit
+
+pga_aggregate_limit
+
+************ HEDWPRD Primary ( Nov 13 2022) ******
+
+--Before
+show parameter sga_max_size
+92G
+show parameter sga_target
+92G
+show parameter pga_aggregate_target
+24G
+show parameter pga_aggregate_limit
+48G
+
+HEDWPRD> BOX.sh
+
+HOSTNAME:   xhedwdbm21p.aetna.com
+
+Number of CPUs:  36
+   model name : Intel(R) Xeon(R) Platinum 8158 CPU @ 3.00GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:         144882      113452        2063         192       29366       30218
+Swap:         16383        7867        8516
+
+HUGE PAGES:
+HugePages_Total:   49080
+HugePages_Free:     2008
+
+
+Before 6 AM
+
+ps -ef |grep pmon
+ps -ef | grep tns
+
+--> check make sure both Primary and Standby databases are up post Linux OS patching
+--> if not startup.
+
+cd $SCRIPTS
+
+Enable_HAS.sh
+
+Around 7 AM
+
+--> After JC adds memory to VM and huge pages. Huge pages needs to be increased to 64452
+
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+
+--> currently 
+HEPYPRD> BOX.sh
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20221113
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20221113
+
+!! What
+alter system set sga_max_size=120G scope=spfile;
+alter system set sga_target=120G scope=spfile; 
+#alter system set pga_aggregate_target=24G scope=spfile; 
+#alter system set pga_aggregate_limit=48G scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+************ HEDWPRD Standby ( Nov 13 2022) ******
+
+--Before
+show parameter sga_max_size
+92G
+show parameter sga_target
+92G
+show parameter pga_aggregate_target
+24G
+show parameter pga_aggregate_limit
+48G
+
+HEDWPRD> BOX.sh
+
+HOSTNAME:   xhedwdbw21p.aetna.com
+
+Number of CPUs:  36
+   model name : Intel(R) Xeon(R) Platinum 8158 CPU @ 3.00GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:         144882      109959        7444         133       27478       33763
+Swap:         16383        2753       13630
+
+HUGE PAGES:
+HugePages_Total:   49080
+HugePages_Free:     2084
+
+
+
+Before 6 AM
+
+ps -ef |grep pmon
+ps -ef | grep tns
+
+--> check make sure both Primary and Standby databases are up post Linux OS patching
+--> if not startup.
+
+cd $SCRIPTS
+
+Enable_HAS.sh
+
+Around 7 AM
+
+--> After JC adds memory to VM and huge pages. Huge pages needs to be increased to 64452
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+--> currently 
+HEPYPRD> BOX.sh
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20221113
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20221113
+
+!! What
+alter system set sga_max_size=120G scope=spfile;
+alter system set sga_target=120G scope=spfile; 
+#alter system set pga_aggregate_target=24G scope=spfile; 
+#alter system set pga_aggregate_limit=48G scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbw21p
+
+srvctl start database -d HEDWPRD_xhedwdbw21p
+
+
+
+***** HEPYPRD Primary 12/17/2022 *******
+
+--Before
+
+show parameter processes
+8000
+
+ulimit -a
+max user processes              (-u) 8800
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20221217
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20221217
+
+
+
+!! Check make sure Unix Admin modified ulimit par
+
+ulimit -a
+
+!! What
+alter system set processes=12300 scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbm1p
+
+srvctl start database -d HEPYPRD_xhepydbm1p
+
+
+
+***** HEPYPRD Standby 12/17/2022 *******
+
+--Before
+
+show parameter processes
+8000
+
+ulimit -a
+max user processes              (-u) 8800
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20221217
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20221217
+
+
+
+!! Check make sure Unix Admin modified ulimit par
+
+ulimit -a
+
+!! What
+alter system set processes=12300 scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+*********************** Jan 22 2023*******************************
+
+**** HEPYPRD Primary 01/22/2023 *******
+
+show parameter UNDO_RETENTION
+
+ALTER SYSTEM SET UNDO_RETENTION = 12800;
+
+show parameter UNDO_RETENTION
+
+**** HEPYPRD Standby 01/22/2023 *******
+
+show parameter UNDO_RETENTION
+
+ALTER SYSTEM SET UNDO_RETENTION = 12800;
+
+show parameter UNDO_RETENTION
+
+
+**** HEPYPRD Primary 01/22/2023 *******
+Add 3 DISKS relance
+
+I was thinking add 2 Disks with rebalance 0 and add third one with rebalance 500 to get all 3 rebalance at once….
+
+
+CLOSED       FORMER            6553600          0          0         512                 512                                 /dev/oracleasm/disks/VOLDAT13
+CLOSED       FORMER            6553600          0          0         512                 512                                 /dev/oracleasm/disks/VOLDAT14
+CLOSED       FORMER            6553600          0          0         512                 512                                 /dev/oracleasm/disks/VOLDAT15
+
+
+
+
+********HEDWPRD Primary 01/22/2023 *****
+
+show parameter _smu_debug_mode
+alter system set "_smu_debug_mode"=0;
+show parameter _smu_debug_mode
+
+********HEDWPRD Standby 01/22/2023 *****
+
+show parameter _smu_debug_mode
+alter system set "_smu_debug_mode"=0;
+show parameter _smu_debug_mode
+
+************************************************* Scalability Jan 2023 *************************************************
+****** HEPYPRD Primary 02/05/2023
+
+--Before
+
+show parameter processes
+12300
+
+ulimit -a
+max user processes              (-u) 13530
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20230205
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20230205
+
+
+
+!! Check make sure Unix Admin modified ulimit par
+
+ulimit -a
+max user processes --> 16200
+
+
+!! What
+alter system set processes=15000 scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbm1p
+
+srvctl start database -d HEPYPRD_xhepydbm1p
+
+
+****** HEPYPRD Standby 02/05/2023
+
+--Before
+
+show parameter processes
+12300
+
+ulimit -a
+max user processes              (-u) 13530
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20230205
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20230205
+
+
+!! Check make sure Unix Admin modified ulimit par
+ulimit -a
+max user processes --> 16200
+
+
+!! What
+alter system set processes=15000 scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+
+****** HEDWPRD Primary 02/05/2023
+
+--Before
+
+show parameter processes
+3000
+
+ulimit -a
+max user processes              (-u) 2047
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20230205
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20230205
+
+
+!! Check make sure Unix Admin modified ulimit par
+ulimit -a
+max user processes --> 6200
+
+
+!! What
+alter system set processes=5000 scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+****** HEDWPRD Standby 02/05/2023
+
+--Before
+
+show parameter processes
+3000
+
+ulimit -a
+max user processes              (-u) 2047
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20230205
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20230205
+
+
+!! Check make sure Unix Admin modified ulimit par
+ulimit -a
+max user processes --> 6200
+
+
+!! What
+alter system set processes=5000 scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbw21p
+
+srvctl start database -d HEDWPRD_xhedwdbw21p
+
+
+
+
+
+
+###################################################################################################################
+
+************ HEPYPRD Primary ( March 19 2023) ******
+
+--Before
+show parameter sga_max_size
+750G
+show parameter sga_target
+750G
+show parameter pga_aggregate_target
+150G
+show parameter pga_aggregate_limit
+300G
+
+
+
+HOSTNAME:   xhepydbm1p.aetna.com
+
+Number of CPUs:  54
+   model name : Intel(R) Xeon(R) Platinum 8268 CPU @ 2.90GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:        1814036     1004663      793424         644       15947      804161
+Swap:         16383           0       16383
+
+HUGE PAGES:
+HugePages_Total:   384012
+HugePages_Free:       13
+
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20230319_1
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20230319_1
+
+
+!! What
+alter system set sga_max_size=900G scope=spfile;
+alter system set sga_target=900G scope=spfile; 
+alter system set pga_aggregate_target=180G scope=spfile; 
+
+#alter system set pga_aggregate_limit=400G scope=spfile;
+
+
+
+xhepydbm2ap
+srvctl stop database -d HEPYPRD_xhepydbm1p
+
+srvctl start database -d HEPYPRD_xhepydbm1p
+
+
+show parameter sga_max_size
+
+show parameter sga_target
+
+show parameter pga_aggregate_target
+
+show parameter pga_aggregate_limit
+
+###############################################################################
+
+exec dbms_stats.set_table_prefs('PROD', 'CVC_INSTANCE_CONTEXT', 'PUBLISH', 'TRUE');
+
+
+###############################################################################
+
+
+ALTER DATABASE
+DATAFILE '+DATA_01/HEPYPRD_XHEPYDBM1P/DATAFILE/indx6.945.1127978817' RESIZE 150G
+/
+
+CREATE INDEX PROD.MED_HICN_INFO_AEDBA_2
+    ON PROD.MEDICARE_HICN_INFO(UPPER("MBI_TXT"),"CONCEPT_FULFILLED_CD", "INST_ACTIVE_CD", "TENANT_ID", "ENDOR_EXPIRE_DT")
+TABLESPACE INDX6 ONLINE PARALLEL 8;
+
+ALTER INDEX  PROD.MED_HICN_INFO_AEDBA_2 NOPARALLEL;
+
+
+CREATE INDEX PROD.MEMBER_PLAN_SELECT_AEDBA_1
+    ON PROD.MEMBER_PLAN_SELECTION("VER_ID", "QXJ__PARENT")
+TABLESPACE INDX6 ONLINE PARALLEL 8;
+
+ALTER INDEX  PROD.MEMBER_PLAN_SELECT_AEDBA_1 NOPARALLEL;
+
+
+
+
+
+************ HEPYPRD StandBy( March 19 2023) ******
+
+--Before
+show parameter sga_max_size
+750G
+show parameter sga_target
+750G
+show parameter pga_aggregate_target
+150G
+show parameter pga_aggregate_limit
+300G
+
+
+
+
+
+
+HEPYPRD> BOX.sh
+
+HOSTNAME:   xhepydbw21p.aetna.com
+
+Number of CPUs:  36
+   model name : Intel(R) Xeon(R) Platinum 8268 CPU @ 2.90GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:        1814038      788343      543529        1080      482164     1021205
+Swap:         16383           0       16383
+
+HUGE PAGES:
+HugePages_Total:   384012
+HugePages_Free:      248
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20230319_1
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20230319_1
+
+!! What
+alter system set sga_max_size=900G scope=spfile;
+alter system set sga_target=900G scope=spfile; 
+alter system set pga_aggregate_target=180G scope=spfile; 
+alter system set pga_aggregate_limit=400G scope=spfile;
+
+#alter system set pga_aggregate_limit=400G scope=both;
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+
+show parameter sga_max_size
+
+show parameter sga_target
+
+show parameter pga_aggregate_target
+
+show parameter pga_aggregate_limit
+
+pga_aggregate_limit
+
+
+
+***** HECVPRD Primary (March 19 2023) ****
+
+
+Login to CV Primary: xhecvdbm21p
+
+. oraenv
+HECVPRD
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHECVPRD.ora spfileHECVPRD.ora_b4_20230319
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHECVPRD.ora initHECVPRD.ora_b4_20230319
+
+
+
+sqlplus / as sysdba
+
+show parameter db_files
+
+200
+
+alter system set db_files=1200 scope=spfile;
+
+
+srvctl stop database -d HECVPRD_xhecvdbm21p
+
+srvctl start database -d HECVPRD_xhecvdbm21p
+
+
+sqlplus / as sysdba
+
+show parameter db_files
+
+
+***** HECVPRD Standby (March 19 2023) ****
+
+Login to DW StandBy: xhecvdbw21p
+
+. oraenv
+HECVPRD
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHECVPRD.ora spfileHECVPRD.ora_b4_20230319
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHECVPRD.ora initHECVPRD.ora_b4_20230319
+
+
+sqlplus / as sysdba
+
+show parameter db_files
+200
+
+alter system set db_files=1200 scope=spfile;
+
+
+
+
+srvctl stop database -d HECVPRD_xhecvdbw21p
+
+srvctl start database -d HECVPRD_xhecvdbw21p
+
+
+
+**** HEPYCFG xhepydbm801p ******
+
+
+
+--Before
+show parameter sga_max_size
+7008M
+show parameter sga_target
+7008M
+show parameter pga_aggregate_target
+1G
+show parameter pga_aggregate_limit
+45000M
+
+ BOX.sh
+
+HOSTNAME:   xhepydbm801p.aetna.com
+
+Number of CPUs:  4
+   model name : Intel(R) Xeon(R) Platinum 8268 CPU @ 2.90GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:          23929       15323         864         750        7741        7480
+Swap:         16383           1       16382
+
+HUGE PAGES:
+HugePages_Total:    5990
+HugePages_Free:     2484
+
+
+
+Before 6 AM
+
+ps -ef |grep pmon
+ps -ef | grep tns
+
+
+
+--> After JC adds memory to VM and huge pages. Huge pages needs to be increased to 32800
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+--> currently 
+BOX.sh
+
+HOSTNAME:   xhepydbm801p.aetna.com
+
+Number of CPUs:  8
+   model name : Intel(R) Xeon(R) Platinum 8268 CPU @ 2.90GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:         128755       70376       14463        1416       43915       56177
+Swap:         16383           0       16383
+
+HUGE PAGES:
+HugePages_Total:   32800
+HugePages_Free:    29294
+
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYCFG.ora spfileHEPYCFG.ora_b4_20230416
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYCFG.ora initHEPYCFG.ora_b4_20230416
+
+!! What
+alter system set sga_max_size=64G scope=spfile;
+alter system set sga_target=64G scope=spfile; 
+alter system set pga_aggregate_target=16G scope=spfile; 
+alter system set pga_aggregate_limit=32G scope=spfile;
+
+alter system set sga_max_size=60G scope=spfile;
+alter system set sga_target=60G scope=spfile; 
+alter system set pga_aggregate_target=14G scope=spfile; 
+alter system set pga_aggregate_limit=30G scope=spfile;
+
+alter system set sga_max_size=32G scope=spfile;
+alter system set sga_target=32G scope=spfile; 
+alter system set pga_aggregate_target=8G scope=spfile; 
+alter system set pga_aggregate_limit=16G scope=spfile;
+
+64000
+64000
+16000M
+32000M
+
+
+*.pga_aggregate_target=32000M
+
+srvctl stop database -d HEPYCFG_xhepydbm801p
+
+srvctl start database -d HEPYCFG_xhepydbm801p
+
+
+
+************ HEDWPRD Primary ( Apr 23 2023) ******
+
+--Before
+show parameter sga_max_size
+120G
+show parameter sga_target
+120G
+show parameter pga_aggregate_target
+24G
+show parameter pga_aggregate_limit
+48G
+
+HEDWPRD> BOX.sh
+
+HOSTNAME:   xhedwdbm21p.aetna.com
+
+Number of CPUs:  36
+   model name : Intel(R) Xeon(R) Platinum 8158 CPU @ 3.00GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:         193263      149130       10741        1227       33390       41641
+Swap:         16383          15       16368
+
+HUGE PAGES:
+HugePages_Total:   64452
+HugePages_Free:     3116
+
+
+
+Before 6 AM
+
+ps -ef |grep pmon
+ps -ef | grep tns
+
+--> check make sure both Primary and Standby databases are up post Linux OS patching
+--> if not startup.
+
+cd $SCRIPTS
+
+
+
+Around 7 AM
+
+--> After JC adds memory to VM and huge pages. Huge pages needs to be increased to 71680
+
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+
+--> currently 
+HEPYPRD> BOX.sh
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20230423
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20230423
+
+!! What
+alter system set sga_max_size=130G scope=spfile;
+alter system set sga_target=130G scope=spfile; 
+#alter system set pga_aggregate_target=28G scope=spfile; 
+#alter system set pga_aggregate_limit=56G scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+************ HEDWPRD Standby ( Apr 23 2023) ******
+
+--Before
+--Before
+show parameter sga_max_size
+120G
+show parameter sga_target
+120G
+show parameter pga_aggregate_target
+24G
+show parameter pga_aggregate_limit
+48G
+
+HEDWPRD> BOX.sh
+
+HOSTNAME:   xhedwdbw21p.aetna.com
+
+Number of CPUs:  36
+   model name : Intel(R) Xeon(R) Platinum 8158 CPU @ 3.00GHz
+
+MEMORY:
+              total        used        free      shared  buff/cache   available
+Mem:         193263      141440        5530        1193       46293       49358
+Swap:         16383           6       16377
+
+HUGE PAGES:
+HugePages_Total:   64452
+HugePages_Free:     3120
+
+
+
+Before 6 AM
+
+ps -ef |grep pmon
+ps -ef | grep tns
+
+--> check make sure both Primary and Standby databases are up post Linux OS patching
+--> if not startup.
+
+cd $SCRIPTS
+
+Enable_HAS.sh
+
+Around 7 AM
+
+--> After JC adds memory to VM and huge pages. Huge pages needs to be increased to 71680
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+--> currently 
+HEPYPRD> BOX.sh
+
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20230423
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20230423
+
+!! What
+alter system set sga_max_size=130G scope=spfile;
+alter system set sga_target=130G scope=spfile; 
+#alter system set pga_aggregate_target=28G scope=spfile; 
+#alter system set pga_aggregate_limit=56G scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbw21p
+
+srvctl start database -d HEDWPRD_xhedwdbw21p
+
+
+
+****** HEPYPRD Primary 06/18/2023
+
+--Before
+
+show parameter processes
+15000
+
+-- Before
+ulimit -a
+max user processes              (-u) 16200
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20230618
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20230618
+
+
+
+!!! Check make sure Unix Admin modified ulimit par
+
+ulimit -a
+max user processes --> 21000
+
+
+!! What
+alter system set processes=18000 scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbm1p
+
+srvctl start database -d HEPYPRD_xhepydbm1p
+
+
+****** HEPYPRD Standby 06/18/2023
+
+--Before
+
+show parameter processes
+15000
+
+ulimit -a
+max user processes              (-u) 16200
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEPYPRD.ora spfileHEPYPRD.ora_b4_20230618
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEPYPRD.ora initHEPYPRD.ora_b4_20230618
+
+
+!! Check make sure Unix Admin modified ulimit par
+ulimit -a
+max user processes --> 21000
+
+
+!! What
+alter system set processes=18000 scope=spfile;
+
+
+srvctl stop database -d HEPYPRD_xhepydbw21p
+
+srvctl start database -d HEPYPRD_xhepydbw21p
+
+
+****** xmedgdbw21s ***************
+
+
+--Before
+--Before
+show parameter sga_max_size
+4G
+show parameter sga_target
+4G
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEGESTS.ora spfileHEGESTS.ora_b4_20230726
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEGESTS.ora initHEGESTS.ora_b4_20230726
+
+!! What
+alter system set sga_max_size=7G scope=spfile;
+alter system set sga_target=7G scope=spfile; 
+
+
+srvctl stop database -d HEGESTS_xmedgdbw21s
+
+srvctl start database -d HEGESTS_xmedgdbw21s
+
+
+
+
+
+****** HEDWPRD Primary 10/22/2023
+
+--Before
+
+show parameter processes
+5000
+
+ulimit -a
+max user processes              (-u) 6200
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20231022
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20231022
+
+
+!! Check make sure Unix Admin modified ulimit par
+ulimit -a
+max user processes --> 6200
+
+
+!! What
+alter system set processes=6000 scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbm21p
+
+srvctl start database -d HEDWPRD_xhedwdbm21p
+
+
+****** HEDWPRD Standby 10/22/2023
+
+--Before
+
+show parameter processes
+5000
+
+ulimit -a
+max user processes              (-u) 6200
+
+
+!! Save existing spfile first
+cd $DBS
+cp spfileHEDWPRD.ora spfileHEDWPRD.ora_b4_20231022
+
+sqlplus / as sysdba
+create pfile from spfile;
+exit
+
+cd $DBS
+cp initHEDWPRD.ora initHEDWPRD.ora_b4_20231022
+
+
+!! Check make sure Unix Admin modified ulimit par
+ulimit -a
+max user processes --> 6200
+
+
+!! What
+alter system set processes=6000 scope=spfile;
+
+
+srvctl stop database -d HEDWPRD_xhedwdbw21p
+
+srvctl start database -d HEDWPRD_xhedwdbw21p
+
+
+**** HEMPSTS ***
+
+Users getting following error while triggering HMEM
+ORA-04036: PGA memory used by the instance exceeds PGA_AGGREGATE_LIMIT 
+
+Current settings are 
+
+HOSTNAME:   xmedmdbw21s.aetna.com
+
+Number of CPUs:  24
+   model name : Intel(R) Xeon(R) Platinum 82
+
+MEMORY:
+              total        used        free
+Mem:         128771       78256       37735
+Swap:         16383         757       15626
+
+HUGE PAGES:
+HugePages_Total:   32800
+HugePages_Free:       78
+
+
+show parameter sga_target     
+64G
+show parameter sga_max_size
+64G
+show parameter pga_aggregate_target
+21G
+show parameter pga_aggregate_limit
+42G
+
+Per Rich R. recommendation just increase 
+pga_aggregate_limit to 54G and see what happens
+
+alter system set pga_aggregate_limit=54G scope=both;
+
+
+**** HEPYPRD (Primary) ****
+
+--Changes in support Level1 performance
+alter system set "_backup_disk_bufsz"=1048576 scope=both;
+alter system set "_backup_disk_bufcnt"=64 scope=both;
+alter system set "_backup_seq_bufsz"=1048576 scope=both;
+alter system set "_backup_seq_bufcnt"=64 scope=both;
+alter system set "_backup_file_bufsz"=1048576 scope=both;
+alter system set "_backup_file_bufcnt"=64 scope=both;
+
+
+
+srvctl stop database -d HEPYDBA_xhepydbw2scl
+
+srvctl start database -d HEPYSTS_xhepydbw21s
+
+
+
+alter system set sga_max_size=900G scope=spfile;
+alter system set sga_target=900G scope=spfile; 
+alter system set pga_aggregate_target=180G scope=spfile; 
+
+#alter system set pga_aggregate_limit=400G scope=spfile;
+
+
+****** HEPYPRD *****
+
+issues during GRP creation on HEPYPRD_1 primary (Node A) 
+
+ORA-04031
+ORA-04031: unable to allocate 510025600 bytes of shared memory ("shared pool","unknown object","sga heap(6,0)","flashback generation buffer")
+
+
+
+!! Per Rich recommendation increase SGA parameters and try again.
+
+alter system set sga_max_size=1100G scope=spfile;
+alter system set sga_target=1100G scope=spfile; 
+
+
+srvctl stop database -d HEPYPRD_xhepydbm2pcl
+srvctl start database -d HEPYPRD_xhepydbm2pcl
+
+
+
+
+
+
+
+****** RACONE bounce example  *****
+
+--> HEPYPRD Primary
+
+sqlplus / as sysdba
+ALTER SYSTEM SET AUDIT_FILE_DEST = '/oraadump/HEPYPRD_1/adump' scope=spfile;
+
+srvctl stop database -d HEPYPRD_xhepydbm2pcl
+srvctl start database -d HEPYPRD_xhepydbm2pcl
+
+--> HEPYPRD StandBy
+
+sqlplus / as sysdba
+ALTER SYSTEM SET AUDIT_FILE_DEST = '/oraadump/HEPYPRD_1/adump' scope= spfile; 
+alter system set sga_max_size=1100G scope=spfile;
+alter system set sga_target=1100G scope=spfile; 
+
+srvctl stop database -d HEPYPRD_xhepydbw2pcl
+srvctl start database -d HEPYPRD_xhepydbw2pcl
+
+select name from v$active_services;
+
+!!if HEPYPRD_RPT not there startup...
+
+srvctl start service  -d HEDWPRD_xhepydbw2pcl -service hepyprd_rpt
+
+or
+
+exec DBMS_SERVICE.START_SERVICE('HEPYPRD_RPT');
+
+--> HEDWPRD Primary
+
+
+sqlplus / as sysdba
+ALTER SYSTEM SET AUDIT_FILE_DEST = '/oraadump/HEDWPRD_1/adump' scope=spfile;
+srvctl stop database -d HEDWPRD_xhedwdbm2pcl
+srvctl start database -d HEDWPRD_xhedwdbm2pcl
+
+
+--> HEDWPRD StandBy
+
+sqlplus / as sysdba
+ALTER SYSTEM SET AUDIT_FILE_DEST = '/oraadump/HEDWPRD_1/adump' scope=spfile;
+
+srvctl stop database -d HEDWPRD_xhedwdbw2pcl
+srvctl start database -d HEDWPRD_xhedwdbw2pcl
+
+select name from v$active_services;
+
+!!if HEPYPRD_RPT not there startup...
+
+srvctl start service  -d HEDWPRD_xhedwdbw2pcl -service hedwprd_rpt
+
+or
+
+exec DBMS_SERVICE.START_SERVICE('HEDWPRD_RPT');
+
+
+
+
+
+
+
+
+

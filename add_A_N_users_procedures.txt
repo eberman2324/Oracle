@@ -1,0 +1,164 @@
+
+## For MP just provide read only DB account
+##and tell them 
+##They will then get directed to IAM group and submit IAM request  
+##(I don’t know how that is handled….  I believe is it handled with a SERVICE NOW request, but I don’t know for sure)
+
+
+
+
+Hi Eugene GM Could you please reset my db password in HEDWPRD and HEPYSTS to SaiRam#1975
+
+
+ALTER  USER sys
+IDENTIFIED BY "Locked#99999"
+/
+
+ALTER  USER sys
+IDENTIFIED BY "Dpoc#999"
+/
+
+
+ALTER USER N935883
+ACCOUNT UNLOCK
+/
+
+ALTER USER A160160
+ZOPA  EXPIRE
+/
+
+
+ALTER  USER A236120
+IDENTIFIED BY "Dec27#2024"
+/
+
+ALTER USER A236120
+ACCOUNT UNLOCK
+/
+
+ALTER USER A974526
+PASSWORD EXPIRE
+/
+
+
+
+
+
+
+
+******** OEM *************
+N861661
+
+GRANT EXECUTE ON SYS.DBMS_WORKLOAD_REPOSITORY TO N935883
+/
+GRANT NON_DBA_OEM_ROLE TO N935883
+/
+GRANT OEM_ADVISOR TO N935883
+/
+GRANT SELECT_CATALOG_ROLE TO N935883
+/
+
+alter user N935883 default role all;
+
+
+
+***** To bulk add many users *******
+
+
+
+Login to xhepydbw21d
+. oraenv
+
+HEPYDEV
+
+!! Make sure A236120 ZOPA in ICRPRD matches HRP none prod ZOPA
+
+####cd $HOME/tls/security/new2
+
+cd $SCRIPTS/security
+
+
+
+vi new_users.txt
+
+
+
+
+A611443
+
+
+
+empdev , hempdev2 , hempdev3 , hemqa_rpt , hempqa2 , hempqa3 , hempsts , hemptst , hempmgr2 . Add new Oracle read-only account for the following databases
+
+./create_user.sh HEMPDEV HEMPDEV2 HEMPDEV3 HEMPQA HEMPQA2 HEMPQA3 HEMPSTS HEMPMGR2 
+./create_user.sh HEMPPRD
+
+HEPYPRD_RPT
+HECVPRD
+HEDWPRD
+HEMPPRD
+
+
+HEPYQA2 
+./create_user.sh HEPYCFG HEDWCFG
+
+./create_user.sh HEDWDEV HEDWDEV2 HEDWDEV3 HEDWQA HEDWQA2 HEDWQA3 HEDWUAT
+
+./create_user.sh HEDWDEV HEDWQA2 HEDWQA HEDWSTS HEDWPRD
+
+
+
+
+./create_user.sh HECVPRD HECVQA HECVQA2 HECVQA3
+
+./create_user.sh HEDWQA HEDWQA2 HEDWQA3 HEPYQA HEPYQA2 HEPYQA3 HECVQA HECVQA2 HECVQA3
+./create_user.sh HEDWQA2 HEDWQA2 HEDWQA3
+
+./create_user.sh HEPYQA HEPYQA2 HEPYQA3
+
+./create_user.sh HEPYSTS HEDWSTS
+
+./create_user.sh HEPYPRD
+
+./create_user.sh HECVDEV HECVDEV2 HECVDEV3
+./create_user.sh HEPYDEV HEPYDEV2 HEPYDEV3
+./create_user.sh HEPYUAT HEDWUAT HECVUAT HECVSTS HEDWSTS HEPYSTS HEPYMGR2 HEDWMGR2
+
+./create_user.sh HEDWPRD
+
+
+TSS-Ops-Database-Oracle            
+
+HECVQA, HECVQA2, HECVQA3, HEDWQA, HEDWQA2, HEDWQA3, HEPYQA, HEPYQA2, HEPYQA3, HEPYCFG
+
+
+
+
+Arun.Tripathi@aetna.com
+
+GRANT DBA TO A847553
+/
+ALTER USER A847553 DEFAULT ROLE APP_USER_ROLE,
+                                DBA
+/
+
+
+
+
+
+
+
+
+
+
+TASK4775034 - HEDWDEV2
+
+TASK4775035 - HEDWDEV3
+TASK4775033 - HEDWDEV
+TASK4775037 - HEDWQA
+TASK4775042 - HEDWQA2
+TASK4775047 - HEDWQA3
+
+
+
+

@@ -1,0 +1,103 @@
+
+
+https://www.forum.dbagenesis.com/forum/oracle-database-administration/how-to-move-datafile-from-file-system-to-asm-diskgroup
+
+
+
+Now we need to move this file  from file system to ASM storage 
+
+
+1. Take tablespace or datafile offline;
+
+
+alter database datafile '/u008/app/oracle/product/19.3/db_1/dbs/ORAFRA' offline;
+
+2. connect to rman and copy file to ASM
+
+
+rman target / 
+
+RMAN> copy datafile '/u008/app/oracle/product/19.3/db_1/dbs/ORAFRA' to '+ORADATA';
+
+log : 
+
+RMAN> copy datafile '/u008/app/oracle/product/19.3/db_1/dbs/ORAFRA' to '+ORADATA';
+
+Starting backup at 05-NOV-22
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=30 device type=DISK
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00007 name=/u008/app/oracle/product/19.3/db_1/dbs/ORAFRA
+output file name=+ORADATA/prod/datafile/test.273.895011123 tag=TAG20151105T221201 RECID=2 STAMP=895011125
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:03
+Finished backup at 05-NOV-22
+
+3. Rename file 
+
+
+sqlplus / as sysdba 
+
+SQL> alter database rename file '/u008/app/oracle/product/19.3/db_1/dbs/ORAFRA' to '+ORADATA/prod/datafile/test.273.895011123';
+
+4. Recover if needed and make it online 
+
+
+SQL> recover datafile '+ORADATA/prod/datafile/test.273.895011123';
+Media recovery complete.
+
+SQL> alter database datafile '+ORADATA/prod/datafile/test.273.895011123' online;
+
+Database altered.
+
+
+
+
+
+
+
+
+10/4/2023   
+
+xmedmdbw21s.aetna.com (oracle) HEMPSTS::/home/oracle/MCL
+HEMPSTS> cat fixing_file_1.out
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL> set echo on
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL> alter database datafile '/orahome/u01/app/oracle/product/19.18.0/db_1/dbs/DATA_01' offline;
+
+Database altered.
+
+[SYS@HEMPSTS:HEMPSTS] SQL> exit
+
+xmedmdbw21s.aetna.com (oracle) HEMPSTS::/home/oracle/MCL
+HEMPSTS> cat fixing_file_2.out
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL> alter database rename file '/orahome/u01/app/oracle/product/19.18.0/db_1/dbs/DATA_01' to '+DATA_01/HEMPSTS_XMEDMDBW21S/DATAFILE/indexes.353.1149280077' ;
+
+Database altered.
+
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL> recover datafile '+DATA_01/HEMPSTS_XMEDMDBW21S/DATAFILE/indexes.353.1149280077' ;
+Media recovery complete.
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL> alter database datafile '+DATA_01/HEMPSTS_XMEDMDBW21S/DATAFILE/indexes.353.1149280077'       online;
+
+Database altered.
+
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL>
+[SYS@HEMPSTS:HEMPSTS] SQL> exit
+
+xmedmdbw21s.aetna.com (oracle) HEMPSTS::/home/oracle/MCL
+HEMPSTS>
+

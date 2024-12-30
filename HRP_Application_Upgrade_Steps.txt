@@ -1,0 +1,585 @@
+-- Check make sure Level 0 completed (should start 1 AM on Saturday and should be done way before 11PM check around 3 PM)
+-- Comment out PY and DW crontab stats job if needed
+
+-- Add DATA, INDEX and TEMP space to HEPYPRD
+-- Add DATA, INDEX space to HEDWPRD
+
+
+-- Check make sure last Archivelog completed. 
+         * Run manually if needed
+	 * BACKUP_HEPYPRD_XHEPYDBM21P_ARCHIVE_LOG
+-- Check make sure FLASH space freed up
+
+
+
+* xhepydbm21p_HEPYPRD_Primary
+
+* xhepydbw21p_HEPYPRD_StandBy
+
+
+
+
+* Run OEM standby archivelog backup job HEPYPRD_STDBY2_ARCHIVE_LOG_PURGE for standby database
+
+
+* Suspend OEM archivelog backup job BACKUP_HEPYPRD_XHEPYDBM21P_ARCHIVE_LOG for primary database
+* Suspend OEM standby archivelog job HEPYPRD_STDBY2_ARCHIVE_LOG_PURGE for standby database
+
+* Comment heartbeat in cron on primary server
+* Manually update RMAN HeartBeat Table in Primary Database
+* /home/oracle/tls/rman/heartbeat.ksh HEPYPRD AEDBA
+
+
+* Get Flashback Database status in primary database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+* Get Flashback Database status in standby database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+
+
+!!!!DISABLE DG Trasport for PY
+
+In Prod on primary machine xhepydbm21p for PAYOR (PY)
+
+--Get oracle password from TPAM
+
+. oraenv
+
+HEPYPRD
+
+
+## To disable data guard
+
+cd $SCRIPTS
+
+-- Check make sure not N/A sessions. (Kill it)
+-- Check make sure all apps connection down and nothing else running.
+
+
+
+
+./DISable_log_shipping.sh HEPYPRD
+
+
+## Check logs
+
+cd /orahome/u01/app/oracle/local/logs
+ls -altr
+
+
+* Perform a Log Switch on Primary Database
+alter system switch logfile;
+
+
+
+
+* Stop Managed Recovery on the Standby Database from Standby server
+
+  Confirm MRP0 Process is up
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+Stop Managed Recovery
+
+    dgmgrl 
+  
+    connect /
+
+   edit database 'HEPYPRD_xhepydbw21p' set state = 'APPLY-OFF';
+    show database verbose 'HEPYPRD_xhepydbw21p';
+
+
+ Confirm MRP0 Process is down
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+Note:  FRA was already defined in HEPYPRD (Otherwise would need to create)
+
+       From primary or standby database
+
+       SQL> show parameter db_recovery_file_dest
+
+       NAME                                 TYPE          VALUE                            
+       ------------------------------------ -------       ---------
+       db_recovery_file_dest                string        +FLASH_01
+       db_recovery_file_dest_size           big integer   7000M
+
+Create restore points.
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT HEPYPRD_Standby_flashback_20210131 GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+    sql => select flashback_on from v$database;
+
+Primary:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT HEPYPRD_Primary_flashback_20210131 GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+
+    sql => select flashback_on from v$database;
+
+
+
+!!!!DISABLE DG Trasport for DW
+
+In Prod on primary machine xhedwdbm21p for Data Warehouse (DW)
+
+
+-- Check make sure Level 0 completed (should start 9 AM on Saturday and should be done way before 11PM check around 3 PM)
+-- Check make sure last Archivelog completed. ( 10:40 PM should kick off last one)
+         * Run manually if needed
+	 * BACKUP_HEDWPRD_XHEDWDBM21P_ARCHIVED_LOGS
+-- Check make sure FLASH space freed up
+
+* xhedwdbm21p_HEDWPRD_Primary
+
+* xhedwdbw21p_HEDWPRD_StandBy
+
+
+* Run OEM standby archivelog backup job HEDWPRD_STDBY2_ARCHIVE_LOG_PURGE for standby database
+
+
+* Suspend OEM archivelog backup job BACKUP_HEDWPRD_XHEDWDBM21P_ARCHIVED_LOGS for primary database
+* Suspend OEM standby archivelog job HEDWPRD_STDBY2_ARCHIVE_LOG_PURGE for standby database
+
+* Comment heartbeat in cron on primary server
+* Manually update RMAN HeartBeat Table in Primary Database
+* /home/oracle/tls/rman/heartbeat.ksh HEDWPRD AEDBA
+
+
+* Get Flashback Database status in primary database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+* Get Flashback Database status in standby database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+
+
+--Get oracle password from TPAM
+
+. oraenv
+
+HEDWPRD
+
+
+
+
+
+
+## To disable data guard
+
+cd $SCRIPTS
+
+
+./DISable_log_shipping.sh HEDWPRD
+
+## Check logs
+
+cd /orahome/u01/app/oracle/local/logs
+ls -altr
+
+
+* Perform a Log Switch on Primary Database
+alter system switch logfile;
+
+
+!! Run LockUser procedure in HEDWPRD
+!! Manually kill N and A ID connections
+
+
+* Stop Managed Recovery on the Standby Database from Standby server
+
+  Confirm MRP0 Process is up
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+Stop Managed Recovery
+
+    dgmgrl 
+  
+    connect /
+
+   edit database 'HEDWPRD_xhedwdbw21p' set state = 'APPLY-OFF';
+    show database verbose 'HEDWPRD_xhedwdbw21p';
+
+
+ Confirm MRP0 Process is down
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+Note:  FRA was already defined in HEDWPRD (Otherwise would need to create)
+
+       From primary or standby database
+
+       SQL> show parameter db_recovery_file_dest
+
+       NAME                                 TYPE          VALUE                            
+       ------------------------------------ -------       ---------
+       db_recovery_file_dest                string        +FLASH_01
+       db_recovery_file_dest_size           big integer   7000M
+
+Create restore points.
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT HEDWPRD_Standby_flashback_20210131 GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+    sql => select flashback_on from v$database;
+
+Primary:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT HEDWPRD_Primary_flashback_20210131 GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+
+    sql => select flashback_on from v$database;
+
+
+
+-------------------------------------------------------------------------> On Sunday Feb 16 around 7:30 AM  - 8:00 AM
+
+-------------------------------------------------------------------------> On Sunday Aug  2 around 7:30 AM  - 8:00 AM
+
+-------------------------------------------------------------------------> On Sunday Nov  22 around 7:30 AM  - 8:30 AM
+
+
+
+
+
+          
+
+!!!!ENABLE DG Trasport for PY
+
+In Prod on primary machine xhepydbm21p for PAYOR (PY)
+
+
+
+--Get oracle password from TPAM
+
+. oraenv
+
+HEPYPRD
+
+
+## To enable data guard
+
+cd /orahome/u01/app/oracle/local/scripts
+
+
+
+./ENable_log_shipping.sh HEPYPRD
+
+
+Perform a Log Switch on Primary Database
+
+  sqlplus / as sysdba
+
+  sql => alter system switch logfile;
+
+  sql => select group#,thread#,sequence# from v$log where status = 'CURRENT';
+
+  Confirm log sent to standby server
+
+  run => view $BDUMP/alert_HEPYPRD.log
+
+
+Once Log Transport Services is running again, enable Managed Recovery on the Standby Database:
+
+
+  dgmgrl
+  
+  connect /
+
+ edit database 'HEPYPRD_xhepydbw21p' set state = 'APPLY-ON';
+
+ show database verbose 'HEPYPRD_xhepydbw21p';
+
+
+Verify the Standby Database is now following the Primary Database into the new Incarnation
+
+   Run the following against the primary and standby databases
+
+   sqlplus / as sysdba
+
+   select incarnation# from V$DATABASE_INCARNATION where status = 'CURRENT';
+
+
+
+Check BCT
+
+ SELECT status, filename FROM V$BLOCK_CHANGE_TRACKING;
+
+ May be needed
+ ALTER DATABASE ENABLE BLOCK CHANGE TRACKING;
+
+
+Drop restore points
+
+  Primary:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT HEPYPRD_Primary_flashback_20210131;
+
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT HEPYPRD_Standby_flashback_20210131; 
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+
+
+
+## Check logs
+
+cd /orahome/u01/app/oracle/local/logs
+ls -altr
+
+Resume OEM archivelog backup job BACKUP_HEPYPRD_XHEPYDBM21P_ARCHIVE_LOG for primary database
+
+Resume OEM standby archive delete job HEPYPRD_STDBY2_ARCHIVE_LOG_PURGE for standby database
+
+Uncomment heartbeat in cron on primary server
+
+Uncomment PY stats job
+
+
+
+
+
+!!!!ENABLE DG Trasport for DW
+
+In Prod on primary machine for Data Warehouse (DW)
+
+
+
+
+
+
+--Get oracle password from TPAM
+
+. oraenv
+
+HEDWPRD
+
+
+## To enable data guard
+
+cd /orahome/u01/app/oracle/local/scripts
+
+
+./ENable_log_shipping.sh HEDWPRD
+
+
+
+## Check logs
+
+cd /orahome/u01/app/oracle/local/logs
+ls -altr
+
+
+
+Perform a Log Switch on Primary Database
+
+  sqlplus / as sysdba
+
+  sql => alter system switch logfile;
+
+  sql => select group#,thread#,sequence# from v$log where status = 'CURRENT';
+
+  Confirm log sent to standby server
+
+  run => view $BDUMP/alert_HEDWPRD.log
+
+
+Once Log Transport Services is running again, enable Managed Recovery on the Standby Database:
+
+
+  dgmgrl
+  
+  connect /
+
+ edit database 'HEDWPRD_xhedwdbw21p' set state = 'APPLY-ON';
+
+ show database verbose 'HEDWPRD_xhedwdbw21p';
+
+
+Verify the Standby Database is now following the Primary Database into the new Incarnation
+
+   Run the following against the primary and standby databases
+
+   sqlplus / as sysdba
+
+   select incarnation# from V$DATABASE_INCARNATION where status = 'CURRENT';
+
+
+
+Check BCT
+
+ SELECT status, filename FROM V$BLOCK_CHANGE_TRACKING;
+
+ May be needed
+ ALTER DATABASE ENABLE BLOCK CHANGE TRACKING;
+
+
+Drop restore points
+
+  Primary:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT HEDWPRD_Primary_flashback_20210131;
+
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT HEDWPRD_Standby_flashback_20210131; 
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+
+!! !! Run UNLOCKUSER procedure in HEDWPRD
+
+!! Uncomment  DW stats crontab jobs
+
+Resume OEM archivelog backup job BACKUP_HEDWPRD_XHEDWDBM21P_ARCHIVED_LOGS for primary database
+
+Resume OEM standby archive delete job HEDWPRD_STDBY2_ARCHIVE_LOG_PURGE for standby database
+
+Uncomment heartbeat in cron on primary server
+
+

@@ -1,0 +1,111 @@
+
+
+**************************************************************************
+
+SET LINESIZE  145
+SET PAGESIZE  200
+SET VERIFY    off
+
+
+
+
+--When Bob Expands the Disks check OS_MB vs TOTAL_MB
+
+select
+  MOUNT_STATUS  ,
+  HEADER_STATUS ,
+  OS_MB,
+  TOTAL_MB ,
+  FREE_MB  ,
+  substr(NAME,1,20) "Name",
+  substr(LABEL,1,10) "Label",
+  substr(PATH,1,50) "Path"
+from
+        v$asm_disk
+order by
+        path,
+        name
+;
+
+
+
+
+select 
+  substr(a.group_number,1,3) "Group Num", 
+  a.name "Group Name",
+  substr(b.disk_number,1,3) "Disk Num", 
+  b.name "Disk Name", 
+  b.MOUNT_STATUS "Disk Mount Status",
+  b.HEADER_STATUS "Disk Header Status",
+  b.TOTAL_MB, 
+  b.FREE_MB, 
+  substr(b.PATH,1,50) "Path"
+from v$asm_diskgroup a, v$asm_disk b
+    where a.group_number = b.group_number
+    order by a.group_number,b.disk_number;
+
+***************************************************************************
+
+
+
+--Data
+alter tablespace DATA add datafile '+DATA_01' SIZE 31744m;
+
+--Data - Cotiviti
+alter tablespace DATA1 add datafile '+DATA_01' SIZE 31744m;
+
+--Index- Cotiviti
+alter tablespace INDX1 add datafile '+DATA_01' SIZE 31744m;
+
+
+--Data - MP
+ALTER TABLESPACE TABLES ADD DATAFILE '+DATA_01' SIZE 30720M;
+
+--Data ACEDQUAL
+alter tablespace ACEDQUAL_DATA add datafile '+DATA_01' SIZE 10000m;
+
+
+
+
+
+--Index on NextGen server
+alter tablespace INDX add datafile '+DATA_01' SIZE 31744m;
+
+
+alter tablespace CXAMD_DATA add datafile '+DATA_01' SIZE 10744m;
+
+
+--UNDO
+
+alter tablespace UNDOTBS1 add datafile '+DATA_01' SIZE 31744m;
+
+alter tablespace UNDOTBS1 add datafile '+DATA_01' SIZE 10240M;
+
+-- Actifio UNDO
+alter tablespace UNDOTBS1 add datafile '+ACTHED_ILCPSKLRYV' SIZE 31744m;
+
+--TEMP
+alter tablespace TEMP add TEMPFILE '+DATA_01' SIZE 31744m;
+
+--TEMP2
+alter tablespace TEMP2 add TEMPFILE '+DATA_01' SIZE 31744m;
+
+--Actifio TEMP
+alter tablespace TEMP add TEMPFILE '+ACTHEP_ILCPSKLRYV' SIZE 31744m;
+
+--SYSAUX
+
+alter tablespace SYSAUX add datafile '+DATA1' SIZE 5G;
+
+ALTER DATABASE
+DATAFILE '+DATA_01/HEPYPRD_XHEPYDBM21P/DATAFILE/sysaux.1163.1064598957' AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
+/
+
+ALTER DATABASE
+DATAFILE '+DATA_01/HECVPRD_XHECVDBM21P/DATAFILE/indx1.280.1066321121' RESIZE 31G
+/
+
+-- Resize BIG FILE TBL
+ALTER DATABASE
+DATAFILE '+DATA_01/HEPYPRD_XHEPYDBM1P/DATAFILE/indx8.949.1127978669' RESIZE 900G
+/

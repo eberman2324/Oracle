@@ -1,0 +1,16 @@
+DECLARE
+ret_val VARCHAR2(4000);
+BEGIN
+ret_val := DBMS_SQLTUNE.CREATE_TUNING_TASK(
+begin_snap => 49,
+end_snap => 53,
+sql_id => 'b53fs4wp4z0vk',
+plan_hash_value => NULL,
+scope => 'COMPREHENSIVE',
+time_limit => 3600,
+task_name => 'SQL_TUNING_b53fs4wp4z0vk',
+description => 'Comprehensive test',
+dbid => 2046490982,
+database_link_to => 'STANDBY_TO_PRIMARY');
+Dbms_Sqltune.EXECUTE_TUNING_TASK('SQL_TUNING_b53fs4wp4z0vk');
+END;

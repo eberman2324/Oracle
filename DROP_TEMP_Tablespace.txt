@@ -1,0 +1,99 @@
+!!! Tried to drop TEMP tablespace, 
+
+but hitting following bug - SMON Blocking Drop Temporary Tablespace (Doc ID 1500044.1)
+
+HEDWQA2 was switched over
+
+Upon login to new Primary HEDWQA2 via DBArtisan noticed following errors
+
+
+ORA-01157: cannot identify/lock data file 201 - see DBWR trace file
+ORA-01110: data file 201: '+DATA_01
+
+Also same errors produced by SELECT * FROM DBA_TEMP_FILES
+
+Determinded that during Create StandBy or Switchover something happend to TEMP FILES.
+
+
+How to fix the issue.
+
+   CREATE TEMPORARY TABLESPACE TEMP_1
+ 
+    TEMPFILE '+DATA_01' SIZE 5G AUTOEXTEND OFF  
+    EXTENT MANAGEMENT LOCAL UNIFORM SIZE 1M
+
+/
+
+ALTER DATABASE DEFAULT TEMPORARY TABLESPACE TEMP_1; 
+
+
+Tried to drop TEMP tablespace, but hitting following bug - SMON Blocking Drop Temporary Tablespace (Doc ID 1500044.1)
+
+Use Workaround
+
+Bounce Database first
+
+srvctl stop database -d HEDWSTS_xhedwdbwu21q
+
+srvctl start database -d HEDWSTS_xhedwdbwu21q
+
+Close ssh console
+
+Start new ssh console
+
+DROP TABLESPACE TEMP
+ INCLUDING CONTENTS AND DATAFILES;
+
+--Create TEMP again
+
+
+ CREATE TEMPORARY TABLESPACE TEMP
+ 
+    TEMPFILE '+DATA_01' SIZE 5G AUTOEXTEND OFF  
+    EXTENT MANAGEMENT LOCAL UNIFORM SIZE 1M
+
+/
+
+
+ALTER DATABASE DEFAULT TEMPORARY TABLESPACE TEMP;
+
+--Drom TEMP_1
+Use Workaround
+
+Bounce Database first
+
+srvctl stop database -d HEDWSTS_xhedwdbwu21q
+
+srvctl start database -d HEDWSTS_xhedwdbwu21q
+
+Close ssh console
+
+Start new ssh console
+
+DROP TABLESPACE TEMP_1
+ INCLUDING CONTENTS AND DATAFILES;
+
+
+-- Increase TEMP tablespace size
+
+
+
+
+alter tablespace TEMP add TEMPFILE '+DATA_01' SIZE 24G;
+
+
+
+************ cvc archiving HEPYQA2****
+
+
+CREATE BIGFILE TEMPORARY TABLESPACE TEMP_1
+    TEMPFILE '+DATA_01' SIZE 5G AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL
+/
+
+ALTER DATABASE
+TEMPFILE '+DATA_01/HEPYQA2_XHEPYDBW22Q/TEMPFILE/temp_1.345.1160234895' RESIZE 2000G
+/
+
+ALTER DATABASE DEFAULT TEMPORARY TABLESPACE TEMP_1;
+

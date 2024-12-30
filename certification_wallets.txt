@@ -1,0 +1,31 @@
+Here is what I typically do: 
+
+	Create new directory for new wallets  (  MDR_wallet_new and COM_wallet_new)
+	Get new wallet info from customer in ZIP format and upload new wallets and unzip in those new directories to get ready
+	TNSPINGs to databases prior to change
+	The change is to do renames of the directories 
+o	mv MDR_wallet wallet_mdr_Feb1 and 
+o	mv COM_wallet wallet_com_Feb1
+o	mv MDR_wallet_new MDR_wallet and
+o	mv COM_wallet_new COM_wallet
+	TNSPING to databases after change
+	Voila! 
+
+
+
+Here are the last few I’ve done….  
+They are now changing every 3 months or every 90 days…   whenever the customer coordinates with OCI reps
+
+
+-rw-r--r--    1 oracle   dba               0 Apr 27 2023  marker888888888888888888
+drwxr-xr-x    2 oracle   dba            4096 Apr 27 2023  wallet_com_Apr27
+drwxr-xr-x    2 oracle   dba            4096 Apr 27 2023  wallet_mdr_Apr27
+-rw-r--r--    1 oracle   dba               0 Jul 31 2023  marker8888888888888888888
+drwxr-xr-x    2 oracle   dba            4096 Jul 31 2023  wallet_mdr_Jul31
+drwxr-xr-x    2 oracle   dba            4096 Jul 31 2023  wallet_com_Jul31
+-rw-r--r--    1 oracle   dba               0 Oct 30 18:02 marker88888888888888888888
+drwxr-xr-x    2 oracle   dba            4096 Oct 30 18:04 wallet_mdr_Oct30
+drwxr-xr-x    2 oracle   dba            4096 Oct 30 18:04 wallet_com_OCT30
+-rw-r--r--    1 oracle   dba               0 Feb 01 18:06 marker8888888888888888888888
+drwxr-xr-x    2 oracle   dba            4096 Feb 01 18:10 MDR_wallet
+drwxr-xr-x    2 oracle   dba            4096 Feb 01 18:10 COM_wallet
