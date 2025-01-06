@@ -1,0 +1,440 @@
+Primary was on xhedwdbm21p
+Original Standby was on xhedwdbw21p (RHEL7 VM less memory/CPU)
+Added 2 more standbys on RHEL8 (RACONE)
+Second new Standby on xhedwdbm2ap (RHEL8 Physical server more Memory/CPU)
+Third new Standby on xhedwdbw2ap (RHEL8 Physical server more Memory/CPU)
+
+Shortly after we observed gap on Original RHEL7 Standby xhedwdbw21p. This is open in READONLY mode (Active DataGuard) it was a big issue for business.
+
+
+
+
+-- Misc queries 
+select GROUP#,THREAD# ,BYTES/1024/1024, status from v$standby_log;
+select GROUP#,THREAD#,BYTES/1024/1024, BLOCKSIZE, STATUS from v$log;
+select open_mode from v$database;   
+
+
+-- Decided to drop one standby log to free up space on REDO disk
+dgmgrl / 
+   edit database 'HEPYPRD_xhepydbw21p'set state=apply-off;
+         show database verbose 'HEPYPRD_xhepydbw21p';
+
+ALTER DATABASE DROP LOGFILE GROUP 29
+/
+edit database 'HEPYPRD_xhepydbw21p'set state=apply-on;
+
+         show database verbose 'HEPYPRD_xhepydbw21p';
+
+
+-- Disabled thread2 on Primary to see if any help. Did not make any difference on lag.
+!! Need to enable back before switchover...
+
+Primary: 
+alter database disable thread 2;
+
+
+----alter database enable public thread 2;
+
+
+-- From  primary
+select * from V$THREAD;
+-- From Standby 
+select * from v$archive_gap;
+
+
+
+ 
+	
+
+
+-- CPU count on each server was provided to Oracle SR
+Primary: 54 CPU
+xhepydbm1p.aetna.com
+
+Standby with the lag issue: 54 CPU
+xhepydbw21p.aetna.com
+
+Good Standby: 192 CPU
+xhepydbm2ap.aetna.com
+
+Good Standby: 192 CPU
+xhepydbw2ap.aetna.com
+
+
+
+
+
+
+-- Follow this note to determine best parallel option for rede apply
+Tuning the parallelism to improve Log Apply Rate for a Physical Standby Database (Doc ID 2848979.1)
+
+
+-- On standby side
+alter system set PARALLEL_MAX_SERVERS=108;
+
+
+
+SQL> alter system set dg_broker_start=false sid='*';
+
+SQL> alter database recover managed standby database cancel;
+
+SQL> alter database recover managed standby database nodelay disconnect from session parallel  108;   #CPUs * 2;
+
+SQL> select systimestamp from dual;
+
+-- wait for about 10 mins
+
+SQL> select systimestamp from dual;
+
+SQL> select to_char(start_time,'dd-mon-yyyy HH:MI:SS') start_time, type, item, units, sofar, total, to_char(timestamp,'dd-mon-yyyy HH:MI:SS') timestamp from gv$recovery_progress where item like '%Apply Rate';
+
+START_TIME	TYPE	ITEM	UNITS	SOFAR	TOTAL	TIMESTAMP
+28-aug-2024 05:27:47	Media Recovery	Active Apply Rate	KB/sec	294120	0	[NULL]
+28-aug-2024 05:27:47	Media Recovery	Average Apply Rate	KB/sec	283737	0	[NULL]
+28-aug-2024 05:27:47	Media Recovery	Maximum Apply Rate	KB/sec	297717	0	[NULL]
+27-aug-2024 08:38:20	Media Recovery	Active Apply Rate	KB/sec	12119	12119	[NULL]
+27-aug-2024 08:38:20	Media Recovery	Average Apply Rate	KB/sec	11886	11886	[NULL]
+27-aug-2024 08:38:20	Media Recovery	Maximum Apply Rate	KB/sec	290709	290709	[NULL]
+
+
+SQL> alter database recover managed standby database cancel;
+
+SQL> alter database recover managed standby database nodelay disconnect from session parallel 54;  #CPUs ;
+
+SQL> select systimestamp from dual;
+
+28-AUG-24 05.43.52.635702 PM -04:00
+
+-- wait for about 10 mins
+
+SQL> select systimestamp from dual;
+
+28-AUG-24 05.53.54.032066 PM -04:00
+
+
+SQL> select to_char(start_time,'dd-mon-yyyy HH:MI:SS') start_time, type, item, units, sofar, total, to_char(timestamp,'dd-mon-yyyy HH:MI:SS') timestamp from gv$recovery_progress where item like '%Apply Rate';
+
+START_TIME	TYPE	ITEM	UNITS	SOFAR	TOTAL	TIMESTAMP
+28-aug-2024 05:43:38	Media Recovery	Active Apply Rate	KB/sec	28326	0	[NULL]
+28-aug-2024 05:43:38	Media Recovery	Average Apply Rate	KB/sec	116307	0	[NULL]
+28-aug-2024 05:43:38	Media Recovery	Maximum Apply Rate	KB/sec	287852	0	[NULL]
+
+
+SQL> alter database recover managed standby database cancel;
+
+SQL> alter database recover managed standby database nodelay disconnect from session parallel 27; #CPUs / 2;
+
+SQL> select systimestamp from dual;
+
+28-AUG-24 05.58.04.046410 PM -04:00
+
+-- wait for about 10 mins
+
+SQL> select systimestamp from dual;
+
+28-AUG-24 06.07.17.668067 PM -04:00
+
+SQL> select to_char(start_time,'dd-mon-yyyy HH:MI:SS') start_time, type, item, units, sofar, total, to_char(timestamp,'dd-mon-yyyy HH:MI:SS') timestamp from gv$recovery_progress where item like '%Apply Rate';
+
+START_TIME	TYPE	ITEM	UNITS	SOFAR	TOTAL	TIMESTAMP
+28-aug-2024 05:57:49	Media Recovery	Active Apply Rate	KB/sec	57369	0	[NULL]
+28-aug-2024 05:57:49	Media Recovery	Average Apply Rate	KB/sec	178244	0	[NULL]
+28-aug-2024 05:57:49	Media Recovery	Maximum Apply Rate	KB/sec	289629	0	[NULL]
+
+
+SQL> alter database recover managed standby database cancel;
+
+SQL> alter database recover managed standby database nodelay disconnect from session noparallel;
+
+SQL> select systimestamp from dual;
+
+28-AUG-24 06.23.48.970004 PM -04:00
+
+-- wait for about 10 mins
+
+SQL> select systimestamp from dual;
+
+28-AUG-24 06.34.53.609060 PM -04:00
+
+SQL> select to_char(start_time,'dd-mon-yyyy HH:MI:SS') start_time, type, item, units, sofar, total, to_char(timestamp,'dd-mon-yyyy HH:MI:SS') timestamp from gv$recovery_progress where item like '%Apply Rate';
+START_TIME	TYPE	ITEM	UNITS	SOFAR	TOTAL	TIMESTAMP
+28-aug-2024 06:23:26	Media Recovery	Active Apply Rate	KB/sec	45147	0	[NULL]
+28-aug-2024 06:23:26	Media Recovery	Average Apply Rate	KB/sec	45081	0	[NULL]
+28-aug-2024 06:23:26	Media Recovery	Maximum Apply Rate	KB/sec	49326	0	[NULL]
+28-aug-2024 05:57:49	Media Recovery	Average Apply Rate	KB/sec	54261	54261	[NULL]
+28-aug-2024 05:57:49	Media Recovery	Maximum Apply Rate	KB/sec	289629	289629	[NULL]
+
+alter system set dg_broker_start=true sid='*';
+
+
+-- On standby side bounced database after that...
+alter system set db_writer_processes=12 scope=spfile;
+
+
+
+-- Several notes on how to deal with when alter database recover managed standby database cancel takes long time
+
+-- Ran this on Standby while following hang: alter database recover managed standby database cancel;
+-- Attached trace file to Oracle SR
+SQL> oradebug setmypid
+SQL> oradebug unlimit;
+SQL> oradebug hanganalyze 3
+-- Wait upto 1 minute before getting the second hanganalyze
+SQL> oradebug hanganalyze 3
+-- Wait upto 1 minute before getting the second hanganalyze
+SQL> oradebug hanganalyze 3
+SQL>oradebug tracefile_name -- this will return the trace file name.
+SQL> exit
+
+
+-- Got this error and had to wait a bit to re issue.
+[SYS@HEPYPRD:HEPYPRD] SQL> alter database recover managed standby database nodelay disconnect from session parallel  108;
+alter database recover managed standby database nodelay disconnect from session parallel  108
+*
+ERROR at line 1:
+ORA-01153: an incompatible media recovery is active
+
+
+-- Run below from Standby side to determine MRP0 PID to kill it manually afterwards
+select * from v$managed_standby;
+
+-- To check if block_change_truackng enabled on Standby side
+select * from v$block_change_tracking;
+
+
+
+
+--- Misc queries that were provided by Oracle while Investigating the issue
+
+select * from v$standby_log;
+
+SELECT * FROM v$dataguard_stats WHERE name LIKE '%lag%';
+select to_char(current_scn) from v$database;
+
+select thread#,sequence#,blocks*block_size/1024/1024 MB,(next_time-first_time)*86400
+sec, (blocks*block_size/1024/1024)/((next_time-first_time)*86400) "MB/s" from
+v$archived_log
+where ((next_time-first_time)*86400<>0)
+and first_time between to_date('2024/08/21 16:00:00','YYYY/MM/DD HH24:MI:SS')
+and to_date('2024/08/21 18:00:00','YYYY/MM/DD HH24:MI:SS')
+and dest_id=2 order by first_time;
+
+What is the lad=g now between primary and this standby:
+
+-- Current Seq Generated on Primary
+Primary: SQL> select thread#, max(sequence#) "Last Primary Seq Generated"
+from v$archived_log val, v$database vdb
+where val.resetlogs_change# = vdb.resetlogs_change#
+and val.resetlogs_time = vdb.resetlogs_time
+group by thread# order by 1;
+
+
+-- What is the last Seq received on Stadnby
+PhyStdby:SQL> select thread#, max(sequence#) "Last Standby Seq Received"
+from v$archived_log val, v$database vdb
+where val.resetlogs_change# = vdb.resetlogs_change#
+and val.resetlogs_time = vdb.resetlogs_time
+group by thread# order by 1;
+
+-- What is the last Seq applied on Standby
+PhyStdby:SQL>select thread#, max(sequence#) "Last Standby Seq Applied"
+from v$archived_log val, v$database vdb
+where val.resetlogs_change# = vdb.resetlogs_change#
+and val.resetlogs_time = vdb.resetlogs_time
+and val.applied in ('YES','IN-MEMORY')
+group by thread# order by 1;
+
+From Primary
+THREAD#	Last Primary Seq Generated
+1			199746
+2			1
+
+From Standby
+THREAD#	Last Standby Seq Received
+1			199746
+2			1
+
+THREAD#	Last Standby Seq Applied
+1			199662
+2			1
+
+
+
+
+
+!! investigate nowait usage with this command for future
+ alter database recover managed standby database cancel; (nowait)
+
+
+******** Below is something maybe usefull in similar situation in the future *****************
+
+Roll Forward Physical Standby Using RMAN Incremental Backup in Single Command (Doc ID 2431311.1)
+
+
+
+Goal
+NOTE: In the images and/or the document content below, the user information and environment data used represents fictitious data from the
+Oracle sample schema(s), Public Documentation delivered with an Oracle database product or other training material.  Any similarity to actual
+environments, actual persons, living or dead, is purely coincidental and not intended in any manner.
+
+For the purposes of this document, the following fictitious environment is used as an example to describe the procedure:
+
+Standby Name: SBY180
+Primary Name:  PRM180
+Directory Name:  /u01/app/oracle and all sub-directories
+
+ 
+
+Note, this procedure is version dependent.  The procedure described in this note is for Oracle 18c and higher. 
+
+For 11g see the following procedure:
+11g Steps to perform for Rolling Forward a Physical Standby Database using RMAN Incremental Backup. (Doc ID 836986.1)
+
+For 12.1 and 12.2, see the following procedure:
+12c How to Roll Forward a Standby Database Using Recover Database From Service (Doc ID 2850185.1) 
+
+ Typically, when rolling forward a physical standby database using primary incremental backup, multiple steps are required:
+
+Identify the Start SCN on Standby for performing incremental backup on primary
+Perform incremental backup on primary with FROM SCN clause
+Move the backup-pieces from primary to standby
+Catalog the backup-piece on Standby
+Perform recovery on standby using recover database noredo
+Refresh standby controlfile again from primary
+Starting from 12.1, we could use "RECOVER DATABASE FROM SERVICE"command which will automate a few steps like performing incremental backup on primary, transfer the backup-pieces to standby over network and perform recovery on standby. However, we still had to manually refresh the standby controlfile and manually restore newly-added datafiles. These steps required manual efforts and are error prone especially when standby files are physically located in a path different to that of primary.
+
+Starting with 18.1, we can use a single command to refresh the standby with changes made on primary:
+
+RMAN> RECOVER STANDBY DATABASE FROM SERVICE primary_connect_identifier;
+
+This command will internally keep track of standby file locations, refresh standby controlfile from primary, update the new standby controlfile with standby file names, perform incremental backup on primary, transfer the backup-pieces over network to standby and perform recovery on standby
+
+Solution
+1. To refresh the standby, ensure that managed recovery is stopped on standby:
+
+SQL> recover managed standby database cancel;
+NOTE: If you do not stop managed recovery, you will get RMAN-05150 error during execution:
+
+RMAN> RECOVER STANDBY DATABASE FROM SERVICE PRM180;
+RMAN-03090: Starting recover at 03-AUG-18
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of recover command at 08/03/2018 12:33:05
+RMAN-05150: Managed Recovery Process must be disabled before running RECOVER STANDBY DATABASE.
+NOTE: If using dataguard broker, ensure to stop recovery using broker:
+
+DGMGRL> EDIT DATABASE '<standby_db>' SET STATE='APPLY-OFF';
+ 
+
+2.If the standby is RAC with more than one instance, make sure only the instance from which recover standby command will be executed is mounted and all other instances are shutdown to avoid RMAN-05157
+
+Starting recover at 22-FEB-21
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of recover command at 02/22/2021 15:18:54
+RMAN-05157: The database must not be mounted on any other instance for RECOVER STANDBY DATABASE command.Starting recover at 22-FEB-21
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of recover command at 02/22/2021 15:18:54
+RMAN-05157: The database must not be mounted on any other instance for RECOVER STANDBY DATABASE command.
+3.Ensure that Oracle Net connectivity is established between the physical standby database and the primary database by adding an entry corresponding to the primary database in the tnsnames.ora file of the physical standby database. In below example, PRM180 is the connect identifier for primary.
+
+4. Connect RMAN to standby as target and run "RECOVER STANDBY DATABASE FROM SERVICE" command. Find below an example run for the command:
+
+$ export ORACLE_SID=SBY180
+$ rman target / 
+
+RMAN> RECOVER STANDBY DATABASE FROM SERVICE PRM180;
+
+RMAN-03090: Starting recover at 03-AUG-18
+RMAN-06009: using target database control file instead of recovery catalog
+RMAN-06196: Oracle instance started
+
+Total System Global Area 671086904 bytes
+
+Fixed Size 8661304 bytes
+Variable Size 188743680 bytes
+Database Buffers 465567744 bytes
+Redo Buffers 8114176 bytes
+
+RMAN-08161: contents of Memory Script:
+{
+restore standby controlfile from service 'PRM180';
+alter database mount standby database;
+}
+RMAN-08162: executing Memory Script
+
+RMAN-03090: Starting restore at 03-AUG-18
+RMAN-08030: allocated channel: ORA_DISK_1
+RMAN-08500: channel ORA_DISK_1: SID=141 device type=DISK
+
+RMAN-08016: channel ORA_DISK_1: starting datafile backup set restore
+RMAN-08169: channel ORA_DISK_1: using network backup set from service PRM180
+RMAN-08021: channel ORA_DISK_1: restoring control file
+RMAN-08180: channel ORA_DISK_1: restore complete, elapsed time: 00:00:01
+RMAN-08505: output file name=/u01/app/oracle/oradata/SBY180/control01.ctl
+RMAN-03091: Finished restore at 03-AUG-18
+
+RMAN-08031: released channel: ORA_DISK_1
+RMAN-06986: Statement processed
+RMAN-06958: Executing: alter system set standby_file_management=manual
+
+RMAN-08161: contents of Memory Script:
+{
+recover database from service 'PRM180';
+}
+RMAN-08162: executing Memory Script
+
+RMAN-03090: Starting recover at 03-AUG-18
+RMAN-08030: allocated channel: ORA_DISK_1
+RMAN-08500: channel ORA_DISK_1: SID=149 device type=DISK
+RMAN-06179: datafile 4 not processed because file is read-only
+RMAN-08039: channel ORA_DISK_1: starting incremental datafile backup set restore
+RMAN-08169: channel ORA_DISK_1: using network backup set from service PRM180
+RMAN-08509: destination for restore of datafile 00001: /u01/app/oracle/oradata/SBY180/system01.dbf
+RMAN-08180: channel ORA_DISK_1: restore complete, elapsed time: 00:00:03
+RMAN-08039: channel ORA_DISK_1: starting incremental datafile backup set restore
+RMAN-08169: channel ORA_DISK_1: using network backup set from service PRM180
+RMAN-08509: destination for restore of datafile 00002: /u01/app/oracle/oradata/SBY180/sysaux01.dbf
+RMAN-08180: channel ORA_DISK_1: restore complete, elapsed time: 00:00:07
+RMAN-08039: channel ORA_DISK_1: starting incremental datafile backup set restore
+RMAN-08169: channel ORA_DISK_1: using network backup set from service PRM180
+RMAN-08509: destination for restore of datafile 00003: /u01/app/oracle/oradata/SBY180/undotbs01.dbf
+RMAN-08180: channel ORA_DISK_1: restore complete, elapsed time: 00:00:03
+
+RMAN-08054: starting media recovery
+
+RMAN-08181: media recovery complete, elapsed time: 00:00:00
+RMAN-03091: Finished recover at 03-AUG-18
+RMAN-06958: Executing: alter system set standby_file_management=auto
+RMAN-03091: Finished recover at 03-AUG-18
+NOTE: 
+
+If you face errors about SBT channels during the process, ensure that below is set on Primary (since the controlfile is automatically refreshed from Primary)
+
+RMAN> CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+RMAN> CONFIGURE CHANNEL DEVICE TYPE SBT CLEAR; 
+
+If your disk channels on primary are configured with CONNECT clause, then, the disk channel allocation won't work on standby. In that case, we need to clear the configuration of DISK channels also on Primary:
+
+RMAN> CONFIGURE CHANNEL DEVICE TYPE DISK CLEAR;
+
+5. After the command is successfully completed, we can clear the online / standby redo logs before starting MRP. 
+
+SQL> begin
+for log_cur in ( select group# group_no from v$log )
+loop
+execute immediate 'alter database clear logfile group '||log_cur.group_no;
+end loop;
+end;
+/
+SQL> begin
+for log_cur in ( select group# group_no from v$standby_log )
+loop
+execute immediate 'alter database clear logfile group '||log_cur.group_no;
+end loop;
+end;

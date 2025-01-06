@@ -1,0 +1,74 @@
+xhepydbw2as_HEPYSTS_A
+
+xhepydbw21s
+
+
+dgmgrl /
+show database verbose 'HEPYSTS_xhepydbw21s';
+
+
+ldest online log sequence     5496
+ext log sequence to archive   5501
+urrent log sequence           5501
+
+select * from v$archive_gap;
+
+restore archivelog sequence between 5427 and 5498;
+
+alter system set db_unique_name = 'HEDWSTS_xhedwdbw2scl' scope= spfile;
+
+srvctl stop database -d HEDWSTS_xhedwdbw2as
+
+
+srvctl stop database -d HEDWSTS_xhedwdbw2scl
+srvctl start database -d HEDWSTS_xhedwdbw2scl
+
+srvctl config database -d HEDWSTS_xhedwdbw2scl
+srvctl disable  database -d HEDWSTS_xhedwdbw2as
+
+
+HEDWSTS> srvctl remove  database -d HEDWSTS_xhedwdbw2as
+Remove the database HEDWSTS_xhedwdbw2as? (y/[n]) y
+
+
+ERROR at line 1:
+ORA-32017: failure in updating SPFILE
+ORA-65500: could not modify DB_UNIQUE_NAME, resource exists
+
+
+xhedwdbw2as.aetna.com (oracle) HEDWSTS::/home/oracle
+HEDWSTS> srvctl config database -d HEDWSTS_xhedwdbw2as
+Database unique name: HEDWSTS_xhedwdbw2as
+Database name:
+Oracle home: /oradb/app/oracle/product/19.22.0/db_1
+Oracle user: oracle
+Spfile: /oradb/app/oracle/product/19.22.0/db_1/dbs/spfileHEDWSTS.ora
+Password file:
+Domain:
+Start options: read only
+Stop options: immediate
+Database role: PRIMARY
+Management policy: AUTOMATIC
+Server pools:
+Disk Groups: DATA1,REDO1,REDO2,ARCH
+Mount point paths:
+Services:
+Type: SINGLE
+OSDBA group: dba
+OSOPER group: oper
+Database instance: HEDWSTS
+Configured nodes: xhedwdbw2as
+CSS critical: no
+CPU count: 0
+Memory target: 0
+Maximum memory: 0
+Default network number for database services:
+Database is administrator managed
+
+srvctl add database -db HEDWSTS_xhedwdbw2scl -oraclehome /oradb/app/oracle/product/19.22.0/db_1 -spifile /oradb/app/oracle/product/19.22.0/db_1/dbs/spfileHEDWSTS.ora -startoption "READ ONLY" dbty
+
+srvctl add database -db HEDWSTS_xhedwdbw2scl -oraclehome /oradb/app/oracle/product/19.22.0/db_1 -spfile /oradb/app/oracle/product/19.22.0/db_1/dbs/spfileHEDWSTS.ora -instance HEDWSTS -diskgroup "DATA1,REDO1,REDO2,ARCH" -startoption "MOUNT" -dbtype single -node xhedwdbw2as 
+
+    -spfile {{ oracle_home }}/dbs/spfile{{ db_name }}.ora -instance {{ db_name }}
+    -diskgroup "{{ data_dg | regex_replace('[+]') }},{{ redo1_dg | regex_replace('[+]') }},{{ redo2_dg | regex_replace('[+]') }}"
+    -startoption "MOUNT" -dbtype single -node {{ an

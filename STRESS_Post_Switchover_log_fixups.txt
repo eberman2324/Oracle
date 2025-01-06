@@ -1,0 +1,385 @@
+https://www.oracle-blog.com/2021/06/04/ora-16857-member-disconnected-from-redo-source-for-longer-than-specified-threshold/
+
+select GROUP#,THREAD#,BYTES/1024/1024 from v$log;
+
+
+
+select GROUP#,THREAD# ,BYTES/1024/1024, status from v$standby_log;
+***********************************************************************
+
+
+
+
+------->>>>>>>  old HEPYSTS
+
+ Total_MB   Free_MB
+    92160      8377
+    92160      8377
+
+
+
+select GROUP#,THREAD#,BYTES/1024/1024 from v$log;
+
+    GROUP#    THREAD# BYTES/1024/1024
+---------- ---------- ---------------
+         1          1            6144
+         2          1            6144
+         3          1            6144
+         4          1            6144
+         5          1            6144
+         6          1            6144
+         7          2             600
+         8          2             600
+         9          2             600
+        10          2             600
+        11          2             600
+        12          2             600
+
+select GROUP#,THREAD# ,BYTES/1024/1024, status from v$standby_log;
+
+    GROUP#    THREAD# BYTES/1024/1024 STATUS
+---------- ---------- --------------- ------------------------------
+       101          1            6144 UNASSIGNED
+       102          1            6144 ACTIVE
+       103          1            6144 UNASSIGNED
+       104          1            6144 UNASSIGNED
+       105          1            6144 UNASSIGNED
+       106          1            6144 UNASSIGNED
+       107          1            6144 UNASSIGNED
+
+
+
+----------->>>> new HEPYSTS NodeA
+
+    655352    565481
+    655352    565481
+
+select GROUP#,THREAD#,BYTES/1024/1024 from v$log;
+
+
+    GROUP#    THREAD# BYTES/1024/1024
+---------- ---------- ---------------
+         1          1            6144
+         2          1            6144
+         3          1            6144
+         4          1            6144
+         5          1            6144
+         6          1            6144
+
+         7          2             600
+         8          2             600
+         9          2             600
+        10          2             600
+        11          2             600
+        12          2             600
+
+
+alter system switch logfile ;
+
+select l.group#, l.thread#,
+f.member,
+l.archived,
+l.status,
+(bytes/1024/1024) fsize
+from
+v$log l, v$logfile f
+where f.group# = l.group# and l.thread#= 2
+order by 1,2;
+
+
+ALTER DATABASE DROP LOGFILE GROUP 7
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 7 ('+REDO1','+REDO2')  SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 8
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 8 ('+REDO1','+REDO2')  SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 10
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 10 ('+REDO1','+REDO2')  SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 11
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 11 ('+REDO1','+REDO2')  SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 12
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 12 ('+REDO1','+REDO2')  SIZE 6000M BLOCKSIZE 4096;
+
+alter database disable thread 2;
+
+ALTER DATABASE DROP LOGFILE GROUP 9
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 9 ('+REDO1','+REDO2')  SIZE 6000M BLOCKSIZE 4096;
+
+
+alter database enable thread 2;
+
+
+
+
+alter database drop logfile group ;
+select GROUP#,THREAD# ,BYTES/1024/1024, status from v$standby_log;
+
+    GROUP#    THREAD# BYTES/1024/1024 STATUS
+---------- ---------- --------------- ------------------------------
+       101          1            6144 UNASSIGNED
+       102          1            6144 UNASSIGNED
+       103          1            6144 UNASSIGNED
+       104          1            6144 UNASSIGNED
+       105          1            6144 UNASSIGNED
+       106          1            6144 UNASSIGNED
+       107          1            6144 UNASSIGNED
+
+       108          2             600 UNASSIGNED
+       109          2             600 UNASSIGNED
+       110          2             600 UNASSIGNED
+       111          2             600 UNASSIGNED
+       112          2             600 UNASSIGNED
+       113          2             600 UNASSIGNED
+       114          2             600 UNASSIGNED
+
+
+
+ALTER DATABASE DROP LOGFILE GROUP 108
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 108 ('+REDO1','+REDO2') SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 109
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 109 ('+REDO1','+REDO2') SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 110
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 110 ('+REDO1','+REDO2') SIZE 6000M BLOCKSIZE 4096;
+
+
+ALTER DATABASE DROP LOGFILE GROUP 111
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 111 ('+REDO1','+REDO2') SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 112
+/
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 112 ('+REDO1','+REDO2') SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 113
+/
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 113 ('+REDO1','+REDO2') SIZE 6000M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 114
+/
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 114 ('+REDO1','+REDO2') SIZE 6000M BLOCKSIZE 4096;
+
+---------->>> old HEDWSTS
+
+    8192      214
+    8192      214
+
+
+select GROUP#,THREAD#,BYTES/1024/1024 from v$log;
+
+    GROUP#    THREAD# BYTES/1024/1024
+---------- ---------- ---------------
+         1          2             600
+         2          2             600
+         3          2             600
+         4          1             600
+         5          1             600
+         6          1             600
+
+select GROUP#,THREAD# ,BYTES/1024/1024, status from v$standby_log;
+
+    GROUP#    THREAD# BYTES/1024/1024 STATUS
+---------- ---------- --------------- ------------------------------
+       101          1             600 UNASSIGNED
+       102          1             600 UNASSIGNED
+       103          1             600 UNASSIGNED
+       104          1             600 UNASSIGNED
+       105          1             600 UNASSIGNED
+       106          1             600 UNASSIGNED
+       107          1             600 UNASSIGNED
+
+
+---------->>> new HEDWSTS NodeA
+
+    589816    573941
+    589816    573941
+
+
+select GROUP#,THREAD#,BYTES/1024/1024 from v$log;
+
+    GROUP#    THREAD# BYTES/1024/1024
+---------- ---------- ---------------
+         1          2             600
+         2          2             600
+         3          2             600
+         4          1             600
+         5          1             600
+         6          1             600
+         7          2             600
+         8          2             600
+         9          2             600
+        10          2             600
+        11          2             600
+        12          2             600
+
+
+
+alter system switch logfile ;
+
+select l.group#, l.thread#,
+f.member,
+l.archived,
+l.status,
+(bytes/1024/1024) fsize
+from
+v$log l, v$logfile f
+where f.group# = l.group# and l.thread#= 2
+order by 1,2
+
+
+ALTER DATABASE DROP LOGFILE GROUP 1
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 1 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 2
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 2 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 3
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 3 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 7
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 7 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 12
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 12 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 11
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 11 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 10
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 10 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 8
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 8 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 9
+/
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 9 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+
+[SYS@HEDWSTS:HEDWSTS_2] SQL> select GROUP#,THREAD# ,BYTES/1024/1024, status from v$standby_log;
+
+    GROUP#    THREAD# BYTES/1024/1024 STATUS
+---------- ---------- --------------- ------------------------------
+       101          1             600 UNASSIGNED
+       102          1             600 UNASSIGNED
+       103          1             600 UNASSIGNED
+       104          1             600 UNASSIGNED
+       105          1             600 UNASSIGNED
+       106          1             600 UNASSIGNED
+       107          1             600 UNASSIGNED
+
+       108          2             600 UNASSIGNED
+       109          2             600 UNASSIGNED
+       110          2             600 UNASSIGNED
+       111          2             600 UNASSIGNED
+       112          2             600 UNASSIGNED
+       113          2             600 UNASSIGNED
+       114          2             600 UNASSIGNED
+
+ALTER DATABASE DROP LOGFILE GROUP 108
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 108 ('+REDO1','+REDO2') SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 109
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 109 ('+REDO1','+REDO2') SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 110
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 110 ('+REDO1','+REDO2') SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 111
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 111 ('+REDO1','+REDO2') SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 112
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 112 ('+REDO1','+REDO2') SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 113
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 113 ('+REDO1','+REDO2') SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 114
+/
+
+ALTER DATABASE ADD STANDBY LOGFILE thread 2 GROUP 114 ('+REDO1','+REDO2') SIZE 600M BLOCKSIZE 4096;
+
+
+
+--We noticed that new HEDWSTS_2 has only 3 Thread 1 groups and Thread 2 has 9
+-- So we need to make it equal 6/6
+-- Drop 3 groups from Thread 2
+-- Add 3 groups to Thread 1
+
+
+
+select GROUP#,THREAD#,BYTES/1024/1024 from v$log;
+
+    GROUP#    THREAD# BYTES/1024/1024
+---------- ---------- ---------------
+         1          2             600
+         2          2             600
+         3          2             600
+
+         4          1             600
+         5          1             600
+         6          1             600
+
+         7          2             600
+         8          2             600
+         9          2             600
+
+        10          2             600
+        11          2             600
+        12          2             600
+
+
+alter system switch logfile ;
+
+ALTER DATABASE DROP LOGFILE GROUP 10
+/
+ALTER DATABASE ADD LOGFILE thread 1 GROUP 10 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 7
+/
+ALTER DATABASE ADD LOGFILE thread 1 GROUP 7 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 8
+/
+ALTER DATABASE ADD LOGFILE thread 1 GROUP 8 ('+REDO1','+REDO2')  SIZE 600M BLOCKSIZE 4096;
+
+
+
+ALTER DATABASE DROP LOGFILE GROUP 29
+/

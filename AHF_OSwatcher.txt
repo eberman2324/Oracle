@@ -1,0 +1,50 @@
+AHF is located in /opt/oracle.ahf
+The AHF service is started at reboot time
+
++ASM1> systemctl status oracle-tfa.service
+â oracle-tfa.service - Oracle Trace File Analyzer
+   Loaded: loaded (/etc/systemd/system/oracle-tfa.service; enabled; vendor preset: disabled)
+   Active: active (running) since Tue 2024-07-02 13:48:10 EDT; 1 weeks 1 days ago
+Main PID: 2906696 (init.tfa)
+    Tasks: 86 (limit: 3355442)
+   Memory: 1.4G
+   CGroup: /system.slice/oracle-tfa.service
+           ââ 359750 /bin/sleep 30
+           ââ2906696 /bin/sh /etc/init.d/init.tfa run >/dev/null 2>&1 </dev/null
+           ââ2907038 /opt/oracle.ahf/jre/bin/java --add-opens java.base/java.lang=ALL-UNNAMED -server -Xms512m -Xmx2048m -Djava.awt.headless=true -Ddisable.>
+           ââ3256660 /opt/oracle.ahf/jre/bin/java -server -Xms64m -Xmx128m -XX:HeapDumpPath=/oragrid/app/base/oracle.ahf/data/xhepydbm2ap/diag/tfa -DtfaHome>
+
+
+xhepydbm2ap.aetna.com (oracle) +ASM1::/home/oracle
++ASM1>
+
+
+-- >> Rich
+
+I think we need to move the datadump path to /oraosw from /oragrid/app/base.    It will have to be done as root.
+
+-- >> Rich
+Rich mentioed to ask Sagun to run this command: tfactl set repositorydir /oraosw/oracle.ahf/data/repository/suptools/xhepydbw2as/oswbb/grid/archive
+(Sagun will need to precreate these dirs)
+/oraosw/oracle.ahf/data/repository/suptools/xhepydbw2as/oswbb/grid/archive
+
+-->> E.B. Opened SR with oracle and they recommend pretty much install and install back
+
+	Hi Eugene,
+This require to reinstall the AHF software with different ahf and data directories and please refer to the below document and download latest version of AHF and uninstall the AHF and install latest version of AHF.
+Autonomous Health Framework (AHF) - Including Trace File Analyzer and Orachk/Exachk ( Doc ID 2550798.1 )
+
+To uninstall AHF:
+# /opt/oracle.ahf/ahf/bin/uninstallahf.sh
+To install AHF:
+# ./ahf_setup [-ahf_loc install_dir] [-data_dir data_dir]
+
+
+---> Rich
+
+We decided just keep where it is.
+
+
+OSwatcher files located under
+
+cd /oragrid/app/base/oracle.ahf/data/repository/suptools/<Server_Name>/oswbb/grid/archive 

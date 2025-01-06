@@ -1,0 +1,1098 @@
+
+***********************************************************************************************************************
+***********************************************************************************************************************
+***********************************************************************************************************************
+***********************************************************************************************************************
+
+select name from v$database;
+select instance_name from v$instance;
+select db_unique_name from v$parameter or  select db_unique_name from v$database;
+
+
+Single Instance:
+DBNAME:         HEPYSTS
+Instance Name:  HEPYSTS
+db_unique_name: HEPYSTS_xhepydbw21s (**dbname_serverName** so Primary and Standby will be different_
+
+
+RACONE Instance
+DBNAME:         HEPYSTS
+Instance Name:  HEPYSTS_1
+db_unique_name: HEPYSTS_xhepydbw2scl (**dbname_clusterName** so NodeA and NodeB will be the same)
+
+
+HEPYSTS
+Cluster Name: xhepydbw2scl
+
+HEDWSTS
+Cluster Name: xhedwdbw2scl
+
+Primary HEPYPRD
+Cluster Name: xhepydbm2pcl
+
+Primary HEDWPRD
+Cluster Name: xhedwdbm2pcl
+
+
+Stanby HEPYPRD
+Cluster Name: xhepydbw2pcl
+
+Standby HEDWPRD
+Cluster Name: xhedwdbw2pcl
+
+***********************************************************************************************************************
+***********************************************************************************************************************
+***********************************************************************************************************************
+***********************************************************************************************************************
+
+
+
+
+
+************ ITPR064569 2024 NG Infrastructure Program *******
+
+**** Labor ITPR: ITPR066381 - 2024 NG Infrastructure Program Labor *****
+
+
+********************** Metalink docs ********************
+
+
+!! Manual
+https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/converting-single-instance-oracle-databases-to-oracle-rac-and-oracle-rac-one-node.html#GUID-A4F1E90E-152C-4A18-9E34-2CA7AE14F10C
+
+!! OEM
+https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/converting-single-instance-oracle-databases-to-oracle-rac-and-oracle-rac-one-node.html#GUID-AB9AFE38-0992-4EC1-A645-E41C0E25BE0A
+
+This is the doc which released by the oracle officially and also various methods. Please work on the below as many customer used the below doc for same.
+
+https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/converting-single-instance-oracle-databases-to-oracle-rac-and-oracle-rac-one-node.html#GUID-409E33E5-8E49-4C90-A85C-9EA3923510C3
+
+RAC: Frequently Asked Questions (RAC FAQ) (Doc ID 220970.1)
+
+
+RAC One Node and QoS – Quality of Service Management sections.
+There’s some good information to review but may not specifically address your questions. Oracle Database QoS Management also supports Oracle RAC One Node databases, but these databases must use server pools that have a maximum size of one if their performance classes are being managed and not simply measured or monitored.
+Oracle 19c Red Hat Linux 8
+https://docs.oracle.com/en/database/oracle/oracle-database/19/ladbi/supported-red-hat-enterprise-linux-8-distributions-for-x86-64.html#GUID-B1487167-84F8-4F8D-AC31-A4E8F592374B
+OS Watcher User's Guide (Doc ID 1531223.1)
+TFA:
+https://docs.oracle.com/en/database/oracle/oracle-database/12.2/atnms/tfa-automatic-collections.html#GUID-3DA59D89-8FF4-4465-861D-05C0BEC9EDF6
+https://docs.oracle.com/en/database/oracle/oracle-database/12.2/atnms/purpose-of-oracle-trace-file-analyzer-collector.html#GUID-45009433-0614-4DF6-9E6A-250204047190
+
+High Availability Overview and Best Practices:
+https://docs.oracle.com/en/database/oracle/oracle-database/19/haovw/configuring-continuous-availability-applicationsconfiguring-continuous-availability-applicati.html#GUID-5EBF37EA-48AB-4508-A14E-86A2583A24BF
+Application Continuity with DRCP:
+https://docs.oracle.com/en/database/oracle/oracle-database/21/jjdbc/application-continuity.html#GUID-9E97B6A5-B2F6-42A6-B8DD-60208D6D549C
+Best Practices for Database Consolidation:
+https://www.oracle.com/docs/tech/database/maa-consolidation.pdf
+
+[11:35 AM] Gary Lynah (Unverified)
+When And Why To Use HugePages on Linux x86-64? (Doc ID 2314903.1)
+
+Autonomous Health Framework (AHF) - Including Trace File Analyzer and Orachk/Exachk (Doc ID 2550798.1)
+
+
+
+https://support.oracle.com/epmos/faces/DocContentDisplay?_afrLoop=222618663717629&id=2550798.1&_afrWindowMode=0&_adf.ctrl-state=jvyvcxrnx_4
+
+Supports RAC, RAC One and Single-Instance.
+
+AHF helps collect diagnostics on-demand for Oracle Support.  
+
+Install/upgrade to the latest Orachk version. 
+
+Oracle Live Labs
+https://apexapps.oracle.com/pls/apex/f?p=133:180:106237285457264::::wid:3305
+
+
+
+-----
+https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/converting-single-instance-oracle-databases-to-oracle-rac-and-oracle-rac-one-node.html#GUID-17D75A80-D910-4662-A1A5-94F47A1D653A
+
+This document describes how to do #1: Note 2083226.1
+
+The above note deals with single-tenant databases. But it does show the steps involved. Skip the container stuff.
+
+This document describes how to do #2: http://docs.oracle.com/database/121/RACAD/cvt2rac.htm#RACAD8851
+
+
+
+https://www.red-gate.com/simple-talk/databases/oracle-databases/convert-single-instance-to-rac-part-2-manually-convert-to-rac/
+
+https://www.linkedin.com/pulse/converting-single-instance-12cr2-database-binary-rac-enabled-ntseh
+
+https://sort.veritas.com/public/documents/sfha/5.1sp1/hp-ux/productguides/html/sfrac_install/ch15s04s02.htm
+
+
+https://jasonbrownsite.wordpress.com/2017/03/01/convert-a-single-instance-standby-dataguard-into-a-rac-standby/
+
+
+
+the instance names will be HEPYSTS_1 and HEPYSTS_2,  RAC one controls this.   
+We can use a different node suffix but the instance names will be db_name_suffix.  
+Also be aware if a failover occurs, the instance name on node b will be HEPYSTS_1 but if a relocation occurs it will be HEPYSTS_2.   
+Remember for RAC one node there is normally only 1 instance but there are briefly 2 instances when you relocate. 
+
+
+
+	Middletown PY Server		RITM5440373	xhepydbm2ap	157.121.108.38
+	Middletown PY Server		RITM5440375	xhepydbm2bp	157.121.108.39
+	Middletown DW Server		RITM5440377	xhedwdbm2ap	157.121.108.41
+	Middletown DW Server		RITM5440378	xhedwdbm2bp	157.121.108.45
+	Windsor DR PY Server		RITM5464204	xhepydbw2ap	157.121.124.134
+	Windsor DR PY Server		RITM5464206	xhepydbw2bp	157.121.124.138
+	Windsor Stress PY Server	RITM5464207	xhepydbw2as	157.121.124.136
+	Windsor Stress PY Server	RITM5464209	xhepydbw2bs	157.121.124.140
+	Windsor DR DW Server		RITM5464210	xhedwdbw2ap	157.121.124.135
+	Windsor DR DW Server		RITM5464211	xhedwdbw2bp	157.121.124.139
+	Windsor Stress DW Server	RITM5464212	xhedwdbw2as	157.121.124.137
+	Windsor Stress DW Server	RITM5464213	xhedwdbw2bs	157.121.124.141
+
+!! Remove Trigger at some point for standby
+
+Trusted SSH keys
+
+/etc/hosts - examnple
+
+--> Node A example
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+############Base IPs
+157.121.124.136 xhepydbw2as.aetna.com xhepydbw2as
+157.121.124.140 xhepydbw2bs.aetna.com xhepydbw2bs
+
+#############Interconnect IP ic1
+192.168.218.53   xhepydbw2as-priv-ci1
+192.168.218.30   xhepydbw2bs-priv-ci1
+
+############Interconnect IP ic2
+192.168.150.53  xhepydbw2as-priv-ci2
+192.168.150.35  xhepydbw2bs-priv-ci2
+
+############VIP for RAC
+157.121.124.85  xhepydbw2as-vip.aetna.com xhepydbw2as-vip
+157.121.124.86  xhepydbw2bs-vip.aetna.com xhepydbw2bs-vip
+~
+
+--> Node B example
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+############Base IPs
+157.121.124.136 xhepydbw2as.aetna.com xhepydbw2as
+157.121.124.140 xhepydbw2bs.aetna.com xhepydbw2bs
+
+############Interconnect IP ic1
+192.168.218.53   xhepydbw2as-priv-ci1
+192.168.218.30   xhepydbw2bs-priv-ci1
+
+
+############Interconnect IP ic2
+192.168.150.53  xhepydbw2as-priv-ci2
+192.168.150.35  xhepydbw2bs-priv-ci2
+
+############VIP for RAC
+157.121.124.85  xhepydbw2as-vip.aetna.com xhepydbw2as-vip
+157.121.124.86  xhepydbw2bs-vip.aetna.com xhepydbw2bs-vip
+~
+~
+
+
+
+xhedwdbm2ap
+xhedwdbm2bp
+
+
+
+
+
+
+./runcluvfy.sh stage -pre crsinst -n xhedwdbm2bp
+************* SSG keys ***************
+xhedwdbw2ap_HEDWPRD_Standby_A
+xhedwdbw2bp_HEDWPRD_Standby_B
+
+#These steps assume the public DSA key has already been generated; but equivalence has not yet been established
+# Repeat these steps for both users oracle and grid
+#From Node A server
+#Copy the public DSA key from Node A server to Node B Server
+cd .ssh
+ssh-keygen -t rsa
+
+scp /home/oracle/.ssh/id_rsa.pub xhecvdbw04q:/home/oracle/.ssh/id_rsa.pub_A
+
+
+
+scp /home/grid/.ssh/id_rsa.pub xhedwdbw2bp:/home/grid/.ssh/id_rsa.pub_A
+
+
+#From Node B Server
+#Append the “authorized_keys” file with the DSA public key
+cd .ssh
+cat id_rsa.pub_A >> authorized_keys
+
+#Test user equivalence (trusted ssh connection)
+#From Node A server
+ssh xhepydbw2bs
+ssh xhedwdbm2bp
+#If the hostname of the target comes back without prompting for a password, then the configuration is complete.
+
+
+#From Node B server
+#Copy the public DSA key from Node B server to Node A Server
+cd .ssh
+ssh-keygen -t rsa
+
+
+
+scp /home/oracle/.ssh/id_rsa.pub xhedwdbw2ap:/home/oracle/.ssh/id_rsa.pub_B
+scp /home/grid/.ssh/id_rsa.pub xhedwdbw2ap:/home/grid/.ssh/id_rsa.pub_B
+
+
+#From Node A Server
+#Append the “authorized_keys” file with the DSA public key
+cd .ssh
+cat id_rsa.pub_B >> authorized_keys
+
+#Test user equivalence (trusted ssh connection)
+#From Node B server
+ssh xhepydbw2as
+ssh xhedwdbm2ap
+If the hostname of the target comes back without prompting for a password, then the configuration is complete.
+
+***********************************************************************************************
+cat id_rsa.pub >> authorized_keys
+[grid@xhepydbw2as ~]$ cd .ssh
+-bash: cd: .ssh: No such file or directory
+
+[grid@xhepydbw2bs ~]$ cd .ssh
+-bash: cd: .ssh: No such file or directory
+
+
+Redo log 
+https://logicalread.com/how-oracle-rac-redo-and-rollback-are-managed-mc04/
+https://asktom.oracle.com/ords/f?p=100:11:0::::P11_QUESTION_ID:18183400346178753
+
+select a.group#, a.thread#, a.sequence# , b.member
+from v$log a, v$logfile b where a.group#=b.group#
+order by 1, 2,3
+
+alter database enable public thread 2;
+
+
+---> Current HEDWSTS
+
+
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 1 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 2 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 3 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 4 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 5 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 6 ('+REDOA_01','+REDOB_01') SIZE 600M;
+
+alter database enable public thread 2;
+
+
+---> Node A
+
+
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 1 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 2 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 3 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 4 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 5 ('+REDOA_01','+REDOB_01') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 6 ('+REDOA_01','+REDOB_01') SIZE 600M;
+
+alter database enable public thread 2;
+
+
+
+******************** 
+
+Rich -->
+
+Hi Sagun,
+
+Can you please increase swap space to 16gb on all servers?
+
+Thanks
+
+
+Eugene -->
+
+Hi Sagun/ Sowjanya,
+
+Please install following these 2 servers
+
+
+/oragrid/app/grid/product/19.23.0/gi/cv/rpm/cvuqdisk-1.0.10-1.rpm
+
+xhedwdbm2ap
+xhedwdbm2bp
+
+
+/oragrid/app/grid/product/19.23.0/gi/cv/rpm/cvuqdisk-1.0.10-1.rpm
+
+
+Rich -->
+
+Can you please add the following firewall ports and add them to aenta.info so chef does not close them?   Just on xhepydbm2ap and xhepydbm2bp for now.
+
+firewall-cmd --zone=public --add-port=1024-65535/tcp --permanent
+firewall-cmd --zone=public --add-port=1024-65535/udp --permanent
+firewall-cmd --reload
+
+Segun responded --?
+
+Current firewall zone is set and internal. Do we want to change the default zone to public?
+
+Rich responded -->
+
+No, sorry.   We just need the ports open.
+
+Segun responded -->
+
+Payer servers have ports opened 
+[root@xhepydbm2ap ~]# firewall-cmd --list-all
+internal (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: bond0 bond0.657 eno12399np0 eno12409np1 eno12419np2 eno12429np3 ens1f0np0 ens1f1np1 ens1f2np2 ens1f3np3
+  sources:
+  services: cockpit dhcpv6-client mdns samba-client ssh
+  ports: 22/tcp 1024-65535/tcp 1024-65535/udp
+  protocols:
+  forward: no
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+
+Rich responded -->
+
+Are the firewall changes made on both xhpydbm2ap and xhepdydbm2bp?
+
+Also, can you please ensure Jumbo Frames are configured for all our private networks.
+
+Oracle recommends that you configure Jumbo Frames with an MTU size of 9000 (MTU=9000) on your private network
+
+
+Segun responded -->
+
+Jumbo frames are setup on all servers on private network. 
+
+Still figuring out the firewall ports. Will get it done today.
+
+
+Rich responded -->
+
+We are still seeing ping failures indicating jumbo frames issue
+
+  Check that maximum (MTU) size packet goes through subnet ...FAILED
+  PRVG-12885 : ICMP packet of MTU size "9000" does not go through subnet
+  "192.168.218.0".
+  PRVG-12885 : ICMP packet of MTU size "9000" does not go through subnet
+  "192.168.150.0".
+  PRVG-12884 : Maximum (MTU) size packet check failed on subnets
+  "192.168.150.0,192.168.218.0"
+
+  xhepydbm2ap: PRVG-2043 : Command "/bin/ping 192.168.218.30 -c 1 -w 3 -M do -s
+               8972 " failed on node "xhepydbm2ap" and produced the following
+               output:
+               PING 192.168.218.30 (192.168.218.30) 8972(9000) bytes of data.
+
+               --- 192.168.218.30 ping statistics ---
+               3 packets transmitted, 0 received, 100% packet loss, time 2036ms
+
+
+  xhepydbm2ap: PRVG-2043 : Command "/bin/ping 192.168.150.35 -c 1 -w 3 -M do -s
+               8972 " failed on node "xhepydbm2ap" and produced the following
+               output:
+               PING 192.168.150.35 (192.168.150.35) 8972(9000) bytes of data.
+
+               --- 192.168.150.35 ping statistics ---
+               3 packets transmitted, 0 received, 100% packet loss, time 2061ms
+
+
+Segun responded -->
+
+Including Bob.
+
+Bob, can you please help us reach out to network resource.
+
+On further investigation, I am assuming that the network switch is not setup for Jumbo frames.
+
+
+The command manually to itself it passes, however running from one node to another failed as your result show. Hence I am assuming that the network switch is not setup for Jumbo frames.
+
+[root@xhepydbm2bp ~]# /bin/ping 192.168.218.30 -c 3 -w 3 -M do -s 8972
+PING 192.168.218.30 (192.168.218.30) 8972(9000) bytes of data.
+8980 bytes from 192.168.218.30: icmp_seq=1 ttl=64 time=0.025 ms
+8980 bytes from 192.168.218.30: icmp_seq=2 ttl=64 time=0.021 ms
+8980 bytes from 192.168.218.30: icmp_seq=3 ttl=64 time=0.020 ms
+
+--- 192.168.218.30 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2047ms
+rtt min/avg/max/mdev = 0.020/0.022/0.025/0.002 ms
+[root@xhepydbm2bp ~]#
+
+
+[root@xhepydbm2bp ~]# /bin/ping 192.168.150.35 -c 3 -w 3 -M do -s 8972
+PING 192.168.150.35 (192.168.150.35) 8972(9000) bytes of data.
+8980 bytes from 192.168.150.35: icmp_seq=1 ttl=64 time=0.035 ms
+8980 bytes from 192.168.150.35: icmp_seq=2 ttl=64 time=0.021 ms
+8980 bytes from 192.168.150.35: icmp_seq=3 ttl=64 time=0.020 ms
+
+--- 192.168.150.35 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2077ms
+rtt min/avg/max/mdev = 0.020/0.025/0.035/0.008 ms
+[root@xhepydbm2bp ~]#
+
+
+Bob responded -->
+
+Hi Richard Tuttle,
+                Can you tell us if the HRP Payor servers network cables were setup to support jumbo frames? Please see the email chain below.
+
+Richard Tuttle responded -->
+
+Nothing here tells me what switch you are speaking to. 
+We have thousands and thousands of switches. 
+I need more info or a ticket to ref. 
+
+192.168 is not in our network. 
+
+But suffice it to say, if you did not ask for Jumbo frames. You wouldn’t have gotten it. Unless you’re on a Nexus box which they are default Jumbo frames (9216). 
+
+Rich Tuffles responded --> 
+
+I took a look. And yes we can do jumbo frames. 
+I presume you want that on all the ports?
+
+If so, not a problem. But since in production we will need to open a change. 
+I’ll get that in the works. 
+
+Rich -->
+
+
+One more requirement regarding the private interconnect
+
+For each cluster member node, the Oracle mDNS daemon uses multicasting on all interfaces to communicate with other nodes in the cluster. Multicasting is required on the private interconnect. For this reason, at a minimum, you must enable multicasting for the cluster:
+•	Across the broadcast domain as defined for the private interconnect
+•	On the IP address subnet ranges 224.0.0.0/24 and optionally 230.0.1.0/24
+You do not need to enable multicast communications across routers.
+
+Rich Tuffles responded -->
+
+We’ve spent almost 10 years trying to shut down the multicast environment. 
+No one is using multicast nor have they for many years. 
+
+This needs much more information. 
+
+Rich responded -->
+
+Honestly, I do not know at what level multicasting is enabled but it is required.    I can try to get more info if need be.
+
+Rich Tuttle responded -->
+
+We will need to know exactly what is “required” as based on what I see it is not going to happen without a good reason. 
+
+If this is for the heartbeat network, then that is a non-starter since it is only a layer 2 subnet. 
+
+
+Richard responded -->
+
+Oracle Grid Infrastructure 11.2.0.2 introduces a new feature called "Redundant Interconnect Usage", which provides an Oracle internal mechanism to make use of physically redundant network interfaces for the Oracle (private) interconnect.
+As part of this new feature, multicast based communication on the private interconnect is utilized to establish communication with peers in the cluster on each startup of the stack on a node.
+Once the connection with the peers in the cluster has been established, the communication is switched back to unicast. Per default, the 230.0.1.0 address (port 42424) on the private interconnect network is used for multicasting. Another IP can be enabled using the patch mentioned below, if it is determined that using the 230.0.1.0 IP causes the multicast communication to fail. Multicasting on either of these IPs and the respective port must, however, be enabled and functioning across the network and on each node meant to be part of the cluster. If multicasting is not enabled as required, nodes will fail to join the cluster with the symptoms discussed.
+
+
+From DOCID  1212703.1
+
+Oracle Database - Enterprise Edition - Version 11.2.0.2 and later
+If multicast based communication is not enabled as required either on the nodes of the cluster or on the network switches used for the private interconnect, the root.sh, which is called as part of a fresh installation of Oracle Grid Infrastructure 11.2.0.2, or the rootupgrade.sh (called as part of an upgrade to Oracle Grid Infrastructure 11.2.0.2) will only succeed on the first node of the cluster, but will fail on subsequent nodes with the symptoms shown below:
+CRS-4402: The CSS daemon was started in exclusive mode but found an active CSS daemon on node <node1>, number 1, and is terminating
+An active cluster was found during exclusive startup, restarting to join the cluster
+Failed to start Oracle Clusterware stack
+Failed to start Cluster Synchorinisation Service in clustered mode at /u01/app/crs/11.2.0.2/crs/install/crsconfig_lib.pm line 1016.
+/u01/app/crs/11.2.0.2/perl/bin/perl -I/u01/app/crs/11.2.0.2/perl/lib -I/u01/app/crs/11.2.0.2/crs/install /u01/app/crs/11.2.0.2/crs/install/rootcrs.pl execution failed
+ 
+Note:  The symptoms will be the same whether an upgrade or a fresh installation of Oracle Grid Infrastructure 11.2.0.2 is performed; so will be the required diagnostics. This issue is also documented in the Oracle Database Readme 11g Release 2 Section 2.39 - "Open Bugs" under BUG: 9974223. 
+ 
+Note: This issue also impacts the following 11.2.0.3 PSUs: 11.2.0.3.5, 11.2.0.3.6, 11.2.0.3.7 as well as 12.1.0.1 installations if multicast is not enabled on the 230.0.1.0 or 224.0.0.251 multicast addresses (one of the 2 must be enabled/functional). With 11.2.0.3 GI was enhanced to utilize broadcast or multicast to bootstrap. However the 11.2.0.3.5 GI PSU introduced a new issue that effectively disables the broadcast functionality (Bug 16547309). 
+
+
+Symptom verification 
+To verify that Oracle CSS daemon fails to start in clustered mode due to a multicasting issue on the network, the ocssd.log file (located under $GI_HOME/log/<nodename>/cssd/ocssd.log) must be reviewed. In case, joining the cluster fails because of such an issue, the following can be observed:
+
+1. When CSS starts in clustered mode to join an existing cluster, we will see an entry in the CSSD log indicating that CSS will attempt to establish communication with a peer in the cluster. For this analysis, we see in the CSSD log for <node2> that communication is attempted with <node1>, which looks similar to:  
+ 
+2010-09-16 23:13:14.862: [GIPCHGEN][1107937600] gipchaNodeCreate: adding new node 0x2aaab408d4a0 { host '<node1>', haName 'CSS_ttoprf10cluster', srcLuid 54d7bb0e-ef4a0c7e, dstLuid 00000000-00000000 numInf 0, contigSeq 0, lastAck 0, lastValidAck 0, sendSeq [0 : 0], createTime 9563084, flags 0x0 }
+2.  Shortly after the above log entry we will see an attempt to establish communication to <node1> from <node2> via multicast address 230.0.1.0, port 42424 on the private interconnect (here: 192.168.x.x):
+2010-09-16 23:13:14.862: [GIPCHTHR][1106360640] gipchaWorkerUpdateInterface: created remote interface for node '<node1>', haName 'CSS_mycluster', inf 'mcast://230.0.1.0:42424/192.168.x.x'
+
+3.  If the communication can be established successfully, we will see a log entry on node2 containing "gipchaLowerProcessAcks: ESTABLISH finished" for the peer node (<node1>). If the communication cannot be established, we will not see this log entry. Instead, we will see an entry indicating that the network communication cannot be established. This entry will look similar to the one shown below:
+2010-09-16 23:13:15.839: [ CSSD][1087465792]clssnmvDHBValidateNCopy: node 1, <node1>, has a disk HB, but no network HB, DHB has rcfg 180134562, wrtcnt, 8627, LATS 9564064, lastSeqNo 8624, uniqueness 1284701023, timestamp 1284703995/10564774
+
+Richard Tuttle responded -- >
+
+Ok, see below. That would be your heartbeat network. So, whatever you do on that private, Layer 2 network we do not see. Nor do we have anything to do with what is sent between the nodes. So, if you configure your ports on the heartbeat with multicast on the nodes. It wouldn’t matter to us. We won’t see it. 
+
+Though I would ensure that the Oracle folks give you more information on how you should configure your private interconnects. 
+
+
+Tuttle, Richard -- >
+
+I took a look. And yes we can do jumbo frames. 
+I presume you want that on all the ports?
+
+If so, not a problem. But since in production we will need to open a change. 
+I’ll get that in the works. 
+
+
+We had a backbone switch fail and we had to swap that out. Due to this, we didn’t have the time to get this in yesterday. 
+I apologize for that, but a failed backbone switch took priority. I will see about getting this in earlier. Worse case is that it will go in Sunday morning during the normal window. 
+
+Ryan, Richard T -->
+
+The jumbo frame issue is resolved.   We are now getting one last error that began showing up after the firewall was disabled. 
+
+Node Connectivity ...FAILED
+xhepydbw2as: PRVG-11067 : TCP connectivity from node "xhepydbw2as":
+             "192.168.150.53" to node "xhepydbw2bs": "192.168.150.35" failed.
+             PRVG-11095 : The TCP system call "connect" failed with error "111"
+             while executing exectask on node "xhepydbw2as"
+             Connection refused
+
+xhepydbw2bs: PRVG-11067 : TCP connectivity from node "xhepydbw2bs":
+             "192.168.150.35" to node "xhepydbw2as": "192.168.150.53" failed.
+             PRVG-11095 : The TCP system call "connect" failed with error "111"
+             while executing exectask on node "xhepydbw2bs"
+             Connection refused
+
+We are looking for resolution, should not be long and I expect the cluster will be ready for Eugene to begin the install on Thursday when he returns from PTO.
+Oracle docs reference selinux as a possible cause for this error.  I am checking to see if selinux is enabled on our Retail/PBM RAC cluster nodes. 
+
+Hello Ed,
+
+I have been working with CVS DBA and Linux admin resources this morning in comparing environments.  They actually had a similar error last year but their resolution did not apply to us.  We also confirmed selinux is enabled for CVS RAC cluster nodes.  Also, the issue we are facing is specific to RAC installations.  The RHEL migrations are dealing with single instance installations.   An SR has been opened with oracle.
+
+new verify errors -->
+
+Verified from problem description:
+
+xhepydbw2as: PRVG-11067 : TCP connectivity from node "xhepydbw2as":
+"192.168.150.53" to node "xhepydbw2bs": "192.168.150.35" failed.
+PRVG-11095 : The TCP system call "connect" failed with error "111"
+while executing exectask on node "xhepydbw2as"
+Connection refused
+
+xhepydbw2bs: PRVG-11067 : TCP connectivity from node "xhepydbw2bs":
+"192.168.150.35" to node "xhepydbw2as": "192.168.150.53" failed.
+PRVG-11095 : The TCP system call "connect" failed with error "111"
+while executing exectask on node "xhepydbw2bs"
+Connection refused
+
+to address  Sowjanya.Makkena@CVSHealth.com>-->
+
+I am on it. Ping is resolving the IP based on /etc/hosts entries but nslookup is not working. Can we reboot xhepydbw2as for quick test?
+
+[root@xhepydbw2as ~]# ping -c 3 xhepydbw2as-priv-ci1
+PING xhepydbw2as-priv-ci1 (192.168.218.53) 56(84) bytes of data.
+64 bytes from xhepydbw2as-priv-ci1 (192.168.218.53): icmp_seq=1 ttl=64 time=0.017 ms
+64 bytes from xhepydbw2as-priv-ci1 (192.168.218.53): icmp_seq=2 ttl=64 time=0.014 ms
+64 bytes from xhepydbw2as-priv-ci1 (192.168.218.53): icmp_seq=3 ttl=64 time=0.013 ms
+
+--- xhepydbw2as-priv-ci1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2072ms
+rtt min/avg/max/mdev = 0.013/0.014/0.017/0.004 ms
+
+
+
+
+It is working on xhepydbw2as/bs without reboot. As a work around I have added chef tag not to control /etc/resolv.conf. Please give it a try and let me know if any issues or concerns.
+
+Worked!!!
+
+Sowjanya.Makkena@CVSHealth.com -->
+
+Here is the workaround I followed to resolve IC IPs on xhepydbw2as/bs because “nslookup” doesn’t query /etc/hosts whereas hostfile works for ping, curl etc. 
+
+1.	/etc/resolv.conf is managed by chef, hence added chef tag to overwrite.
+2.	Updated /etc/resolv.conf with loop back IP
+   nameserver 127.0.0.1
+3.	Started/enabled dnsmasq.service
+
+Can you please check with Oracle if dnsmasq is recommended on RAC or not and If it is not suggested please check and let me know the alternate recommendation to resolve private interconnects.
+
+Venitia -->
+•	DBAs reported the connectivity issue returned.  After much discussion, Daniel Shaver asked that the 2 private routes be /24 vs. /23, which resolved the errors.
+
+Rich Ryan -- (final) >
+
+	
+we updated the subnet mask on the private interconnects from 255.255.254.0 to 255.255.255.0
+
+
+Chris,
+
+We do not have the ports.  The issue is with the RAC cluster interconnects.  We get multiple cluster verify errors dealing with the interconnect when firewalld is active.  Many attempts have been made to identify the ports in play.    A suggestion has been made to place the interconnect IP addresses  in a separate firewall zone but time is needed to test this out.
+In addition to the servers below, we need to add the following
+
+xhepydbm2ap
+xhedydbm2bp
+xhedwdbm2ap
+xhedwdbm2bp
+xhepydbw2ap
+xhepydbw2bp
+xhedwdbw2ap
+xhedwdbw2bp
+
+
+*********** GI install notes *****
+
+./runcluvfy.sh stage -post crsinst -n xhedwdbw2as,xhedwdbw2bs
+
+./runcluvfy.sh stage -post crsinst -n xhepydbw2as,xhepydbw2bs
+
+./runcluvfy.sh stage -post crsinst -n xhepydbw2as
+xhedwdbw2as
+xhedwdbw2bs
+
+D
+export DISPLAY=10.56.170.94:0.0
+
+
+Cluster Name: XHEPYDBW2S
+xhepydbw2as_HEPYSTS_A
+Scan Name: xhepydbw2s-scan.aetna.com (RAC Oracle IP-HRP_20231205.a.xlsx, nslookup xhepydbw2s-scan )
+Scan Port" 1521 - ??
+Public Host Name: xhepydbw2as.aetna.com (hostname or /etc/hosts)
+Role: HUB
+Virtual Host name: xhepydbw2as-vip.aetna.com (/etc/hosts)
+Network interface name: (ifconfig -a or ip link show or ls -altr /etc/sysconfig/network-scripts)
+Subnet: (ip addr show)
+Used for
+xhepydbw2bs_HEPYSTS_B
+
+
+Cluster Name: XHEDWDBW2S ( xhedwdbw2scl )
+xhedwdbw2as_HEDWSTS_A
+xhedwdbw2bs_HEDWSTS_B
+
+Cluster Name: XHEPYDBM2P
+xhepydbm2ap_HEPYPRD_Primary_A
+xhepydbm2bp_HEPYPRD_Primary_B
+
+Cluster Name: XHEDWDBM2P
+xhedwdbm2ap_HEDWPRD_Primary_A
+xhedwdbm2bp_HEDWPRD_Primary_B
+
+Cluster Name: XHEPYDBW2P
+xhepydbw2ap_HEPYPRD_Standby_A
+xhepydbw2bp_HEPYPRD_Standby_B
+
+Cluster Name: XHEDWDBW2P
+xhedwdbw2ap_HEDWPRD_Standby_A
+xhedwdbw2bp_HEDWPRD_Standby_B
+
+
+***** Create Standby errors *******
+TASK [create_standby_db : Bounce listener] *************************************
+Monday 17 June 2024  19:30:22 +0000 (0:00:02.227)       0:02:51.419 *********** 
+changed: [xhepydbw2as.aetna.com] => (item=stop) => {"ansible_loop_var": "item", "changed": true, "cmd": ["$ORACLE_HOME/bin/srvctl", "stop", "listener", "-l", "listener"], "delta": "0:00:00.467170", "end": "2024-06-17 15:30:23.437725", "item": "stop", "msg": "", "rc": 0, "start": "2024-06-17 15:30:22.970555", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+failed: [xhepydbw2as.aetna.com] (item=start) => {"ansible_loop_var": "item", "changed": true, "cmd": ["$ORACLE_HOME/bin/srvctl", "start", "listener", "-l", "listener"], "delta": "0:00:01.803654", "end": "2024-06-17 15:30:25.499536", "item": "start", "msg": "non-zero return code", "rc": 1, "start": "2024-06-17 15:30:23.695882", "stderr": "", "stderr_lines": [], "stdout": "PRCR-1079 : Failed to start resource ora.LISTENER.lsnr\nCRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2as/crs/trace/crsd_oraagent_grid.trc\"\nCRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2as/crs/trace/crsd_oraagent_grid.trc\"\nCRS-2674: Start of 'ora.LISTENER.lsnr' on 'xhepydbw2as' failed", "stdout_lines": ["PRCR-1079 : Failed to start resource ora.LISTENER.lsnr", "CRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2as/crs/trace/crsd_oraagent_grid.trc\"", "CRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2as/crs/trace/crsd_oraagent_grid.trc\"", "CRS-2674: Start of 'ora.LISTENER.lsnr' on 'xhepydbw2as' failed"]}
+
+Rich-- >
+
+[4:03 PM] Ryan, Richard T
+it was part of the listener.ora updates
+[4:03 PM] Ryan, Richard T
+it will be differant next time
+Fix and hit Replay
+
+#1081
+
+cd /oradb/app/oracle/admin/HEPYSTS/rman
+PY Stress:
+
+db_name: HEPYSTS   
+primary_host: xhepydbw21s
+db_port: 1572
+duplicate_type: tape
+rman_channel_count: 48
+syspass: Locked#99999
+backup_host: winpdd0821_lf2
+storage_unit: /ora_str_boost0821/xhepydbw21s
+rcatpass: HEPYSTSnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+
+DW Stress:
+
+db_name: HEDWSTS   
+primary_host: xhedwdbw21s
+db_port: 1573
+duplicate_type: tape
+rman_channel_count: 24
+syspass: Locked#99999
+backup_host: winpdd3541_lf2
+storage_unit: /ora_str_boost3541/xhedwdbw21s
+rcatpass: HEDWSTSnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+
+ALTER DATABASE
+DATAFILE '+DATA_01/HEPYPRD_XHEPYDBM1P/DATAFILE/data3.694.1113697703' RESIZE 12750G
+/
+
+
+
+Its is the best to go for manual procedure without wasting much time.
+
+
++REDO1/HEDWSTS_XHEDWDBW2AS/ONLINELOG/group_7.271.1172138359
++REDO2/HEDWSTS_XHEDWDBW2AS/ONLINELOG/group_7.271.1172138359
++REDO1/HEDWSTS_XHEDWDBW2AS/ONLINELOG/group_8.272.1172138359
++REDO2/HEDWSTS_XHEDWDBW2AS/ONLINELOG/group_8.272.1172138359
++REDO1/HEDWSTS_XHEDWDBW2AS/ONLINELOG/group_9.273.1172140433
++REDO2/HEDWSTS_XHEDWDBW2AS/ONLINELOG/group_9.273.1172140433
+
+**** Convert to RAC notes ******
+
+
+
+
+1)  Create physical standby database on server  first
+
+
+2) Add service to Primary database
+
+   Note: May already exist
+
+   exec dbms_service.CREATE_SERVICE(SERVICE_NAME=> 'HEDWSTS_RPT', NETWORK_NAME=> 'HEDWSTS_RPT')
+
+   select * from dba_services;
+
+
+3) Add trigger to primary database
+
+   CREATE OR REPLACE TRIGGER SYS.STARTDGSERVICES
+   AFTER STARTUP
+   ON DATABASE
+   DECLARE
+    db_role VARCHAR(30);
+    db_open_mode VARCHAR(30);
+   BEGIN
+
+    execute immediate ' ALTER SYSTEM SET SERVICE_NAMES='' '' ';
+
+    SELECT DATABASE_ROLE, OPEN_MODE INTO db_role, db_open_mode FROM V$DATABASE;
+
+    IF db_role = 'PRIMARY'
+          THEN DBMS_SERVICE.START_SERVICE('HEDWSTS_APP');
+    END IF;
+    IF db_role = 'PHYSICAL STANDBY' AND db_open_mode LIKE 'READ ONLY%'
+       THEN DBMS_SERVICE.START_SERVICE('HEDWSTS_RPT');
+    END IF;
+  END;
+/
+
+
+4) Configure Standby DataBase For Active DataGuard
+
+   Run below on Standby database server
+
+   srvctl modify database -d HEDWSTS_xhedwdbw2as -startoption "READ ONLY"
+   srvctl stop database -d HEDWSTS_xhedwdbw2as
+   srvctl start database -d HEDWSTS_xhedwdbw2as
+   srvctl config database -d HEDWSTS_xhedwdbw2as
+ 
+   sqlplus / as sysdba
+
+   select * from dba_services;
+
+SELECT OPEN_MODE,PROTECTION_MODE,DATABASE_ROLE FROM V$DATABASE;
+
+
+A. Convert Standby to Active
+
+B. init.ora file changes
+
+Cluster Name: XHEDWDBW2S ( xhedwdbw2scl )
+xhedwdbw2as_HEDWSTS_A
+xhedwdbw2bs_HEDWSTS_B
+
+
+On xhedwdbw2as_HEDWSTS_A
+
+create pfile from spfile;
+cd $DBS
+vi initHEDWSTS.ora
+*.cluster_database=true
+*.cluster_database_instances=2
+
+HEDWSTS_1.instance_number=1
+HEDWSTS_1.instance_name= HEDWSTS_1
+HEDWSTS_1.thread=1
+HEDWSTS_1.undo_tablespace='UNDOTBS1'
+HEDWSTS_1.local_listener= ''(DESCRIPTION=(ADDRESS=(PROTOCOL=IPC)(KEY=DBANAME_IPC)))''
+
+
+HEDWSTS_2.instance_number=2
+HEDWSTS_2.instance_name= HEDWSTS_2
+HEDWSTS_2.thread=2
+HEDWSTS_2.undo_tablespace='UNDOTBS2'
+HEDWSTS_2.local_listener= ''(DESCRIPTION=(ADDRESS=(PROTOCOL=IPC)(KEY=DBANAME_IPC)))''
+
+Node A
+Start the database instance using the PFILE created 
+
+startup pfile=/oradb/app/oracle/product/19.22.0/db_1/dbs/initHEDWSTS.ora force nomount;
+
+cp initHEDWSTS.ora initHEDWSTS_1.ora
+scp initHEDWSTS.ora  xhedwdbw2bs:/oradb/app/oracle/product/19.22.0/db_1/dbs/initHEDWSTS.ora 
+
+
+
+
+C. Redo log groups changes to NodeB
+
+startup pfile=/oradb/app/oracle/product/19.22.0/db_1/dbs/initHEDWSTS.ora force nomount;
+
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 1 ('+REDO1','+REDO2') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 2 ('+REDO1','+REDO2') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 3 ('+REDO1','+REDO2') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 4 ('+REDO1','+REDO2') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 5 ('+REDO1','+REDO2') SIZE 600M;
+ALTER DATABASE ADD LOGFILE thread 2 GROUP 6 ('+REDO1','+REDO2') SIZE 600M;
+
+alter database enable public thread 2;
+
+
+D. Add UNDOTBS2 to Node2
+
+create undo tablespace UNDOTBS2 datafile  '+DATA1' size 72G;
+
+Shutdown database on NodeA 
+sqlplus / as sysdba
+shutdown immediate
+
+E. Password file
+
+F. Remote Listener
+
+
+
+Stop Data Guard Apply:
+•	Stop the redo apply on the standby database to halt data recovery.
+
+
+F. Add the configuration for the  Oracle RAC One Node database and its instance-to-node mapping using SRVCTL.
+
+
+
+H. To add the configuration of an Oracle RAC One Node database, use the following command
+
+
+12.	Start Data Guard Apply:
+•	Restart the redo apply on the standby database to resume data recovery.
+
+
+I.
+
+J.
+
+K.
+
+Misc:
+
+Stop Data Guard Apply:
+•	Stop the redo apply on the standby database to halt data recovery.
+        #Suspend log shipping from Primary 
+	cd $SCRIPTS
+	./DISable_log_shipping.sh HEPYxxx
+	#Turn off log applied on Standby
+	dgmgrl / 
+	edit database 'HEPYxxx_servername' set state=apply-off;
+	#Bring Standby down
+	srvctl stop database -d HEPYxx_servername
+
+
+Start data Guard apply:
+
+13.	dgmgrl / 
+14.	edit database 'HEPYxxx_servername' set state=apply-on;
+15.	srvctl start database -d HEPYxx_servername
+
+
+
+https://community.oracle.com/mosc/discussion/2997000/converting-single-instance-database-to-rac-cluster-after-active-duplication
+
+*.cluster_database_instances = 2
+*.undo_management=AUTO
+<SID1>.undo_tablespace=undotbs (undo tablespace which already exists)
+<SID1>.instance_name=<SID1>
+<SID1>.instance_number=1
+<SID1>.thread=1
+<SID1>.local_listener=<LISTENERNAME>_<HOSTNAME1>
+
+<SID2>.instance_name=<SID2>
+<SID2>.instance_number=2
+<SID2>.local_listener=<LISTENERNAME>_<HOSTNAME2>
+<SID2>.thread=2
+<SID2>.undo_tablespace=UNDOTBS2
+<SID2>.cluster_database = TRUE
+<SID2>.cluster_database_instances = 2
+
+ps -ef|grep pmon
+
+https://www.bing.com/videos/riverview/relatedvideo?q=Convert+Single+Instance+to+RAC+ONE+Node&mid=FB4E12DFE563B187AE99FB4E12DFE563B187AE99&FORM=VIRE
+
+export DISPLAY=10.184.74.117:0.0
+
+restore archivelog sequence between 5717 and 5883;
+
+
+./runcluvfy.sh stage -post crsinst -n xhepydbm2ap, xhepydbm2bp
+
+--->
+Post-check for cluster services setup was unsuccessful.
+Checks did not pass for the following nodes:
+        ASM(+ASM1),ASM(+ASM2)
+
+
+Failures were encountered during execution of CVU verification request "stage -post crsinst".
+
+ORAchk checks ...FAILED
+  Check the integrity of key GI startup files ...FAILED
+  ASM(+ASM1): AHF-8608: The integrity check of key GI startup files did not  succeed
+  succeed
+
+  ASM(+ASM2): AHF-8608: The integrity check of key GI startup files did not
+  succeed
+
+
+
+Sagun,
+
+Please execute the following on xhepydbm2ap
+
+/oragrid/app/grid/product/19.23.0/gi/bin/ ocrconfig -manualbackup
+
+at let me know the results.
+
+
+
+[root@xhepydbm2ap ~]# /oragrid/app/grid/product/19.23.0/gi/bin/ ocrconfig -manualbackup
+-bash: /oragrid/app/grid/product/19.23.0/gi/bin/: Is a directory
+[root@xhepydbm2ap ~]# /oragrid/app/grid/product/19.23.0/gi/bin/ocrconfig -manualbackup
+
+xhepydbm2ap     2024/07/03 11:18:15     +MGMTREPO:/xhepydbm2pcl/OCRBACKUP/backup_20240703_111815.ocr.285.1173352695     327444227
+[root@xhepydbm2ap ~]#
+
+
+
+Can you now execute 
+
+/oragrid/app/grid/product/19.23.0/gi/bin/crsctl stop crs
+/oragrid/app/grid/product/19.23.0/gi/bin/crsctl start crs
+
+
+------>
+
+./runcluvfy.sh stage -post crsinst -n xhepydbw2as,xhepydbw2bs
+
+Post-check for cluster services setup was unsuccessful.
+Checks did not pass for the following nodes:
+        xhepydbw2bs,xhepydbw2as
+
+
+Failures were encountered during execution of CVU verification request "stage -post crsinst".
+
+ASM Integrity ...FAILED
+PRVG-6056 : Insufficient ASM instances found.  Expected 2 but found 1, on nodes
+"xhepydbw2as".
+
+So issue was due ASM instance down on NodeB
+
+
+
+
+***** patching ****
+
+Make sure all databases are running on node 1.
+Patch the GI and DB homes (GI, DB, OJVM, Java JDK, etc.) on node 2.
+Relocate the databases from the unpatched node 1 to the patched node 2.
+Run the post-install SQL scripts for each patch on each database on node 2.
+Patch the GI and DB homes on node 1.
+
+
+
+************************** tnsnames.ora changes ********
+
+xhepydbw2pcl
+
+
+HEPYPRD, HEPYPRD.AETNA.COM, HEPYPRD.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbm2p-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw2p-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbm1p.aetna.com)(PORT = 1574))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21p.aetna.com)(PORT = 1574))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYPRD_APP)
+    )
+  )
+
+
+
+HEDWPRD, HEDWPRD.AETNA.COM, HEDWPRD.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm2p-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw2p-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm21p.aetna.com)(PORT = 1575))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21p.aetna.com)(PORT = 1575))    
+      
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWPRD_APP)
+    )
+  )
+
+
+HEPYPRD_RPT, HEPYPRD_RPT.AETNA.COM, HEPYPRD_RPT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw2p-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21p.aetna.com)(PORT = 1574))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYPRD_RPT)
+    )
+  )
+
+
+HEDWPRD_RPT, HEDWPRD_RPT.AETNA.COM, HEDWPRD_RPT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw2p-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21p.aetna.com)(PORT = 1575))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+     (SERVICE_NAME = HEDWPRD_RPT)
+    )
+  )
+
+
+
+

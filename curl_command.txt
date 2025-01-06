@@ -1,0 +1,16 @@
+https://www.cherryservers.com/blog/how-to-use-curl-to-download-files-on-linux
+
+https://blog.hubspot.com/website/curl-command
+
+
+Upload example:
+
+curl -v -u <Nexus token>:<Nexus zopa> --upload-file "C:\PBM\Java_vulnerability\test_upload_nexus_jag.txt"  https://nexus-sdi.cvshealth.com/nexus/repository/dba-oracle-hcvs/pbm-oracle/linux/test_upload_nexus_jag.txt
+
+Download example:
+curl https://nexus-sdi.cvshealth.com/nexus/repository/dba-oracle-hcvs/pbm-oracle/linux/p6880880_190000_Linux-x86-64.zip --output  "C:\PBM\Java_vulnerability\files\p6880880_190000_Linux-x86-64.zip"
+
+Browse:
+Browse - Nexus Repository Manager (cvshealth.com)
+
+

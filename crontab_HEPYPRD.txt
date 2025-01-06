@@ -1,0 +1,80 @@
+# alert.log monitoring
+0,15,30,45 0-23 * * * /oradb/app/oracle/local/scripts/monitor/scan_oracle.ksh HEPYPRD > /dev/null  2>/dev/null
+05 05 1 * * /oradb/app/oracle/local/scripts/monitor/move_filtered_err_file.ksh HEPYPRD > /dev/null  2>/dev/null
+
+# heartbeat script
+*/5 * * * * /oradb/app/oracle/local/scripts/monitor/rman/heartbeat.ksh HEPYPRD AEDBA > /dev/null 2>&1
+
+
+# GRP and FRA checks
+0 * * * * /oradb/app/oracle/local/scripts/monitor/rman/check_for_grp.ksh HEPYPRD > /dev/null 2>&1
+*/15 * * * * /oradb/app/oracle/local/scripts/space/get_fra_usage.sh HEPYPRD > /dev/null 2>&1
+
+# backups check
+00 08 * * * /oradb/app/oracle/local/scripts/monitor/rman/check_database_backup.sh HEPYPRD > /dev/null 2>&1
+
+# Check For Unusable Indexes
+05 06 * * * /oradb/app/oracle/local/scripts/monitor/chkidx/check_for_unusable_indx.ksh HEPYPRD > /dev/null 2>&1
+
+# Check For Unusable Indexes
+10 06 * * * /oradb/app/oracle/local/scripts/monitor/chkidx/check_for_invisible_indx.ksh HEPYPRD > /dev/null 2>&1
+
+# Get Custom Indexes Created In The Last Week
+15 06 * * 1 /oradb/app/oracle/local/scripts/monitor/chkidx/get_custom_indexes.sh HEPYPRD > /dev/null 2>&1
+
+
+# Get Session Information In Support of Max Processes Issue
+*/2 * * * * /oradb/app/oracle/local/scripts/monitor/orasupp/get_session_info.ksh HEPYPRD > /dev/null 2>&1
+# Email Session Information Report
+59 23 * * * /oradb/app/oracle/local/scripts/monitor/orasupp/email_get_session_info.ksh > /dev/null 2>&1
+
+# HRP Upgrade watch 
+*/4 * * * * /oradb/app/oracle/local/scripts/HRP_upgrade/PY_CREATE_GRP.sh HEPYPRD > /dev/null 2>&1
+*/5 * * * * /oradb/app/oracle/local/scripts/HRP_upgrade/PY_DROP_GRP.sh HEPYPRD > /dev/null 2>&1
+
+# hang anylyzer
+0 * * * * /oradb/app/oracle/local/scripts/monitor/orasupp/load_hang_analyze.ksh HEPYPRD > /dev/null 2>&1
+
+# kill job
+*/5 * * * * /oradb/app/oracle/local/scripts/kill_job/kill_jobs.sh HEPYPRD > /dev/null 2>/dev/null
+
+# long runners and blocking locks monitor
+0 * * * * /oradb/app/oracle/local/scripts/monitor/longrunners/PY_LONG_RUNNERS.sh HEPYPRD > /dev/null 2>/dev/null
+*/15 * * * * /oradb/app/oracle/local/scripts/monitor/blocking/monitor_blocking_locks.ksh HEPYPRD > /dev/null 2>&1
+
+
+# Gather Weekly - Sunday Only
+30 04 * * 0 /oradb/app/oracle/local/scripts/stats/gather_weekly_stats.sh HEPYPRD > /dev/null 2>&1
+# Gather Stats on CVC Tables Sunday Only
+30 02 * * 0 /oradb/app/oracle/local/scripts/stats/gather_cvc_stats_wkly.sh HEPYPRD > /dev/null 2>&1
+#***********************************STATS DAILY JOBS*********************************************************************
+# Gather Stats on Claim Lines For Subscription Tables
+15 02 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_claim_lines_for_sub.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on HMEM Tables
+15 04 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_hmem_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Supplier and Supplier_Location Tables
+30 04 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_supplier_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Claim Workbasket Tables
+15 05 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_claim_workbasket.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Health Edge Identified Tables
+45 19 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_he_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Pay Calc Tables
+01 23 * * 0-6 /oradb/app/oracle/local/scripts/stats/gather_he_paycalc1.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats before cap run.
+00 08 15 * * /oradb/app/oracle/local/scripts/stats/gather_cap_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+
+
+# Get Archive Log Space Usage
+*/15 * * * * /oradb/app/oracle/local/scripts/space/get_archivelog_usage.sh HEPYPRD > /dev/null 2>&1
+# Collect Table Space Information
+00 21 * * 5 /oradb/app/oracle/local/scripts/space/collect_table_space.ksh HEPYPRD > /dev/null 2>&1
+# Get Space Usage
+00 06 * * * /oradb/app/oracle/local/scripts/space/space_usage.sh HEPYPRD > /dev/null 2>&1
+59 05 * * * /oradb/app/oracle/local/scripts/space/top_segments.sh HEPYPRD > /dev/null 2>&1

@@ -1,0 +1,364 @@
+############################################################################
+How to get cluster name
+
+Login to the server as grid
+
+. oraenv
++ASM1
+
+cd $ORACLE_HOME/bin
++ASM1> ./cemutlo -n
+xhepydbw2scl
+
+
+How to get tape info
+
+Login to Source DB as oracle
+
+rmanc
+show all;
+exit
+cd $LOGS
+view rman log where you can find that info
+
+-- How to get rman pass
+export RCATPASS=`rcatpass`
+
+echo $RCATPASS
+# In new incognito window open below link
+https://ci-autoeng.cvshealth.com/jenkins/
+
+
+
+--Misc **** How to manually drop database...
+
+ps -ef |grep pmon
+ps -ef |grep tns
+
+#under oracle
+export ORACLE_SID=HEDWSTS
+shutdown abort
+
+cd $DBS
+rm *HEDWSTS*
+
+
+
+alter database open mount;
+drop database;
+
+srvctl remove database -d HEDWSTS_xhedwdbw2scl
+
+In asmcmd   rm -r */HEDWSTS_XHEDWDBW2AS
+
+
+
+
+
+
+cd /oradb/app/oracle/admin/HEPYSTS/rman
+
+cd /oradb/app/oracle/admin/HEDWSTS/rman
+ 
+#################################################################################
+
+db_name: HEPYSTS   
+primary_host: xhepydbw21s
+db_port: 1572
+duplicate_type: tape
+rman_channel_count: 36
+syspass: Locked#99999
+backup_host: winpdd0821_lf2
+storage_unit: /ora_str_boost0821/xhepydbw21s
+rcatpass: HEPYSTSnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEPYSTS_xhepydbw2scl
+
+DW Stress:
+
+db_name: HEDWSTS   
+primary_host: xhedwdbw21s
+db_port: 1573
+duplicate_type: tape
+rman_channel_count: 24
+syspass: Locked#99999
+backup_host: winpdd3541_lf2
+storage_unit: /ora_str_boost3541/xhedwdbw21s
+rcatpass: HEDWSTSnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEDWSTS_xhedwdbw2scl
+
+
+
+
+############################################################################################
+
+1. Run Archive log backup on Primary - to cleanup FLASH_01 space
+2. Run LOG Purge on Standby - to cleanup FLASH_01 space
+3. Disable Archive log backup on Primary
+4. Disable Log Purge job on Standby
+5. Kick off Create Standby Action with EXTRA_VAR_CONTENTS below
+6. Make running active Jenkins job to keep forever to avoid timeout/job history age out issues we encountered in the past with long runners.
+
+############################################################################################
+
+xhepydbm2ap
+xhepydbm2bp
+xhedwdbm2ap
+xhedwdbm2bp
+
+xhepydbw2ap
+xhepydbw2bp
+xhedwdbw2ap
+xhedwdbw2bp
+
+
+-- > HEPYPRD Primary (xhepydbm2ap.aetna.com):
+db_name: HEPYPRD 
+primary_host: xhepydbm1p
+db_port: 1574
+duplicate_type: tape
+rman_channel_count: 48
+syspass: yrRN+1UG
+backup_host: midpdd3540_lf2
+storage_unit: /ora_prd_boost3540/xhepydbm1p
+rcatpass: HEPYPRDnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEPYPRD_xhepydbm2pcl
+
+
+---> HEDWPRD Primary (xhedwdbm2ap.aetna.com):
+db_name: HEDWPRD 
+primary_host: xhedwdbm21p
+db_port: 1575
+duplicate_type: tape
+rman_channel_count: 24
+syspass: gjMA$6YS
+backup_host: midpdd7966_lf2
+storage_unit: /ora_prd_boost7966/xhedwdbm21p
+rcatpass: HEDWPRDnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEDWPRD_xhedwdbm2pcl
+
+
+
+-- > HEPYPRD Standby (xhepydbw2ap.aetna.com):
+db_name: HEPYPRD 
+primary_host: xhepydbm1p
+db_port: 1574
+duplicate_type: tape
+rman_channel_count: 48
+syspass: yrRN+1UG
+backup_host: midpdd3540_lf2
+storage_unit: /ora_prd_boost3540/xhepydbm1p
+rcatpass: HEPYPRDnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEPYPRD_xhepydbw2pcl
+
+--fastcopy version
+
+
+To make use of fastcopy backups
+
+1.	Suspend the archivelog backup job
+2.	Perform an archivelog backup 
+3.	Preform the fastcopy scan
+4.	Execute the create standby job
+5.	Once the rman duplicate step begins, you can resume archivelog backups if you choose.   
+
+
+
+db_name: HEPYPRD 
+primary_host: xhepydbm1p
+db_port: 1574
+duplicate_type: tape
+rman_channel_count: 48
+syspass: yrRN+1UG
+backup_host: winpdd0821_lf2
+storage_unit: /ora_prd_boost3540_restore/xhepydbm1p
+rcatpass: HEPYPRDnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEPYPRD_xhepydbw2pcl
+
+
+---> HEDWPRD Standby (xhedwdbW2ap.aetna.com):
+db_name: HEDWPRD 
+primary_host: xhedwdbm21p
+db_port: 1575
+duplicate_type: tape
+rman_channel_count: 12
+syspass: gjMA$6YS
+backup_host: midpdd7966_lf2
+storage_unit: /ora_prd_boost7966/xhedwdbm21p
+rcatpass: HEDWPRDnamr
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEDWPRD_xhedwdbw2pcl
+
+
+#############################################################################################################################
+
+HEPYDBA (attempt on PY Stress NodeA)
+
+db_name: HEPYDBA   
+primary_host: xhepydbw21d
+db_port: 1655
+duplicate_type: tape
+rman_channel_count: 24
+syspass: Locked#99999
+backup_host: winpdd0821_lf2
+storage_unit: /ora_dev_boost0821/xhepydbw21d
+rcatpass: crFH!4rk
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEPYDBA_xhepydbw2scl
+
+
+HEPYDBA (attempt on DW Stress NodeA)
+
+db_name: HEPYDBA   
+primary_host: xhepydbw21d
+db_port: 1655
+duplicate_type: tape
+rman_channel_count: 24
+syspass: Locked#99999
+backup_host: winpdd0821_lf2
+storage_unit: /ora_dev_boost0821/xhepydbw21d
+rcatpass: crFH!4rk
+application_id: 4F59932753D657C5
+asm_sid: +ASM1
+rman_agent_home: "/opt/dpsapps/rmanagent"
+db_unique_name: HEPYDBA_xhedwdbw2scl
+
+
+***** Errors *****
+TASK [create_standby_db : Bounce listener] *************************************
+Friday 21 June 2024  14:32:43 +0000 (0:00:02.021)       0:01:07.666 *********** 
+changed: [xhedwdbw2as.aetna.com] => (item=stop) => {"ansible_loop_var": "item", "changed": true, "cmd": ["$ORACLE_HOME/bin/srvctl", "stop", "listener", "-l", "listener"], "delta": "0:00:00.434468", "end": "2024-06-21 10:32:43.739134", "item": "stop", "msg": "", "rc": 0, "start": "2024-06-21 10:32:43.304666", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+failed: [xhedwdbw2as.aetna.com] (item=start) => {"ansible_loop_var": "item", "changed": true, "cmd": ["$ORACLE_HOME/bin/srvctl", "start", "listener", "-l", "listener"], "delta": "0:00:01.762421", "end": "2024-06-21 10:32:45.726274", "item": "start", "msg": "non-zero return code", "rc": 1, "start": "2024-06-21 10:32:43.963853", "stderr": "", "stderr_lines": [], "stdout": "PRCR-1079 : Failed to start resource ora.LISTENER.lsnr\nCRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhedwdbw2as/crs/trace/crsd_oraagent_grid.trc\"\nCRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhedwdbw2as/crs/trace/crsd_oraagent_grid.trc\"\nCRS-2674: Start of 'ora.LISTENER.lsnr' on 'xhedwdbw2as' failed", "stdout_lines": ["PRCR-1079 : Failed to start resource ora.LISTENER.lsnr", "CRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhedwdbw2as/crs/trace/crsd_oraagent_grid.trc\"", "CRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhedwdbw2as/crs/trace/crsd_oraagent_grid.trc\"", "CRS-2674: Start of 'ora.LISTENER.lsnr' on 'xhedwdbw2as' failed"]}
+
+Login under gird cd $TNS_ADMIN
+
+Rich said that Jenkins could be added spaces or extra comments to listener.ora
+
+Here is example that I got to work (just that section)
+
+      (ADDRESS = (PROTOCOL = IPC)(KEY = HEPYSTS_IPC))
+      (ADDRESS = (PROTOCOL = tcp)(host = xhepydbw2as)(port = 1572))
+      (ADDRESS = (PROTOCOL = IPC)(KEY = HEPYDBA_IPC))
+      (ADDRESS = (PROTOCOL = tcp)(host = xhepydbw2as)(port = 1655))
+SID_LIST_LISTENER =
+# HEPYSTS Begin ANSIBLE MANAGED BLOCK
+   (SID_DESC =
+     (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+     (SID_NAME = HEPYSTS)
+# HEPYSTS End ANSIBLE MANAGED BLOCK 
+# HEPYDBA Begin ANSIBLE MANAGED BLOCK
+     (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+     (SID_NAME = HEPYDBA)
+# HEPYDBA End ANSIBLE MANAGED BLOCK
+   )
+
+!!! Under grid
+Copy listener.ora back and do following
+
+$ORACLE_HOME/bin/srvctl start listener -l listener
+
+$ORACLE_HOME/bin/srvctl stop listener -l listener
+
+srvctl config listener -l listener
+
+You can Replay Jenkins job now
+
+
+
+******************************************************************************
+
+
+connected to target database: HEPYDBA (DBID=1930627171)
+connected to recovery catalog database
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00554: initialization of internal recovery manager package failed
+RMAN-04006: error from auxiliary database: ORA-12528: TNS:listener: all appropri
+ate instances are blocking new connections
+
+
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00554: initialization of internal recovery manager package failed
+RMAN-04006: error from auxiliary database: ORA-12528: TNS:listener: all appropriate instances are blocking new connections
+
+
+
+TASK [create_standby_db : Bounce listener] *************************************
+Wednesday 14 August 2024  18:36:42 +0000 (0:00:02.257)       0:02:09.527 ****** 
+changed: [xhepydbw2ap.aetna.com] => (item=stop) => {"ansible_loop_var": "item", "changed": true, "cmd": ["$ORACLE_HOME/bin/srvctl", "stop", "listener", "-l", "listener"], "delta": "0:00:00.475400", "end": "2024-08-14 14:36:43.222989", "item": "stop", "msg": "", "rc": 0, "start": "2024-08-14 14:36:42.747589", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+failed: [xhepydbw2ap.aetna.com] (item=start) => {"ansible_loop_var": "item", "changed": true, "cmd": ["$ORACLE_HOME/bin/srvctl", "start", "listener", "-l", "listener"], "delta": "0:00:01.809246", "end": "2024-08-14 14:36:45.283168", "item": "start", "msg": "non-zero return code", "rc": 1, "start": "2024-08-14 14:36:43.473922", "stderr": "", "stderr_lines": [], "stdout": "PRCR-1079 : Failed to start resource ora.LISTENER.lsnr\nCRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2ap/crs/trace/crsd_oraagent_grid.trc\"\nCRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2ap/crs/trace/crsd_oraagent_grid.trc\"\nCRS-2674: Start of 'ora.LISTENER.lsnr' on 'xhepydbw2ap' failed", "stdout_lines": ["PRCR-1079 : Failed to start resource ora.LISTENER.lsnr", "CRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2ap/crs/trace/crsd_oraagent_grid.trc\"", "CRS-5016: Process \"/oragrid/app/grid/product/19.23.0/gi/bin/lsnrctl\" spawned by agent \"ORAAGENT\" for action \"start\" failed: details at \"(:CLSN00010:)\" in \"/oragrid/app/base/diag/crs/xhepydbw2ap/crs/trace/crsd_oraagent_grid.trc\"", "CRS-2674: Start of 'ora.LISTENER.lsnr' on 'xhepydbw2ap' failed"]}
+
+!!!To fix that. Make sure similar line exist in listener.ora file
+
+
+
+
+
+
+
+      (ADDRESS = (PROTOCOL = IPC)(KEY = HEPYPRD_IPC))
+      (ADDRESS = (PROTOCOL = tcp)(host = xhepydbw2ap)(port = 1574))
+SID_LIST_LISTENER =
+  (SID_LIST =
+# HEPYPRD Begin ANSIBLE MANAGED BLOCK
+   (SID_DESC =
+     (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+     (SID_NAME = HEPYPRD)
+   )
+# HEPYPRD End ANSIBLE MANAGED BLOCK
+   )
+
+
+      (ADDRESS = (PROTOCOL = IPC)(KEY = HEPYPRD_IPC))
+      (ADDRESS = (PROTOCOL = tcp)(host = xhepydbm2ap)(port = 1574))
+SID_LIST_LISTENER =
+  (SID_LIST =
+# HEDWPRD Begin ANSIBLE MANAGED BLOCK
+   (SID_DESC =
+     (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+     (SID_NAME = HEDWPRD)
+   )
+# HEDWPRD End ANSIBLE MANAGED BLOCK
+  )
+
+~
+
+
+
+rman
+         connect target /
+         connect catalog HEDWPRD/HEDWPRDnamr@RCATPROD
+        
+
+
+rman
+         connect target /
+         connect catalog HEPYPRD/HEPYPRDnamr@RCATPROD
+
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 10 BACKUP TYPE TO BACKUPSET;
+
