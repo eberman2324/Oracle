@@ -1,0 +1,1352 @@
+Default: G3t0ut4fnt0d_p
+
+
+
+--CV--
+xhecvdbm01p - Primary PROD
+xhecvdbw01p - Standby PROD
+xhecvdbw01d - Dev1 (standby created)
+xhecvdbw02d - Dev2 (standby created)
+xhecvdbw03d - Dev3 (switchback completed)
+xhecvdbw01q - QA1 Primary (standby created)
+xhecvdbm01q - QA1 Standby created
+xhecvdbw02q - QA2 (standby created)
+xhecvdbw03q - QA3 (standby created)
+xhecvdbw04q - UAT (standby created)
+
+--PY--
+xhepydbw01d - Dev1 (FAILED) RMAN
+xhepydbw02d - Dev2 Primary (standby created)
+xhepydbw03d - Dev3 (switchback completed)
+xhepydbw04d - Dev2 Standby
+xhepydbw05d - MGR2 (FAILED) on db file convert +IND_01
+xhepydbw01q - QA1 (standby created)
+xhepydbw02q - QA2 (FAILED) REDO size	
+xhepydbw03q - QA3 (FAILED) REDO size
+xhepydbw04q - UAT (standby created)
+xhepydbm01q - MASK
+--DW--
+xhedwdbw01d - Dev1 (standby created)
+xhedwdbw02d - Dev2 (standby created)
+xhedwdbw03d - Dev3 (switchback completed)
+xhedwdbw04d - MGR2 (FAILED) Need more memory huge
+xhedwdbw01q - QA1 Primary (standby created)
+xhedwdbm01q - QA1 Standby created
+xhedwdbw02q - QA2 (FAILED) REDO size
+xhedwdbw03q - QA3 (FAILED) REDO size
+xhedwdbw04q - UAT (standby created)
+
+
+
+
+--> Latest update
+
+•	Application Tier
+•	Prod vs. non-prod
+•	Architecture RAC/standalone
+•	Server Delivery Date by application team
+•	for standalone can they use image restore/automation pipeline?
+•	data migration GG, ADG, backup/restore
+•	Dates for build  from - To
+•	Comments – items missing from server delivery
+
+
+
+Application	Servers	RAC/StandAlone	Migration Stragegy	IP Address	Host	Version	FQDN	Pre-req fixes for DB Build	Server Delivery Date	DB Build Completion Date	Engage with App teams to finalize Dates	Data Migration	Cutover - DOWNTIME	Post Cutover
+														 
+
+
+
+
+--CV--
+xhecvdbm01p - Primary PROD - TBD
+xhecvdbw01p - Standby PROD - TBD
+xhecvdbw01d - Dev1 (standby created ready for switchover))
+xhecvdbw02d - Dev2 (standby created ready for switchover)
+xhecvdbw03d - Dev3 (switchback completed)
+xhecvdbw01q - QA1  (switchback completed)
+xhecvdbm01q - QA1 Standby created
+xhecvdbw02q - QA2 (standby created) Environment not available for any related work at this moment.
+xhecvdbw03q - QA3 (standby created) Environment not available for any related work at this moment.
+xhecvdbw04q - UAT (switchback completed)
+
+--PY--
+xhepydbw01d - Dev1 (standby created ready for switchover))
+xhepydbw02d - Dev2 Primary (standby created ready for switchover)
+xhepydbw03d - Dev3 (switchback completed)
+xhepydbw04d - Dev2 Standby --> create after switchover
+xhepydbw05d - MGR2 (standby created ready for switchover))
+xhepydbw01q - QA1 (switchback completed)
+xhepydbw02q - QA2 (Standby FAILED) REDO size, will use logs resize workaround when env available to kick off standby clone. Environment not available for any related work at this moment.
+xhepydbw03q - QA3 (Standby FAILED) REDO size, will use logs resize workaround when env available to kick off standby clone. Environment not available for any related work at this moment.
+xhepydbw04q - UAT (switchback completed)
+
+--DW--
+xhedwdbw01d - Dev1 (standby created ready for switchover))
+xhedwdbw02d - Dev2 Primary (standby created ready for switchover)
+xhedwdbw03d - Dev3 (switchback completed)
+xhedwdbw04d - MGR2 (standby created ready for switchover))
+xhedwdbw01q - QA1 Primary (switchback completed)
+xhedwdbm01q - QA1 Standby created
+xhedwdbw02q - QA2 (Standby FAILED) REDO size, will use logs resize workaround when env available to kick off standby clone. Environment not available for any related work at this moment.
+xhedwdbw03q - QA3 (Standby created)
+xhedwdbw04q - UAT (switchback completed)
+
+
+
+
+
+*********************************************
+
+
+MGR2
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw05d.aetna.com)(PORT = 1574))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw26d.aetna.com)(PORT = 1574))) (CONNECT_DATA = (SERVICE_NAME = HEPYMGR2_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw04d.aetna.com)(PORT = 1575))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw26d.aetna.com)(PORT = 1575))) (CONNECT_DATA = (SERVICE_NAME = HEDWMGR2_APP)))
+
+
+
+
+UAT
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw04q.aetna.com)(PORT = 1572))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbwu21q.aetna.com)(PORT = 1552))) (CONNECT_DATA = (SERVICE_NAME = HEPYUAT_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw04q.aetna.com)(PORT = 1573))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbwu21q.aetna.com)(PORT = 1573))) (CONNECT_DATA = (SERVICE_NAME = HEDWUAT_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw04q.aetna.com)(PORT = 1567))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbwu21q.aetna.com)(PORT = 1567))) (CONNECT_DATA = (SERVICE_NAME = HECVUAT_APP)))
+
+
+
+
+Dev1
+
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw01d.aetna.com)(PORT = 1555))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21d.aetna.com)(PORT = 1555))) (CONNECT_DATA = (SERVICE_NAME = HEPYDEV_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01d.aetna.com)(PORT = 1554))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21d.aetna.com)(PORT = 1554))) (CONNECT_DATA = (SERVICE_NAME = HEDWDEV_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01d.aetna.com)(PORT = 1567))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21d.aetna.com)(PORT = 1567))) (CONNECT_DATA = (SERVICE_NAME = HECVDEV_APP)))
+
+
+
+Dev2
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw02d.aetna.com)(PORT = 1552))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw22d.aetna.com)(PORT = 1552)) (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw04d.aetna.com)(PORT = 1552)) (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw25d.aetna.com)(PORT = 1552))) (CONNECT_DATA = (SERVICE_NAME = HEPYDEV2_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw02d.aetna.com)(PORT = 1553))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw22d.aetna.com)(PORT = 1553))) (CONNECT_DATA = (SERVICE_NAME = HEDWDEV2_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw02d.aetna.com)(PORT = 1567))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw22d.aetna.com)(PORT = 1567))) (CONNECT_DATA = (SERVICE_NAME = HECVDEV2_APP)))
+
+
+QA3
+
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw03q.aetna.com)(PORT = 1572))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw23q.aetna.com)(PORT = 1572))
+
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw03q.aetna.com)(PORT = 1573))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw23q.aetna.com)(PORT = 1573))
+
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw03q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw23q.aetna.com)(PORT = 1567))
+
+
+
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw03q.aetna.com)(PORT = 1572))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw23q.aetna.com)(PORT = 1572))) (CONNECT_DATA = (SERVICE_NAME = HEPYQA3_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw03q.aetna.com)(PORT = 1573))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw23q.aetna.com)(PORT = 1573))) (CONNECT_DATA = (SERVICE_NAME = HEDWQA3_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw03q.aetna.com)(PORT = 1567))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw23q.aetna.com)(PORT = 1567))) (CONNECT_DATA = (SERVICE_NAME = HECVQA3_APP)))
+
+
+QA2
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw02q.aetna.com)(PORT = 1578))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw22q.aetna.com)(PORT = 1578))) (CONNECT_DATA = (SERVICE_NAME = HEPYQA2_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw02q.aetna.com)(PORT = 1578))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw22q.aetna.com)(PORT = 1578))) (CONNECT_DATA = (SERVICE_NAME = HEDWQA2_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw02q.aetna.com)(PORT = 1567))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw22q.aetna.com)(PORT = 1567))) (CONNECT_DATA = (SERVICE_NAME = HECVQA2_APP)))
+
+
+
+Dev3
+
+
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw03d.aetna.com)(PORT = 1592))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw23d.aetna.com)(PORT = 1592))) (CONNECT_DATA = (SERVICE_NAME = HEPYDEV3_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw03d.aetna.com)(PORT = 1558))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw23d.aetna.com)(PORT = 1558))) (CONNECT_DATA = (SERVICE_NAME = HEDWDEV3_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw03d.aetna.com)(PORT = 1567))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw23d.aetna.com)(PORT = 1567))) (CONNECT_DATA = (SERVICE_NAME = HECVDEV3_APP)))
+
+QA1
+
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw01q.aetna.com)(PORT = 1559))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21q.aetna.com)(PORT = 1559))
+
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm21q.aetna.com)(PORT = 1560))
+
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm01q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm21q.aetna.com)(PORT = 1567))
+
+
+
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw01q.aetna.com)(PORT = 1559))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21q.aetna.com)(PORT = 1559))) (CONNECT_DATA = (SERVICE_NAME = HEPYQA_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01q.aetna.com)(PORT = 1560))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21q.aetna.com)(PORT = 1560)) (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm01q.aetna.com)(PORT = 1560)) (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm21q.aetna.com)(PORT = 1560))) (CONNECT_DATA = (SERVICE_NAME = HEDWQA_APP)))
+jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS_LIST =  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01q.aetna.com)(PORT = 1567))  (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21q.aetna.com)(PORT = 1567)) (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm01q.aetna.com)(PORT = 1567)) (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm21q.aetna.com)(PORT = 1567))) (CONNECT_DATA = (SERVICE_NAME = HECVQA_APP)))
+********************************************
+
+HECVDEV, HECVDEV.AETNA.COM, HECVDEV.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01d.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21d.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVDEV_APP)
+    )
+  )
+
+
+HECVDEV2, HECVDEV2.AETNA.COM, HECVDEV2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw02d.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw22d.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVDEV2_APP)
+    )
+  )
+
+
+
+HECVDEV3, HECVDEV3.AETNA.COM, HECVDEV3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw03d.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw23d.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVDEV3_APP)
+    )
+  )
+
+
+
+HECVQA, HECVQA.AETNA.COM, HECVQA.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm01q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm21q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVQA_APP)
+    )
+  )
+
+
+HECVQA2, HECVQA2.AETNA.COM, HECVQA2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw02q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw22q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVQA2_APP)
+    )
+  )
+
+
+
+HECVQA3, HECVQA3.AETNA.COM, HECVQA3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw03q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw23q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVQA3_APP)
+    )
+  )
+
+HECVUAT, HECVUAT.AETNA.COM, HECVUAT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw04q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbwu21q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVUAT_APP)
+    )
+  )
+
+
+HECVPRD, HECVPRD.AETNA.COM, HECVPRD.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm01p.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01p.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm21p.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21p.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVPRD_APP)
+    )
+  )
+
+HEPYDEV, HEPYDEV.AETNA.COM, HEPYDEV.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw01d.aetna.com)(PORT = 1555))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21d.aetna.com)(PORT = 1555))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYDEV_APP)
+    )
+  )
+
+HEDWDEV, HEDWDEV.AETNA.COM, HEDWDEV.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01d.aetna.com)(PORT = 1554))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21d.aetna.com)(PORT = 1554))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWDEV_APP)
+    )
+  )
+
+HEPYDEV2, HEPYDEV2.AETNA.COM, HEPYDEV2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+     
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw02d.aetna.com)(PORT = 1552))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw04d.aetna.com)(PORT = 1552))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw22d.aetna.com)(PORT = 1552))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw25d.aetna.com)(PORT = 1552))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYDEV2_APP)
+    )
+  )
+
+HEDWDEV2, HEDWDEV2.AETNA.COM, HEDWDEV2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw02d.aetna.com)(PORT = 1553))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw22d.aetna.com)(PORT = 1553))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWDEV2_APP)
+    )
+  )
+
+HEPYDEV3, HEPYDEV3.AETNA.COM, HEPYDEV3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw03d.aetna.com)(PORT = 1592))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw23d.aetna.com)(PORT = 1592))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYDEV3_APP)
+    )
+  )
+
+HEDWDEV3, HEDWDEV3.AETNA.COM, HEDWDEV3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw03d.aetna.com)(PORT = 1558))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw23d.aetna.com)(PORT = 1558))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWDEV3_APP)
+    )
+  )
+
+
+HEPYMGR2, HEPYMGR2.AETNA.COM, HEPYMGR2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw05d.aetna.com)(PORT = 1574))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw26d.aetna.com)(PORT = 1574))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYMGR2_APP)
+    )
+  )
+
+
+
+HEDWMGR2, HEDWMGR2.AETNA.COM, HEDWMGR2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw04d.aetna.com)(PORT = 1575))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw26d.aetna.com)(PORT = 1575))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWMGR2_APP)
+    )
+  )
+
+HEPYQA, HEPYQA.AETNA.COM, HEPYQA.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw01q.aetna.com)(PORT = 1559))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21q.aetna.com)(PORT = 1559))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYQA_APP)
+    )
+  )
+
+HEDWQA, HEDWQA.AETNA.COM, HEDWQA.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm21q.aetna.com)(PORT = 1560))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWQA_APP)
+    )
+  )
+
+HEDWQA_RPT, HEDWQA_RPT.AETNA.COM, HEDWQA_RPT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm21q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21q.aetna.com)(PORT = 1560))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+     (SERVICE_NAME = HEDWQA_RPT)
+    )
+  )
+
+
+HEPYQA2, HEPYQA2.AETNA.COM, HEPYQA2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw02q.aetna.com)(PORT = 1578))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw22q.aetna.com)(PORT = 1578))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYQA2_APP)
+    )
+  )
+
+HEDWQA2, HEDWQA2.AETNA.COM, HEDWQA2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw02q.aetna.com)(PORT = 1579))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw22q.aetna.com)(PORT = 1579))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWQA2_APP)
+    )
+  )
+
+
+HEPYQA3, HEPYQA3.AETNA.COM, HEPYQA3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw03q.aetna.com)(PORT = 1572))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw23q.aetna.com)(PORT = 1572))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYQA3_APP)
+    )
+  )
+
+HEDWQA3, HEDWQA3.AETNA.COM, HEDWQA3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw03q.aetna.com)(PORT = 1573))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw23q.aetna.com)(PORT = 1573))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWQA3_APP)
+    )
+
+HEPYUAT, HEPYUAT.AETNA.COM, HEPYUAT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw04q.aetna.com)(PORT = 1572))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbwu21q.aetna.com)(PORT = 1572))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYUAT_APP)
+    )
+  )
+
+HEDWUAT, HEDWUAT.AETNA.COM, HEDWUAT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw04q.aetna.com)(PORT = 1573))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbwu21q.aetna.com)(PORT = 1573))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWUAT_APP)
+    )
+  )
+
+HEPYSTS, HEPYSTS.AETNA.COM, HEPYSTS.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw2s-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21s.aetna.com)(PORT = 1572))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYSTS_APP)
+    )
+  )
+
+HEDWSTS, HEDWSTS.AETNA.COM, HEDWSTS.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw2s-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21s.aetna.com)(PORT = 1573))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWSTS_APP)
+    )
+  )
+
+
+****** Standby creation notes ****
+
+db_name: HEDWDEV3 
+primary_host: xhedwdbw23d
+db_port: 1558
+duplicate_type: active
+rman_channel_count: 4
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+
+
+db_name: HEPYDEV3 
+primary_host: xhepydbw23d
+db_port: 1592
+duplicate_type: active
+rman_channel_count: 4
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+
+
+
+db_name: HECVDEV3 
+primary_host: xhecvdbw23d
+db_port: 1567
+duplicate_type: active
+rman_channel_count: 2
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+
+
+
+
+db_name: HEPYQA2
+primary_host: xhepydbw22q
+db_port: 1578
+duplicate_type: active
+rman_channel_count: 8
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+sga_size: 8254390272
+
+
+db_name: HEDWQA2
+primary_host: xhedwdbw22q
+db_port: 1579
+duplicate_type: active
+rman_channel_count: 8
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+
+
+db_name: HECVQA2
+primary_host: xhecvdbw22q
+db_port: 1567
+duplicate_type: active
+rman_channel_count: 2
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+
+
+
+primary_instance_name: HECVSTS 
+db_name: HECVSTS 
+primary_host: xhecvdbw21s
+db_port: 1567
+duplicate_type: active
+rman_channel_count: 4
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+
+
+
+
+
+cd /oradb/app/oracle/admin/HEDWQA2/rman
+
+***** Huge pages notes ******
+
+Current RHEL7 
+
+HEPYDEV - all set
+HEPYDEV2 - 4404/2738
+HEPYDEV3 - all set
+HEPYQA - 32816/32100
+HEPYQA2 - all set
+HEPYQA3 - 36500/32100
+HEPYUAT - 17418/15972
+HEPYMGR2 - 17616/15972
+
+HEDWDEV - all set
+HEDWDEV2 - 4404/3940
+HEDWDEV3 - all set
+HEDWQA -  alls set
+HEDWQA2 - 40968/37644
+HEDWQA3 - 4404/3940
+HEDWUAT - 4404/3940
+HEDWMGR2 -  8808/3940
+
+HECVDEV - all set
+HECVDEV2 - 4104/3940
+HECVDEV3 - all set
+HECVQA - 4104/3940
+HECVQA2 - 4104/3940
+HECVQA3 - 4104/3940
+HECVUAT - 7944/3940
+Primary HECVPRD all set
+Standby HECVPRD all set
+BT
+
+********************************************Misc*************************************
+
+
+I am creating standby no xhepydbw04d from RHEL8 Primary on xhepydbw02d
+
+
+xhepydbw04d
+
+db_name: HEPYDEV2
+primary_host: xhepydbw02d
+db_port: 1552
+duplicate_type: active
+rman_channel_count: 4
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+sga_size: 8254390272
+
+BACKUP_HEPYQA3_XHEPYDBW23Q_WEEKLY_LEVEL_0
+Aug 29 7:50 PM (every Thursday)
+
+-- from tape  (E.B.)
+db_name: HEPYQA3
+primary_host: xhepydbw23q
+db_port: 1572
+duplicate_type: tape
+rman_channel_count: 8
+syspass: Locked#99999
+backup_host: winpdd0821_lf2
+storage_unit: /ora_dev_boost0821/xhepydbw23q
+application_id: 4F59932753D657C5
+asm_sid: +ASM
+rman_agent_home: "/opt/dpsapps/rmanagent"
+rcatpass: HEPYQA3namr
+
+
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'BLKSIZE=1048576,SBT_LIBRARY=/orahome/u01/app/ddboost/lib/libddobk.so,ENV=(STORAGE_UNI
+T=/ora_dev_boost0821/xhepydbw23q,BACKUP_HOST=winpdd0821_lf2,ORACLE_HOME=/orahome/u01/app/oracle/admin/HEPYQA3/oracle_home)' FORMAT   '
+./%d/bk_%d_%I_%T/%U';
+
+
+-- Active attempt
+db_name: HEPYDEV
+primary_host: xhepydbw21d
+db_port: 1555
+duplicate_type: active
+rman_channel_count: 4
+syspass: Locked#99999
+application_id: 4F59932753D657C5
+
+Failed: 
+
+
+ORA-17628: Oracle error 19505 returned by remote Oracle server
+ORA-19505: failed to identify file ""
+
+
+-- From tape attempt
+db_name: HEPYDEV
+primary_host: xhepydbw21d
+db_port: 1555
+duplicate_type: tape
+rman_channel_count: 4
+syspass: Locked#99999
+backup_host: winpdd0821_lf2
+storage_unit: /ora_dev_boost0821/xhepydbw21d
+application_id: 4F59932753D657C5
+asm_sid: +ASM
+rman_agent_home: "/opt/dpsapps/rmanagent"
+rcatpass: HEPYDEVnamr
+
+
+Failed:
+ORA-19511: non RMAN, but media manager or vendor specific failure, error text:
+   sbtinit2: Unable to initialize the DD Boost library: Unable to load the library at '/oradb/app/ddboost/lib/libDDBoost.so'. Error code: 2. Error: /oradb/app/ddboost/lib/libDDBoost.so: cannot open shared object fi
+
+*******************>
+Failed:
+TASK [create_standby_db : Clone database from tape backup] *********************
+Friday 04 October 2024  16:03:34 +0000 (0:00:00.082)       0:03:59.220 ******** 
+fatal: [xhepydbw03q.aetna.com]: FAILED! => {"changed": true, "cmd": ["/oradb/app/oracle/product/19.22.0/db_1/bin/rman", "target", "****/****@HEPYQA3_xhepydbw23q", "auxiliary", "****/****@HEPYQA3_xhepydbw03q", "catalog", "HEPYQA3/HEPYQA3namr@RCATDEV", "cmdfile=/oradb/app/oracle/admin/HEPYQA3/rman/duplicate_HEPYQA3_for_standby.rman", "log=/oradb/app/oracle/admin/HEPYQA3/rman/duplicate_HEPYQA3_for_standby.log"], "delta": "0:00:03.476162", "end": "2024-10-04 12:03:38.063829", "msg": "non-zero return code", "rc": 1, "start": "2024-10-04 12:03:34.587667", "stderr": "", "stderr_lines": [], "stdout": "RMAN> RMAN> 2> 3> 4> 5> 6> 7> 8> 9> 10> 11> 12> 13> 14> 15> 16> 17> 18> 19> 20> 21> 22> 23> 24> 25> 26> 27> 28> 29> 30> 31> 32> 33> 34> 35> 36> 37> 38> 39> 40> 41> 42> 43> 44> 45> 46> 47> 48> 49> 50> 51> 52> 53> 54> 55> 56> 57> 58> 59> 60> 61> 62> 63> ", "stdout_lines": ["RMAN> RMAN> 2> 3> 4> 5> 6> 7> 8> 9> 10> 11> 12> 13> 14> 15> 16> 17> 18> 19> 20> 21> 22> 23> 24> 25> 26> 27> 28> 29> 30> 31> 32> 33> 34> 35> 36> 37> 38> 39> 40> 41> 42> 43> 44> 45> 46> 47> 48> 49> 50> 51> 52> 53> 54> 55> 56> 57> 58> 59> 60> 61> 62> 63> "]}
+
+add following, cleanup and re start
+
+19220> cat /oradb/app/oracle/product/19.22.0/db_1/config/rman_agent_home.cfg
+RMAN_AGENT_HOME=/opt/dpsapps/rmanagent
+
+cd /oradb/app/oracle/product/19.22.0/db_1/config
+vi rman_agent_home.cfg
+RMAN_AGENT_HOME=/opt/dpsapps/rmanagent
+
+
+
+<******************
+cat /proc/meminfo
+
+
+huge_pages: 36500
+HugePages_Total:    3940
+
+xhepydbw01q
+dgmgrl 
+
+Could you update /proc/meminfo
+
+xhepydbw05d - Update Huge pages value in  /proc/meminfo to what currently in /etc/sysctl.d/oracle.conf
+xhedwdbw04d - Memory should match what currenty allocated on xhedwdbw26d 
+xhecvdbw04q - Memory should match what currenty allocated on xhecvdbwu21q
+xhedwdbw04q - Update Huge pages value in  /proc/meminfo to what currently in /etc/sysctl.d/oracle.conf
+xhepydbw04q - Increase size of both ASM REDO DISKS to be like below
+
+
+fatal: [xhepydbw05d.aetna.com]: FAILED! => {"changed": false, "msg": ["Insufficient REDO1 Disk Group space availble on standby", "Primary Data Disk space required: 79872", "Standby Data Disk space 
+
+
+fatal: [xhepydbw04q.aetna.com]: FAILED! => {"changed": false, "msg": ["Insufficient REDO1 Disk Group space availble on standby", "Primary Data Disk space required: 79872", "Standby Data Disk space 
+fatal: [xhepydbw01q.aetna.com]: FAILED! => {"changed": false, "msg": ["Insufficient REDO1 Disk Group space availble on standby", "Primary Data Disk space required: 79872", "Standby Data Disk space 
+xhedwdbw04q
+xhepydbw02q
+xhepydbw03q
+xhedwdbw02q
+xhedwdbw03q
+
+
+-- Source RHEL7
+select round(free_mb,-1) from v$asm_diskgroup where name='REDOA_01';
+4430
+select round(free_mb,-1) from v$asm_diskgroup where name='REDOB_01';
+4430
+
+4430 + 4430= 8860
+
+-- Aux RHEL8
+select round(free_mb,-1) from v$asm_diskgroup where name='REDO1';
+8120
+select round(free_mb,-1) from v$asm_diskgroup where name='REDO2';
+8120
+
+select round(free_mb,-1) from v\$asm_diskgroup where name='{{ redo1_dg_name }}';
+
+
+select unique regexp_substr(name,'[^/]+', 1, level) name from v$datafile connect by regexp_substr(name, '[^,]+', 1, level) is not null;
+
+select distinct bytes/1024/1024 from v$log;
+600
+
+select count(*) from v$log;
+6
+
+6144 x 6 = 36864
+
+
+
+required_redo_space: "{{ 600 * (6 * 2) + 1) }}"
+required_redo_space: "{{ 6144 * (6 * 2) + 1) }}"
+
+required_redo_space = 79,872
+free_redo1.stdout  =  75710
+- required_redo_space | int > free_redo1.stdout | int
+
+80,000 - 75774 = 4290 M 
+
+
+xhepydbw05d - we will use workaround to reduce redo log sizes on Primary. No addtiotnal space needed
+
+xhepydbw04q - we will use workaround to reduce redo log sizes on Primary. No addtiotnal space needed
+xhedwdbw04q - we will use workaround to reduce redo log sizes on Primary. No addtiotnal space needed
+
+xhepydbw01q
+REDO1 current size: 75774 M
+REDO2 current size: 75774 M
+add 4226 M to REDO1
+add 4226 M to REDO2
+REDO1 shoudl be sized 80000 M
+REDO2 shoudl be sized 80000 M
+
+xhepydbw02q
+REDO1 current size: 73726 M
+REDO2 current size: 73726 M
+add 6274 M to REDO1
+add 6274 M to REDO2
+REDO1 shoudl be sized 80000 M
+REDO2 shoudl be sized 80000 M
+
+xhepydbw03q
+REDO1 current size: 73726 M
+REDO2 current size: 73726 M
+add 6274 M to REDO1
+add 6274 M to REDO2
+REDO1 shoudl be sized 80000 M
+REDO2 shoudl be sized 80000 M
+
+
+
+xhedwdbw02q - should be ok
+xhedwdbw03q - should be ok
+
+
+
+Redo log reduction on Source example
+select GROUP#,THREAD#,BYTES/1024/1024 from v$log;
+
+ALTER DATABASE DROP LOGFILE GROUP 1;
+ALTER DATABASE ADD LOGFILE GROUP 1 ('+REDOA_01','+REDOB_01') SIZE 5144M BLOCKSIZE 4096;
+
+
+ALTER DATABASE DROP LOGFILE GROUP 2;
+ALTER DATABASE ADD LOGFILE GROUP 2 ('+REDOA_01','+REDOB_01') SIZE 5144M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 3;
+ALTER DATABASE ADD LOGFILE GROUP 3 ('+REDOA_01','+REDOB_01') SIZE 5144M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 4;
+ALTER DATABASE ADD LOGFILE GROUP 4 ('+REDOA_01','+REDOB_01') SIZE 5144M BLOCKSIZE 4096;
+
+ALTER DATABASE DROP LOGFILE GROUP 5;
+ALTER DATABASE ADD LOGFILE GROUP 5 ('+REDOA_01','+REDOB_01') SIZE 5144M BLOCKSIZE 4096;
+
+
+ALTER DATABASE DROP LOGFILE GROUP 6;
+ALTER DATABASE ADD LOGFILE GROUP 6 ('+REDOA_01','+REDOB_01') SIZE 5144M BLOCKSIZE 4096;
+
+
+
+
+select group#,status from v$log;
+!! switch logfiles manually until Group 24 becomes INACTIVE.
+alter system switch logfile;
+
+select group#,status from v$log;
+!! if needed
+alter system checkpoint;
+
+
+
+	
+Job#1237 keep forever
+Job#1238 keep forever
+Job#1239 keep forever
+Job#1246 keep forever
+
+https://ci-autoeng.cvshealth.com/jenkins/job/DBEngineering/job/Oracle/job/ans_ent_oracle_install/1237/
+https://ci-autoeng.cvshealth.com/jenkins/job/DBEngineering/job/Oracle/job/ans_ent_oracle_install/1238/
+https://ci-autoeng.cvshealth.com/jenkins/job/DBEngineering/job/Oracle/job/ans_ent_oracle_install/1239/
+https://ci-autoeng.cvshealth.com/jenkins/job/DBEngineering/job/Oracle/job/ans_ent_oracle_install/1246/
+----> HEPYQA
+
+9.	Disable start trigger on current Primary
+
+ALTER TRIGGER "SYS"."STARTDGSERVICES" DISABLE;
+
+10.	Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HEPYQA_xhepydbw01q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+select * from v$archive_gap;
+
+
+
+----> HEDWQA
+
+9.	Disable start trigger on current Primary
+
+ALTER TRIGGER "SYS"."STARTDGSERVICES" DISABLE;
+
+10.	Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/qyBS?4sf
+switchover to 'HEDWQA_xhedwdbw01q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+select * from v$archive_gap;
+
+
+
+----> HECVQA
+
+vi listener.ora
+
+(GLOBAL_DBNAME = HECVQA_xhecvdbw21q_dgmgrl)
+
+lsnrctl reload HECVQA
+
+9.	Disable start trigger on current Primary
+
+ALTER TRIGGER "SYS"."STARTDGSERVICES" DISABLE;
+
+10.	Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HECVQA_xhecvdbw01q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+select * from v$archive_gap;
+
+-- Issues after switchvoer 
+
+
+
+srvctl stop listener
+srvctl start listener
+
+select NAME from dba_services;
+
+srvctl config service -d HEPYSTS_xhepydbw2scl -s HEPYSTS_APP
+srvctl status service -d HECVQA_xhecvdbw01q -s HECVQA_APP
+
+exec DBMS_SERVICE.START_SERVICE('HECVQA_APP');
+
+exec DBMS_SERVICE.STOP_SERVICE('HEDWPRD_RPT');
+
+
+srvctl status service -d HECVDEV3_xhecvdbw03d -s HECVDEV3_APP
+
+DDE: Problem Key 'ORA 1110' was flood controlled (0x1) (no incident)
+ORA-01110: data file 201: '+DATA1'
+
+10:35:03.698	DBMS	HECVQA (Oracle 19.0.0.0.0) -- ORA-01157: cannot identify/lock data file 201 - see DBWR trace file
+10:35:03.698	DBMS	ORA-01110: data file 201: '+DATA1'
+
+select file_name, file_id from  dba_data_files;
+
+select file_name, file_id DBA_TEMP_FILES;
+
+
+STD_BACKUP_HOST=winpdd0821_v20.aetna.com
+STD_STORAGE_UNIT=ora_qa_boost0821
+
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'BLKSIZE=1048576,SBT_LIBRARY=/opt/dpsapps/rmanagent/lib/libddobk.so,ENV=(STORAGE_UNIT=ora_qa_boost0821,BACKUP_HOST=winpdd0821_v20.aetna.com,ORACLE_HOME=/oradb/app/oracle/admin/HEPYQA/oracle_home)' FORMAT'./%d/bk_%d_%I_%T/%U';
+
+
+
+RMAN_AGENT_HOME=/opt/dpsapps/rmanagent
+
+
+**** MGR2 create IND_01 on RHEL8 server in support of clone from RHLEL7 ****
+
+1. How much space IND_01 occupied on RHEL7 server
+INDX2, INDX3, INDX4, INDX5
+-- Actual size (index tablespaces that part IND_1)
+select SUM(bytes)/1024/1024/1024 gb  from dba_segments where   tablespace_name IN ('INDX2','INDX3','INDX4','INDX5') and  SEGMENT_TYPE IN ('INDEX','LOBINDEX');
+~14630 GB (14.7 TB)
+--Allocated size (index tablespaces that part IND_1)
+select sum(bytes)/1024/1024/1024 gb from dba_data_files    where TABLESPACE_NAME IN ('INDX2','INDX3','INDX4','INDX5') 
+19 TB
+
+-- Actual size (index tablespaces that  part DATA_01)
+select SUM(bytes)/1024/1024/1024 gb  from dba_segments where   tablespace_name IN ('INDX','INDX6','INDX7') and  SEGMENT_TYPE IN ('INDEX','LOBINDEX');
+~18102 GB (18.2 TB)
+--Allocated size (index tablespaces that part DATA_01)
+select sum(bytes)/1024/1024/1024 gb from dba_data_files    where TABLESPACE_NAME IN ('INDX','INDX6','INDX7') 
+~19 TB
+
+
+-- Actual size (data tablespaces that  part DATA_01)
+select SUM(bytes)/1024/1024/1024 gb  from dba_segments where   tablespace_name IN ('DATA','DATA2','DATA3','DATA4','DATA5','DATA6','DATA7','DATA8') and  SEGMENT_TYPE IN ('TABLE','LOBSEGMENT');
+23624 GB (23.7 TB)
+
+--Allocated size (data tablespaces that part DATA_01)
+select sum(bytes)/1024/1024/1024 gb from dba_data_files    where TABLESPACE_NAME IN ('DATA','DATA2','DATA3','DATA4','DATA5','DATA6','DATA7','DATA8') 
+29629 GB (30 TB
+
+Actual database used size: 57 TB
+
+
+
+xhepydbw05d
+
+Total DATA1 disks
+Need 3 x 6.5 TB disks allocated to IND_1
+
+sqlplus / as sysasm
+
+create diskgroup IND_1
+external redundancy
+disk '/dev/oracleasm/disks/???*'
+attribute
+ 'sector_size'='512',
+ 'au_size'='4m',
+ 'compatible.asm' = '19.3',
+ 'compatible.rdbms' = '12.1';
+
+
+
+
+
+srvctl stop database -d HEPYQA3_xhepydbw23q
+
+srvctl start database -d HEPYQA3_xhepydbw23q
+
+
+----> HECVQA3
+
+On Primary side
+
+vi listener.ora
+
+(GLOBAL_DBNAME = HECVQA3_xhecvdbw23q_dgmgrl)
+
+lsnrctl reload HECVQA3
+
+
+
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HECVQA3_xhecvdbw03q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+
+----> HEDWQA3
+
+On Primary side
+
+vi listener.ora
+
+Add GLOBAL to following section
+
+Current:
+SID_LIST_HEDWQA3 =
+  (SID_LIST =
+    (SID_DESC =
+      (ORACLE_HOME = /orahome/u01/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = HEDWQA3)
+    )
+  )
+
+New:
+SID_LIST_HEDWQA3 =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = HEDWQA3_xhedwdbw23q_dgmgrl)
+      (ORACLE_HOME = /orahome/u01/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = HEDWQA3)
+    )
+  )
+
+
+lsnrctl reload HEDWQA3
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HEDWQA3_xhedwdbw03q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+----> HEPYQA3
+
+On Primary side
+
+vi listener.ora
+
+Add GLOBAL to following section
+
+Current:
+SID_LIST_HEPYQA3 =
+  (SID_LIST =
+    (SID_DESC =
+      (ORACLE_HOME = /orahome/u01/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = HEPYQA3)
+    )
+  )
+
+New:
+SID_LIST_HEPYQA3 =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = HEPYQA3_xhepydbw23q_dgmgrl)
+      (ORACLE_HOME = /orahome/u01/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = HEPYQA3)
+    )
+  )
+
+
+
+lsnrctl reload HEPYQA3
+
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HEPYQA3_xhepydbw03q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+----> HECVQA2
+
+!!! Suspend OEM backups
+!!! Disable crontab entries
+
+vi listener.ora
+
+(GLOBAL_DBNAME = HECVQA2_xhecvdbw22q_dgmgrl)
+
+lsnrctl reload HECVQA2
+
+
+
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HECVQA2_xhecvdbw02q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+
+----> HEDWQA2
+
+!!! Suspend OEM backups
+!!! Disable crontab entries
+
+
+
+
+
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HEDWQA2_xhedwdbw02q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+
+----> HEPYQA2
+
+!!! Suspend OEM backups
+!!! Disable crontab entries
+
+
+vi listener.ora
+
+(GLOBAL_DBNAME = HEPYQA2_xhepydbw22q_dgmgrl)
+
+lsnrctl reload HEPYQA2
+
+
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HEPYQA2_xhepydbw02q';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+
+
+**** Sep 4
+
+----> HEDWMGR2
+
+!!! Suspend OEM backups
+!!! Disable crontab entries
+
+listener on Source is all set with GLOBAL_NAME entry....
+
+
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HEDWMGR2_xhedwdbw04d';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+
+
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+
+STD_BACKUP_HOST=winpdd0821_v20.aetna.com
+STD_STORAGE_UNIT=ora_dev_boost0821
+
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'BLKSIZE=1048576,SBT_LIBRARY=/opt/dpsapps/rmanagent/lib/libddobk.so,ENV=(STORAGE_UNIT=ora_dev_boost0821,BACKUP_HOST=winpdd0821_v20.aetna.com,ORACLE_HOME=/oradb/app/oracle/admin/HEDWMGR2/oracle_home)' FORMAT'./%d/bk_%d_%I_%T/%U';
+
+
+
+----> HEPYMGR2
+
+!!! Suspend OEM backups
+!!! Disable crontab entries
+
+
+Issue switchover command from current Primary 
+
+dgmgrl
+connect sys/Locked#99999
+switchover to 'HEPYMGR2_xhepydbw05d';
+
+11.	Post switchover check commands
+From new Standby (Old Primary) and new Primary (RHEL8 box)
+To make sure all SUCCESS and looks as expected. And no Warnings. 
+dgmgrl / 
+show configuration
+show database verbose '<DBNAME>_<SERVERNAME>'
+
+From new Standby (Old Primary) just in case. Should be no gaps.
+
+
+
+
+**********************************
+
+STD_BACKUP_HOST=winpdd0821_v20.aetna.com
+STD_STORAGE_UNIT=ora_dev_boost0821
+
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'BLKSIZE=1048576,SBT_LIBRARY=/opt/dpsapps/rmanagent/lib/libddobk.so,ENV=(STORAGE_UNIT=ora_dev_boost0821,BACKUP_HOST=winpdd0821_v20.aetna.com,ORACLE_HOME=/oradb/app/oracle/admin/HEPYMGR2/oracle_home)' FORMAT'./%d/bk_%d_%I_%T/%U';
+
+
+# ALERT LOG MONITORING
+0,15,30,45 0-23 * * * /oradb/app/oracle/local/scripts/monitor/scan_oracle.ksh HEDWUAT
+05 05 1 * * /oradb/app/oracle/local/scripts/monitor/move_filtered_err_file.ksh
+
+#######################################################################
+*/5 * * * * /oradb/app/oracle/local/scripts/monitor/rman/heartbeat.ksh HEDWUAT AEDBA > /dev/null 2>&1
+#######################################################################
+0 * * * * /oradb/app/oracle/local/scripts/monitor/rman/check_for_grp.ksh HEDWUAT > /dev/null 2>&1
+
+# HRP UPGRADE WATCHER
+*/2 * * * * /oradb/app/oracle/local/scripts/HRP_upgrade/DW_CREATE_GRP.sh HEDWUAT > /dev/null 2>&1
+*/3 * * * * /oradb/app/oracle/local/scripts/HRP_upgrade/DW_DROP_GRP.sh HEDWUAT > /dev/null 2>&1
+~

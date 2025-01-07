@@ -1,0 +1,347 @@
+HECVDEV, HECVDEV.AETNA.COM, HECVDEV.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01d.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21d.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVDEV_APP)
+    )
+  )
+
+
+HECVDEV2, HECVDEV2.AETNA.COM, HECVDEV2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw02d.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw22d.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVDEV2_APP)
+    )
+  )
+
+
+
+HECVDEV3, HECVDEV3.AETNA.COM, HECVDEV3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw03d.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw23d.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVDEV3_APP)
+    )
+  )
+
+
+
+HECVQA, HECVQA.AETNA.COM, HECVQA.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm01q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm21q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVQA_APP)
+    )
+  )
+
+
+HECVQA2, HECVQA2.AETNA.COM, HECVQA2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw02q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw22q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVQA2_APP)
+    )
+  )
+
+
+
+HECVQA3, HECVQA3.AETNA.COM, HECVQA3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw03q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw23q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVQA3_APP)
+    )
+  )
+
+HECVUAT, HECVUAT.AETNA.COM, HECVUAT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw04q.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbwu21q.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVUAT_APP)
+    )
+  )
+
+
+HECVPRD, HECVPRD.AETNA.COM, HECVPRD.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm01p.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw01p.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbm21p.aetna.com)(PORT = 1567))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhecvdbw21p.aetna.com)(PORT = 1567))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HECVPRD_APP)
+    )
+  )
+
+HEPYDEV, HEPYDEV.AETNA.COM, HEPYDEV.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw01d.aetna.com)(PORT = 1555))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21d.aetna.com)(PORT = 1555))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYDEV_APP)
+    )
+  )
+
+HEDWDEV, HEDWDEV.AETNA.COM, HEDWDEV.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01d.aetna.com)(PORT = 1554))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21d.aetna.com)(PORT = 1554))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWDEV_APP)
+    )
+  )
+
+HEPYDEV2, HEPYDEV2.AETNA.COM, HEPYDEV2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+     
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw02d.aetna.com)(PORT = 1552))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw04d.aetna.com)(PORT = 1552))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw22d.aetna.com)(PORT = 1552))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw25d.aetna.com)(PORT = 1552))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYDEV2_APP)
+    )
+  )
+
+HEDWDEV2, HEDWDEV2.AETNA.COM, HEDWDEV2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw02d.aetna.com)(PORT = 1553))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw22d.aetna.com)(PORT = 1553))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWDEV2_APP)
+    )
+  )
+
+HEPYDEV3, HEPYDEV3.AETNA.COM, HEPYDEV3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw03d.aetna.com)(PORT = 1592))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw23d.aetna.com)(PORT = 1592))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYDEV3_APP)
+    )
+  )
+
+HEDWDEV3, HEDWDEV3.AETNA.COM, HEDWDEV3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw03d.aetna.com)(PORT = 1558))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw23d.aetna.com)(PORT = 1558))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWDEV3_APP)
+    )
+  )
+
+
+HEPYMGR2, HEPYMGR2.AETNA.COM, HEPYMGR2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw05d.aetna.com)(PORT = 1574))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw26d.aetna.com)(PORT = 1574))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYMGR2_APP)
+    )
+  )
+
+
+
+HEDWMGR2, HEDWMGR2.AETNA.COM, HEDWMGR2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw04d.aetna.com)(PORT = 1575))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw26d.aetna.com)(PORT = 1575))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWMGR2_APP)
+    )
+  )
+
+HEPYQA, HEPYQA.AETNA.COM, HEPYQA.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw01q.aetna.com)(PORT = 1559))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21q.aetna.com)(PORT = 1559))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYQA_APP)
+    )
+  )
+
+HEDWQA, HEDWQA.AETNA.COM, HEDWQA.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm21q.aetna.com)(PORT = 1560))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWQA_APP)
+    )
+  )
+
+HEDWQA_RPT, HEDWQA_RPT.AETNA.COM, HEDWQA_RPT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm01q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbm21q.aetna.com)(PORT = 1560))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21q.aetna.com)(PORT = 1560))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+     (SERVICE_NAME = HEDWQA_RPT)
+    )
+  )
+
+
+HEPYQA2, HEPYQA2.AETNA.COM, HEPYQA2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw02q.aetna.com)(PORT = 1578))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw22q.aetna.com)(PORT = 1578))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYQA2_APP)
+    )
+  )
+
+HEDWQA2, HEDWQA2.AETNA.COM, HEDWQA2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw02q.aetna.com)(PORT = 1579))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw22q.aetna.com)(PORT = 1579))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWQA2_APP)
+    )
+  )
+
+
+HEPYQA3, HEPYQA3.AETNA.COM, HEPYQA3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw03q.aetna.com)(PORT = 1572))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw23q.aetna.com)(PORT = 1572))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYQA3_APP)
+    )
+  )
+
+HEDWQA3, HEDWQA3.AETNA.COM, HEDWQA3.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw03q.aetna.com)(PORT = 1573))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw23q.aetna.com)(PORT = 1573))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWQA3_APP)
+    )
+
+HEPYUAT, HEPYUAT.AETNA.COM, HEPYUAT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw04q.aetna.com)(PORT = 1572))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbwu21q.aetna.com)(PORT = 1572))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYUAT_APP)
+    )
+  )
+
+HEDWUAT, HEDWUAT.AETNA.COM, HEDWUAT.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw04q.aetna.com)(PORT = 1573))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbwu21q.aetna.com)(PORT = 1573))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWUAT_APP)
+    )
+  )
+
+HEPYSTS, HEPYSTS.AETNA.COM, HEPYSTS.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw2s-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhepydbw21s.aetna.com)(PORT = 1572))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEPYSTS_APP)
+    )
+  )
+
+HEDWSTS, HEDWSTS.AETNA.COM, HEDWSTS.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw2s-scan.aetna.com)(PORT = 1551))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xhedwdbw21s.aetna.com)(PORT = 1573))
+    )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = HEDWSTS_APP)
+    )
+  )
