@@ -1,0 +1,97 @@
+
+----------> ORIGINAL HEPYPRD
+
+
+# Gather Weekly - Sunday Only
+30 04 * * 0 /oradb/app/oracle/local/scripts/stats/gather_weekly_stats.sh HEPYPRD > /dev/null 2>&1
+# Gather Stats on CVC Tables Sunday Only
+30 02 * * 0 /oradb/app/oracle/local/scripts/stats/gather_cvc_stats_wkly.sh HEPYPRD > /dev/null 2>&1
+#***********************************STATS DAILY JOBS*********************************************************************
+# Gather Stats on Claim Lines For Subscription Tables
+15 02 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_claim_lines_for_sub.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on HMEM Tables
+15 04 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_hmem_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Supplier and Supplier_Location Tables
+30 04 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_supplier_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Claim Workbasket Tables
+15 05 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_claim_workbasket.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Health Edge Identified Tables
+45 19 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_he_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats on Pay Calc Tables
+01 23 * * 0-6 /oradb/app/oracle/local/scripts/stats/gather_he_paycalc1.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+# Gather Stats before cap run.
+00 08 15 * * /oradb/app/oracle/local/scripts/stats/gather_cap_stats.sh HEPYPRD > /dev/null 2>&1
+#************************************************************************************************************************
+
+
+
+-----> ORIGINAL HEDWPRD
+
+#### STATS ###############################################################
+# Gather Stats on Cache Tables and Supporting Tables
+# Every Sunday starts at 10 AM
+00 10 * * 0 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_1.sh HEDWPRD > /dev/null 2>&1
+01 10 * * 0 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_2.sh HEDWPRD > /dev/null 2>&1
+02 10 * * 0 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_3.sh HEDWPRD > /dev/null 2>&1
+03 10 * * 0 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_4.sh HEDWPRD > /dev/null 2>&1
+04 10 * * 0 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_5.sh HEDWPRD > /dev/null 2>&1
+# Every day except Sunday starts as 3:30 PM
+30 15 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_1.sh HEDWPRD > /dev/null 2>&1
+31 15 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_2.sh HEDWPRD > /dev/null 2>&1
+32 15 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_3.sh HEDWPRD > /dev/null 2>&1
+33 15 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_4.sh HEDWPRD > /dev/null 2>&1
+34 15 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_core_tables_stats_5.sh HEDWPRD > /dev/null 2>&1
+#Every day starts at 11 PM
+00 23 * * 0-6 /oradb/app/oracle/local/scripts/stats/gather_misc_tables_stats.sh HEDWPRD > /dev/null 2>&1
+
+#Every day except Sunday starts as 1 AM
+00 01 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_cached_tables_stats.sh HEDWPRD > /dev/null 2>&1
+
+#Every day except Sunday starts as 3:00 AM
+00 03 * * 1-6 /oradb/app/oracle/local/scripts/stats/gather_datamart_tables_stats.sh HEDWPRD > /dev/null 2>&1
+
+
+#Only on Wed and Sunday starts at 3 AM
+00 03 * * 3 /oradb/app/oracle/local/scripts/stats/gather_tran_step_fact.sh HEDWPRD > /dev/null 2>&1
+00 03 * * 0 /oradb/app/oracle/local/scripts/stats/gather_tran_step_fact.sh HEDWPRD > /dev/null 2>&1
+###########################################################################################################
+
+
+----> Request to change for HRP upgrade weekend
+
+1)            Reschedule the Weekly Stats job to Friday @ 11pm. 
+2)            Cancel all Daily Stats jobs on Saturday.
+3)            Reschedule Level 0 backup to Saturday @ 3am.
+
+0 - Sun      Sunday
+1 - Mon      Monday
+2 - Tue      Tuesday
+3 - Wed      Wednesday
+4 - Thu      Thursday
+5 - Fri      Friday
+6 - Sat      Saturday
+7 - Sun      Sunday
+
+
+-----------> Make changes in HEPYPRD on Friday morning, replace stats job entries with below
+
+
+01 23 * * 5 /oradb/app/oracle/local/scripts/stats/gather_weekly_stats.sh HEPYPRD > /dev/null 2>&1
+45 19 * * 1-5 /oradb/app/oracle/local/scripts/stats/gather_he_stats.sh HEPYPRD > /dev/null 2>&1
+
+-------------> Make changes in HEDWPRD on Friday morning, comment out job below
+#00 03 * * 0 /oradb/app/oracle/local/scripts/stats/gather_tran_step_fact.sh HEDWPRD > /dev/null 2>&1
+
+
+
+--------> After HRP upgrade completed and after checkout. Kick off manually CVC stats job. Once in progress. Put original schedule back for all jobs.
+
+20 07 * * 0 /oradb/app/oracle/local/scripts/stats/gather_cvc_stats_wkly.sh HEPYPRD > /dev/null 2>&1
+
+
