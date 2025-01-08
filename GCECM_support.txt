@@ -1,0 +1,99 @@
+Database: GCECM 
+Server: apadb390c.firsthealth.com
+
+
+App Name in ICR: FEP End to End Processing
+Unix Admin  Vernon McPherron
+Application Contacts: Mary Stuart-Vail, Sebha Surendra Shetty, Sivaram Gudavalli
+
+
+Oracle Databases and servers
+
+Prod Database: GCECM   
+Prod Server:   APADB390c.firsthealth.com  - use in TPAM %390% apadb390n1 same thing as apadb390c to search for oracle and your A/N password
+
+UAT Database: GCECMUAT
+UAT Server:   PTADB084c.firsthealth.com
+
+QA Database:  GCECMQA
+QA Server:    PTADB085.firsthealth.com
+
+DEV Database: GCECMDEV
+Dev Server:   ATADB691.cvty.com 
+
+
+
+
+
+
+
+
+Attached is a cheat sheet for patching the GCECM databases.  
+
+Attached is a cheat sheet I used for upgrading to 12c several years ago
+
+Delana Banks supports the FEP, DOCIDX, and EDIPROD databases.  Those databases, along with GCECM, are used by the FEP application.  It’s good to patch/upgrade all 4 at the same time, if possible, so the application people don’t have to test on any more weekends than necessary.  This can’t always be accomplished.
+
+
+
+**** ggsci commands examples ****
+
+ggsci
+
+info all (command)
+
+Program     Status      Group       Lag at Chkpt  Time Since Chkpt
+
+MANAGER     RUNNING
+REPLICAT    RUNNING     GD1PD1R1    00:00:00      00:00:07
+REPLICAT    RUNNING     SD1PD1R1    00:00:00      00:00:09
+
+To rerun the previous command use “!”
+
+! (command)
+
+versions (command)
+
+2020-01-11 07:11:26  ERROR   OGG-15312  Cannot obtain database version informat.
+
+Operating System:
+AIX
+Version 7, Release 1
+Node: atadb691
+Machine: AIX
+
+
+REPORTS: View the reports for specific processes.
+
+view report SD1PD1R1 (command)
+
+
+
+show (command)
+
+show all (command)
+
+Parameter settings:
+
+SET DEBUG      OFF
+
+Current directory: /orahome/u01/app/oracle/product/19.5.0/db_1
+
+Editor:  vi
+
+Reports (.rpt)                 /oracle/ggs/19.1.0.0_19c/dirrpt
+Parameters (.prm)              /oracle/ggs/19.1.0.0_19c/dirprm
+Replicat Checkpoints (.cpr)    /oracle/ggs/19.1.0.0_19c/dirchk
+Extract Checkpoints (.cpe)     /oracle/ggs/19.1.0.0_19c/dirchk
+Process Status (.pcs)          /oracle/ggs/19.1.0.0_19c/dirpcs
+SQL Scripts (.sql)             /oracle/ggs/19.1.0.0_19c/dirsql
+Database Definitions (.def)    /oracle/ggs/19.1.0.0_19c/dirdef
+Dump files (.dmp)              /oracle/ggs/19.1.0.0_19c/dirdmp
+Masterkey wallet files (.wlt)  /oracle/ggs/19.1.0.0_19c/dirwlt
+Credential store files (.crd)  /oracle/ggs/19.1.0.0_19c/dircrd
+
+dirrpt
+
+GG error log file: ggserr.log (located under GG oracle home)
+
+/oracle/ggs/18.1.0_12c/dirrpt
