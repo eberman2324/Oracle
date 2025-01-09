@@ -1,0 +1,96 @@
+FYI: For Your Information
+BTW: By The Way
+LOL: Laugh Out Loud
+AFAIK: As Far As I Know
+HTH: Hope This Helps
+ASAP: As Soon As Possible
+RTFM: Read This From Manual
+IMO: In My Opinion
+IMHO: In My Humble Opinion (a variant)
+DITTO: duplicate, copy, repeat what I just did
+
+*****************************************
+then it comes into my ***queue**** to be fulfilled….
+enough
+Unique
+any thoughts?
+You need to use the Concur application **through** eService or walk her through 
+Curious
+me neither
+Either Monday or Tuesday
+ I do know AP though or The instance won't crash, though
+(though --> despite the fact or still )
+It was worth a try
+
+Think --> thought 
+Bring --> brought
+Buy --> bought
+Intermittent - sporadic, irregular 
+Continuous – unbroken, constant, endless
+heterogeneous -  diverse or mixed or various
+culprit - >> person/somebody/something that responsible for issue
+
+************************************************************
+I will be out of the office on PTO starting 06/21 returning back on 6/29
+Contact Mike Swafford for any Workability Oracle issues or requests. 
+Contact Peter Cai for eDiscovery Oracle Issues or requests.
+Contact Carol Hairston for SQL Server eDiscovery, ARES and Tax support
+Contact secondary DBA for other support.
+
+If you need to escalate contact Joe Weichel.
+
+
+
+I will out on off site trainig this week with limited email access returning back on Monday 9/27. 
+
+Please contact Mike Swafford for any Workability Oracle issues or requests. 
+
+****>
+I am going to be away from my office between 12:00 PM to 1:15 PM today Monday Dec 27
+Please contact Ashok Miryalkar for any Workability Oracle issues or requests. 
+
+If you need to escalate, contact my manager Joe Weichel.
+
+
+
+*************************************************************************************
+
+Workability  an industry-leading claim and absence management system  
+Aetna’s WorkAbility intake and claim management system provides a totally integrated solution for short-and
+long-term disability management services and all other employee leave programs, including Family and Medical Leave Act administration. 
+This Web-based system enables sharing of all claim data across products and functions, resulting in increased productivity for the entire claim process.
+
+In addition to improved functionality and flexibility, WorkAbility offers clinical analysis and benchmarking of trends that will help a company manage
+its absence programs more effectively. The breadth and depth of this feature is unmatched in the disability industry today.
+
+Simply put Aetna’s WorkAbility system improves disability claim and absence management from beginning to end to benefit both employer and employee
+
+ 
+
+WorkAbility Proper, which demonstrates a variety of claim administration tasks. 
+WorkAbility Portal, which demonstrates a variety of report simulations. 
+ 
+
+Purpose of the DR and DM Environment
+Aetna’s Disability Claim management supplies crucial data to it’s plan sponsors and other Aetna systems via
+ reverse data feeds generated from Workability’s’ Data Repository
+
+Workability - Workability (WKAB) is comprised of a suite of Disability applications 
+acquired from Broadspire. Aetnaprod has been targeted as the server that houses one of the most crucial databases needed for WKAB functionality
+
+Workability (Wkab) is the disability claim management system for Leave of Absence, Short Term Disability and Long Term Disability claims.  
+
+
+
+Wkab systems (Eligibility, ClaimImport and LeaveImport) which will create realistic and current Employees and LTD, STD and LOA claims
+
+Aetna Disability & Absence Management Business Systems
+
+
+********************************************************************************************
+
+
+
+
+
+

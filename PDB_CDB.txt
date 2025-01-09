@@ -1,0 +1,148 @@
+Logon to aebsm1p
+
+. $SETUPENV CAEBSPRD  (default setting)   I mention this as ARPROD will become a pdb next week.  Its CDB will be CARPROD
+
+
+Option 1:
+
+             export ORACLE_PDB_SID=AEBSPROD
+             sqlplus / as sysdba
+             show con_name
+
+Option 2:
+
+              unset ORACLE_PDB_SID
+              sqlplus / as sysdba
+              alter session set container=AEBSPROD;
+              show con_name
+
+I personally prefer option 2.  Especially if your database resides in a CDB with many pdb’s.  JUPITER I assume would be a candidate for a shared environment.
+
+
+
+
+
+*********************************************
+
+Below is a list of the prod container databases should you have a need to connect to the PDB on Monday.  Really doubt you’ll need to do any work in the CDB.
+
+AIX Server          CDB                     PDB                     Port
+
+aebsm1p            CAEBSPRD           AEBSPROD                     1521
+aebsm1p            CARPROD            ARPROD                       1531
+aoradbm3p          CFAHPROD           FAHPROD                      1531
+aifsdbm1p          CIFSPROD           IFSPROD                      1526
+
+From DBArtisan, it is business as usual for connecting to the PDB.
+
+To connect to the PDB ARPROD from the Unix server aebsm1p:
+
+Set Environment for the CDB on AIX server aebsm1p
+. $SETUPENV CARPROD
+
+sqlplus / as sysdba
+
+show pdbs
+
+alter session set container=ARPROD;
+
+show con_name
+
+From here it is business as usual.
+
+
+********************************************************************
+
+oracle pass: !WEluv19c
+
+AEBSQA2.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1536))
+    )
+    (CONNECT_DATA = (SID = AEBSQA2)
+    )
+  )
+
+CDBEQA2> ps -ef | grep pmon
+    root 43581928        1   0   Aug 15      -  0:35 /usr/sbin/ipmon -s -D
+  oracle 13763268        1   0   Aug 15      -  1:44 ora_pmon_CIFSQA
+  oracle 43975236        1   0   Aug 15      -  1:41 ora_pmon_CDBEPERF
+  oracle 54067882        1   0   Aug 15      -  1:37 ora_pmon_CARPERF
+  oracle 55116420        1   0   Aug 15      -  0:56 ora_pmon_CDBEQA
+  oracle 61342352        1   0   Aug 15      -  0:57 ora_pmon_CDBEQA3
+  oracle 61473392        1   0   Aug 15      -  1:49 ora_pmon_CIFSUAT
+  oracle 20317046        1   0   Aug 15      -  1:13 ora_pmon_EBSHPERF
+  oracle 21693430        1   0   Aug 15      -  1:23 ora_pmon_ARHISTF
+  oracle 29230020        1   0   Aug 15      -  1:41 ora_pmon_CARQA
+  oracle 39584530        1   0   Aug 15      -  1:16 ora_pmon_CIFSPFIX
+  oracle 41747254        1   0   Aug 15      -  1:12 ora_pmon_CDBEQA2
+  oracle 59048764        1   0   Aug 16      -  1:23 ora_pmon_ARHISTQ
+  oracle 56624240 55706836   0 10:11:28  pts/0  0:00 grep pmon
+
+
+. $SETUPENV CDBEQA2
+
+aebsw1q (oracle) CDBEQA2::/etc
+CDBEQA2> sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Wed Oct 23 10:09:01 2024
+Version 19.19.0.0.0
+
+Copyright (c) 1982, 2022, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.19.0.0.0
+
+[SYS@CDB$ROOT:CDBEQA2] SQL> show pdbs
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 AEBSQA2                        READ WRITE NO
+[SYS@CDB$ROOT:CDBEQA2] SQL>
+
+alter session set container=AEBSQA2;
+
+show con_name
+
+
+
+*********************************************************************************
+
+Hi,
+
+unfortunately, that's not possible.
+
+In any case, the Non-CDB will end up as a PDB in a CDB.
+
+However, you can "reuse" the existing datafiles by plugging in the Non-CDB as a PDB
+
+You'll find more information on migrating a Non-CDB -> PDB in the following MOS-Notes
+
+- MOS-Note: How to Convert Non-CDB to PDB (Doc ID 2288024.1)
+
+- How to Convert Non-CDB to PDB Database in 12c - Testcase (Doc ID 2012448.1)
+
+and in the documentation (Administrator’s Guide):
+
+- 7.4 Cloning a Non-CDB : https://docs.oracle.com/en/database/oracle/oracle-database/19/multi/cloning-a-pdb.html#GUID-B5D803D4-939B-4D0A-B684-5A1089EA4618
+
+- 9.3 Adopting a Non-CDB as a PDB : https://docs.oracle.com/en/database/oracle/oracle-database/19/multi/plugging-in-a-pdb.html#GUID-EE58804F-A999-4F7C-93DE-D641B3C1047B
+
+HTH
+
+
+
+**************************************************************************************
+
+https://www.snowdba.com/oracle-19c-rdbms-migrate-non-cdb-to-cdb-pdb-options-1-1/
+https://dohdatabase.com/2023/09/27/how-to-upgrade-to-oracle-database-19c-and-migrate-to-a-pdb-using-refreshable-clone-pdbs/
+https://oracle-base.com/articles/12c/multitenant-migrate-non-cdb-to-pdb-12cr1
+https://www.youtube.com/watch?v=Nxlumq-VTRE
+
+# Create PDB
+https://oracle-base.com/articles/12c/multitenant-create-and-configure-container-database-12cr1#google_vignette
+

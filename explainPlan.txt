@@ -1,0 +1,3 @@
+--Run from DBArtisan 
+
+select plan_table_output from table (dbms_xplan.display_awr('8ms2zu9q82x6j'));

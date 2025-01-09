@@ -1,0 +1,301 @@
+
+
+
+********Final Version ******
+
+
+
+select * from dba_jobs
+
+select count(*) from dba_jobs
+
+select * from wkab10.temp2;
+
+select * from wkab10.temp2 order by TIMESTAMP desc;
+
+--Testing bug. Need to recreate
+library cache lock
+
+
+1. Create TEMP2 table under wkab10 on wkabdev3 database
+
+2. Login to sqlplus as wkab10/wkab10_wkabdev3
+
+
+
+--my procedure that should update the description text of my records
+create or replace procedure testjob is
+begin  
+ INSERT INTO TEMP2  VALUES (1, 'Test',SYSDATE);   
+ commit;
+ exception
+  when others then
+       raise_application_error(-20001, 'Procedure testjob caused an ERROR!! Message: '||sqlerrm);
+end;
+ / 
+show errors; 
+ 
+--my submit that execute the testjob procedure (executes right away first time and then executes every 5 min)
+set serveroutput on; 
+declare
+v_jobno binary_integer;
+begin  
+ 
+dbms_job.submit (v_jobno,              
+                 'testjob;', 
+                 sysdate,
+                 'sysdate+5/(24*60)');             
+   dbms_output.put_line('Jobnumber: ' || v_jobno);
+  commit;
+end;
+/ 
+show errors
+
+
+
+--SECOND PROCEDURES
+
+--my procedure that should update the description text of my records
+create or replace procedure testjob2 is
+begin  
+ INSERT INTO TEMP2  VALUES (2, 'Test',SYSDATE);   
+ commit;
+ exception
+  when others then
+       raise_application_error(-20001, 'Procedure testjob caused an ERROR!! Message: '||sqlerrm);
+end;
+ / 
+show errors; 
+ 
+--my submit that execute the testjob procedure (executes right away first time and then executes every 5 min)
+
+
+
+Login LX_WEEKLY/lxweekly
+
+
+set serveroutput on; 
+begin  
+ 
+dbms_job.submit (448,              
+                 'LX_WEEKLY_JOB;', 
+                 sysdate,
+                 'sysdate+1');             
+   dbms_refresh.refresh(''"LX_WEEKLY"."LX_CLAIM_MV"'');
+  commit;
+end;
+/ 
+
+
+
+declare
+my_job number;
+begin
+  dbms_job.submit(job => my_job, 
+    what => 'dbms_refresh.refresh(''"LX_WEEKLY"."LX_CLAIM_MV"'');'
+    next_date => TRUNC(SYSDATE+1),
+    interval => TRUNC(SYSDATE+1));
+   end;
+/
+
+
+
+
+declare
+  my_job number;
+begin
+  dbms_job.submit(job => my_job, 
+    what => 'my_procedure(foo);'
+    next_date => sysdate+1,
+    interval => 'sysdate+1');
+end;
+/
+
+
+
+select TRUNC(SYSDATE+1) from dual;
+
+
+set serveroutput on; 
+declare
+v_jobno binary_integer;
+begin  
+ 
+dbms_job.submit (v_jobno,              
+                 'dbms_refresh.refresh(''"LX_WEEKLY"."LX_CLAIM_MV"'');',
+                 sysdate,
+                 'sysdate+1');             
+   dbms_output.put_line('Jobnumber: ' || v_jobno);
+  commit;
+end;
+/ 
+show errors
+
+exec dbms_job.remove(1);
+        commit;
+
+set serveroutput on; 
+declare
+v_jobno binary_integer;
+begin  
+ 
+dbms_job.submit (v_jobno,              
+                 'testjob2;', 
+                 sysdate,
+                 'sysdate+5/(24*60)');             
+   dbms_output.put_line('Jobnumber: ' || v_jobno);
+  commit;
+end;
+/ 
+show errors
+
+
+
+---Disable jobs
+
+   exec dbms_job.broken(82,true);
+        commit;
+
+        exec dbms_job.broken(83,true);
+        commit;
+
+-- Enable jobs
+
+   exec dbms_job.broken(82,false);
+        commit;
+
+        exec dbms_job.broken(83,false);
+        commit;
+
+
+     
+******************************* 11g Scheduler ****************************
+
+select * from dba_scheduler_windows
+
+select * from dba_scheduler_jobs 
+
+
+## Example on how to change start time for Tuesday DEFAULT_MAINTENANCE_PLAN Job
+## Use DB control to get SQL
+
+
+BEGIN
+DBMS_SCHEDULER.DISABLE(
+name=>'"SYS"."TUESDAY_WINDOW"',
+force=>TRUE);
+END;
+
+BEGIN
+DBMS_SCHEDULER.SET_ATTRIBUTE(
+name=>'"SYS"."TUESDAY_WINDOW"',
+attribute=>'REPEAT_INTERVAL',
+value=>'FREQ=WEEKLY;BYDAY=TUE;BYHOUR=13;BYMINUTE=0;BYSECOND=0');
+END;
+
+BEGIN
+DBMS_SCHEDULER.ENABLE(
+name=>'"SYS"."TUESDAY_WINDOW"');
+END;
+
+
+****************How to stop running job and disable in HEDWSTS
+select 
+   job_name,  
+   owner, 
+   enabled 
+from 
+   dba_scheduler_jobs where job_name  = 'CACHED_CURRENT_CLAIMS_POP_JOB'
+
+
+
+BEGIN dbms_scheduler.stop_job('PROD_DW.CACHED_CURRENT_CLAIMS_POP_JOB');
+ END;
+/
+
+execute dbms_scheduler.disable('PROD_DW.CACHED_CURRENT_CLAIMS_POP_JOB')
+
+--HEPYMGR2
+
+SELECT JOB_NAME, STATE FROM DBA_SCHEDULER_JOBS where job_name like '%MV%'
+
+JOB_NAME	STATE
+
+MV_RF$J_61_1	SUCCEEDED
+MV_RF$J_61_2	RUNNING
+MV_RF$J_61_3	RUNNING
+MV_RF$J_61_4	SUCCEEDED
+MV_RF$J_61_5	SUCCEEDED
+
+
+BEGIN dbms_scheduler.stop_job('PROD.MV_RF$J_81_3');
+ END;
+/
+
+execute dbms_scheduler.disable('PROD.MV_RF$J_81_3');
+
+
+*** How to disable and enable weekend BSLN_MAINTAIN_STATS_JOB *****
+
+
+SELECT * FROM DBA_SCHEDULER_JOBS WHERE STATE <> 'DISABLED' and OWNER = 'SYS' and JOB_NAME = 'BSLN_MAINTAIN_STATS_JOB'
+
+
+select 
+   job_name,  
+   owner, 
+   state,
+   enabled,
+   next_run_date
+from 
+   dba_scheduler_jobs where job_name  = 'BSLN_MAINTAIN_STATS_JOB'
+
+execute dbms_scheduler.disable('SYS.BSLN_MAINTAIN_STATS_JOB');
+
+execute dbms_scheduler.enable('SYS.BSLN_MAINTAIN_STATS_JOB');
+
+
+************************************
+
+https://seydikorurer.wordpress.com/2020/04/16/purge-old-audit-records-with-dbms_audit_mgmt/
+
+SELECT * FROM DBA_SCHEDULER_JOBS WHERE STATE <> 'DISABLED' and OWNER = 'SYS' and job_name = 'DAILY_DB_AUDIT_PURGE_JOB'
+
+
+SELECT * FROM DBA_SCHEDULER_JOBS WHERE STATE <> 'DISABLED' and OWNER = 'SYS' and job_name = 'DAILY_DB_AUDIT_ARCHIVE_TIMESTP'
+
+SELECT MIN(TIMESTAMP)  FROM  dba_audit_trail 
+
+DBA_AUDIT_MGMT_CLEAN_EVENTS Displays the cleanup event history
+DBA_AUDIT_MGMT_CLEANUP_JOBS Displays the currently configured audit trail purge jobs
+DBA_AUDIT_MGMT_CONFIG_PARAMS Displays the currently configured audit trail properties
+DBA_AUDIT_MGMT_LAST_ARCH_TS Displays the last archive timestamps set for the audit trails
+
+
+SELECT * FROM dba_audit_mgmt_last_arch_ts;
+
+SELECT *  FROM DBA_AUDIT_TRAIL WHERE 
+TO_CHAR(TIMESTAMP,'MM-YYYY') = '10-2021' order by 
+TIMESTAMP 
+
+BEGIN
+sys.dbms_scheduler.disable( '"SYS"."DAILY_DB_AUDIT_ARCHIVE_TIMESTP"' );
+END;
+/
+BEGIN
+sys.dbms_scheduler.set_attribute( name => '"SYS"."DAILY_DB_AUDIT_ARCHIVE_TIMESTP"', attribute => 'job_action', value => 'BEGIN DBMS_AUDIT_MGMT.SET_LAST_ARCHIVE_TIMESTAMP(AUDIT_TRAIL_TYPE => DBMS_AUDIT_MGMT.AUDIT_TRAIL_AUD_STD, LAST_ARCHIVE_TIME => sysdate-15); END;');
+END;
+/
+                   
+BEGIN
+sys.dbms_scheduler.enable( '"SYS"."DAILY_DB_AUDIT_ARCHIVE_TIMESTP"' );
+END;
+/
+
+BEGIN
+sys.dbms_scheduler.disable( '"SYS"."DAILY_DB_AUDIT_ARCHIVE_TIMESTP"' );
+sys.dbms_scheduler.set_attribute( name => '"SYS"."DAILY_DB_AUDIT_ARCHIVE_TIMESTP"', attribute => 'job_action', value => 'BEGIN DBMS_AUDIT_MGMT.SET_LAST_ARCHIVE_TIMESTAMP(AUDIT_TRAIL_TYPE =>DBMS_AUDIT_MGMT.AUDIT_TRAIL_AUD_STD, LAST_ARCHIVE_TIME => sysdate-15); END;');
+                   
+sys.dbms_scheduler.enable( '"SYS"."DAILY_DB_AUDIT_ARCHIVE_TIMESTP"' );
+END;
+

@@ -1,0 +1,50 @@
+select /*+ index_ffs (s) PARALLEL (4) */ count(s.hcc_id)
+from prod.supplier s,
+         prod.transient_supplier_id t
+where s.hcc_id = t.hcc_id
+and  concept_fulfilled_cd = 't'
+and  endor_expire_dt != to_date('01/01/3000', 'MM/DD/YYYY')
+and  endor_eff_dt != endor_expire_dt
+/
+
+
+Select /*+ index_ffs (s) PARALLEL (4) */ member_status, count(member_hcc_id) as NumMembers from PROD_DW.member group by member_status;
+
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.udt_value_link 
+
+
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.ABSTRACT_EOB_ATTACHMENT
+ 	Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.CLMSRCH
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.COB_POLICY
+	Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.SUBSCRB_DOB_DT
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.CONSOLIDATED_CLAIM
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.CORRESPONDENCE_INFORMATION
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.DENTAL_SUPPLIER_INVOICE
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.HCFA1500
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.INDIVIDUAL_INFORMATION
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.INSURANCE_INFORMATION
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.LICENSE_NUMBER
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.MEDICARE_HICN_INFO
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.MEMBER_LINK
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.MEMBER_PHYSICAL_ADDRESS
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.MEMBERSHIP
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.OTHER_RESPONSIBLE_PERSON_INFO
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.PATIENT_INFO
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.PER_MEMBER_PER_MONTH_BILL_LINE
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.PERSON_NAME
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.POSTAL_ADDRESS
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.SUBSCRIPTION
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.SUBSCRIPTION_SELECTION
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.SUPPLIER_INVOICE_PERSON_INFO
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.TAX_ENTITY
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.TELEPHONE
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.UB92
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.USER_ACCOUNT
+
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.PERSON_NAME - 587557003
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.POSTAL_ADDRESS - 1220313243
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from PROD.CORRESPONDENCE_INFORMATION  - 830220126
+
+
+Select /*+ index_ffs (s) PARALLEL (4) */ count(*) as Count from sys.aud$
+

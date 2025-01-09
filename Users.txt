@@ -1,0 +1,9222 @@
+*******Create new Update ZOPAs ******************
+CREATE ZOPA A210466 ZOPA BY zopa
+    DEFAULT TABLESPACE WKAB_DATA
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DATA_MOD_PROFILE
+    ACCOUNT UNLOCK;
+/
+GRANT "CONNECT" TO A210466;
+/
+GRANT APP_DATA_MOD_ROLE TO A210466;
+/
+ALTER ZOPA A210466 DEFAULT ROLE "CONNECT",
+                                APP_DATA_MOD_ROLE;
+/
+ALTER ZOPA N175594 
+zopa EXPIRE
+/
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N220410',1,3,SYSDATE);
+COMMIT;
+
+***********Create new Read Only Developer************************************************
+CREATE ZOPA N175594 ZOPA BY "zopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N175594
+/
+GRANT AE_CONNECT_ROLE TO A806046
+/
+GRANT "CONNECT" TO N175594
+/
+GRANT "RESOURCE" TO N175594
+/
+ALTER ZOPA N175594 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE",
+                                 AE_CONNECT_ROLE TO
+/
+
+--ALTER ZOPA N175594 
+--zopa EXPIRE
+--/
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N175594',1,2,SYSDATE);
+COMMIT;
+
+**************Create new Read Only ZOPA****************************************************
+CREATE ZOPA A806046 ZOPA BY "zopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_ZOPA_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A806046
+/
+GRANT "RESOURCE" TO A806046
+/
+
+GRANT AE_CONNECT_ROLE TO A806046
+/
+
+GRANT APP_ZOPA_ROLE TO A806046
+/
+ALTER ZOPA A806046 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_ZOPA_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A806046
+/
+ALTER ZOPA A806046 
+zopa EXPIRE
+/
+
+*********************************************************************************
+
+
+
+********Unlock or Reset Account ***************************
+
+
+
+ALTER ZOPA A771664 
+ZOPA BY "zopa"
+/
+ALTER ZOPA A771664 
+zopa EXPIRE
+/
+ALTER ZOPA A236120
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210171'
+
+
+***************Checked for LOCKED ZOPAS *******************************
+
+SELECT * from dba_ZOPAs where account_status not in ('OPEN') order by ZOPAname
+
+SELECT ZOPAname, DEFAULT_TABLESPACE from dba_ZOPAs where ZOPAname = 'A199333'
+
+*************************************************************
+
+*****Action after drop ZOPA from production****DBArtizan************
+
+SELECT * FROM AEDBA.AEDBA_VALID_ZOPAS WHERE ZOPANAME = 'A210355'
+
+UPDATE AEDBA.AEDBA_VALID_ZOPAS SET ACTIVE  = 2,AUDIT_DTS = SYSDATE WHERE ZOPANAME = 'A210355';
+COMMIT;
+
+*****Action after adding new ZOPA to production******************
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N228058',1,2,SYSDATE);
+COMMIT;
+*********SQLPLUS from Client (DBA PC) host string ********************
+*********************************************
+wkabqa1.world
+*********************************************
+wkabqa2.world
+*********************************************
+wkabqa3.world
+*********************************************
+wkabuat.world
+*********************************************
+wkabprod.world
+*********************************************
+
+
+**********EMAIL To ZOPA **********************
+
+Madhu Sudhan Re,
+ 
+I reset your id on all 3 QA oracle databases
+
+(WKABQA1,WKABQA2 and WKABQA3 )
+ 
+Your temp zopa: zopa. 
+ 
+It will ask you to change upon first login.
+ 
+Let me know if you have any problems.
+
+
+Robert
+ 
+I reset your id in all QA databases
+ 
+Your temp zopa: zopa. 
+ 
+It will ask you to change upon first login.
+ 
+Let me know if this works , so I could close eService Ticket
+
+
+
+****************Add privliages to execute proceures in QA and UAT
+
+
+***UAT implementation*****
+1. Create APP_TESTER_ROLE
+
+   CREATE ROLE APP_TESTER_ROLE NOT IDENTIFIED
+/
+
+Grant execute on all packages for wkab10
+*** Do not do at this moment
+Grant Update, delete, insert on all tables for wkab10
+
+
+2. this ZOPA did not exist in UAT
+
+CREATE ZOPA A771664 ZOPA BY zopa
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A771664
+/
+GRANT "RESOURCE" TO A771664
+/
+GRANT APP_TESTER_ROLE TO A771664
+/
+GRANT APP_DEVELOPER_ROLE TO A771664
+/
+ALTER ZOPA A771664 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                APP_TESTER_ROLE,
+                                APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO A771664
+/
+
+ALTER ZOPA A771664 
+zopa EXPIRE
+/
+ALTER ZOPA A771664 
+ACCOUNT UNLOCK
+/
+
+
+
+
+
+
+3. this ZOPA did not exist in UAT
+
+CREATE ZOPA A409585 ZOPA BY zopa
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A409585
+/
+GRANT "RESOURCE" TO A409585
+/
+GRANT APP_TESTER_ROLE TO A409585
+/
+GRANT APP_DEVELOPER_ROLE TO A409585
+/
+ALTER ZOPA A409585 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                APP_TESTER_ROLE,
+                                APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO A409585
+/
+
+ALTER ZOPA A409585 
+zopa EXPIRE
+/
+ALTER ZOPA A409585 
+ACCOUNT UNLOCK
+/
+
+
+
+
+
+
+4. Grant role to ZOPA
+
+GRANT APP_TESTER_ROLE TO A216023
+/
+ALTER ZOPA A216023 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                APP_ZOPA_ROLE,
+                                APP_TESTER_ROLE
+/                           
+
+
+5. Grant role to ZOPA
+
+GRANT APP_TESTER_ROLE TO N228735
+/
+ALTER ZOPA N228735 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                APP_DEVELOPER_ROLE,
+                                APP_TESTER_ROLE
+/
+
+6. Grant role to ZOPA
+
+GRANT APP_TESTER_ROLE TO A193041
+/
+ALTER ZOPA A193041 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                APP_ZOPA_ROLE,
+                                APP_TESTER_ROLE
+/
+
+
+
+
+
+***MIke alredy did them in QA
+
+7.Grant role to ZOPA
+GRANT APP_TESTER_ROLE TO A199388
+/
+
+
+8. Grant role to ZOPA
+GRANT APP_TESTER_ROLE TO A210351
+/
+ALTER ZOPA A210351 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                APP_DATA_MOD_ROLE,
+                                APP_TESTER_ROLE 
+/
+
+
+
+
+10. ****grant execute on WKAB10 packages to APP_TESTER_ROLE ****
+   ****I checked in WKABQA1 Mike granted update, delete on all wkab10 tables to APP_TESTER_ROLE
+   ****I will not going to do it in QA2, QA3 and UAT until they asked me specificlty!!!!!!!!
+
+****Also, we have to make sure that the DEBUG permission on all of the WKAB10 packages is revoked from PUBLIC.
+    For some reason, PL/SQL Developer does things differently if it sees that it has DEBUG permission and when 
+   it does, it breaks because it executes within the context of another procedure so privs granted to 
+   a role aren't in effect. ---->/workability/home/oracle/revoke_debug.sql (wkabuat)
+
+
+GRANT SELECT ANY SEQUENCE TO APP_ZOPA_ROLE
+/
+GRANT SELECT ANY SEQUENCE TO APP_DEVELOPER_ROLE
+/
+
+
+
+
+**************ZOPAS and their ROLES and PROFILE*******************************************
+***This helpful if somebody need to know list of ZOPAs with update role...***************
+
+select ZOPANAME from dba_ZOPAs where profile='APP_DATA_MOD_PROFILE' order by ZOPANAME
+
+select grantee from dba_role_privs where granted_role = 'APP_DATA_MOD_ROLE'
+select grantee from dba_role_privs where granted_role = 'APP_DEVELOPER_ROLE'
+select grantee from dba_role_privs where granted_role = 'APP_ZOPA_ROLE'
+
+select ZOPANAME from dba_ZOPAs,dba_role_privs where ZOPAname = grantee
+and  granted_role = 'APP_DATA_MOD_ROLE' order by ZOPANAME
+
+select *  from dba_ZOPAs where profile='APP_DATA_MOD_PROFILE' order by ZOPANAME
+
+select ZOPANAME,ACCOUNT_STATUS,LOCK_DATE,EXPIRY_DATE,CREATED,PROFILE 
+ from dba_ZOPAs where ZOPANAME = 'A210355'
+
+SELECT * FROM AEDBA.AEDBA_VALID_ZOPAS WHERE ZOPANAME = 'A210355'
+SELECT * FROM AEDBA.AEDBA_MOD_ZOPA_AUDIT 
+
+SELECT ZOPAID,TIMESTAMP#,TERMINAL,LOGOFF$TIME,COMMENT$TEXT FROM SYS.AUD$ WHERE ZOPAID =  'A210057'
+
+SELECT * FROM SYS.AUD$
+
+SELECT NAME, VALUE FROM V$PARAMETER WHERE NAME LIKE 'audit%'
+
+SELECT *  FROM SYS.AUD$ WHERE ZOPAID IN ('IVR','S023326') AND
+TO_CHAR(TIMESTAMP#,'MM-YYYY') = '08-2008' order by 
+TIMESTAMP# desc
+
+SELECT * FROM DBA_AUDIT_EXISTS where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_OBJECT where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_SESSION where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_STATEMENT where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_TRAIL where SESSIONID = 52785328
+SELECT * FROM DBA_OBJ_AUDIT_OPTS  
+
+
+**********************zzDBA id************************************************************************
+
+
+!!! MTPR01.WORLD database change to ZOPA_DATA table
+
+--Baker, John ZZ219751
+ 
+
+CREATE ZOPA ZZ219751 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ219751 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ219751
+/
+GRANT DBA TO ZZ219751
+/
+GRANT "RESOURCE" TO ZZ219751
+/
+ALTER ZOPA ZZ219751 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+
+ 
+--Berman, Eugene ZZ236120
+
+
+CREATE ZOPA ZZ236120 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ236120 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ236120
+/
+GRANT DBA TO ZZ236120
+/
+GRANT "RESOURCE" TO ZZ236120
+/
+ALTER ZOPA ZZ236120 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+
+ 
+ 
+--Cai, Peter ZZ665751
+ 
+
+CREATE ZOPA ZZ665751 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ665751 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ665751
+/
+GRANT DBA TO ZZ665751
+/
+GRANT "RESOURCE" TO ZZ665751
+/
+ALTER ZOPA ZZ665751 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+ 
+--Forbes, Tonya ZZ815144
+
+CREATE ZOPA ZZ815144 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ815144 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ815144
+/
+GRANT DBA TO ZZ815144
+/
+GRANT "RESOURCE" TO ZZ815144
+/
+ALTER ZOPA ZZ815144 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/ 
+ 
+--Ginepro, Ray ZZ221823
+ 
+CREATE ZOPA ZZ221823 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ221823 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ221823
+/
+GRANT DBA TO ZZ221823
+/
+GRANT "RESOURCE" TO ZZ221823
+/
+ALTER ZOPA ZZ221823 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/ 
+
+--Johnson, Mary Ellen ZZ470903
+
+CREATE ZOPA ZZ470903 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ470903 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ470903
+/
+GRANT DBA TO ZZ470903
+/
+GRANT "RESOURCE" TO ZZ470903
+/
+ALTER ZOPA ZZ470903 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+ 
+ 
+--Khersonsky, Raf ZZ170895
+
+CREATE ZOPA ZZ170895 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ170895 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ170895
+/
+GRANT DBA TO ZZ170895
+/
+GRANT "RESOURCE" TO ZZ170895
+/
+ALTER ZOPA ZZ170895 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+ 
+ 
+--Krawetzky, Peter ZZ559878
+ 
+CREATE ZOPA ZZ559878 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ559878 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ559878
+/
+GRANT DBA TO ZZ559878
+/
+GRANT "RESOURCE" TO ZZ559878
+/
+ALTER ZOPA ZZ559878 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+ 
+--Lantsberger, Mark ZZ470595
+ 
+CREATE ZOPA ZZ470595 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ470595 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ470595
+/
+GRANT DBA TO ZZ470595
+/
+GRANT "RESOURCE" TO ZZ470595
+/
+ALTER ZOPA ZZ470595 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+
+ 
+--Pagan, Oscar ZZ568125
+
+CREATE ZOPA ZZ568125 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ568125 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ568125
+/
+GRANT DBA TO ZZ568125
+/
+GRANT "RESOURCE" TO ZZ568125
+/
+ALTER ZOPA ZZ568125 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+ 
+ 
+--Ryan, Rich ZZ707000
+
+CREATE ZOPA ZZ707000 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ707000 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ707000
+/
+GRANT DBA TO ZZ707000
+/
+GRANT "RESOURCE" TO ZZ707000
+/
+ALTER ZOPA ZZ707000 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+ 
+ 
+--Schloendorn, Tom ZZ025774
+ 
+CREATE ZOPA ZZ025774 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ025774 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ025774
+/
+GRANT DBA TO ZZ025774
+/
+GRANT "RESOURCE" TO ZZ025774
+/
+ALTER ZOPA ZZ025774 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+
+ 
+--Semencar, John ZZ744624
+
+CREATE ZOPA ZZ744624 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ744624 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ744624
+/
+GRANT DBA TO ZZ744624
+/
+GRANT "RESOURCE" TO ZZ744624
+/
+ALTER ZOPA ZZ744624 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+ 
+ 
+--Skinner, Tim ZZ738163
+
+CREATE ZOPA ZZ738163 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ738163 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ738163
+/
+GRANT DBA TO ZZ738163
+/
+GRANT "RESOURCE" TO ZZ738163
+/
+ALTER ZOPA ZZ738163 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+ 
+ 
+--Swafford, Mike ZZ217924
+ 
+CREATE ZOPA ZZ217924 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ217924 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ217924
+/
+GRANT DBA TO ZZ217924
+/
+GRANT "RESOURCE" TO ZZ217924
+/
+ALTER ZOPA ZZ217924 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+ 
+--Yorgey, Ken ZZ740531
+ 
+CREATE ZOPA ZZ740531 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA ZZ740531 
+zopa EXPIRE
+/
+GRANT "CONNECT" TO ZZ740531
+/
+GRANT DBA TO ZZ740531
+/
+GRANT "RESOURCE" TO ZZ740531
+/
+ALTER ZOPA ZZ740531 DEFAULT ROLE "CONNECT",
+                                 DBA,
+                                 "RESOURCE"
+/
+
+
+
+**********WKABPROD**************
+
+CREATE ROLE APP_DATA_KOFAX_ROLE NOT IDENTIFIED
+/
+GRANT APP_DATA_KOFAX_ROLE TO SYSTEM WITH ADMIN OPTION
+/
+GRANT APP_DATA_KOFAX_ROLE TO S030599
+/
+ALTER ZOPA S030599 DEFAULT ROLE APP_DATA_KOFAX_ROLE,
+                                "CONNECT"
+/
+GRANT SELECT ANY TABLE TO APP_DATA_KOFAX_ROLE
+/
+GRANT EXECUTE ON WKAB10.PK_FIND_INDEXFIELDS TO APP_DATA_KOFAX_ROLE
+/
+GRANT UPDATE ON WKAB10.T_TASK_INSTANCE_IMAGE TO APP_DATA_KOFAX_ROLE
+/
+
+
+
+CREATE ZOPA S030599 ZOPA BY VALUES 'xxx'
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_KOFAX_ROLE TO S030599
+/
+GRANT "CONNECT" TO S030599
+/
+ALTER ZOPA S030599 DEFAULT ROLE APP_DATA_KOFAX_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S030599
+/
+
+***************STG1*******************************************
+
+CREATE ROLE APP_DATA_KOFAX_ROLE NOT IDENTIFIED
+/
+GRANT APP_DATA_KOFAX_ROLE TO SYSTEM WITH ADMIN OPTION
+/
+ALTER ZOPA SYSTEM DEFAULT ROLE APP_DATA_IVR_ROLE,
+                               APP_DATA_KOFAX_ROLE,
+                               APP_TESTER_ROLE,
+                               AQ_ADMINISTRATOR_ROLE,
+                               DBA
+/
+GRANT APP_DATA_KOFAX_ROLE TO S030598
+/
+ALTER ZOPA S030598 DEFAULT ROLE APP_DATA_KOFAX_ROLE,
+                                "CONNECT"
+/
+GRANT SELECT ANY TABLE TO APP_DATA_KOFAX_ROLE
+/
+GRANT EXECUTE ON WKAB10.PK_FIND_INDEXFIELDS TO APP_DATA_KOFAX_ROLE
+/
+GRANT UPDATE ON WKAB10.T_TASK_INSTANCE_IMAGE TO APP_DATA_KOFAX_ROLE
+/
+
+CREATE ZOPA S030598 ZOPA BY VALUES 'xxx'
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_KOFAX_ROLE TO S030598
+/
+GRANT "CONNECT" TO S030598
+/
+ALTER ZOPA S030598 DEFAULT ROLE APP_DATA_KOFAX_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S030598
+/
+
+********************
+
+
+***************WKABDEV1 and WKABDEV2*****************************************
+
+CREATE ROLE APP_DATA_KOFAX_ROLE NOT IDENTIFIED
+/
+
+GRANT APP_DATA_KOFAX_ROLE TO S030596
+/
+ALTER ZOPA S030596 DEFAULT ROLE APP_DATA_KOFAX_ROLE,
+                                "CONNECT"
+/
+GRANT SELECT ANY TABLE TO APP_DATA_KOFAX_ROLE
+/
+GRANT EXECUTE ON WKAB10.PK_FIND_INDEXFIELDS TO APP_DATA_KOFAX_ROLE
+/
+GRANT UPDATE ON WKAB10.T_TASK_INSTANCE_IMAGE TO APP_DATA_KOFAX_ROLE
+/
+
+CREATE ZOPA S030596 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_KOFAX_ROLE TO S030596
+/
+GRANT "CONNECT" TO S030596
+/
+ALTER ZOPA S030596 DEFAULT ROLE APP_DATA_KOFAX_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S030596
+/
+
+*****************************QA*****************************************
+
+CREATE ROLE APP_DATA_KOFAX_ROLE NOT IDENTIFIED
+/
+
+
+CREATE ZOPA S030596 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_KOFAX_ROLE TO S030596
+/
+GRANT "CONNECT" TO S030596
+/
+ALTER ZOPA S030596 DEFAULT ROLE APP_DATA_KOFAX_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S030596
+/
+
+
+
+
+GRANT SELECT ANY TABLE TO APP_DATA_KOFAX_ROLE
+/
+GRANT EXECUTE ON WKAB10.PK_FIND_INDEXFIELDS TO APP_DATA_KOFAX_ROLE
+/
+GRANT UPDATE ON WKAB10.T_TASK_INSTANCE_IMAGE TO APP_DATA_KOFAX_ROLE
+/
+
+
+**********This happened couple times on wkabstg1 after upgrade to 11g ****************
+
+
+ZOPA locked himselft
+
+
+ALTER ZOPA A771664 
+ZOPA BY "zopa"
+/
+ALTER ZOPA A771664 
+zopa EXPIRE
+/
+ALTER ZOPA A771664 
+ACCOUNT UNLOCK
+/
+
+ZOPA tried to input temp zopa (worked ok) but got following message after entering new one
+
+ORA-01017
+
+
+Temp solution: Ask for permanent zopa and do change from Unix sqlplus.
+
+788538.1
+
+Issue changing Expired zopas from 9i or 10g Oracle Client.
+
+**************************************************09/28/2009 wkabstrs ***************************
+
+CREATE ZOPA N144288 ZOPA BY xxxx
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO N144288
+/
+GRANT APP_DEVELOPER_ROLE TO N144288
+/
+GRANT "CONNECT" TO N144288
+/
+GRANT "RESOURCE" TO N144288
+/
+ALTER ZOPA N144288 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT UNLIMITED TABLESPACE TO N144288
+/
+
+
+
+
+CREATE ZOPA N144290 ZOPA BY xxxx
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO N144290
+/
+GRANT APP_DEVELOPER_ROLE TO N144290
+/
+GRANT "CONNECT" TO N144290
+/
+GRANT "RESOURCE" TO N144290
+/
+ALTER ZOPA N144290 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT UNLIMITED TABLESPACE TO N144290
+/
+
+
+
+
+CREATE ZOPA N144291 ZOPA BY xxxx
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO N144291
+/
+GRANT APP_DEVELOPER_ROLE TO N144291
+/
+GRANT "CONNECT" TO N144291
+/
+GRANT "RESOURCE" TO N144291
+/
+ALTER ZOPA N144291 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT UNLIMITED TABLESPACE TO N144291
+/
+
+
+CREATE ZOPA N144289 ZOPA BY xxxx
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO N144289
+/
+GRANT APP_DEVELOPER_ROLE TO N144289
+/
+GRANT "CONNECT" TO N144289
+/
+GRANT "RESOURCE" TO N144289
+/
+ALTER ZOPA N144289 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT UNLIMITED TABLESPACE TO N144289
+/
+
+*********************** 09/30/2009 wkabqa3 *******Request for Database Support #24422583**************************
+
+
+A210595 - Mark Trent
+
+
+A220326 - Christine Zabat
+A101505 - Ronnie Noriega
+A210132 - Ron Gonzalez
+
+
+
+
+CREATE ZOPA A210595 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_ZOPA_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A210595
+/
+GRANT "RESOURCE" TO A210595
+/
+GRANT AE_CONNECT_ROLE TO A210595
+/
+
+GRANT APP_ZOPA_ROLE TO A210595
+/
+ALTER ZOPA A210595 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_ZOPA_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A210595
+/
+
+
+CREATE ZOPA A220326 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_ZOPA_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A220326
+/
+GRANT "RESOURCE" TO A220326
+/
+GRANT AE_CONNECT_ROLE TO A220326
+/
+
+GRANT APP_ZOPA_ROLE TO A220326
+/
+ALTER ZOPA A220326 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_ZOPA_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A220326
+/
+
+
+CREATE ZOPA A101505 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_ZOPA_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A101505
+/
+GRANT "RESOURCE" TO A101505
+/
+GRANT AE_CONNECT_ROLE TO A101505
+/
+
+GRANT APP_ZOPA_ROLE TO A101505
+/
+ALTER ZOPA A101505 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_ZOPA_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A101505
+/
+
+
+CREATE ZOPA A210132 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_ZOPA_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A210132
+/
+GRANT "RESOURCE" TO A210132
+/
+GRANT AE_CONNECT_ROLE TO A210132
+/
+
+GRANT APP_ZOPA_ROLE TO A210132
+/
+ALTER ZOPA A210132 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_ZOPA_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A210132
+/
+
+
+--Afterwards
+
+ALTER ZOPA A210595 
+ZOPA BY "xxx"
+/
+
+***************** 09/30/2009 Approved Request for Database Support #24426619 *******
+
+
+
+ALTER ZOPA A771664
+ZOPA BY "xxx"
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+***************** 10/1/09 Changed zopa on RMANWDEV **************
+
+ALTER ZOPA sys
+ZOPA BY "xxx"
+/
+ALTER ZOPA system
+ZOPA BY "xxxx"
+/
+
+
+**************  10/6/2009 Approved Request for Database Support #24482259 ************
+
+ALTER ZOPA A244843
+ZOPA BY "xxx"
+/
+ALTER ZOPA A244843
+ACCOUNT UNLOCK
+
+
+************************** 10/20/2009 Request for Database Support #24661994 ************************
+
+ALTER ZOPA A210075
+ZOPA BY "xxx"
+/
+
+
+************************** 10/20/2009 Unassigned Database Support Request #24665827 **************
+
+
+ALTER ZOPA N144291
+ZOPA BY "xx"
+/
+ALTER ZOPA N144291
+ACCOUNT UNLOCK
+/
+
+
+**************************10/21/2009 Approved Request for Database Support #24672801 ****************
+
+--WKABQA2
+CREATE ZOPA N101683 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO N101683
+/
+GRANT "RESOURCE" TO N101683
+/
+GRANT AE_CONNECT_ROLE TO N101683
+/
+
+GRANT APP_DEVELOPER_ROLE TO N101683
+/
+ALTER ZOPA N101683 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_DEVELOPER_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO N101683
+/
+
+
+-- WKABQA1 and WKABQA3
+ALTER ZOPA N101683
+ZOPA BY "xxx"
+/
+ALTER ZOPA N101683
+ACCOUNT UNLOCK
+/
+
+
+******************************10/21/2009  Request for Database Support #24676989 *************
+
+CREATE ZOPA A210132 ZOPA BY "zzz"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A210132
+/
+GRANT "RESOURCE" TO A210132
+/
+GRANT AE_CONNECT_ROLE TO A210132
+/
+
+GRANT APP_DEVELOPER_ROLE TO A210132
+/
+ALTER ZOPA A210132 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_DEVELOPER_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A210132
+/
+ 
+
+
+********************* 10/22/2009 Request for Database Support #24687690 for GONZALEZ ********
+
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+
+*********************************************eService Request: 24801389*************************************************
+
+ALTER ZOPA tculp
+ZOPA BY "zzzz"
+/
+ALTER ZOPA tculp
+ACCOUNT UNLOCK
+/
+
+
+************************ 11/3/2009  Approved Request for Database Support #24830371 ****************
+
+ALTER ZOPA N240118
+ZOPA BY "xxx"
+/
+ALTER ZOPA N240118
+ACCOUNT UNLOCK
+/
+
+********************* 11/4/2009 Request for Database Support #24854618 *******************************
+
+
+CREATE ZOPA N146966 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO N146966
+/
+
+GRANT APP_DEVELOPER_ROLE TO N146966
+/
+ALTER ZOPA N146966 DEFAULT ROLE  APP_DEVELOPER_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO N146966
+/
+
+
+********** 11/9/2009 SRequest for Daupport #24784776 *****************************************
+
+CREATE ZOPA A210586 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO A210586
+/
+GRANT AE_CONNECT_ROLE TO A210586
+/
+ALTER ZOPA A210586 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                AE_CONNECT_ROLE TO
+/
+GRANT UNLIMITED TABLESPACE TO A210586
+/
+--ALTER ZOPA N175594 
+--zopa EXPIRE
+--/
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A210586',1,2,SYSDATE);
+COMMIT;
+
+****************11/19/2009 Request for Database Support #25043970 for BATHEJA **********************
+
+ALTER ZOPA N144290
+ZOPA BY "xxx"
+/
+ALTER ZOPA N144290
+ACCOUNT UNLOCK
+/
+
+
+
+*****************11/24/2009 Request for Database Support #25106996 for CHRISTODOULOU *******************
+
+ALTER ZOPA A199394
+ZOPA BY "xxx"
+/
+ALTER ZOPA A199394
+ACCOUNT UNLOCK
+/
+
+
+***************** 12/07/2009 Request for Database Support #25235396 for PELLETIER ********************
+
+ALTER ZOPA A210401
+ZOPA BY "xxx"
+/
+ALTER ZOPA A210401
+ACCOUNT UNLOCK
+/
+
+**************************
+ALTER ZOPA A210466
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A210466
+ACCOUNT UNLOCK
+/
+
+
+
+******************  Request for Database Support #25327120 for WEIMER
+
+
+1. STG1 and STG2 (read/write)
+
+
+
+
+CREATE ZOPA A147612 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DATA_MOD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_MOD_ROLE TO A147612
+/
+GRANT AE_CONNECT_ROLE TO A147612
+/
+ALTER ZOPA A147612 DEFAULT ROLE APP_DATA_MOD_ROLE,
+                                AE_CONNECT_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO A147612
+/
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A147612',1,3,SYSDATE);
+COMMIT;
+
+
+
+2. WKABPROD (read only)
+
+
+CREATE ZOPA A147612 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_ZOPA_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A147612
+/
+GRANT "RESOURCE" TO A147612
+/
+
+GRANT AE_CONNECT_ROLE TO A147612
+/
+
+GRANT APP_ZOPA_ROLE TO A147612
+/
+ALTER ZOPA A147612 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 APP_ZOPA_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A147612
+/
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A147612',1,2,SYSDATE);
+COMMIT;
+
+
+
+**********Request for Database Support #25358720 for EFFNER
+
+
+
+ALTER ZOPA A210307
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A210307
+ACCOUNT UNLOCK
+/
+
+****************** Request for Database Support #25413074 for GONZALEZ
+
+
+
+ALTER ZOPA A210132
+ZOPA BY "xxx"
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+
+****************** Request for Database Support #25430121 for MCQUAID
+
+
+ALTER ZOPA A210321
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A210321
+ACCOUNT UNLOCK
+/
+
+****************** Request for Database Support #25439810 for CHAMMINGS
+
+ALTER ZOPA A199387
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A199387
+ACCOUNT UNLOCK
+/
+
+
+
+******************* Request for Database Support #25451890 for D'SA
+
+
+CREATE ZOPA N147696 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_LOG_ONLY_ROLE TO N147696
+/
+ALTER ZOPA N147696 DEFAULT ROLE APP_DEVELOPER_LOG_ONLY_ROLE
+/
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N147696',1,2,SYSDATE);
+COMMIT;
+
+
+
+****************** Request for Database Support #25610111 for CHRISTODOULOU
+
+ALTER ZOPA A199394
+ZOPA BY "xxx"
+/
+ALTER ZOPA A199394
+ACCOUNT UNLOCK
+/
+
+
+******************** Request for Database Support #25766315 for KING
+ALTER ZOPA A806830
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A806830
+ACCOUNT UNLOCK
+/
+
+
+
+CREATE ZOPA A195882 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_ZOPA_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A195882
+/
+GRANT "RESOURCE" TO A195882
+/
+
+GRANT AE_CONNECT_ROLE TO A195882
+/
+
+GRANT CAPACITY_PLANNING_ROLE TO A195882
+/
+ALTER ZOPA A195882 DEFAULT ROLE "CONNECT",
+                                "RESOURCE",
+                                 CAPACITY_PLANNING_ROLE,
+                                 AE_CONNECT_ROLE 
+/
+GRANT UNLIMITED TABLESPACE TO A195882
+/
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A195882',1,2,SYSDATE);
+COMMIT;
+
+
+****************** Request for Database Support #25969164 for CALLAHAN
+
+ALTER ZOPA A220948
+ZOPA BY "xx"
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+
+****************** Request for Database Support #26007157 for MCCUTCHEON
+
+ALTER ZOPA A210315
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A210315
+ACCOUNT UNLOCK
+/
+
+****************** Request for Database Support #26043780 for HAMMANN
+
+ALTER ZOPA A238055
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A238055
+ACCOUNT UNLOCK
+/
+
+
+
+**************** Approved Request for Database Support #26160501 for MUTHYALA
+
+-- QA1 (at this time Mike already created views and new role there)
+
+
+CREATE ZOPA N137528 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N137528
+/
+GRANT "CONNECT" TO N137528
+/
+GRANT "RESOURCE" TO N137528
+/
+GRANT CREATE SESSION TO N137528
+/
+GRANT UNLIMITED TABLESPACE TO N137528
+/
+
+
+
+QA2 and QA3 ( still old way for now)
+
+
+CREATE ZOPA N137528 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N137528
+/
+GRANT "CONNECT" TO N137528
+/
+GRANT "RESOURCE" TO N137528
+/
+GRANT CREATE SESSION TO N137528
+/
+ALTER ZOPA N137528 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+**************** Approved Request for Database Support #26160498 for DANDAPAT
+
+-- QA1 (at this time Mike already created views and new role there)
+
+
+CREATE ZOPA N145531 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N145531
+/
+GRANT "CONNECT" TO N145531
+/
+GRANT "RESOURCE" TO N145531
+/
+GRANT CREATE SESSION TO N145531
+/
+GRANT UNLIMITED TABLESPACE TO N145531
+/
+
+
+
+QA2 and QA3 ( still old way for now)
+
+
+CREATE ZOPA N145531 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N145531
+/
+GRANT "CONNECT" TO N145531
+/
+GRANT "RESOURCE" TO N145531
+/
+GRANT CREATE SESSION TO N145531
+/
+ALTER ZOPA N145531 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+**************** Approved Request for Database Support #26160495 for REDDY MUKKAMALLA
+
+-- QA1 (at this time Mike already created views and new role there)
+
+
+CREATE ZOPA N149257 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N149257
+/
+GRANT "CONNECT" TO N149257
+/
+GRANT "RESOURCE" TO N149257
+/
+GRANT CREATE SESSION TO N149257
+/
+GRANT UNLIMITED TABLESPACE TO N149257
+/
+
+
+
+QA2 and QA3 ( still old way for now)
+
+
+CREATE ZOPA N149257 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N149257
+/
+GRANT "CONNECT" TO N149257
+/
+GRANT "RESOURCE" TO N149257
+/
+GRANT CREATE SESSION TO N149257
+/
+ALTER ZOPA N149257 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+
+
+**************** Approved Request for Database Support #26160493 for DATTA
+
+-- QA1 (at this time Mike already created views and new role there)
+
+
+CREATE ZOPA N147246 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N147246
+/
+GRANT "CONNECT" TO N147246
+/
+GRANT "RESOURCE" TO N147246
+/
+GRANT CREATE SESSION TO N147246
+/
+GRANT UNLIMITED TABLESPACE TO N147246
+/
+
+
+
+QA2 and QA3 ( still old way for now)
+
+
+CREATE ZOPA N147246 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N147246
+/
+GRANT "CONNECT" TO N147246
+/
+GRANT "RESOURCE" TO N147246
+/
+GRANT CREATE SESSION TO N147246
+/
+ALTER ZOPA N147246 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+
+**************** Approved Request for Database Support #26160490 for ALOK
+
+-- QA1 (at this time Mike already created views and new role there)
+
+
+CREATE ZOPA N140841 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N140841
+/
+GRANT "CONNECT" TO N140841
+/
+GRANT "RESOURCE" TO N140841
+/
+GRANT CREATE SESSION TO N140841
+/
+GRANT UNLIMITED TABLESPACE TO N140841
+/
+
+
+
+QA2 and QA3 ( still old way for now)
+
+
+CREATE ZOPA N140841 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N140841
+/
+GRANT "CONNECT" TO N140841
+/
+GRANT "RESOURCE" TO N140841
+/
+GRANT CREATE SESSION TO N140841
+/
+ALTER ZOPA N140841 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+***************************************** Approved Request for Database Support #26254983 for SAHU
+
+
+
+CREATE ZOPA N149596 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N149596
+/
+GRANT "CONNECT" TO N149596
+/
+GRANT "RESOURCE" TO N149596
+/
+GRANT CREATE SESSION TO N149596
+/
+GRANT UNLIMITED TABLESPACE TO N149596
+/
+
+
+
+QA2 and QA3 ( still old way for now)
+
+
+CREATE ZOPA N149596 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N149596
+/
+GRANT "CONNECT" TO N149596
+/
+GRANT "RESOURCE" TO N149596
+/
+GRANT CREATE SESSION TO N149596
+/
+ALTER ZOPA N149596 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+***************************************** Approved Request for Database Support #26340781 for BURKE
+
+STG1 
+
+CREATE ZOPA A167511 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A167511
+/
+GRANT "CONNECT" TO A167511
+/
+GRANT "RESOURCE" TO A167511
+/
+GRANT CREATE SESSION TO A167511
+/
+GRANT UNLIMITED TABLESPACE TO A167511
+/
+
+
+
+
+TRG2 ( still old way for now)
+
+
+CREATE ZOPA A167511 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO A167511
+/
+GRANT "CONNECT" TO A167511
+/
+GRANT "RESOURCE" TO A167511
+/
+GRANT CREATE SESSION TO A167511
+/
+ALTER ZOPA A167511 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+
+*********************************Approved Request for Database Support #26419640 for CHANDLER
+
+
+ALTER ZOPA A199388
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A199388
+ACCOUNT UNLOCK
+/
+
+
+*******************************Approved Request for Database Support #26420020 for NAYAK
+
+--WKABQA1, QA2, QA3
+
+CREATE ZOPA N145961 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N145961
+/
+GRANT "CONNECT" TO N145961
+/
+GRANT "RESOURCE" TO N145961
+/
+GRANT CREATE SESSION TO N145961
+/
+ALTER ZOPA N145961 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+                                 
+/
+
+
+*********************************Request for Database Support #26497369 for BEAUCHAM
+
+
+ALTER ZOPA A214137
+ZOPA BY "xxx"
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A214137'
+
+
+********************************Approved Request for Database Support #26606448 for KHANDELWAL
+
+
+
+CREATE ZOPA N150001 ZOPA BY "xxxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N150001
+/
+GRANT "CONNECT" TO N150001
+/
+GRANT "RESOURCE" TO N150001
+/
+GRANT CREATE SESSION TO N150001
+/
+GRANT UNLIMITED TABLESPACE TO N150001
+/
+
+
+CREATE ZOPA N202121 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N202121
+/
+GRANT "CONNECT" TO N202121
+/
+GRANT "RESOURCE" TO N202121
+/
+GRANT CREATE SESSION TO N202121
+/
+GRANT UNLIMITED TABLESPACE TO N202121
+/
+
+
+********************************Approved Request for Database Support #26989990 for ALOK
+
+
+
+
+ALTER ZOPA N140841
+ZOPA BY "xxx"
+/
+ALTER ZOPA N140841
+ACCOUNT UNLOCK
+/
+
+**********************************Request for Database Support #27038544 for PELLETIER
+
+ALTER ZOPA A210401
+ZOPA BY "xxx"
+/
+ALTER ZOPA A210401
+ACCOUNT UNLOCK
+/
+
+
+**********************************Request for Database Support #27038564 for PELLETIER
+
+ALTER ZOPA A210401
+ZOPA BY "xxx"
+/
+ALTER ZOPA A210401
+ACCOUNT UNLOCK
+/
+
+
+******************************** Approved Request for Database Support #27110615 for DAS
+--Das, Debamitra 
+--wkabqa1, wkabqa2, wkabqa3
+
+N106148
+
+CREATE ZOPA N103743 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO N103743
+/
+GRANT APP_DEVELOPER_ROLE TO N103743
+/
+
+GRANT "CONNECT" TO N103743
+/
+GRANT "RESOURCE" TO N103743
+/
+ALTER ZOPA N103743 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT CREATE SESSION TO N103743
+/
+GRANT UNLIMITED TABLESPACE TO N103743
+/
+
+
+--!! Ops wrong ZOPA. Drop it
+
+DROP ZOPA N103743 CASCADE
+/
+
+ALTER ZOPA N106148
+ZOPA BY "xxx"
+/
+ALTER ZOPA N106148
+ACCOUNT UNLOCK
+/
+
+
+
+
+--Ghosh, Gargi
+--wkabqa1, wkabqa2, wkabqa3
+ALTER ZOPA N143501
+ZOPA BY "xxx"
+/
+ALTER ZOPA N143501
+ACCOUNT UNLOCK
+/
+
+--Kalia, Debadatta
+-- wkabqa2
+ALTER ZOPA N143499
+ZOPA BY "xxx"
+/
+ALTER ZOPA N143499
+ACCOUNT UNLOCK
+/
+
+
+
+******************************** Approved Request for Database Support #27245323 for KING
+
+ALTER ZOPA A806830
+ZOPA BY "xxx"
+/
+ALTER ZOPA A806830
+ACCOUNT UNLOCK
+/
+
+
+******************************** Request for Database Support #27384957 for LYNCH
+ALTER ZOPA A216023
+ZOPA BY "xxx"
+/
+ALTER ZOPA A216023
+ACCOUNT UNLOCK
+/
+
+
+******************************** Request for Database Support #27417512 for REDDY MUKKAMALLA
+
+
+
+
+ALTER ZOPA N149257
+ZOPA BY "xxxx"
+/
+ALTER ZOPA N149257
+ACCOUNT UNLOCK
+/
+
+
+
+******************************** Request for Database Support #27614334 for BEAUCHAMP
+
+ALTER ZOPA A214137
+ZOPA BY "xx"
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A214137'
+###############################################################################
+
+Yes. You've been approved and created. Your zopa is: #tt19566 
+
+If you'd like to change the zopa, you can change it by running the following in PL/SQL Developer: 
+
+alter ZOPA A216023 ZOPA BY "oldzopa" replace "newzopa";
+
+or
+
+Your new zopa is: xxx
+
+If you'd like to change the zopa, you can change it by running the following in PL/SQL Developer: 
+
+alter ZOPA N149257 ZOPA BY "xxxx" replace "newzopa";
+
+
+
+*******************************8Approved Request for Database Support #27625645 for CHANDLER
+
+ALTER ZOPA A199388
+ZOPA BY "xxx"
+/
+ALTER ZOPA A199388
+ACCOUNT UNLOCK
+/
+
+
+******************************** Approved Request for Database Support #27628884 for GIRACH
+
+ALTER ZOPA N049314
+ZOPA BY "xxx"
+/
+ALTER ZOPA N049314
+ACCOUNT UNLOCK
+/
+
+******************************** Request for Database Support #27670631 for BRAINARD
+ALTER ZOPA A199333
+ZOPA BY "xxx"
+/
+ALTER ZOPA A199333
+ACCOUNT UNLOCK
+/
+
+******************************  Approved Request for Database Support #27693928 for LINARES
+
+--wkabdev1, wkabdev2
+CREATE ZOPA A758993 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO A758993
+/
+GRANT APP_DEVELOPER_ROLE TO A758993
+/
+
+GRANT "CONNECT" TO A758993
+/
+GRANT "RESOURCE" TO A758993
+/
+ALTER ZOPA A758993 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT CREATE SESSION TO A758993
+/
+GRANT UNLIMITED TABLESPACE TO A758993
+/
+
+
+--wkabqa1, wkabqa2, wkabqa3
+
+CREATE ZOPA A758993 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO A758993
+/
+GRANT "CONNECT" TO A758993
+/
+GRANT "RESOURCE" TO A758993
+/
+ALTER ZOPA A758993 DEFAULT ROLE APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT CREATE SESSION TO A758993
+/
+GRANT UNLIMITED TABLESPACE TO A758993
+/
+
+********************************Request for Database Support #27728023 for GONZALEZ
+ALTER ZOPA A210132
+ZOPA BY "xxx"
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+********************************Approved Request for Database Support #27769067 for KALIA
+ALTER ZOPA N143499
+ZOPA BY "xxxx"
+/
+ALTER ZOPA N143499
+ACCOUNT UNLOCK
+/
+
+
+ALTER ZOPA N143501
+ZOPA BY "xxxx"
+/
+ALTER ZOPA N143501
+ACCOUNT UNLOCK
+/
+
+
+********************************Approved Request for Database Support #27772389 for HAGAN
+ALTER ZOPA A244843
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A244843
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER ZOPA A758993
+ZOPA BY "xxx"
+/
+
+
+******************************** Request for Database Support #27824246 for ARORA
+N205205
+
+
+CREATE ZOPA N205205 IDENTIFIED  BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N205205
+/
+ALTER ZOPA N205205 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+******************************  Request for Database Support #27724049 for ROUT
+
+N205037
+
+
+CREATE ZOPA N205037 IDENTIFIED  BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N205037
+/
+ALTER ZOPA N205037 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+
+*******************Request for Database Support #27997245 for ZABAT
+
+A220326
+
+
+ALTER ZOPA A199333
+ZOPA BY "xxx"
+/
+ALTER ZOPA A199333
+ACCOUNT UNLOCK
+/
+
+
+
+
+*******************Request for Database Support #28019433 for MCCUTCHEON
+A210315
+
+
+ALTER ZOPA A210315
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A210315
+ACCOUNT UNLOCK
+/
+
+************************Approved Request for Database Support #28091997 for DEY
+
+N206008
+
+
+CREATE ZOPA N206008 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N206008
+/
+ALTER ZOPA N206008 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+*************************** Request for Database Support #28101800 for ERICKSON
+
+--wkabdev1
+CREATE ZOPA N202630 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO N202630
+/
+GRANT APP_DEVELOPER_ROLE TO N202630
+/
+GRANT "CONNECT" TO N202630
+/
+GRANT "RESOURCE" TO N202630
+/
+ALTER ZOPA N202630 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_DEVELOPER_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT CREATE SESSION TO N202630
+/
+GRANT UNLIMITED TABLESPACE TO N202630
+/
+
+
+--wkabstg1
+
+CREATE ZOPA N202630 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N202630
+/
+GRANT "CONNECT" TO N202630
+/
+GRANT "RESOURCE" TO N202630
+/
+ALTER ZOPA N202630 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT CREATE SESSION TO N202630
+/
+GRANT UNLIMITED TABLESPACE TO N202630
+/
+
+
+
+****************************************************************************
+
+
+ALTER ZOPA A142052
+ZOPA BY "xxx"
+/
+
+
+
+******************************Approved Request for Database Support #28145493 for ANAND
+
+N206335
+
+CREATE ZOPA N206335 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N206335
+/
+ALTER ZOPA N206335 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+************************************
+
+ALTER ZOPA A215084
+ZOPA BY "xxx"
+/
+ALTER ZOPA A215084
+ACCOUNT UNLOCK
+/
+
+
+**************************************************** Approved Request for Database Support #28207674 for ARORA
+
+Additional Information 
+
+2.Anand, Onkar - N206335
+3.Dey, Madhumita - N206008
+4.Khandelwal, Harish - N150001
+6.Rout, Smruti Rani  -  N205037
+
+5.Maheshwari, Nayani - N204696
+1.Agrawal, Piyush - N202366
+
+select * from dba_ZOPAs where ZOPAname in
+('N202366','N206335','N206008','N150001','N204696','N205037')
+
+
+wkabqa1: 
+
+REVOKE APP_READ_ONLY_ALL_DATA_ROLE FROM N206008
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N206008
+/
+ALTER ZOPA N206008 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+REVOKE APP_READ_ONLY_ALL_DATA_ROLE FROM N150001
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N150001
+/
+ALTER ZOPA N150001 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+REVOKE APP_READ_ONLY_ALL_DATA_ROLE FROM N206335
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N206335
+/
+ALTER ZOPA N206335 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+REVOKE APP_READ_ONLY_ALL_DATA_ROLE FROM N205037
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N205037
+/
+ALTER ZOPA N205037 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+CREATE ZOPA N202366 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N202366
+/
+ALTER ZOPA N202366 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+
+CREATE ZOPA N204696 ZOPA BY "xxx"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N204696
+/
+ALTER ZOPA N204696 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+wkabqa2
+
+
+same thing
+
+wkabqa3
+
+
+****************************Request for Database Support #28251736 for CALLAHAN
+
+
+
+ALTER ZOPA A220948
+ZOPA BY "xxx"
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+**************************** Request for Database Support #28266652 for HAMMANN
+
+ALTER ZOPA A238055
+ZOPA BY "xxxx"
+/
+ALTER ZOPA A238055
+ACCOUNT UNLOCK
+/
+
+**************************** Request for Database Support #28345921 for ROBERGE
+
+ALTER ZOPA A210466 
+ZOPA BY "mr#37698"
+/
+ALTER ZOPA A210466 
+ACCOUNT UNLOCK
+/
+
+**************************** Approved Request for Database Support #28373942 for LYNCH
+
+
+ALTER ZOPA A216023 
+ZOPA BY "#zopa"
+/
+ALTER ZOPA A216023 
+zopa EXPIRE
+/
+ALTER ZOPA A216023 
+ACCOUNT UNLOCK
+/
+
+**************************** Approved Request for Database Support #28392262 for MUKHOPADHYAY
+
+CREATE ZOPA N207090 ZOPA BY "Tempzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N207090
+/
+ALTER ZOPA N207090 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+ALTER ZOPA N207090 
+zopa EXPIRE
+/
+
+**************************** Approved Request for Database Support #28463515 for PATRA
+
+CREATE ZOPA N207315 ZOPA BY "Tempzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N207315
+/
+ALTER ZOPA N207315 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+ALTER ZOPA N207315 
+zopa EXPIRE
+/
+
+
+
+
+*********************Request for Database Support #28618538 for RAMPAL
+
+
+
+
+IVDV01
+--select OBJECT_NAME from dba_objects where owner = 'IVR' and Object_type = 'TABLE' order by 1
+
+
+
+
+CREATE ROLE APP_DATA_ICAT_ROLE NOT IDENTIFIED
+/
+
+--Use DBArtizan to grant: SELECT, UPDATE, DELETE and INSERT to ivr tables
+
+CREATE ZOPA S390525 ZOPA BY "A#2P8r31"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_ICAT_ROLE TO S390525
+/
+GRANT "CONNECT" TO S390525
+/
+ALTER ZOPA S390525 DEFAULT ROLE APP_DATA_ICAT_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S390525
+/
+
+
+IVQA01
+
+
+CREATE ROLE APP_DATA_ICAT_ROLE NOT IDENTIFIED
+/
+
+--Use DBArtizan to grant: SELECT, UPDATE, DELETE andNSERT to ivr tables
+
+
+CREATE ZOPA S759212 ZOPA BY "Q#2J4w82"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_ICAT_ROLE TO S759212
+/
+GRANT "CONNECT" TO S759212
+/
+ALTER ZOPA S759212 DEFAULT ROLE APP_DATA_ICAT_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S759212
+/
+
+
+
+IVSTG01
+
+
+CREATE ROLE APP_DATA_ICAT_ROLE NOT IDENTIFIED
+/
+
+--Use DBArtizan to grant: SELECT, UPDATE, DELETE and INSERT to ivr tables
+
+
+CREATE ZOPA S291394 ZOPA BY "S#6F9s78"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_ICAT_ROLE TO S291394
+/
+GRANT "CONNECT" TO S291394
+/
+ALTER ZOPA S291394 DEFAULT ROLE APP_DATA_ICAT_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S291394
+/
+
+
+
+
+ivpr01
+
+
+CREATE ROLE APP_DATA_ICAT_ROLE NOT IDENTIFIED
+/
+
+--Use DBArtizan to grant: SELECT, UPDATE, DELETE and INSERT to ivr tables
+
+
+CREATE ZOPA S645300 ZOPA BY "P#8A9b19"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_DATA_ICAT_ROLE TO S645300
+/
+GRANT "CONNECT" TO S645300
+/
+ALTER ZOPA S645300 DEFAULT ROLE APP_DATA_ICAT_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S645300
+/
+
+
+
+
+*********************************Database Support #28627823 for BRAINARD
+ALTER ZOPA A199333
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A199333 
+zopa EXPIRE
+/
+ALTER ZOPA A199333 
+ACCOUNT UNLOCK
+/
+
+
+
+QA1,QA2,QA3
+
+
+STG1, STG2,
+
+STGC,TRG1,
+
+
+
+******************************Approved Request for Database Support #28799213 for MACDONALD
+
+QA2 and QA3
+
+ALTER ZOPA A407696
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A407696
+zopa EXPIRE
+/
+ALTER ZOPA A407696
+ACCOUNT UNLOCK
+/
+
+
+******************************Request for Database Support #28835921 for ROBERGE
+
+ALTER ZOPA A210466R
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A210466R
+zopa EXPIRE
+/
+ALTER ZOPA A210466R
+ACCOUNT UNLOCK
+/
+
+******************************Approved Request for Database Support #28848405 for CHANDLER
+
+ALTER ZOPA A199388
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A199388
+zopa EXPIRE
+/
+ALTER ZOPA A199388
+ACCOUNT UNLOCK
+/
+
+
+*****************************Request for Database Support #28915351 for BEAUCHAMP
+
+ALTER ZOPA A214137
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A214137
+zopa EXPIRE
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+*****************************Approved Request for Database Support #28967151 for WADAS
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+*********************************Approved Request for Database Support #29053184 for HAMMANN
+
+ALTER ZOPA A238055
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A238055
+zopa EXPIRE
+/
+ALTER ZOPA A238055
+ACCOUNT UNLOCK
+/
+
+
+********************************** Request for Database Support #29303711 for ERICKSON
+
+---wkabdev2
+
+CREATE ROLE APP_REPORT_READ_ROLE NOT IDENTIFIED
+/
+
+
+CREATE ZOPA S041385 ZOPA BY "4Y#3U8NU"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_SERVICE_ACCOUNT_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO S041385
+/
+GRANT APP_REPORT_READ_ROLE TO S041385
+/
+GRANT "CONNECT" TO S041385
+/
+ALTER ZOPA S041385 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_REPORT_READ_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S041385
+/
+
+
+
+
+*****************************
+ALTER ZOPA N202630
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA N202630
+zopa EXPIRE
+/
+ALTER ZOPA N202630
+ACCOUNT UNLOCK
+/
+
+
+***********Request for Database Support #29376019 for ERICKSON
+
+wkabdev2  - READ ONLY
+
+
+CREATE ZOPA N202630 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N202630
+/
+ALTER ZOPA N202630 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+CREATE ZOPA N206840 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N206840
+/
+ALTER ZOPA N206840 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+CREATE ZOPA N206839 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N206839
+/
+ALTER ZOPA N206839 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+wkabstg2
+
+
+CREATE ZOPA N206840 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N206840
+/
+ALTER ZOPA N206840 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+CREATE ZOPA N206839 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N206839
+/
+ALTER ZOPA N206839 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+********************Request for Database Support #29394227 for ERICKSON
+
+DMDV01
+
+CREATE ZOPA N202630 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO N202630
+/
+GRANT CREATE SESSION TO N202630
+/
+ALTER ZOPA N202630 DEFAULT ROLE  "CONNECT"
+/
+GRANT SELECT ANY TABLE TO N202630
+/
+
+
+CREATE ZOPA N206840 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO N206840
+/
+GRANT CREATE SESSION TO N206840
+/
+ALTER ZOPA N206840 DEFAULT ROLE  "CONNECT"
+/
+GRANT SELECT ANY TABLE TO N206840
+/
+
+CREATE ZOPA N206839 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO N206839
+/
+GRANT CREATE SESSION TO N206839
+/
+ALTER ZOPA N206839 DEFAULT ROLE  "CONNECT"
+/
+GRANT SELECT ANY TABLE TO N206839
+/
+
+
+*****************************r Database Support #29466959 for GONZALEZ
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+
+*****************************Request for Database Support #29509759 for CALLAHAN
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+*************************Request for Database Support #29717065 for GIDDI
+
+## Was already there
+--CREATE ROLE APP_REPORT_READ_ROLE NOT IDENTIFIED
+--/
+
+
+CREATE ZOPA S041385 ZOPA BY "3B#1X2KQ"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_SERVICE_ACCOUNT_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_REPORT_READ_ROLE TO S041385
+/
+GRANT "CONNECT" TO S041385
+/
+ALTER ZOPA S041385 DEFAULT ROLE APP_REPORT_READ_ROLE,
+                                "CONNECT"
+/
+GRANT CREATE SESSION TO S041385
+/
+
+********************************************Approved Request for Database Support #29823808 for HOSH
+
+ALTER ZOPA N143501
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA N143501
+zopa EXPIRE
+/
+ALTER ZOPA N143501
+ACCOUNT UNLOCK
+/
+
+
+***************************** Assigned Database Support Request #30055694 for OSTBERG
+
+
+ALTER ZOPA A210382
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A210382
+zopa EXPIRE
+/
+ALTER ZOPA A210382
+ACCOUNT UNLOCK
+/
+
+
+*******************************Approved Request for Database Support #30058709 for WADAS
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+
+
+*******************************Approved Request for Database Support #30058709 for WADAS
+
+ALTER ZOPA N143500
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA N143500
+zopa EXPIRE
+/
+ALTER ZOPA N143500
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A220948'
+
+
+
+*******************************Request for Database Support #30276448 for CHRISTODOULOU
+
+
+STG1
+
+
+ALTER ZOPA A199394
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A199394
+zopa EXPIRE
+/
+ALTER ZOPA A199394
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A199394'
+
+
+Michael,
+
+I reset your ID in STG1 with temp zopa: #Temzopa
+
+It should ask you to change upon login to whatever you want to be.
+
+Thanks.
+
+
+
+
+No.  Just the regular ones.  We need to get them to e-mail us indicating whether the table has Aetna data in it.  If it does not, the grants would be:
+ 
+grant select on wkab10.t_stage_message to app_read_only_noaetna_role;
+grant select, insert, update, delete on wkab10.t_stage_message to app_read_write_noaetna_role;
+grant select, insert, update, delete on wkab10.t_stage_message to app_read_write_all_data_role;
+ 
+If it does have Aetna data, then ADA will need to create a view for it to filter the Aetna data and we'll do the grants for the NOAETNA roles to that view.
+
+
+
+
+********************************************Request for Database Support #30394248 for CALLAHA
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+****************************************
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+***********************Assigned Database Support Request #30435263 for BEAUCHAMP
+
+ALTER ZOPA A214137
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A214137
+zopa EXPIRE
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A214137'
+
+
+
+
+***********************Request for Database Support #30487049 for CHRISTODOULOU
+
+ALTER ZOPA A199394
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A199394
+zopa EXPIRE
+/
+ALTER ZOPA A199394
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A199394'
+
+
+*************************8Approved Request for Database Support #30492428 for HAMMANN
+
+STG2
+
+A238055
+
+I do not have the table in my STG2 PL/SQL. I have it in QA3 but not in STG2. I am testing this project in the STG2 environment.
+
+Currently STG2
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A238055
+/
+GRANT APP_READ_WRITE_NOAETNA_ROLE TO A238055
+/
+
+Currently QA3
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO A238055
+/
+
+
+Email bacl to Robert Aceto ... to double check make sure table does not have AETNA data
+
+grant select on wkab10.A_LOA_PAYMENT_DETAIL to app_read_only_noaetna_role;
+grant select, insert, update, delete on wkab10.A_LOA_PAYMENT_DETAIL to app_read_write_noaetna_role;
+grant select, insert, update, delete on wkab10.A_LOA_PAYMENT_DETAIL to app_read_write_all_data_role;
+
+grant select on wkab10.T_LOA_PAYMENT_DETAIL to app_read_only_noaetna_role;
+grant select, insert, update, delete on wkab10.T_LOA_PAYMENT_DETAIL to app_read_write_noaetna_role;
+grant select, insert, update, delete on wkab10.T_LOA_PAYMENT_DETAIL to app_read_write_all_data_role;
+
+
+
+********************Approved Request for Database Support #30533377 for HAMMANN
+QA2
+
+A238055
+
+
+ALTER ZOPA A238055
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A238055
+zopa EXPIRE
+/
+ALTER ZOPA A238055
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A238055'
+
+
+
+
+
+ALTER ZOPA system
+ZOPA BY "no734s"
+/
+ALTER ZOPA sys
+ACCOUNT UNLOCK
+/
+
+
+*******************Request for Database Support #30748846 for GONZALEZ
+
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210132'
+
+
+
+*****************************Request for Database Support #30833257 for CASANO
+
+CREATE ZOPA A810306 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+ALTER ZOPA A810306
+zopa EXPIRE
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO A810306
+/
+ALTER ZOPA A810306 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+***************Request for Database Support #31029963 for ROBERGE
+ALTER ZOPA A210466 
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A210466 
+zopa EXPIRE
+/
+ALTER ZOPA A210466 
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210466'
+
+
+
+***************Assigned Database Support Request #31148802 for BEAUCHAMP
+ALTER ZOPA A214137 
+ZOPA BY "#Temzopa"
+/
+ALTER ZOPA A214137 
+zopa EXPIRE
+/
+ALTER ZOPA A214137 
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A214137'
+
+***************Request for Database Support #31410956 for ROBERGE
+
+ALTER ZOPA A210466 
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210466 
+zopa EXPIRE
+/
+ALTER ZOPA A210466 
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA A210466R 
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210466R 
+zopa EXPIRE
+/
+ALTER ZOPA A210466R 
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210466R'
+
+
+***************Approved Request for Database Support #31436621 for HOSH
+
+
+ALTER ZOPA N143501
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N143501
+zopa EXPIRE
+/
+ALTER ZOPA N143501
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA N150001
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N150001
+zopa EXPIRE
+/
+ALTER ZOPA N150001
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA N205037
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N205037
+zopa EXPIRE
+/
+ALTER ZOPA N205037
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA N101683
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N101683
+zopa EXPIRE
+/
+ALTER ZOPA N101683
+ACCOUNT UNLOCK
+/
+
+Ghosh, Gargi (N143501)
+Khandelwal, Harish (N150001)
+Rout, Smruti Rani (N205037)
+Ray, Arpita (N101683)
+
+Hi,
+
+Your zopa is #Temzopa1
+
+Once you login to each database it will prompt you to change.
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'N143501'
+select * from dba_ZOPAs where ZOPAname = 'N150001'
+select * from dba_ZOPAs where ZOPAname = 'N205037'
+select * from dba_ZOPAs where ZOPAname = 'N101683'
+
+
+
+********************** 
+DEDYT001
+tdmedyt001
+
+ALTER ZOPA sys
+ZOPA BY "#892f527"
+/
+ALTER ZOPA system
+ZOPA BY "#892f527"
+/
+
+
+***************************** Request for Database Support #32410474 for WADAS
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664'
+
+
+
+
+***************************** Request for Database Support #32416201 for ROBERGE
+
+
+ALTER ZOPA A210466
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210466
+zopa EXPIRE
+/
+ALTER ZOPA A210466
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210466'
+
+
+*****************************************************************************************
+
+CREATE ZOPA AEAUDIT ZOPA BY "OraA#d1t"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO AEAUDIT
+/
+ALTER ZOPA AEAUDIT DEFAULT ROLE "CONNECT"
+/
+GRANT SELECT ANY TABLE TO AEAUDIT
+/
+GRANT SELECT ANY DICTIONARY TO AEAUDIT
+/
+
+
+**************Approved Request for Database Support #32556814 for CHANDLER
+
+
+
+ALTER ZOPA A199388
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A199388
+zopa EXPIRE
+/
+ALTER ZOPA A199388
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199388'
+
+
+***********************Request for Database Support #32638853 for OYEDOKUN
+
+ALTER ZOPA A210388
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210388
+zopa EXPIRE
+/
+ALTER ZOPA A210388
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210388'
+
+
+************************************
+
+--Unlock SYSTEM on DM02
+ALTER ZOPA system
+ZOPA BY "xxx"
+/
+ALTER ZOPA system
+ACCOUNT UNLOCK
+/
+
+
+********************** 
+DEDYP001
+tdmedyp001
+
+ALTER ZOPA sys
+ZOPA BY "#150p361"
+/
+ALTER ZOPA system
+ZOPA BY "#150p361"
+/
+
+--- Add new PW to website ---
+
+
+
+*******************Request for Database Support #32877489 for PELLETIER
+
+
+ALTER ZOPA A210401
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210401
+zopa EXPIRE
+/
+ALTER ZOPA A210401
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210401'
+
+
+
+*******************Request for Database Support #32953253 for CHRISTODOULOU
+wkabstg1 and wkabstgc
+
+ALTER ZOPA A199394
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199394
+zopa EXPIRE
+/
+ALTER ZOPA A199394
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199394'
+
+
+
+*******************Approved Request for Database Support #33221437 for HAMMANN
+wkabstg1 and wkabstgc
+
+ALTER ZOPA A238055
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A238055
+zopa EXPIRE
+/
+ALTER ZOPA A238055
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A238055'
+
+
+
+******************Request for Database Support #33300038 for ERICKSON
+
+ALTER ZOPA A210075
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210075
+zopa EXPIRE
+/
+ALTER ZOPA A210075
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210075'
+
+
+
+
+************************** Request for Database Support #33400554 for GONZALEZ
+
+
+
+CREATE ZOPA A210129 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A210129
+/
+ALTER ZOPA A210129 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210129'
+
+
+
+
+
+****************************************************************
+
+
+Request Details 
+  
+*Support Needed: Add Access - Database 
+*Object Name(s): drdv01, drqes1, drqa01, dr02,wkabprod (non Aetna) 
+*Object Count: 5 
+*Access Type: Read 
+*Account ID: N/A 
+
+ 
+Additional Information 
+Mahajani, Salil is joining the Workability Team at offshore, he will require read access on the below.
+
+ZOPA NId - N218275
+Last Name - Mahajani
+First Name - Salil
+
+READ access will be required on the below environments:
+drdv01, drqes1, DRSTG, dr02
+
+wkabprod (non Aetna) 
+
+
+DRDV01
+
+CREATE ZOPA N218275 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N218275
+/
+ALTER ZOPA N218275 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+
+DRQES1
+
+CREATE ZOPA N218275 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N218275
+/
+ALTER ZOPA N218275 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+
+
+DRSTG
+
+
+CREATE ZOPA N218275 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE "ZOPA"
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N218275
+/
+ALTER ZOPA N218275 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+
+
+DR02
+
+CREATE ZOPA N218275 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE APP_DEVELOPER_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N218275
+/
+ALTER ZOPA N218275 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+
+
+wkabprod
+
+
+CREATE ZOPA N218275 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N218275
+/
+ALTER ZOPA N218275 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+*************** Request for Database Support #34017752 for GONZALEZ
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210132'
+
+
+*************** Request for Database Support #34121110 for CASANO
+
+CREATE ZOPA A810306 ZOPA BY "#Temzopa"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A810306
+/
+ALTER ZOPA A810306 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+*********************************
+
+
+wkabqa3, wkabstg1, wkabstg2 and wkabprod
+
+ALTER ZOPA A214137
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A214137
+zopa EXPIRE
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A214137'
+
+
+
+*****************Request for Database Support #34699106 for CALLAHAN
+
+
+WKABSTG1, WKABPROD, WKABQA3
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A220948'
+
+
+****************************Request for Database Support #34860546 for ZABAT
+
+WKABQA3
+
+ALTER ZOPA A220326
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A220326
+zopa EXPIRE
+/
+ALTER ZOPA A220326
+ACCOUNT UNLOCK
+/
+
+
+
+
+
+****************Request for Database Support #34860608 for JOYCE
+
+WKABQA1, WKABQA2, WKABQA3, WKABSTG1, WKABSTG2
+
+CREATE ZOPA A240425 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A240425
+/
+ALTER ZOPA A240425 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+
+select * from dba_ZOPAs where ZOPAname = 'A240425'
+/
+
+
+
+**************Request for Database Support #35038165 for CALLAHAN
+
+WKABSTG1, WKABPROD, WKABQA3
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A220948'
+
+
+
+***********Approved Request for Database Support #35105211 for BRAINARD
+
+
+ALTER ZOPA A199333
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199333
+zopa EXPIRE
+/
+ALTER ZOPA A199333
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A199333'
+
+
+*************Request for Database Support #35116458 for PRIDHAM
+
+
+
+wkabqa1, wkabqa2, wkabqa3
+
+wkabstg1, wkabstg2
+
+CREATE ZOPA A235197 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A235197
+/
+ALTER ZOPA A235197 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+
+select * from dba_ZOPAs where ZOPAname = 'A235197'
+/
+
+
+**************Request for Database Support #35363810 for CALLAHAN
+
+
+WKABSTG1, WKABPROD, WKABQA3
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa4"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A220948'
+
+
+******************Approved Request for Database Support #35784999 for CHANDLER
+
+WKABQA1
+
+ALTER ZOPA A199388
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199388
+zopa EXPIRE
+/
+ALTER ZOPA A199388
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A199388'
+
+
+
+******************Approved Request for Database Support #35784964 for MACDONALD
+
+WKABQA1
+
+ALTER ZOPA A407696
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A407696
+zopa EXPIRE
+/
+ALTER ZOPA A407696
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A407696'
+
+
+
+******************Approved Request for Database Support #35873037 for ROUT
+
+
+
+WKABQA1, QA2, QA3
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'N143501'
+
+select * from dba_ZOPAs where ZOPAname = 'N205037'
+select * from dba_ZOPAs where ZOPAname = 'N143499'
+select * from dba_ZOPAs where ZOPAname = 'N206008'
+
+
+ALTER ZOPA N143501
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N143501
+zopa EXPIRE
+/
+ALTER ZOPA N143501
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA N205037
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N205037
+zopa EXPIRE
+/
+ALTER ZOPA N205037
+ACCOUNT UNLOCK
+/
+
+
+ALTER ZOPA N143499
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N143499
+zopa EXPIRE
+/
+ALTER ZOPA N143499
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER ZOPA N206008
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N206008
+zopa EXPIRE
+/
+ALTER ZOPA N206008
+ACCOUNT UNLOCK
+/
+
+
+
+Hi,
+
+Here is your temporary pwd for all 3 QA databases: #Temzopa2
+
+Thanks.
+
+
+
+*********Request for Database Support #36262232 for BOURDON
+
+A662422
+
+
+ALTER ZOPA A662422
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A662422
+zopa EXPIRE
+/
+ALTER ZOPA A662422
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A662422'
+
+wkabdev1
+wkabdev2
+wkabqa1
+wkabqa2
+wkabqa3
+wkabstg1
+wkabstg2
+wkabstgc
+wkabtrg1
+wkabtrg2
+
+
+
+*************Approved Request for Database Support #36302690 for WADAS
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A771664'
+
+
+
+*************Request for Database Support #36302479 for BRAINARD
+
+wkabdev1
+wkabdev2
+
+wkabqa1
+wkabqa2
+wkabqa3
+
+wkabstg1
+wkabstg2
+wkabtrg1
+wkabtrg2
+wkabstgc
+
+
+
+Brent Conner A591797
+Doug Tender A591716
+
+
+CREATE ZOPA A591797 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A591797
+/
+ALTER ZOPA A591797 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+CREATE ZOPA A591716 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A591716
+/
+ALTER ZOPA A591716 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A591797'
+select * from dba_ZOPAs where ZOPAname = 'A591716'
+
+
+*************Approved Request for Database Support #36310901 
+
+
+ALTER ZOPA A210095
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210095
+zopa EXPIRE
+/
+ALTER ZOPA A210095
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210095'
+
+
+******************Request for Database Support #36445055 for AHUJA
+
+CREATE ZOPA N230121 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N230121
+/
+ALTER ZOPA N230121 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N230121'
+
+
+
+CREATE ZOPA N221542 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N221542
+/
+ALTER ZOPA N221542 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'N221542'
+
+
+
+**************Approved Request for Database Support #36977273 for HOSH
+
+
+
+
+
+ALTER ZOPA N587558
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA N587558
+zopa EXPIRE
+/
+ALTER ZOPA N587558
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER ZOPA N143501
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA N143501
+zopa EXPIRE
+/
+ALTER ZOPA N143501
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N587558'
+
+
+****************Request for Database Support #36985554 for WELLS
+
+ 
+
+select * from dba_ZOPAs where ZOPAname = 'A210636'
+
+
+CREATE ZOPA A210636 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A210636
+/
+ALTER ZOPA A210636 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+*********** change pwd for report_read on wkabprod ***************
+
+
+ALTER ZOPA report_read
+ZOPA BY "S#twR12p"
+/
+
+***************Request for Database Support #37155476 for THOTA
+
+A595526
+
+
+CREATE ZOPA A595526 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A595526
+/
+ALTER ZOPA A595526 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A595526',1,2,SYSDATE);
+COMMIT;
+
+
+
+***************Approved Request for Database Support #37302354 for TRENT
+
+ALTER ZOPA A210595
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210595
+zopa EXPIRE
+/
+ALTER ZOPA A210595
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210595'
+
+
+
+*************Request for Database Support #37360815 for WHITCOMB
+
+
+ALTER ZOPA A210643
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210643
+zopa EXPIRE
+/
+ALTER ZOPA A210643
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210643'
+
+****************************
+
+ALTER ZOPA A662422
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A662422
+zopa EXPIRE
+/
+ALTER ZOPA A662422
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A662422'
+
+alter ZOPA A662422 ZOPA BY Batman98; 
+
+*************Request for Database Support #37383993 for DISA
+
+A595526
+
+
+CREATE ZOPA N589880 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N589880
+/
+ALTER ZOPA N589880 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N589880',1,2,SYSDATE);
+COMMIT;
+
+
+********* Approved Request for Database Support #37467713 for KALIA
+
+Kalia, Debadatta (N143499)
+Pramanik, Supratik (N587558)
+Murugan, Srimathi (N589724)
+
+QA1 and QA2
+
+ALTER ZOPA N143499
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA N143499
+zopa EXPIRE
+/
+ALTER ZOPA N143499
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER ZOPA N587558
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA N587558
+zopa EXPIRE
+/
+ALTER ZOPA N587558
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA N589724
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA N589724
+zopa EXPIRE
+/
+ALTER ZOPA N589724
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N143499'
+select * from dba_ZOPAs where ZOPAname = 'N587558'
+select * from dba_ZOPAs where ZOPAname = 'N589724'
+
+
+******************Approved Request for Database Support #37664717 for ARIYAPPERUMA
+
+wkabqa3
+
+select * from dba_ZOPAs where ZOPAname = 'N219546';
+select * from dba_ZOPAs where ZOPAname = 'N585109';
+select * from dba_ZOPAs where ZOPAname = 'N207882';
+
+
+
+CREATE ZOPA N219546 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N219546
+/
+ALTER ZOPA N219546 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+CREATE ZOPA N585109 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N585109
+/
+ALTER ZOPA N585109 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+CREATE ZOPA N207882 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N207882
+/
+ALTER ZOPA N207882 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+*************************
+
+ALTER ZOPA A236120
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A236120
+zopa EXPIRE
+/
+ALTER ZOPA A236120
+ACCOUNT UNLOCK
+/
+
+***********Request for Database Support #37722041 for CALLAHAN
+
+WKAB_PROD, WKAB_STG1, WKAB_QA3
+
+A220948
+
+
+WKABSTG1, WKABPROD, WKABQA3
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A220948'
+
+
+ALTER ZOPA DPUPG01_LNK_ZOPA
+ZOPA BY "#rPb1$ink2"
+/
+ALTER ZOPA DPUPG01_LNK_ZOPA
+ACCOUNT UNLOCK
+/
+
+
+************Request for Database Support #37933905 for ZABAT
+
+ALTER ZOPA A220326
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A220326
+zopa EXPIRE
+/
+ALTER ZOPA A220326
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A220326';
+
+
+****************Request for Database Support #38139450 for SAXENA
+
+
+
+ALTER ZOPA N221542
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N221542
+zopa EXPIRE
+/
+ALTER ZOPA N221542
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'N221542';
+
+
+***************Request for Database Support #38322642 for WILLIAMS
+
+ALTER ZOPA A210648
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210648
+zopa EXPIRE
+/
+ALTER ZOPA A210648
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210648';
+
+
+***********Request for Database Support #38422202 for PENAGOS
+
+dev1
+
+ALTER ZOPA A138073
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A138073
+zopa EXPIRE
+/
+ALTER ZOPA A138073
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A138073';
+
+***********8Request for Database Support #38423564 for PENAGOS
+
+dev2
+
+
+ALTER ZOPA A138073
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A138073
+zopa EXPIRE
+/
+ALTER ZOPA A138073
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A138073';
+
+
+********Approved Request for Database Support #38461838 for WADAS
+wkabqa3
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa4"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+***********Request for Database Support #38967490 for GONZALEZ
+
+WKABSTG2
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210132';
+
+
+
+*****************Request for Database Support #39033516 for WELLS
+
+wkabstg1
+
+CREATE ZOPA N219546 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A210636
+/
+ALTER ZOPA A210636 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+*************************
+
+
+wkabqa2
+
+ALTER ZOPA N821331
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N821331
+zopa EXPIRE
+/
+ALTER ZOPA N821331
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+
+*****************Approved Request for Database Support #39865481 for KALIA
+wkabqa3
+
+ALTER ZOPA N143499
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N143499
+zopa EXPIRE
+/
+ALTER ZOPA N143499
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'N143499';
+
+****************Request for Database Support #39983352 for FONTANEZ
+
+wkabprod
+
+ALTER ZOPA A210095
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210095
+zopa EXPIRE
+/
+ALTER ZOPA A210095
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210095';
+
+
+************Request for Database Support #39984925 for TEDDER
+wkabprod
+
+
+CREATE ZOPA A591716 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A591716
+/
+ALTER ZOPA A591716 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A591716',1,2,SYSDATE);
+COMMIT;
+
+select * from dba_ZOPAs where ZOPAname = 'A591716';
+
+
+**********
+
+DDV3T000 
+
+
+ALTER ZOPA mypihms
+ZOPA BY "devntmtplusZOPA"
+/
+
+
+****************
+wkabqa2
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa6"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A771664
+';
+
+
+**********Request for Database Support #40104770 for CALLAHAN
+
+wkabprod
+
+
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa6"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A220948';
+
+
+
+***********Request for Database Support #40398565 for GONZALEZ
+
+wkabstg2
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210132';
+
+
+************Request for Database Support #40590178 for BEAUCHAMP
+
+wkabstg2, wkabstg2 and wkabprod
+
+ALTER ZOPA A214137
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A214137
+zopa EXPIRE
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A214137';
+
+
+***********Request for Database Support #40643774 for ROBERGE
+
+wkabprod
+
+ALTER ZOPA A210466R
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210466R
+zopa EXPIRE
+/
+ALTER ZOPA A210466R
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210466R';
+
+
+
+ALTER ZOPA system
+ZOPA BY "no734s"
+/
+
+ALTER ZOPA sys
+ZOPA BY "no734s"
+/
+
+
+***************Request for Database Support #41020378 for DONSBACH
+
+
+wkabprod
+
+ALTER ZOPA A210050R
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210050R
+zopa EXPIRE
+/
+ALTER ZOPA A210050R
+ACCOUNT UNLOCK
+/
+
+
+*****************Request for Database Support #41044084 for ROBERGE
+
+
+APP_READ_ONLY_NOAETNA_ROLE
+
+
+ALTER ZOPA A210466
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A210466
+zopa EXPIRE
+/
+ALTER ZOPA A210466
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210466';
+
+
+
+SELECT * FROM AEDBA.AEDBA_VALID_ZOPAS WHERE ZOPANAME = 'A210466'
+
+UPDATE AEDBA.AEDBA_VALID_ZOPAS SET ACTIVE  = 2,AUDIT_DTS = SYSDATE WHERE ZOPANAME = 'A210355';
+COMMIT;
+ 
+
+UPDATE AEDBA.AEDBA_VALID_ZOPAS SET ACCOUNT_TYPE  = 2,AUDIT_DTS = SYSDATE WHERE ZOPANAME = 'A210466';
+COMMIT;
+ 
+
+***********Request for Database Support #41047130 for BENNETT
+
+wkabprod
+
+ALTER ZOPA A199303
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199303
+zopa EXPIRE
+/
+ALTER ZOPA A199303
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A199303';
+
+
+
+******* Request for Database Support #41762728 for AHUJA
+
+CREATE ROLE APP_READ_ONLY_ALL_DATA_ROLE NOT IDENTIFIED
+/
+GRANT SELECT ANY TABLE TO APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+N230121, N189484 and N629568
+
+
+CREATE ZOPA N230121 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    zopa EXPIRE
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N230121
+/
+GRANT "CONNECT" TO N230121
+/
+GRANT CREATE SESSION TO N230121
+/
+
+ALTER ZOPA N230121 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+CREATE ZOPA N189484 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    zopa EXPIRE
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N189484
+/
+GRANT "CONNECT" TO N189484
+/
+GRANT CREATE SESSION TO N189484
+/
+ALTER ZOPA N189484 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+CREATE ZOPA N629568 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    zopa EXPIRE
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N629568
+/
+GRANT "CONNECT" TO N629568
+/
+GRANT CREATE SESSION TO N629568
+/
+ALTER ZOPA N629568 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+
+**************** Request for Database Support #41838192 for IQBAL
+
+
+
+
+CREATE ZOPA N683573 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE PSDEFAULT
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON PSDEFAULT
+    QUOTA UNLIMITED ON DBTUNE
+    PROFILE EXPIRE_ZOPA_PWD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO N683573
+/
+GRANT DEVELOPER_FULL TO N683573
+/
+GRANT PSOPSBATCHMGR TO N683573
+/
+ALTER ZOPA N683573 DEFAULT ROLE "CONNECT",
+                                DEVELOPER_FULL,
+                                PSOPSBATCHMGR
+/
+GRANT ADMINISTER ANY SQL TUNING SET TO N683573
+/
+GRANT ADMINISTER SQL TUNING SET TO N683573
+/
+GRANT ADVISOR TO N683573
+/
+GRANT SELECT ANY DICTIONARY TO N683573
+/
+
+CREATE ZOPA N683573 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE DBTUNE
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON DBTUNE
+    QUOTA UNLIMITED ON PSDEFAULT
+    zopa EXPIRE
+    PROFILE EXPIRE_ZOPA_PWD
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO N683573
+/
+GRANT DEVELOPER_SUID TO N683573
+/
+GRANT PSOPSBATCHMGR TO N683573
+/
+ALTER ZOPA N683573 DEFAULT ROLE "CONNECT",
+                                DEVELOPER_SUID,
+                                PSOPSBATCHMGR
+/
+GRANT EXECUTE ON PSDBA.USP_PS_TRUNCATE_TABLE TO N683573
+
+
+
+
+
+A216688
+/
+
+
+ALTER ZOPA A236120
+ZOPA BY "#Loopnow1"
+/
+ALTER ZOPA A216688
+zopa EXPIRE
+/
+ALTER ZOPA A216688
+ACCOUNT UNLOCK
+/
+
+
+************Request for Database Support #42108756 for WADAS
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa4"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+**************Approved Request for Database Support #42165318 for KALIA
+
+
+WKABQA1,WKABQA2,WKABQA3
+
+ALTER ZOPA N178758
+ZOPA BY "#Temzopa14"
+/
+ALTER ZOPA N178758
+zopa EXPIRE
+/
+ALTER ZOPA N178758
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N178758';
+
+
+ALTER ZOPA N143499
+ZOPA BY "#Temzopa14"
+/
+ALTER ZOPA N143499
+zopa EXPIRE
+/
+ALTER ZOPA N143499
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N143499';
+
+
+
+***********Request for Database Support #42204193 for GARCIA
+ALTER ZOPA A199343
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199343
+zopa EXPIRE
+/
+ALTER ZOPA A199343
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199343';
+
+
+
+***********Approved Request for Database Support #42293953 for CHANDLER
+QA1, QA2 & QA3
+
+ALTER ZOPA A199388
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A199388
+zopa EXPIRE
+/
+ALTER ZOPA A199388
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199388';
+
+
+
+
+*******************Request for Database Support #42379508 for WELLS
+A210636
+WKABDEV2
+WKABQA3
+
+
+
+CREATE ZOPA A210636 ZOPA BY "#Temzopa3"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A210636
+/
+ALTER ZOPA A210636 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+WKABSTG1 WmWD?TB2
+WKABSTG2
+WKABPROD
+
+
+ALTER ZOPA A210636
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A210636
+zopa EXPIRE
+/
+ALTER ZOPA A210636
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210636';
+
+
+***************Request for Database Support #42537513 for AHUJA
+
+N634641
+N304781
+
+
+--IVDV01
+
+CREATE ZOPA N634641 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N634641
+/
+GRANT "CONNECT" TO N634641
+/
+ALTER ZOPA N634641 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+GRANT CREATE SESSION TO N634641
+/
+
+
+CREATE ZOPA N304781 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO N304781
+/
+GRANT "CONNECT" TO N304781
+/
+ALTER ZOPA N304781 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+GRANT CREATE SESSION TO N304781
+/
+
+
+***************Approved Request for Database Support #42555976 for GONZALEZ
+
+STG1
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199388';
+
+
+*************Request for Database Support #42620815 for THOTA
+
+ALTER ZOPA A595526
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A595526
+zopa EXPIRE
+/
+ALTER ZOPA A595526
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A595526';
+
+
+*************Approved Request for Database Support #42660882 for WADAS
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+
+******************Request for Database Support #42726533 for CALLAHAN
+
+WKAB_PROD, WKAB_STG1, WKAB_STG2, WKAB_QA3
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa7"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A220948';
+
+
+
+*********************Approved Request for Database Support #42823010 for HAGAN
+
+ALTER ZOPA A244843
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A244843
+zopa EXPIRE
+/
+ALTER ZOPA A244843
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A244843';
+
+
+
+***********************
+ALTER ZOPA system
+ZOPA BY "no734s"
+/
+
+ALTER ZOPA sys
+ZOPA BY "no734s"
+/
+
+
+******************Approved Request for Database Support #42932969 for GHOSH
+
+Anindita Ghosh (NID:N587364)
+Sreya Saswati (NID:N626207)
+
+
+ALTER ZOPA N587364
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N587364
+zopa EXPIRE
+/
+ALTER ZOPA N587364
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N587364';
+
+ALTER ZOPA N626207
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N626207
+zopa EXPIRE
+/
+ALTER ZOPA N626207
+ACCOUNT UNLOCK
+/Saswati, Sreya <SaswatiS@AETNA.com>
+
+select * from dba_ZOPAs where ZOPAname = 'N626207';
+
+
+
+***********Request for Database Support #43128628 for GARCIA
+
+
+Need to reset zopa for below ZOPAs to access QA3, STG2, STGC, TRG1 databases in WorkABility for use with PLSQL Developer to support WorkAbility Reports application. The following ID's who need zopas reset: A199343
+
+
+ALTER ZOPA A199343
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199343
+zopa EXPIRE
+/
+ALTER ZOPA A199343
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199343';
+
+
+
+************************************************
+
+QA2
+
+ALTER ZOPA N626207
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N626207
+zopa EXPIRE
+/
+ALTER ZOPA N626207
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N626207';
+
+
+******************Request for Database Support #43154914 for WADAS
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa6"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+***** Request for Database Support #43159559 for WADAS
+QA2
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa7"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+
+*************Request for Database Support #43358455 for ROBERGE
+
+
+ALTER ZOPA A210466 
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA A210466 
+zopa EXPIRE
+/
+ALTER ZOPA A210466 
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210466';
+
+
+***************Approved Request for Database Support #43373679 for TRENT
+
+ALTER ZOPA A210595
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210595
+zopa EXPIRE
+/
+ALTER ZOPA A210595
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210595';
+
+
+
+*************Completed Database Support Request #43212518 for HOUSE
+
+ISPROD
+
+
+
+ALTER ZOPA A210595
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210595
+zopa EXPIRE
+/
+ALTER ZOPA A210595
+ACCOUNT UNLOCK
+/
+
+system/dnZ4a$YT
+ifsdbprod
+
+AIFSDBM1P
+ifsdbprod
+aifsdbm1p
+select * from dba_ZOPAs where ZOPAname = 'A242918';
+
+
+
+*****************************Approved Request for Database Support #43624000 for CHANDLER
+
+ALTER ZOPA A199388
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A199388
+zopa EXPIRE
+/
+ALTER ZOPA A199388
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199388';
+
+
+**************Approved Request for Database Support #43720502 for LYNCH
+
+
+ALTER ZOPA A216023
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A216023
+zopa EXPIRE
+/
+ALTER ZOPA A216023
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A216023';
+select * from dba_ZOPAs where ZOPAname = 'NBENNETT'
+NBENNETT
+
+
+I found NBENNETT and NBENNETT1 ZOPA in PIHMS production.
+
+
+SELECT PTIME from SYS.ZOPA$ WHERE NAME = 'NBENNETT';
+
+
+
+
+********************
+
+--wkabdev2
+
+ALTER ZOPA S030596
+ZOPA BY "#KofaxDev"
+/
+
+
+--wkabqa1
+
+ALTER ZOPA S030596
+ZOPA BY "#KofaxQa" 
+/
+
+
+********Request for Database Support #44000923 for CHRISTODOULOU
+
+
+ALTER ZOPA A199394
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A199394
+zopa EXPIRE
+/
+ALTER ZOPA A199394
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199394';
+
+
+
+
+
+
+*****************************Request for Database Support #44341564 for ERICKSON
+
+ALTER ZOPA A210075
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210075
+zopa EXPIRE
+/
+ALTER ZOPA A210075
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210075';
+
+
+*****************************Request for Database Support #44550919 for ERICKSON
+
+ALTER ZOPA A407696
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A407696
+zopa EXPIRE
+/
+ALTER ZOPA A407696
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A407696';
+
+
+
+
+*************************RE: Approved Request for Database Support #44683218 for ARASU
+
+
+
+
+CREATE ZOPA N143242 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N143242
+/
+ALTER ZOPA N143242 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+ALTER ZOPA N143242
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N143242
+zopa EXPIRE
+/
+ALTER ZOPA N143242
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N143242';
+
+
+***************Request for Database Support #45026845 for WADAS
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa8"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+
+********Request for Database Support #45253070 for PELLETIER
+
+
+Reset / unlock account A210401 on STG1, STG2, and Prod
+
+
+ALTER ZOPA A210401
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210401
+zopa EXPIRE
+/
+ALTER ZOPA A210401
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+****************Request for Database Support #45561661 for GONZALEZ
+
+
+A210132
+
+PWorkAbility PROD, STG1 and STG2
+WorkAbility PROD, STG1 and STG2
+
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa4"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+*************Request for Database Support #45875178 for DESCHAINE
+
+
+
+A676881
+
+--->stg1 and stg2
+
+CREATE ZOPA A676881 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_NOAETNA_ROLE TO A676881
+/
+ALTER ZOPA A676881 DEFAULT ROLE  APP_READ_WRITE_NOAETNA_ROLE
+/
+
+
+
+
+---> wkabprod
+CREATE ZOPA A676881 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A676881
+/
+ALTER ZOPA A676881 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A676881',1,2,SYSDATE);
+COMMIT;
+
+select * from dba_ZOPAs where ZOPAname = 'A676881';
+
+
+
+
+***********************************************
+select * from dba_ZOPAs where ZOPAname = 'N144408';
+select * from dba_ZOPAs where ZOPAname = 'A593739';
+
+A593739
+
+
+N203947
+
+--->stg1 and stg2
+
+CREATE ZOPA N203947 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N203947
+/
+ALTER ZOPA N203947 DEFAULT ROLE  APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+CREATE ZOPA A593739 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A593739
+/
+ALTER ZOPA A593739 DEFAULT ROLE  APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+
+
+---> wkabprod
+CREATE ZOPA N203947 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N203947
+/
+ALTER ZOPA N203947 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+CREATE ZOPA A593739 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A593739
+/
+ALTER ZOPA A593739 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N203947',1,2,SYSDATE);
+COMMIT;
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A593739',1,2,SYSDATE);
+COMMIT;
+
+
+
+**************Request for Database Support #45939631 for PRIDHAM
+
+CREATE ZOPA A235197 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A235197
+/
+ALTER ZOPA A235197 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A235197',1,2,SYSDATE);
+COMMIT;
+
+
+
+
+******************Request for Database Support #46971328 for BLAKER
+
+ALTER ZOPA A199322
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199322
+zopa EXPIRE
+/
+ALTER ZOPA A199322
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199322';
+
+
+*****************Request for Database Support #47035911 for WELLS
+Dev1, Dev2, QA2, QA3, STG1, STG2(2), PROD
+ALTER ZOPA A210636
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210636
+zopa EXPIRE
+/
+ALTER ZOPA A210636
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210636';
+
+
+
+*********************Request for Database Support #47084452 for BEAUCHAMP
+
+WKAB STG1, STG2, PROD QA2, QA3 and 
+,
+
+ALTER ZOPA A214137
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A214137
+zopa EXPIRE
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A214137';
+
+
+
+***********************Request for Database Support #47105554 for CHRISTODOULOU
+
+ALTER ZOPA A199394
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A199394
+zopa EXPIRE
+/
+ALTER ZOPA A199394
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199394';
+
+
+****************Request for Database Support #47239659 for JOYCE
+
+ALTER ZOPA A240425
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A240425
+zopa EXPIRE
+/
+ALTER ZOPA A240425
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A240425';
+
+
+
+*******************Request for Database Support #47241963 for JOYCE
+
+--DR02--
+
+
+CREATE ZOPA A240425 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO A240425
+/
+ALTER ZOPA A240425 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+
+********************Request for Database Support #47447283 for WADAS
+
+
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+
+*******************Approved Request for Database Support #47447283 for WADAS
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa7"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+*******************Request for Database Support #47765933 for GONZALEZ
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210132';
+
+
+***********Approved Request for Database Support #48100233 for WADAS
+QA3
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa8"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+
+***************Request for Database Support #48213108 for WADAS
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa9"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+*****************Request for Database Support #48353403 for WADAS
+QA2
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa9"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+
+*******************Request for Database Support #48593675 for CALLAHAN
+WKAB_PROD, WKAB_STG1,WKAB_STG2, WKAB_QA3, WKAB_QA2
+
+
+
+ALTER ZOPA A220948
+ZOPA BY "#Temzopa8"
+/
+ALTER ZOPA A220948
+zopa EXPIRE
+/
+ALTER ZOPA A220948
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A220948';
+
+
+
+**************Request for Database Support #48996876 for GONZALEZ
+
+PROD, STG1 and STG2. 
+
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa6"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210132';
+
+
+
+*****************FINREPP Request for Database Support #49134164 for HAGGERTY
+
+ALTER ZOPA A744214
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A744214
+zopa EXPIRE
+/
+ALTER ZOPA A744214
+ACCOUNT UNLOCK
+/
+
+
+Hearts%5
+
+
+select * from dba_ZOPAs where ZOPAname = 'A744214';
+
+
+
+*********FINREPP  Approved - IFS Access Request (55811599) for Brody
+
+
+
+
+CREATE ZOPA N072192 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE EXPIRE_AIS_PWD
+    ACCOUNT UNLOCK
+    zopa EXPIRE
+/
+GRANT APP_ZOPA_ROLE TO N072192
+/
+ALTER ZOPA N072192 DEFAULT ROLE APP_ZOPA_ROLE
+/
+
+
+
+
+
+**********************Request for Database Support #49521795 for MCQUAID
+
+ALTER ZOPA A210321
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A210321
+zopa EXPIRE
+/
+ALTER ZOPA A210321
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210321';
+
+
+*************Request for Database Support #49535008 for YEEDARA
+
+ALTER ZOPA A680401
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A680401
+zopa EXPIRE
+/
+ALTER ZOPA A680401
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A680401';
+
+
+
+******************: Approved Request for Database Support #49535950 for NEVATIA
+
+DMDV01
+
+CREATE ZOPA N189484 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE  TO N189484
+/
+ALTER ZOPA N189484 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE 
+/
+
+CREATE ZOPA N656820 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE  TO N656820
+/
+ALTER ZOPA N656820 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE 
+/
+
+
+CREATE ZOPA N630863 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE  TO N630863
+/
+ALTER ZOPA N630863 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE 
+/
+
+
+DM02
+
+
+
+CREATE ZOPA N189484 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE  TO N189484
+/
+ALTER ZOPA N189484 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE 
+/
+
+CREATE ZOPA N656820 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE  TO N656820
+/
+ALTER ZOPA N656820 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE 
+/
+
+
+CREATE ZOPA N630863 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE  TO N630863
+/
+ALTER ZOPA N630863 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE 
+/
+
+
+
+N189484 - Prateek Nevatia
+N656820 - Ankita Inamdar
+N630863 - Shrivastava, Priyanka
+
+
+
+ALTER ZOPA N189484
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N189484
+zopa EXPIRE
+/
+ALTER ZOPA N189484
+ACCOUNT UNLOCK
+/
+
+
+ALTER ZOPA N656820
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N656820
+zopa EXPIRE
+/
+ALTER ZOPA N656820
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA N630863
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N630863
+zopa EXPIRE
+/
+ALTER ZOPA N630863
+ACCOUNT UNLOCK
+/
+
+
+**************** Request for Database Support #49581135 for NEVATIA
+
+CREATE ZOPA N189484 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N189484
+/
+ALTER ZOPA N189484 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N189484',1,2,SYSDATE);
+COMMIT;
+
+UPDATE AEDBA.AEDBA_VALID_ZOPAS SET ACCOUNT_TYPE = 2 where ZOPAname = 'N189484'
+
+commit;
+
+
+****************Request for Database Support #50404228 for KANDULA
+
+ALTER ZOPA N203947
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N203947
+zopa EXPIRE
+/
+ALTER ZOPA N203947
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N203947';
+
+
+
+***************Approved Request for Database Support #50961493 for WADAS
+
+QA3
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa10"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+select * from dba_ZOPAs where ZOPAname = 'N640917';
+
+
+****************Request for Database Support #51047753 for LYNCH
+
+ALTER ZOPA A216023
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A216023
+zopa EXPIRE
+/
+ALTER ZOPA A216023
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A216023';
+
+
+**********************Request for Database Support #51308204 for MCQUAID
+
+ALTER ZOPA A210321
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210321
+zopa EXPIRE
+/
+ALTER ZOPA A210321
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210321';
+
+
+********************Request for Database Support #51364592 for GONZALEZ
+
+
+PROD, STG1 & STG2
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa7"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210132';
+
+
+
+**************************Request for Database Support #51976398 for ERICKSON
+
+
+
+PROD, 
+
+ALTER ZOPA A210075
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A210075
+zopa EXPIRE
+/
+ALTER ZOPA A210075
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210075';
+
+
+************
+
+QA2
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa11"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+********* Request for Database Support #52196748 for TAILOR
+
+CREATE ZOPA N592261 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N592261
+/
+ALTER ZOPA N592261 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+GRANT APP_DEVELOPER_ROLE TO N592261
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'N592261';
+
+
+**************Request for Database Support #52429996 for ERICKSON
+
+ALTER ZOPA A210075
+ZOPA BY "#Temzopa4"
+/
+ALTER ZOPA A210075
+zopa EXPIRE
+/
+ALTER ZOPA A210075
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210075';
+
+
+*****************Request for Database Support #52484156 for ACETO
+
+wkabprod
+
+ALTER ZOPA A199246
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A199246
+zopa EXPIRE
+/
+ALTER ZOPA A199246
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A199246';
+
+
+*************Database Support Request for Approval #53406869 for WADAS
+
+wkabqa2
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa12"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+ALTER ZOPA SYS
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199246';
+
+
+*************************TOM ZOPA **************************************************
+
+CREATE ZOPA TOM ZOPA BY "T#mJup3R"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO TOM
+/
+ALTER ZOPA TOM DEFAULT ROLE "CONNECT"
+/
+GRANT SELECT ON SYS.DBA_ZOPAS TO TOM
+/
+GRANT SELECT ON SYS.DBA_SYS_PRIVS TO TOM
+/
+GRANT SELECT ON SYS.V_$PWFILE_ZOPAS TO TOM
+/
+GRANT SELECT ON SYS.V_$SYSTEM_PARAMETER TO TOM
+/
+GRANT SELECT ON SYS.DBA_ROLES TO TOM
+/
+GRANT SELECT ON SYS.DBA_PROFILES TO TOM
+/
+GRANT SELECT ON SYS.DBA_ROLE_PRIVS TO TOM
+/
+GRANT ALTER ANY ROLE TO TOM
+/
+GRANT ALTER PROFILE TO TOM
+/
+GRANT ALTER ZOPA TO TOM
+/
+GRANT CREATE PROFILE TO TOM
+/
+GRANT CREATE ROLE TO TOM
+/
+GRANT CREATE SESSION TO TOM
+/
+GRANT CREATE ZOPA TO TOM
+/
+GRANT DROP ANY ROLE TO TOM
+/
+GRANT DROP PROFILE TO TOM
+/
+GRANT DROP ZOPA TO TOM
+/
+GRANT GRANT ANY PRIVILEGE TO TOM
+/
+GRANT GRANT ANY ROLE TO TOM
+/
+
+
+
+*****************************
+
+
+ALTER ZOPA A236120
+ZOPA BY "#Loopnow1"
+/
+
+
+********IFSPROD ******
+
+A540651
+A303996
+
+ALTER ZOPA A303996
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A303996
+zopa EXPIRE
+/
+ALTER ZOPA A303996
+ACCOUNT UNLOCK
+/
+
+
+#Rg3FsA7
+
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A303996';
+
+
+
+********Request for Database Support #55184453 for Poulin
+
+
+
+CREATE ZOPA A781214 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A781214
+/
+ALTER ZOPA A781214 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A781214',1,2,SYSDATE);
+COMMIT;
+
+
+*****55414936 
+
+ALTER ZOPA N775871
+ZOPA BY "Sep18#2019"
+/
+
+ALTER ZOPA N775871
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210466';
+
+
+
+*****DPUAT91 *****
+
+ALTER ZOPA N683573
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N683573
+zopa EXPIRE
+/
+ALTER ZOPA N683573
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'N683573';
+
+
+*****************************
+
+
+ALTER ZOPA SYS
+ZOPA BY "eDiscovery33"
+/
+
+*******Request for Database Support #55568738 for Beauchamp
+
+PROD
+
+ALTER ZOPA A214137
+ZOPA BY "#Temzopa4"
+/
+ALTER ZOPA A214137
+zopa EXPIRE
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A214137';
+
+
+
+*************Request for Database Support #55599844 for Srinivasan
+
+DPDEV91
+
+
+
+
+CREATE ZOPA A616031 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE PSDEFAULT
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON DBTUNE
+    QUOTA UNLIMITED ON PSDEFAULT
+    PROFILE EXPIRE_ZOPA_PWD
+    zopa EXPIRE 
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO A616031
+/
+GRANT DEVELOPER_FULL TO A616031
+/
+GRANT PSOPSBATCHMGR TO A616031
+/
+ALTER ZOPA A616031DEFAULT ROLE "CONNECT",
+                                DEVELOPER_FULL,
+                                PSOPSBATCHMGR
+/
+
+
+
+
+**************Request for Database Support #55604219 for Gonzalez
+
+STG2
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa8"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210132';
+
+
+
+
+**********
+
+N683573
+
+
+ALTER ZOPA N683573
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N683573
+zopa EXPIRE
+/
+ALTER ZOPA A236120
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N683573';
+
+
+
+
+****
+
+
+ALTER ZOPA A199343
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A199343
+zopa EXPIRE
+/
+ALTER ZOPA A199343
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A199343';
+
+
+*************
+
+A210648
+
+ALTER ZOPA A210648
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210648
+zopa EXPIRE
+/
+ALTER ZOPA A210648
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A210648';
+
+
+
+
+***************Request for Database Support #55910904 for Sandberg
+
+A681233
+
+, ‘WKABPROD’, , 'DR02' 
+
+‘wkabqa3’
+
+CREATE ZOPA A681233 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A681233
+/
+ALTER ZOPA A681233 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+WKABSTG1’
+
+CREATE ZOPA A681233 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A681233
+/
+ALTER ZOPA A681233 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+ ‘WKABSTG2’
+
+CREATE ZOPA A681233 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A681233
+/
+ALTER ZOPA A681233 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+wkabprod
+
+
+CREATE ZOPA A681233 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A681233
+/
+ALTER ZOPA A681233 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A681233',1,2,SYSDATE);
+COMMIT;
+
+
+DR02
+
+CREATE ZOPA A681233 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_BA_NOAENTA TO A681233
+/
+ALTER ZOPA A681233 DEFAULT ROLE APP_READ_ONLY_BA_NOAENTA
+/
+
+
+***********************Approved Request for Database Support #55954756 for Macdonald
+
+A407696
+
+wkabqa2, wkabqa3, wkabqa1, wkabdev2
+
+
+ALTER ZOPA A407696
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A407696
+zopa EXPIRE
+/
+ALTER ZOPA A407696
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A407696';
+
+
+
+**************E: Request for Database Support #55975633 for Bushi
+
+DEV2,QA2,STG2 
+
+
+CREATE ZOPA A068768 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A068768
+/
+ALTER ZOPA A068768 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+GRANT APP_DEVELOPER_ROLE TO A068768
+/
+
+
+***********Request for Database Support #55983467 for Beauchamp
+
+
+STG1, QA2
+
+ALTER ZOPA A214137
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA A214137
+zopa EXPIRE
+/
+ALTER ZOPA A214137
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'A214137';
+
+
+
+*******************Request for Database Support #55988960 for Charnis
+
+DPDEV91 and DPDEV92
+
+A616888
+
+A616031
+
+DPDEV91
+
+ALTER ZOPA A616031
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A616031
+zopa EXPIRE
+/
+ALTER ZOPA A616031
+ACCOUNT UNLOCK
+/
+
+DPDEV92
+
+ALTER ZOPA A616031
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A616031
+zopa EXPIRE
+/
+ALTER ZOPA A616031
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA A616888
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A616888
+zopa EXPIRE
+/
+ALTER ZOPA A616888
+ACCOUNT UNLOCK
+/
+
+
+*****************Request for Database Support #56007440 for Pastore
+
+
+ALTER ZOPA A067076
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA A067076
+zopa EXPIRE
+/
+ALTER ZOPA A067076
+ACCOUNT UNLOCK
+/
+
+
+********Request for Database Support #56016914 for Kandula
+
+
+ALTER ZOPA N203947
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA N203947
+zopa EXPIRE
+/
+ALTER ZOPA N203947
+ACCOUNT UNLOCK
+/
+
+*****************Request for Database Support #56017736 for Inamdar
+
+
+ALTER ZOPA N656820
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N656820
+zopa EXPIRE
+/
+ALTER ZOPA N656820
+ACCOUNT UNLOCK
+/
+
+
+*****************
+
+ALTER ZOPA A236120
+ZOPA BY "Feb10#2020"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A771664';
+
+
+eService Request. https://eservice.aetna.com/net/default.aspx
+
+eService --> Service Administration --> DBA Requests
+ 
+or
+ 
+eService --> Application Development--> Database Support
+
+
+
+*************Approved Request for Database Support #56029189 for Parab
+
+N656820
+N143592
+N726227
+
+
+1 ivr IVDV01/IVQA01/IVSTG01
+
+
+CREATE ZOPA N656820 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT  IVR_ROLE TO N656820 
+/
+GRANT "CONNECT" TO N656820
+/
+ALTER ZOPA N656820 DEFAULT ROLE IVR_ROLE
+/
+GRANT CREATE SESSION TO N656820
+/
+
+
+
+
+CREATE ZOPA N143592 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT IVR_ROLE TO N143592 
+/
+GRANT "CONNECT" TO N656820
+/
+ALTER ZOPA N143592 DEFAULT ROLE IVR_ROLE
+/
+GRANT CREATE SESSION TO N143592
+/
+
+
+
+
+
+CREATE ZOPA N726227 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE TOOLS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT IVR_ROLE TO  N726227 
+/
+GRANT "CONNECT" TO N726227
+/
+ALTER ZOPA N726227 DEFAULT ROLE IVR_ROLE
+/
+GRANT CREATE SESSION TO N726227
+/
+
+
+
+2 ivr DMDV01/ DMQES1/DMSTG
+
+
+CREATE ZOPA N656820 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N656820
+/
+ALTER ZOPA N656820 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+CREATE ZOPA N143592 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N143592
+/
+ALTER ZOPA N143592 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+CREATE ZOPA N726227 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N726227
+/
+ALTER ZOPA N726227 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+
+
+CREATE ROLE APP_READ_ONLY_ALL_DATA_ROLE NOT IDENTIFIED
+/
+GRANT CREATE SESSION TO APP_READ_ONLY_ALL_DATA_ROLE
+/
+GRANT SELECT ANY TABLE TO APP_READ_ONLY_ALL_DATA_ROLE
+/
+CREATE ROLE APP_READ_WRITE_ALL_DATA_ROLE NOT IDENTIFIED
+/
+GRANT ALTER ANY MATERIALIZED VIEW TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT CREATE SESSION TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT DELETE ANY TABLE TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT EXECUTE ANY PROCEDURE TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT INSERT ANY TABLE TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT SELECT ANY DICTIONARY TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT SELECT ANY TABLE TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT UPDATE ANY TABLE TO APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+
+*************
+
+DPUAT92 and DPDRYRUN
+
+ALTER ZOPA A616888
+ZOPA BY "#Temzopa14"
+/
+ALTER ZOPA A616888
+zopa EXPIRE
+/
+ALTER ZOPA A616888
+ACCOUNT UNLOCK
+/
+
+
+
+***************Request for Database Support #56138346 for Simkhada
+
+
+DEV2,QA2,STG2 
+
+CREATE ZOPA A742660 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A742660
+/
+ALTER ZOPA A742660 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+GRANT APP_DEVELOPER_ROLE TO A742660
+/
+
+
+
+******************
+
+
+ALTER ZOPA A771664
+ZOPA BY "#Temzopa14"
+/
+ALTER ZOPA A771664
+zopa EXPIRE
+/
+ALTER ZOPA A771664
+ACCOUNT UNLOCK
+/
+
+
+
+******Request for Database Support #56184484 for Murugan
+
+
+DEV2,QA2,STG2 
+
+CREATE ZOPA N208982 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N208982
+/
+
+GRANT APP_DEVELOPER_ROLE TO N208982
+/
+ALTER ZOPA N208982 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+ALTER ZOPA N208982 DEFAULT ROLE APP_DEVELOPER_ROLE 
+/
+
+
+
+GRANT UNLIMITED TABLESPACE TO N208982
+/
+
+
+ALTER ZOPA N208982
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA N208982
+zopa EXPIRE
+/
+ALTER ZOPA N208982
+ACCOUNT UNLOCK
+/
+
+
+
+N208982
+
+
+A068768
+A210648
+
+
+****************Request for Database Support #56214229 for Gonzalez
+DM02
+
+CREATE ZOPA A210132 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO A210132
+/
+ALTER ZOPA A210132 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+
+
+****************Request for Database Support #56252495 for Gonzalez
+
+DR02 
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa02"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+
+
+*****************Request for Database Support #56254737 for Patra
+
+
+WKABDEV2, WKABQA2, WKABSTG2 
+
+
+
+
+CREATE ZOPA N207315 ZOPA BY "#Temzopa2"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N207315
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N207315
+/
+ALTER ZOPA N207315 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N207315
+/
+
+
+ALTER ZOPA N207315
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA N207315
+zopa EXPIRE
+/
+ALTER ZOPA SYSTEM
+ACCOUNT UNLOCK
+/
+
+
+
+
+select * from dba_ZOPAs where ZOPAname = 'N207315';
+
+
+************ Request for Database Support #56262235 for Chakraborty
+
+
+
+
+WKABDEV2, WKABQA2, 
+
+
+
+
+CREATE ZOPA N710944 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_DEVELOPER_ROLE TO N710944
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N710944
+/
+ALTER ZOPA N710944 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N710944
+/
+
+
+WKABSTG2 
+
+
+CREATE ZOPA N710944 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N710944
+/
+ALTER ZOPA N710944 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+
+*****************Request for Database Support #56273932 for Iqbal
+
+
+DPDRYRUN
+
+ALTER ZOPA N683573
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N683573
+zopa EXPIRE
+/
+ALTER ZOPA N683573
+ACCOUNT UNLOCK
+/
+
+
+***************
+
+wkabprod
+                      
+
+ALTER ZOPA S049250
+ZOPA BY "#TsQ416rPt"
+/
+
+
+DPNTP000/DNTMPRP1
+
+ALTER ZOPA S042208
+ZOPA BY "#RsQ217rPt"
+/
+
+
+
+**************Approved Request for Database Support #56407090 for Gonzalez
+
+ALTER ZOPA A210132
+ZOPA BY "#Temzopa9"
+/
+ALTER ZOPA A210132
+zopa EXPIRE
+/
+ALTER ZOPA A210132
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210132';
+
+
+
+ALTER ZOPA N304781
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA N304781
+zopa EXPIRE
+/
+ALTER ZOPA N304781
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N304781';
+
+
+
+*******Request for Database Support #56460628 for Kandula
+
+
+ALTER ZOPA N203947
+ZOPA BY "#Temzopa4"
+/
+ALTER ZOPA N203947
+zopa EXPIRE
+/
+ALTER ZOPA N203947
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N203947';
+
+
+***********************************
+
+ALTER ZOPA N304781R
+ZOPA BY "Sep03#2020"
+/
+ALTER ZOPA N304781R
+zopa EXPIRE
+/
+ALTER ZOPA N304781R
+ACCOUNT UNLOCK
+/
+
+
+*********8Request for Database Support #56515309 for Williams
+
+ALTER ZOPA A210648
+ZOPA BY "#Temzopa3"
+/
+ALTER ZOPA A210648
+zopa EXPIRE
+/
+ALTER ZOPA A210648
+ACCOUNT UNLOCK
+/
+
+
+
+*******Assigned Database Support Request #56571430 for Whitcomb
+
+ALTER ZOPA A210643
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A210643
+zopa EXPIRE
+/
+ALTER ZOPA A210643
+ACCOUNT UNLOCK
+/
+
+
+
+*************
+
+ALTER ZOPA A616888
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A616888
+zopa EXPIRE
+/
+ALTER ZOPA A616888
+ACCOUNT UNLOCK
+/
+
+
+
+
+ALTER ZOPA system
+ZOPA BY "#sysDPUATTSt3"
+/
+
+ALTER ZOPA sys
+ZOPA BY "sysDPDEVUG"
+/
+
+
+
+**********Request for Database Support #56953591 for Kandula
+
+
+ALTER ZOPA N203947
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA N203947
+zopa EXPIRE
+/
+ALTER ZOPA N203947
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N203947';
+
+
+
+********** Request for Database Support #56971700 for Erickson
+
+
+ALTER ZOPA A210075
+ZOPA BY "#Temzopa5"
+/
+ALTER ZOPA A210075
+zopa EXPIRE
+/
+ALTER ZOPA A210075
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A210075';
+
+
+********
+
+N203947 
+
+ALTER ZOPA N203947
+ZOPA BY "#Temzopa6"
+/
+ALTER ZOPA N203947
+zopa EXPIRE
+/
+ALTER ZOPA SYSTEM
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'N203947';
+
+
+
+
+N203947 
+
+ALTER ZOPA A216688
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A216688
+zopa EXPIRE
+/
+ALTER ZOPA A216688
+ACCOUNT UNLOCK
+/
+
+select * from dba_ZOPAs where ZOPAname = 'A216688';
+
+
+
+**************
+
+DEV2 A070028 no
+DEV1 A070028 no
+QA1  A070028 no 
+QA2  A070028 no
+QA3  A070028 no
+STG1 A070028 no
+STG2 
+
+
+A070028
+David  Chandler
+
+A137509
+
+
+CREATE ZOPA A070028 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A070028
+/
+ALTER ZOPA A070028 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+select * from dba_ZOPAs where ZOPAname = 'A070028';
+
+
+**********88Request for Database Support #57300474 for Laurore
+
+WKAB PROD, STG1, STG2, DR02
+
+
+A210132
+
+
+A114756
+
+
+wkabstg1
+
+CREATE ZOPA A114756 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO A114756
+/
+GRANT APP_READ_WRITE_NOAETNA_ROLE TO A114756
+/
+GRANT "CONNECT" TO A114756
+/
+GRANT "RESOURCE" TO A114756
+/
+ALTER ZOPA A114756 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_READ_WRITE_NOAETNA_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT SELECT ON SYS.DBA_OBJECTS TO A114756
+/
+GRANT SELECT ON SYS.ALL_OBJECTS TO A114756
+/
+GRANT UNLIMITED TABLESPACE TO A114756
+/
+
+
+
+wkabstg2
+
+
+CREATE ZOPA A114756 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT AE_CONNECT_ROLE TO A114756
+/
+GRANT APP_READ_WRITE_NOAETNA_ROLE TO A114756
+/
+GRANT "CONNECT" TO A114756
+/
+GRANT "RESOURCE" TO A114756
+/
+ALTER ZOPA A114756 DEFAULT ROLE AE_CONNECT_ROLE,
+                                APP_READ_WRITE_NOAETNA_ROLE,
+                                "CONNECT",
+                                "RESOURCE"
+/
+GRANT SELECT ON SYS.ALL_OBJECTS TO A114756
+/
+GRANT SELECT ON WKAB10.T_WCP_TEMP_ZOPA TO A114756
+/
+GRANT SELECT ON SYS.DBA_OBJECTS TO A114756
+/
+GRANT UNLIMITED TABLESPACE TO A114756
+/
+
+
+
+wkabprod
+
+
+CREATE ZOPA A114756 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A114756
+/
+ALTER ZOPA A114756 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+DR02
+
+CREATE ZOPA A114756 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_BA_NOAENTA TO A114756
+/
+GRANT APP_READ_ONLY_LX_ROLE TO A114756
+/
+ALTER ZOPA A114756 DEFAULT ROLE APP_READ_ONLY_BA_NOAENTA,
+                                APP_READ_ONLY_LX_ROLE
+/
+
+
+
+
+************Request for Database Support #57323731 for Deshpande
+
+
+CREATE ZOPA A113354 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A113354
+/
+ALTER ZOPA A113354 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+********************RE: Request for Database Support #57335833 for Deshpande
+
+DR02
+
+A113354
+
+
+CREATE ZOPA A113354 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_ALL_DATA_ROLE TO A113354
+/
+ALTER ZOPA A113354 DEFAULT ROLE APP_READ_ONLY_ALL_DATA_ROLE
+/
+
+***************Approved Request for Database Support #57817336 for Macdonald
+
+
+ALTER ZOPA A407696
+ZOPA BY "#Temzopa2"
+/
+ALTER ZOPA A407696
+zopa EXPIRE
+/
+ALTER ZOPA A407696
+ACCOUNT UNLOCK
+/
+
+
+*************** Request for Database Support #58419700 for Henry
+
+WKABPROD, WKABSTG1, WKABSTG2, DR02
+
+
+
+---wkabprod
+
+CREATE ZOPA A659265 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A659265
+/
+ALTER ZOPA A659265 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('A659265',1,2,SYSDATE);
+COMMIT;
+
+
+----DR02
+
+CREATE ZOPA A659265 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_STANDARD_PROFILE
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_BA_NOAENTA TO A659265
+/
+ALTER ZOPA A659265 DEFAULT ROLE APP_READ_ONLY_BA_NOAENTA
+/
+
+
+---WKABSTG1
+
+CREATE ZOPA A659265 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A659265
+/
+ALTER ZOPA A659265 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+-- WKABSTG2
+
+CREATE ZOPA A659265 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    ACCOUNT UNLOCK
+/
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO A659265
+/
+ALTER ZOPA A659265 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+ALTER ZOPA N209220
+ZOPA BY "$HhtMN4A"
+/
+ALTER ZOPA A236120
+zopa EXPIRE
+/
+ALTER ZOPA A236120
+ACCOUNT UNLOCK
+/
+
+
+
+
+********** Request for Database Support #59024305 
+
+--wkabprod
+
+CREATE ZOPA N821676 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N821676
+/
+ALTER ZOPA N821676 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N821676',1,2,SYSDATE);
+COMMIT;
+
+
+
+ALTER ZOPA N209220
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N209220
+zopa EXPIRE
+/
+ALTER ZOPA N209220
+ACCOUNT UNLOCK
+/
+
+
+****** Request for Database Support #59024283 
+
+
+---wkabqa1, wkabqa2, wkabqa3
+
+CREATE ZOPA N821676 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N821676
+/
+ALTER ZOPA N821676 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+*******Request for Database Support #59024249 
+
+--- wkabdev1, wkabdev2, wkabdev3
+
+CREATE ZOPA N821676 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N821676
+/
+ALTER ZOPA N821676 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+
+ALTER ZOPA A610993
+ZOPA BY "Sep25$2018"
+/
+
+
+ALTER ZOPA A804545
+ACCOUNT UNLOCK
+/
+
+
+*******************
+
+
+
+ALTER ZOPA N821051
+ZOPA BY "#Temzopa1"
+/
+ALTER ZOPA N821051
+zopa EXPIRE
+/
+ALTER ZOPA A236120
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER ZOPA A236120
+ZOPA BY "#Oct092018#"
+/
+
+
+
+****** eService 60089242 
+
+DEV1, DEV 2, DEV 3, QA1, QA 2, QA 3 and STG 1, STG 2.
+
+
+CREATE ZOPA N630498 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N630498
+/
+ALTER ZOPA N630498 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N630498
+/
+
+
+Hi,
+
+I created your NID in wkabdev1 database. With following temp zopa: #Temzopa1
+
+It should ask you to change upon login. Please let me know if this working for you and I will do the same in all other databases.
+
+Thanks.
+
+
+
+
+****** eService 60089632
+
+Dev1, Dev2 ,Dev3, QA1, QA2 & QA3.
+
+
+CREATE ZOPA N592480 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N592480
+/
+ALTER ZOPA N592480 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N592480
+/
+
+Z00mZ00m!
+
+
+
+Hi,
+
+I created your NID in wkabdev1 database. With following temp zopa: #Temzopa1
+
+It should ask you to change upon login. Please let me know if this working for you and I will do the same in all other databases.
+
+Thanks.
+
+
+
+************* eService 60092401
+
+DEV1, DEV2, DEV3, QA1, QA2, QA3,
+
+
+CREATE ZOPA N124875 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N124875
+/
+ALTER ZOPA N124875 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N124875
+/
+
+
+Z00mZ00m!
+
+
+Hi,
+
+I created your NID in wkabdev1 database. With following temp zopa: #Temzopa1
+
+It should ask you to change upon login. Please let me know if this working for you and I will do the same in all other databases.
+
+Thanks.
+
+
+*************************************************
+
+*************eService  60098178 
+
+
+N085584
+
+CREATE ZOPA N085584 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N085584
+/
+ALTER ZOPA N085584 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N085584
+/
+
+
+Hi,
+
+Your NID oracle account created in following databases:
+
+ wkabdev1
+ wkabdev2
+ wkabdev3
+ wkabqa1
+ wkabqa2
+ wkabqa3
+
+ With following temp zopa: #Temzopa1
+
+It should prompt to change zopa upon first login to each database.
+
+Thanks.
+
+*************eService 60098216 
+
+N278477
+
+
+CREATE ZOPA N278477 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N278477
+/
+ALTER ZOPA N278477 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N278477
+/
+
+Hi,
+
+Your NID oracle account created in following databases:
+
+ wkabdev1
+ wkabdev2
+ wkabdev3
+ wkabqa1
+ wkabqa2
+ wkabqa3
+
+ With following temp zopa: #Temzopa1
+
+It should prompt to change zopa upon first login to each database.
+
+Thanks.
+
+
+ 
+*************eService 60098714 
+
+N122563
+
+
+CREATE ZOPA N122563 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N122563
+/
+ALTER ZOPA N122563 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N122563
+/
+
+
+Hi,
+
+Your NID oracle account created in following databases:
+
+ wkabdev1
+ wkabdev2
+ wkabdev3
+ wkabqa1
+ wkabqa2
+ wkabqa3
+
+ With following temp zopa: #Temzopa1
+
+It should prompt to change zopa upon first login to each database.
+
+Thanks.
+
+
+*************eService  60098736 
+
+N115689
+
+CREATE ZOPA N115689 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N115689
+/
+ALTER ZOPA N115689 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N115689
+/
+
+
+
+
+Hi,
+
+Your NID oracle account created in following databases:
+
+ wkabdev1
+ wkabdev2
+ wkabdev3
+ wkabqa1
+ wkabqa2
+ wkabqa3
+
+ With following temp zopa: #Temzopa1
+
+It should prompt to change zopa upon first login to each database.
+
+Thanks.
+
+****** eService 60113066 
+
+
+N262736
+
+CREATE ZOPA N262736 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N262736
+/
+ALTER ZOPA N262736 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N262736
+/
+
+
+
+
+Hi,
+
+Your NID oracle account created in following databases:
+
+ wkabdev1
+ wkabdev2
+ wkabdev3
+ wkabqa1
+ wkabqa2
+ wkabqa3
+
+ With following temp zopa: #Temzopa1
+
+It should prompt to change zopa upon first login to each database.
+
+Thanks.
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+********** eService 60116068
+
+N731812
+
+
+CREATE ZOPA N731812 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N731812
+/
+ALTER ZOPA N731812 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N731812
+/
+
+
+
+********** eService 60116087
+N225592
+
+CREATE ZOPA N225592 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N225592
+/
+ALTER ZOPA N225592 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N225592
+/
+
+
+
+***********eService 60116093
+
+N100410
+
+
+
+CREATE ZOPA N100410 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N100410
+/
+ALTER ZOPA N100410 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N100410
+/
+
+
+
+********eService 60116107
+
+N115690
+
+
+CREATE ZOPA N115690 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N115690
+/
+ALTER ZOPA N115690 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N115690
+/
+
+Z00mZ00m!
+
+
+CREATE ZOPA N630498 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N630498
+/
+ALTER ZOPA N630498 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N630498
+/
+
+
+
+
+#################################################################
+
+**** eService 60118480
+
+DEV2, DEV3, QA2, STG2, STG1, QA3, DEV1
+
+N770247
+
+CREATE ZOPA N770247 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N770247
+/
+ALTER ZOPA N770247 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N770247
+/
+
+
+
+
+CREATE ZOPA N770247 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N770247
+/
+ALTER ZOPA N770247 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N770247
+/
+
+
+**** eService 60118571
+
+DEV2,DEV3,QA2,QA3,STG1,STG2
+
+N274184
+
+CREATE ZOPA N274184 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N274184
+/
+ALTER ZOPA N274184 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N274184
+/
+
+
+
+
+CREATE ZOPA N274184 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N274184
+/
+ALTER ZOPA N274184 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N274184
+/
+
+
+*** eService 60125842
+
+QA1, QA2, QA3, DEV1, DEV2, DEV3, STG1, STG2, and STGC.
+
+N274025
+
+
+CREATE ZOPA N274025 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N274025
+/
+ALTER ZOPA N274025 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N274025
+/
+
+
+
+CREATE ZOPA N274025 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N274025
+/
+ALTER ZOPA N274025 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N274025
+/
+
+
+*** eService 60128505
+
+QA1, QA2, QA3, Dev1, Dev2 and Dev3
+
+N100411
+
+
+CREATE ZOPA N100411 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N100411
+/
+ALTER ZOPA N100411 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N100411
+/
+
+
+
+*** eService 60122238
+
+QA1, QA2, QA3, Dev1, Dev2 and Dev3
+
+N125743
+
+
+
+CREATE ZOPA N125743 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N125743
+/
+ALTER ZOPA N125743 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N125743
+/
+
+
+**** eService 60121942
+
+QA1, QA2, QA3, Dev1, Dev2 and Dev3.
+
+N279306
+
+
+CREATE ZOPA N279306 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N279306
+/
+ALTER ZOPA N279306 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N279306
+/
+
+
+
+**** eService 60121913
+
+QA1, QA2, QA3, Dev1, Dev2 and Dev3
+
+N271519
+
+
+CREATE ZOPA N271519 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N271519
+/
+ALTER ZOPA N271519 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N271519
+/
+
+
+**** eService 60121676
+
+QA1, QA2, QA3, Dev1, Dev2 and Dev3
+
+N293185
+
+
+CREATE ZOPA N293185 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N293185
+/
+ALTER ZOPA N293185 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N293185
+/
+
+
+
+
+**** eService 60121673
+
+QA1, QA2, QA3, DEV1, DEV2, and DEV3
+
+N269476
+
+
+CREATE ZOPA N269476 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N269476
+/
+ALTER ZOPA N269476 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N269476
+/
+
+
+
+**** eService 60121662
+
+QA1, QA2, QA3, Dev1, Dev2 and Dev3
+
+N279882
+
+CREATE ZOPA N279882 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_DEVELOPER_ROLE TO N279882
+/
+ALTER ZOPA N279882 DEFAULT ROLE APP_DEVELOPER_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N279882
+/
+
+
+
+Z00mZ00m!
+STG1 - Un5Vo?9P
+STG2 - eZJ2cbS$
+STGC - fc0UW0?9
+
+
+
+
+
+Hi,
+
+Your NID oracle account created in following databases:
+
+ wkabdev1
+ wkabdev2
+ wkabdev3
+ wkabqa1
+ wkabqa2
+ wkabqa3
+
+ With following temp zopa: #Temzopa1
+
+It should prompt to change zopa upon first login to each database.
+
+Thanks.
+
+
+Account for wkabstg1 and wkabstg2 will be added after internal approval….
+
+
+CIjK4K%9
+
+ALTER ZOPA HE_CUSTOM
+ZOPA BY "Develop_821"
+/
+ALTER ZOPA N821145
+zopa EXPIRE
+/
+ALTER ZOPA N821145
+ACCOUNT UNLOCK
+/
+
+
+CREATE ZOPA N821145 ZOPA BY "#Temzopa7"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+     zopa EXPIRE
+      ACCOUNT UNLOCK
+/
+GRANT APP_READ_WRITE_NOAETNA_ROLE TO N821145
+/
+ALTER ZOPA N821145 DEFAULT ROLE APP_READ_WRITE_NOAETNA_ROLE
+/
+
+
+ORA-01017
+
+
+***********
+
+wkabprod
+
+CREATE ZOPA N318985 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N318985
+/
+ALTER ZOPA N318985 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N318985',1,2,SYSDATE);
+COMMIT;
+
+
+
+*****
+
+Z00mZ00m!
+
+
+CREATE ZOPA N821455 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N821455
+/
+ALTER ZOPA N821455 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N821455
+/
+
+
+CREATE ZOPA N821901 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N821901
+/
+ALTER ZOPA N821901 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+GRANT UNLIMITED TABLESPACE TO N821901
+/
+
+
+**** IFSPROD
+#Permzopa1
+
+ALTER ZOPA A605486
+ZOPA BY "Oct19#2020"
+/
+
+ALTER ZOPA A605486
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA A605486
+ACCOUNT UNLOCK
+/
+
+
+-- insufficient privileges to extract ZOPA
+--CREATE ZOPA A236120 ZOPA BY VALUES '?'
+--    DEFAULT TABLESPACE ZOPASD
+--    TEMPORARY TABLESPACE TEMP
+--    PROFILE STANDARD
+--    ACCOUNT UNLOCK
+--/
+
+CREATE ZOPA A236120 ZOPA BY "DEC06#2018"
+    DEFAULT TABLESPACE ZOPASD
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    ACCOUNT UNLOCK
+/
+
+
+GRANT "CONNECT" TO A236120
+/
+GRANT DBA TO A236120
+/
+GRANT "RESOURCE" TO A236120
+/
+ALTER ZOPA A236120 DEFAULT ROLE "CONNECT",
+                                DBA,
+                                "RESOURCE"
+/
+GRANT UNLIMITED TABLESPACE TO A236120
+/
+
+
+
+
+ALTER ZOPA N821065
+ZOPA BY "July24#2019"
+/
+
+ALTER ZOPA N821065
+zopa EXPIRE
+/
+ALTER ZOPA N821065
+ACCOUNT UNLOCK
+/
+
+
+WKAB_NOTRIGGER
+
+ALTER ZOPA WKAB_NOTRIGGER
+ZOPA BY "Sep18#2019"
+/
+
+
+****Approved Request for Database Support #60489472 for Poff
+
+Z00mZ00m!
+Baldocchi, Justine A (Group Benefits Operations) <Justine.Baldocchi@thehartford.com>
+
+
+CREATE ZOPA N821312 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N821312
+/
+ALTER ZOPA N821312 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+
+
+******wkabprod*********
+
+
+CREATE ZOPA N389778 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N389778
+/
+ALTER ZOPA N389778 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N389778',1,2,SYSDATE);
+COMMIT;
+
+
+*********wkabprod*********
+
+
+
+CREATE ZOPA N389771 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N389771
+/
+ALTER ZOPA N389771 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N389771',1,2,SYSDATE);
+COMMIT;
+
+ 
+
+CREATE ZOPA N389748 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N389748
+/
+ALTER ZOPA N389748 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N389748',1,2,SYSDATE);
+COMMIT;
+
+
+
+CREATE ZOPA N390023 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N390023
+/
+ALTER ZOPA N390023 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N390023',1,2,SYSDATE);
+COMMIT;
+
+
+
+******* wkabprod*****
+
+N390034 
+
+
+CREATE ZOPA N390034 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N390034
+/
+ALTER ZOPA N390034 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N390034',1,2,SYSDATE);
+COMMIT;
+
+************
+wkabprod sys/sk#aeF?sv9Mpe1H
+CREATE PROFILE DEFAULT
+    LIMIT SESSIONS_PER_ZOPA         UNLIMITED
+          CPU_PER_SESSION           UNLIMITED
+          CPU_PER_CALL              UNLIMITED
+          CONNECT_TIME              UNLIMITED
+          IDLE_TIME                 UNLIMITED
+          LOGICAL_READS_PER_SESSION UNLIMITED
+          LOGICAL_READS_PER_CALL    UNLIMITED
+          COMPOSITE_LIMIT           UNLIMITED
+          PRIVATE_SGA               UNLIMITED
+          FAILED_LOGIN_ATTEMPTS     UNLIMITED
+          zopa_LIFE_TIME        UNLIMITED
+          zopa_REUSE_TIME       390
+          zopa_REUSE_MAX        25
+          zopa_LOCK_TIME        UNLIMITED
+          zopa_GRACE_TIME       UNLIMITED
+          zopa_VERIFY_FUNCTION  AI_zopa_VALIDATE
+/
+
+CREATE PROFILE TRUSTED_ID_NO_EXPIRE
+    LIMIT SESSIONS_PER_ZOPA         DEFAULT
+          CPU_PER_SESSION           DEFAULT
+          CPU_PER_CALL              DEFAULT
+          CONNECT_TIME              DEFAULT
+          IDLE_TIME                 DEFAULT
+          LOGICAL_READS_PER_SESSION DEFAULT
+          LOGICAL_READS_PER_CALL    DEFAULT
+          COMPOSITE_LIMIT           DEFAULT
+          PRIVATE_SGA               DEFAULT
+          FAILED_LOGIN_ATTEMPTS     5
+          zopa_LIFE_TIME        UNLIMITED
+          zopa_REUSE_TIME       365
+          zopa_REUSE_MAX        6
+          zopa_LOCK_TIME        1
+          zopa_GRACE_TIME       UNLIMITED
+          zopa_VERIFY_FUNCTION  DEFAULT
+/
+
+
+
+
+ALTER ZOPA S011890
+ACCOUNT UNLOCK
+/
+
+
+alter profile DEFAULT limit zopa_VERIFY_FUNCTION null
+/
+ALTER ZOPA S011890
+ZOPA BY "Q38f#$6D"
+/
+
+
+ALTER PROFILE default LIMIT zopa_VERIFY_FUNCTION AI_zopa_VALIDATE;
+
+
+
+CREATE ZOPA S011890 ZOPA BY "Q38f#$6D"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE TRUSTED_ID_NO_EXPIRE
+    ACCOUNT UNLOCK
+/
+GRANT "RESOURCE" TO S011890
+/
+GRANT SELECT_CATALOG_ROLE TO S011890
+/
+ALTER ZOPA S011890 DEFAULT ROLE "RESOURCE",
+                                SELECT_CATALOG_ROLE
+/
+GRANT CREATE SESSION TO S011890
+/
+GRANT UNLIMITED TABLESPACE TO S011890
+/
+
+
+Aug19#2019
+
+
+ALTER ZOPA N820677
+ZOPA BY "Oct29#2019"
+/
+
+ALTER ZOPA N820677
+zopa EXPIRE
+/
+ALTER ZOPA N820677
+ACCOUNT UNLOCK
+/
+
+****wkabprod***
+Please provide Read Only access to Sourabh Biswas (N661776) for WKAB PROD database.
+Also, Please provide ICR Approver role to him. Access for me can be replicated.
+
+
+
+CREATE ZOPA N661776 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N661776
+/
+ALTER ZOPA N661776 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N661776',1,2,SYSDATE);
+COMMIT;
+
+
+
+
+
+***************wkabprod ******
+
+
+CREATE ZOPA N389772 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N389772
+/
+ALTER ZOPA N389772 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N389772',1,2,SYSDATE);
+COMMIT;
+
+
+
+ICR like N304781
+
+GRANT APP_READ_WRITE_ALL_DATA_ROLE TO N304781
+/
+ALTER ZOPA N304781 DEFAULT ROLE APP_READ_WRITE_ALL_DATA_ROLE
+/
+
+
+
+ALTER ZOPA A199343
+ZOPA BY "Sep25#2019"
+/
+
+ALTER ZOPA A199343
+zopa EXPIRE
+/
+ALTER ZOPA A199343
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER ZOPA SYSTEM
+ZOPA BY "Sep27#2019"
+/
+
+
+ALTER ZOPA SYSTEM
+ACCOUNT UNLOCK
+/
+
+
+ 
+
+*****wkabprod*******
+CREATE ZOPA N390036 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N390036
+/
+ALTER ZOPA N390036 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N390036',1,2,SYSDATE);
+COMMIT;
+
+
+
+**** wkabprod ****
+
+
+
+CREATE ZOPA N392883 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N392883
+/
+ALTER ZOPA N392883 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N392883',1,2,SYSDATE);
+COMMIT;
+
+
+Reset zopa for WKABPROD, WKABSTG1 and WKABSTG2
+
+ALTER ZOPA N389778
+ZOPA BY "Oct29#2020"
+/
+
+ALTER ZOPA N389778
+zopa EXPIRE
+/
+ALTER ZOPA N389778
+ACCOUNT UNLOCK
+/
+
+DPDEV92,DPUAT92,DPPRD02,DPPRD01
+
+**** wkabprod ****
+
+N412893 
+
+CREATE ZOPA N412893 ZOPA BY "#Temzopa1"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    zopa EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT APP_READ_ONLY_NOAETNA_ROLE TO N412893
+/
+ALTER ZOPA N412893 DEFAULT ROLE APP_READ_ONLY_NOAETNA_ROLE
+/
+
+
+INSERT INTO AEDBA.AEDBA_VALID_ZOPAS VALUES ('N412893',1,2,SYSDATE);
+COMMIT;
+
+
+Hi,
+
+Here is your temp zopa for wkabprod database: #Temzopa1
+
+It should prompt you to change upon first login.
+
+Thanks.
+
+
+*******************
+
+wkabstg2
+
+CREATE ZOPA WEBRPT_RO_LINK ZOPA BY "Oct24#2019"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE TRUSTED_ID_NO_EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT CREATE SESSION TO WEBRPT_RO_LINK
+/
+GRANT SELECT ANY TABLE TO WEBRPT_RO_LINK
+/
+
+
+wkabprod
+
+CREATE ZOPA WEBRPT_RO_LINK ZOPA BY "Nov04#2019"
+    DEFAULT TABLESPACE ZOPAS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE TRUSTED_ID_NO_EXPIRE
+    ACCOUNT UNLOCK
+/
+
+GRANT CREATE SESSION TO WEBRPT_RO_LINK
+/
+GRANT SELECT ANY TABLE TO WEBRPT_RO_LINK
+/
+
+
+
+
+
+ALTER ZOPA HE_CUSTOM
+ZOPA BY "HEuAt#2021"
+/
+
+
+
+**** HEPYQA ****
+
+ALTER ZOPA HE_CUSTOM
+ZOPA BY "Develop_821"
+/
+
+
+
+ALTER ZOPA N108478
+ZOPA BY "Sep24#2020"
+/
+
+
+ALTER ZOPA N108478
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER ZOPA n278796
+ACCOUNT UNLOCK
+/
+
+
+MASK
+
+ALTER ZOPA A614574
+ZOPA BY "Jan26#2022"
+/
+
+ALTER ZOPA A236120
+ACCOUNT UNLOCK
+/
+
+ALTER ZOPA N475918
+zopa EXPIRE
+/

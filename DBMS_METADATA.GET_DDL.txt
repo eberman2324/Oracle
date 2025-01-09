@@ -1,0 +1,96 @@
+SELECT DBMS_METADATA.GET_DDL(object_type, object_name, owner) FROM 
+DBA_OBJECTS WHERE OBJECT_TYPE = 'SYNONYM' AND OWNER = 'PUBLIC';
+
+SELECT DBMS_METADATA.GET_DDL('SYNONYM', SYNONYM_NAME, OWNER) FROM 
+all_synonyms where owner='PUBLIC' and table_owner not in ('SYS');
+
+SELECT DBMS_METADATA.GET_DDL('SYNONYM', SYNONYM_NAME, OWNER) FROM 
+all_synonyms where owner='PUBLIC' and SYNONYM_NAME in ('S_TABLE1');
+
+
+SELECT DBMS_METADATA.GET_DDL('VIEW','DBA_TABLES') FROM dual;
+
+SELECT DBMS_METADATA.GET_DDL('TABLESPACE', 'TEMP') FROM DBA_tablespaces;
+
+SELECT DBMS_METADATA.GET_DDL('USER', 'EQT') FROM DBA_users;
+select DBMS_METADATA.GET_GRANTED_DDL('OBJECT_GRANT','EQT') aa from dual;
+select dbms_metadata.GET_DEPENDENT_DDL('TABLESPACE_QUOTA', 'EQT') || '/' ddl from dual;
+select dbms_metadata.get_granted_ddl('TABLESPACE_QUOTA', upper(&&username)) || '/' ddl from dual
+
+
+ 
+
+select dbms_metadata.get_granted_ddl( 'TABLESPACE_QUOTA', 'SCOTT' ) from dual
+
+
+SELECT DBMS_METADATA.GET_DDL('TABLE','CLAIM_STATUS_LOG','IVR') FROM 
+DBA_OBJECTS WHERE OBJECT_TYPE = 'TABLE' AND OWNER = 'IVR';
+
+
+SELECT DBMS_METADATA.GET_DDL('TABLE','CLAIM_STATUS_LOG','IVR') FROM DUAL;
+
+SELECT DBMS_METADATA.GET_DDL('TABLE','KNS_IVR_RTW_CALL_LOG','IVR') FROM DUAL;
+
+SELECT DBMS_METADATA.GET_DDL('TABLE','CLAIM_STATUS_LOG','IVR') FROM DUAL;
+
+
+**** Get Table DDL *****************8
+
+sqlplus / as sysdba
+
+set trimspool on
+set feedback off
+set heading off
+set pagesize 0
+set linesize 1024
+set long 1000000
+  
+set long 200000 pages 0 lines 131
+
+SELECT DBMS_METADATA.GET_DDL('TABLE','CLAIM_STATUS_LOG','IVR') FROM DUAL;
+
+SELECT DBMS_METADATA.GET_DDL('TABLE','KNS_IVR_RTW_CALL_LOG','IVR') FROM DUAL;
+
+SELECT DBMS_METADATA.GET_DDL('TABLE','CLAIM_STATUS_LOG','IVR') FROM DUAL;
+
+
+SYS_IL0000282938C00030$$
+SYS_IL0000282938C00031$$
+IMPDP_STATS
+
+
+SYS_IL0001083204C00030$$
+IMPDP_STATS
+
+SELECT DBMS_METADATA.GET_DDL('INDEX',SYS_IL0000282938C00030$$);
+
+SELECT DBMS_METADATA.GET_DDL('INDEX','SYS_IL0001083204C00030$$','SYS') FROM DUAL;
+
+select dbms_metadata.get_ddl('index', 'SYS_IL0001083204C00030$$') from dba_indexes;
+
+select dbms_metadata.get_ddl('INDEX', index_name, owner)
+from dba_indexes
+where table_Name in ('IMPDP_STATS');
+
+****** Get DBLink DDL **************
+set trimspool on
+set feedback off
+set heading off
+set pagesize 0
+set linesize 1024
+set long 1000000
+
+
+SELECT DBMS_METADATA.GET_DDL('DB_LINK','DPDEV90.WORLD','WKAB10') FROM DUAL;
+
+
+******************* Custom index DDL extract ****
+
+spool EB_indexes.out
+set long 1000000 trimspool on linesize 999 pagesize 0 verify off feed off echo off
+column DDL format A999 word_wrap
+select dbms_metadata.get_ddl('INDEX', index_name, owner)
+from dba_indexes
+where index_name like '%AEDBA%';
+spool off
+

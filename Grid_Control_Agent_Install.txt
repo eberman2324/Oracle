@@ -1,0 +1,521 @@
+GCAGENT*****************************************GRID CONTROL MANAGEMENT AGENT -- boraw1d
+
+Cleanup DB Control
+ 
+    . $SETUPENV wkabdev1
+
+    cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    emca -deconfig dbcontrol db -repos drop
+
+    . $SETUPENV wkabdev2
+
+     cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    emca -deconfig dbcontrol db -repos drop
+ 
+Management Agent Install
+1) Stage the zip file (AIX_Grid_Control_agent_download_11_1_0_1_0.zip).
+    	Location on aebsw1d Server under /orastage/ebsu285/oracle_cd_tars
+  	On Target Server create new directory for example
+  	cd /boraw1du204/oracle11g_software/
+  	mkdir AIX_Grid_Control_agent
+
+  	Sftp or rcp over to boraw1d Server
+  	cd /boraw1du204/oracle11g_software/AIX_Grid_Control_agent 
+  	unzip AIX_Grid_Control_agent_download_11_1_0_1_0.zip
+
+2) Add the response file to the staged directory.  Edit the response file to install to the correct path.
+
+    	You can copy the response file from 
+  	/orastage/ebsu285/oracle_cd_images__gcmagent_1110_64bit/additional_agent.rsp. All that is required to be modified in the file is 
+  	Sftp or rcp over to boraw1d Server and put under /boraw1du204/oracle11g_software/AIX_Grid_Control_agent directory
+ 	ORACLE_AGENT_HOME_LOCATION=/boraw1du01/app/oracle/product/11.1.0  
+
+ 
+3) Add entries to the oratab and oraInst.loc.
+
+ 	cd /etc
+ 	vi oratab
+ 	GCAGENT:/boraw1du01/app/oracle/product/11.1.0/agent11g:N:/boraw1du01:/boraw1du101
+4) Install the agent:
+
+                . $SETUPENV GCAGENT 
+ 	
+		1. cd <stage location>/aix/agent
+                            cd /boraw1du204/oracle11g_software/AIX_Grid_Control_agent/aix/agent
+
+		2. #./runInstaller -silent -responseFile <absolute path of the response file>/additional_agent.rsp
+                            ./runInstaller -silent -responseFile /boraw1du204/oracle11g_software/AIX_Grid_Control_agent/additional_agent.rsp
+
+                It start installing and at the end hanged on this line:
+
+                 Running Configuration assistant "Agent Add-on Plug-in"
+                 Configuration assistant "Agent Add-on Plug-in" Succeeded
+
+                 Wait for 10 min and if installation do not go back to OS promt. Just CNTRL C
+                            
+		3. have sss execute AGENT_HOME/root.sh   (this will set permission to enable jobs to execute through Grid and create reboot scripts for the agent)
+                            ./boraw1du01/app/oracle/product/11.1.0/agent11g/root.sh
+
+5) In order to get this to work correctly, we need the user account "dbsnmp" password set to "drugs2gogo".  Once its done and you want to begin using grid, contact Rich Ryan to set it up.  
+
+We will need:
+            Database name
+
+            Listener port number
+
+            Your Aetna external email address
+
+            Your Aetna ZZ id
+
+
+If this is production database, it belongs in the production grid control environmment.  The production management server has not been installed on the new grid hardware yet so for now, the management server to point to is xasrxemgm1p.aetna.com.  You should be able to modifiy the agent installed on aebsm1p.iwhouse.aetna.com.  To do this perform the following
+ 
+1.  stop the agent:  $AGENT_HOME/bin/emctl stop agent
+2.  cd $AGENT_HOME/sysman/config
+3.  chnage every occurance of emgriddev to xasrxemgm1p in file emd.properties (there should be 2 occurances of emgriddev)
+4.  secure the agent:  $AGENT_HOME/bin/emctl secure agent   (managment server password is newskates4u)
+5.  start agent (if need be): $AGENT_HOME/bin/emctl start agent
+
+
+
+
+*********************************************************************************************************************************************************
+
+*****************************************GRID CONTROL MANAGEMENT AGENT -- boraw1Q
+
+Cleanup DB Control
+ 
+    . $SETUPENV wkabqa1
+
+    cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    emca -deconfig dbcontrol db -repos drop
+
+    . $SETUPENV wkabqa2
+
+    cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    emca -deconfig dbcontrol db -repos drop
+
+
+    . $SETUPENV wkabqa3
+
+    cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    emca -deconfig dbcontrol db -repos drop
+ 
+
+Management Agent Install
+1) Stage the zip file (AIX_Grid_Control_agent_download_11_1_0_1_0.zip).
+    	Location on aebsw1d Server under /orastage/ebsu285/oracle_cd_tars
+  	On Target Server create new directory for example
+  	cd /boraw1du204/oracle11g_software/
+  	mkdir AIX_Grid_Control_agent
+
+  	Sftp or rcp over to boraw1d Server
+
+  	cd /boraw1du204/oracle11g_software/AIX_Grid_Control_agent 
+  	unzip AIX_Grid_Control_agent_download_11_1_0_1_0.zip
+
+2) Add the response file to the staged directory.  Edit the response file to install to the correct path.
+
+    	You can copy the response file from 
+  	/orastage/ebsu285/oracle_cd_images__gcmagent_1110_64bit/additional_agent.rsp. All that is required to be modified in the file is 
+  	Sftp or rcp over to boraw1d Server and put under /boraw1qu101/oracle11g_software/AIX_Grid_Control_agent directory
+ 	ORACLE_AGENT_HOME_LOCATION=/boraw1qu01/app/oracle/product/11.1.0  
+
+ 
+3) Add entries to the oratab and oraInst.loc.
+
+ 	cd /etc
+ 	vi oratab
+ 	GCAGENT:/boraw1qu01/app/oracle/product/11.1.0/agent11g:N:/boraw1qu01:/boraw1qu101
+4) Install the agent:
+
+                . $SETUPENV GCAGENT 
+ 	
+		1. cd <stage location>/aix/agent
+                            cd /boraw1qu101/oracle11g_software/AIX_Grid_Control_agent/aix/agent
+
+		2. #./runInstaller -silent -responseFile <absolute path of the response file>/additional_agent.rsp
+                            ./runInstaller -silent -responseFile /boraw1qu101/oracle11g_software/AIX_Grid_Control_agent/additional_agent.rsp
+                            
+		3. have sss execute AGENT_HOME/root.sh   (this will set permission to enable jobs to execute through Grid and create reboot scripts for the agent)
+                            ./boraw1qu01/app/oracle/product/11.1.0/agent11g/root.sh
+
+5) In order to get this to work correctly, we need the user account "dbsnmp" password set to "drugs2gogo".  Once its done and you want to begin using grid, contact Rich Ryan to set it up.  
+
+We will need:
+            Database name: wkabqa1
+
+            Listener port number: 
+
+            Your Aetna external email address: 
+
+            Your Aetna ZZ id: 
+
+
+If this is production database, it belongs in the production grid control environmment.  The production management server has not been installed on the new grid hardware yet so for now, the management server to point to is xasrxemgm1p.aetna.com.  You should be able to modifiy the agent installed on aebsm1p.iwhouse.aetna.com.  To do this perform the following
+ 
+1.  stop the agent:  $AGENT_HOME/bin/emctl stop agent
+2.  cd $AGENT_HOME/sysman/config
+3.  chnage every occurance of emgriddev to xasrxemgm1p in file emd.properties (there should be 2 occurances of emgriddev)
+4.  secure the agent:  $AGENT_HOME/bin/emctl secure agent   (managment server password is newskates4u)
+5.  start agent (if need be): $AGENT_HOME/bin/emctl start agent
+
+
+
+
+*********************************************************************************************************************************************************
+************************************************GRID CONTROL MANAGEMENT AGENT -- Floradev
+
+Cleanup DB Control
+ 
+    . $SETUPENV DBATST
+
+    cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    emca -deconfig dbcontrol db -repos drop
+
+ 
+Management Agent Install
+1) Stage the zip file (AIX_Grid_Control_agent_download_11_1_0_1_0.zip).
+    	Location on aebsw1d Server under /orastage/ebsu285/oracle_cd_tars
+  	On Target Server create new directory for example:
+  	cd /workability/oracle11g_software/
+  	mkdir AIX_Grid_Control_agent
+
+  	Sftp or rcp over to Target Server and unzip it.
+  	cd /workability/oracle11g_software/AIX_Grid_Control_agent 
+  	unzip AIX_Grid_Control_agent_download_11_1_0_1_0.zip
+
+2) Add the response file to the staged directory.  Edit the response file to install to the correct path.
+
+    	You can copy the example response file from 
+  	/orastage/ebsu285/oracle_cd_images__gcmagent_1110_64bit/additional_agent.rsp. 
+  	Sftp or rcp over to Target Server and put under /workability/oracle11g_software/AIX_Grid_Control_agent directory
+        All that is required to be modified in the file is: 
+ 	ORACLE_AGENT_HOME_LOCATION=/u27/app/oracle/product/11.1.0  
+
+ 
+3) Add entries to the oratab and oraInst.loc.
+
+ 	cd /etc
+ 	vi oratab
+ 	GCAGENT:/u27/app/oracle/product/11.1.0/agent11g:N:/u01:/u28
+4) Install the agent:
+
+                . $SETUPENV GCAGENT 
+ 	
+		1. cd <stage location>/aix/agent
+                            cd /workability/oracle11g_software/AIX_Grid_Control_agent/aix/agent
+
+		2. #./runInstaller -silent -responseFile <absolute path of the response file>/additional_agent.rsp
+                            ./runInstaller -silent -responseFile /workability/oracle11g_software/AIX_Grid_Control_agent/additional_agent.rsp
+
+167.69.26.212
+
+ New: 167.69.38.97
+
+------------ERRORS ------------------------------------------
+
+The specified Management Service on host emgriddev at port 4889 is unreachable.
+Check the connection details for the Management Service to ensure that you enter
+ed the value for the host name correctly
+
+  I think it is the firewall thing.  There are a set of ports that we may need to put in a request to get them opened between emgridprd and those two boxes
+  Sometimes they'll do it if it's just between two specific boxes on specific ports.
+Berman, Eugene [3:22 PM]:
+  Ok thanks. I will try install and if similar erros will reach out to Unix Guys
+Swafford, Mike [3:23 PM]:
+  If I remember, there are something like 3 ports involved.  I'll get the list and see.
+
+358953.1
+		3. have sss execute AGENT_HOME/root.sh   (this will set permission to enable jobs to execute through Grid and create reboot scripts for the agent)
+                            ./u27/app/oracle/product/11.1.0/agent11g/root.sh
+                            /u27/app/oracle/product/11.1.0/agent11g/root.sh
+
+5) In order to get this to work correctly, we need the user account "dbsnmp" password set to "drugs2gogo".  Once its done and you want to begin using grid, contact Rich Ryan to set it up.  
+
+We will need:
+            Database name
+
+            Listener port number
+
+            Your Aetna external email address
+
+            Your Aetna ZZ id
+
+
+If this is production database, it belongs in the production grid control environmment.  The production management server has not been installed on the new grid hardware yet so for now, the management server to point to is xasrxemgm1p.aetna.com.  You should be able to modifiy the agent installed on aebsm1p.iwhouse.aetna.com.  To do this perform the following
+ 
+1.  stop the agent:  $AGENT_HOME/bin/emctl stop agent
+2.  cd $AGENT_HOME/sysman/config
+3.  chnage every occurance of emgriddev to xasrxemgm1p in file emd.properties (there should be 2 occurances of emgriddev)
+4.  secure the agent:  $AGENT_HOME/bin/emctl secure agent   (managment server password is newskates4u)
+5.  start agent (if need be): $AGENT_HOME/bin/emctl start agent
+
+
+
+*********************************************************************************************************************************************************
+************************************************GRID CONTROL MANAGEMENT AGENT -- Datarep 
+
+Cleanup DB Control
+ 
+    . $SETUPENV DR02
+
+    cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    --Do it later on
+    #emca -deconfig dbcontrol db -repos drop
+
+ 
+Management Agent Install
+1) Stage the zip file (AIX_Grid_Control_agent_download_11_1_0_1_0.zip).
+    	Location on aebsw1d Server under /orastage/ebsu285/oracle_cd_tars
+  	On Target Server create new directory for example:
+  	cd /u33/oracle/oracle_software
+  	mkdir AIX_Grid_Control_agent
+
+  	Sftp or rcp over to Target Server and unzip it.
+ 
+  	cd /u33/oracle/oracle_software/AIX_Grid_Control_agent 
+  	unzip AIX_Grid_Control_agent_download_11_1_0_1_0.zip
+
+2) Add the response file to the staged directory.  Edit the response file to install to the correct path.
+
+    	You can copy the example response file from 
+  	/orastage/ebsu285/oracle_cd_images__gcmagent_1110_64bit/additional_agent.rsp. 
+  	Sftp or rcp over to Target Server and put under /workability/oracle11g_software/AIX_Grid_Control_agent directory
+
+        All that is required to be modified in the file is: 
+ 	
+        ORACLE_AGENT_HOME_LOCATION=/u38/app/oracle/product/11.1.0  
+     
+        
+        OMS_HOST=emgridprod
+
+OMS_HOST=167.69.240.206
+OMS_PORT=4889  
+AGENT_REGISTRATION_PASSWORD=newskates4u
+
+ 
+3) Add entries to the oratab and oraInst.loc.
+
+ 	cd /etc
+ 	vi oratab
+ 	GCAGENT:/u38/app/oracle/product/11.1.0/agent11g:N:/u35
+
+4) Install the agent:
+
+                . $SETUPENV GCAGENT 
+ 	
+		1. cd <stage location>/aix/agent
+                             cd /u33/oracle/oracle_software/AIX_Grid_Control_agent/aix/agent
+
+		2. #./runInstaller -silent -responseFile <absolute path of the response file>/additional_agent.rsp
+                            ./runInstaller -silent -responseFile /u33/oracle/oracle_software/AIX_Grid_Control_agent/additional_agent.rsp
+
+
+
+		3. have sss execute AGENT_HOME/root.sh   (this will set permission to enable jobs to execute through Grid and create reboot scripts for the agent)
+                        
+                            /u38/app/oracle/product/11.1.0/agent11g/root.sh
+
+5) In order to get this to work correctly, we need the user account "dbsnmp" password set to "drugs2gogo".  Once its done and you want to begin using grid, contact Rich Ryan to set it up.  
+
+We will need:
+            Database name
+
+            Listener port number
+
+            Your Aetna external email address
+
+            Your Aetna ZZ id
+
+
+If this is production database, it belongs in the production grid control environmment.  The production management server has not been installed on the new grid hardware yet so for now, the management server to point to is xasrxemgm1p.aetna.com.  You should be able to modifiy the agent installed on aebsm1p.iwhouse.aetna.com.  To do this perform the following
+ 
+1.  stop the agent:  $AGENT_HOME/bin/emctl stop agent
+2.  cd $AGENT_HOME/sysman/config
+3.  chnage every occurance of emgriddev to xasrxemgm1p in file emd.properties (there should be 2 occurances of emgriddev)
+4.  secure the agent:  $AGENT_HOME/bin/emctl secure agent   (managment server password is newskates4u)
+5.  start agent (if need be): $AGENT_HOME/bin/emctl start agent
+
+
+*********************************************************************************************************************************************************
+************************************************GRID CONTROL MANAGEMENT AGENT -- Datamart
+
+Cleanup DB Control
+ 
+    . $SETUPENV DM02
+
+    cd $ORACLE_HOME/bin
+    emctl stop dbconsole
+    --Do it later on
+    #emca -deconfig dbcontrol db -repos drop
+
+ 
+Management Agent Install
+1) Stage the zip file (AIX_Grid_Control_agent_download_11_1_0_1_0.zip).
+    	Location on aebsw1d Server under /orastage/ebsu285/oracle_cd_tars
+  	On Target Server create new directory for example:
+  	cd /u36/oracle/oracle_software
+  	mkdir AIX_Grid_Control_agent
+
+  	Sftp or rcp over to Target Server and unzip it.
+ 
+  	cd /u36/oracle/oracle_software/oracle_software/AIX_Grid_Control_agent 
+  	unzip AIX_Grid_Control_agent_download_11_1_0_1_0.zip
+
+2) Add the response file to the staged directory.  Edit the response file to install to the correct path.
+
+    	You can copy the example response file from 
+  	/orastage/ebsu285/oracle_cd_images__gcmagent_1110_64bit/additional_agent.rsp. 
+  	Sftp or rcp over to Target Server and put under /workability/oracle11g_software/AIX_Grid_Control_agent directory
+
+        All that is required to be modified in the file is: 
+ 	
+        ORACLE_AGENT_HOME_LOCATION=/u37/app/oracle/product/11.1.0  
+     
+        
+        OMS_HOST=emgridprod
+
+OMS_HOST=167.69.240.206
+OMS_PORT=4889  
+AGENT_REGISTRATION_PASSWORD=newskates4u
+
+ 
+3) Add entries to the oratab and oraInst.loc.
+
+ 	cd /etc
+ 	vi oratab
+ 	GCAGENT:/u37/app/oracle/product/11.1.0/agent11g:N:/u37
+
+4) Install the agent:
+
+                . $SETUPENV GCAGENT 
+ 	
+		1. cd <stage location>/aix/agent
+                             cd /u36/oracle/oracle_software/AIX_Grid_Control_agent/aix/agent
+
+		2. #./runInstaller -silent -responseFile <absolute path of the response file>/additional_agent.rsp
+                            ./runInstaller -silent -responseFile /u36/oracle/oracle_software/AIX_Grid_Control_agent/additional_agent.rsp
+
+
+
+		3. have sss execute AGENT_HOME/root.sh   (this will set permission to enable jobs to execute through Grid and create reboot scripts for the agent)
+                        
+                            /u37/app/oracle/product/11.1.0/agent11g/root.sh
+
+5) In order to get this to work correctly, we need the user account "dbsnmp" password set to "drugs2gogo".  Once its done and you want to begin using grid, contact Rich Ryan to set it up.  
+
+We will need:
+            Database name
+
+            Listener port number
+
+            Your Aetna external email address
+
+            Your Aetna ZZ id
+
+
+If this is production database, it belongs in the production grid control environmment.  The production management server has not been installed on the new grid hardware yet so for now, the management server to point to is xasrxemgm1p.aetna.com.  You should be able to modifiy the agent installed on aebsm1p.iwhouse.aetna.com.  To do this perform the following
+ 
+1.  stop the agent:  $AGENT_HOME/bin/emctl stop agent
+2.  cd $AGENT_HOME/sysman/config
+3.  chnage every occurance of emgriddev to xasrxemgm1p in file emd.properties (there should be 2 occurances of emgriddev)
+4.  secure the agent:  $AGENT_HOME/bin/emctl secure agent   (managment server password is newskates4u)
+5.  start agent (if need be): $AGENT_HOME/bin/emctl start agent
+
+ping emgridprod.aetna.com 167.69.240.206
+***************************
+
+
+ALTER USER dbsnmp
+IDENTIFIED BY "drugs2gogo"
+/
+
+ALTER USER dbsnmp
+ACCOUNT UNLOCK
+/
+
+
+********************************
+
+AGENT has stopped monitoring... or target in our case Listener for HEPYQA2 showing up in RED in OEM
+Login to specific server and run this command. Downside we will get tons of emails for all databases on this server.
+emctl clearstate agent
+
+
+GCAGENT
+ps -ef | grep emagent 
+
+
+****************blackout command line ************
+
+http://docs.oracle.com/html/B12013_03/emctl.htm
+## 3 days and 1 hour
+emctl start blackout DBATST_blackout DBATST.world -d 3 1:00
+## 1 hour
+emctl start blackout DBATST_blackout DBATST.world -d  1:00
+
+
+emctl status blackout
+emctl stop blackout DBATST_blackout
+
+
+it looks like the default is to not allow jobs when starting a blackout form emctl
+to allow jobs, you need to specify -allow_jobs
+
+
+***************************
+
+HEDWPRD> !1727
+cd /orahome/u01/app/oracle/product/agent12c/agent_13.2.0.0.0/bin
+
+xhedwdbw21p.aetna.com (oracle) HEDWPRD::/orahome/u01/app/oracle/product/agent12c/agent_13.2.0.0.0/bin
+HEDWPRD> ./emctl start agent
+Oracle Enterprise Manager Cloud Control 13c Release 2
+Copyright (c) 1996, 2016 Oracle Corporation.  All rights reserved.
+Starting agent .................. started.
+
+kbaYsKW?9uyS0RIrN5e!$zV4#nOGZT
+GCAGENT
+ps -ef | grep emagent 
+
+emctl status agent
+emctl start agent
+emctl stop agent
+emctl clearstate agent
+emctl getemhome
+
+ps -ef | grep emagent
+
+oracle    9228 32549 44 Oct03 ?
+
+oracle   32549     1  0 Sep25 ?  
+
+kill -9 9228
+kill -9 32549
+
+Logs location: /orahome/u01/app/oracle/product/oem_agent/agent_inst/sysman/log
+               /orahome/u01/app/oracle/product/agent12c/agent_inst/sysman/log
+
+
+
+***** OMS ***
+
+This morning at about 8:45,  the oms on xorcldm2p became un-responsive.    After trying to status and then stop the oms,  I forced down the oms and restarted it.    All appears to be functioning normally now.
+
+Commands issued:
+
+emctl stop oms -all -force
+emctl start oms
+
+
+**** How to change heap size of agent ****
+EM 13c, EM12c: How to Modify or Increase Enterprise Manager Cloud Control Agent JVM Heap and Permgen Memory (Doc ID 1399201.1)
+

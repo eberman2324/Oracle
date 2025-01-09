@@ -1,0 +1,475 @@
+cd /tmp
+sqlplus as sysdba
+
+@?/rdbms/admin/spreport
+
+Completed Snapshots
+
+                               Snap                    Snap
+Instance     DB Name             Id   Snap Started    Level Comment
+------------ ------------ --------- ----------------- ----- -------------------
+wkabprod     WKABPROD          2927 12 Jun 2008 22:00     5
+                               2928 12 Jun 2008 23:00     5
+                               2929 13 Jun 2008 00:00     5
+                               2930 13 Jun 2008 01:00     5
+                               2931 13 Jun 2008 02:00     5
+                               2932 13 Jun 2008 03:00     5
+                               2933 13 Jun 2008 04:00     5
+                               2934 13 Jun 2008 05:00     5
+                               2935 13 Jun 2008 06:00     5
+                               2936 13 Jun 2008 07:00     5
+                               2937 13 Jun 2008 08:00     5
+                               2938 13 Jun 2008 09:00     5
+                               2939 13 Jun 2008 10:00     5
+                               2940 13 Jun 2008 10:54     5
+                               2941 13 Jun 2008 10:56     5
+                               2942 13 Jun 2008 11:00     5
+                               2943 13 Jun 2008 12:00     5
+
+
+
+Specify the Begin and End Snapshot Ids
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Enter value for begin_snap: 2942
+Begin Snapshot Id specified: 2942
+
+Enter value for end_snap: 2943
+
+
+
+File should be located under /tmp/sp_2942_2943.lst
+
+
+**********************CPU SPike research to find root cause query*********************************************************
+
+Just to make sure I understand the process to get down to sql which causing this kind issues.
+
+1. Check for activities that were happening during slow time, by looking into who.log file for specific date.
+2. Identify session in question.
+3. Run Stats pack to get more details on session in question.
+
+Let me know if something else you normally do to identify sessions causing CPU spikes.
+
+Thanks. 
+
+/workability/oracle/home/logs/
+
+I usually do the who log, but it is only a snapshot so it doesn't always get everything.  In this case, after I called in and I didn't see anything happening at the moment, I ran
+
+Exec statspack.snap;
+
+I then spent a few minutes digging around in the who logs and didn't find anything notable.
+  So I ran the statspack report for the snapshot at the top of the hour up until the manual snapshot I took. 
+ Then looked at the high consumer queries and compared them back to some previous "normal" timeframes to see if they looked out of the ordinary.  
+In this case I hadn't seen them before.  
+I pulled query plans on them and they're not to good. 
+ So I also checked FIRST_LOAD_TIME and LAST_LOAD_TIME to see what time that SQL had been loaded into the shared pool. 
+ Found that it was first loaded in about 12:06pm.
+
+
+
+Look at: SQL ordered by Reads section for 2 top sql. Check explain plan. See if these queries were running during same time privouse day
+
+Look at: The query went from about 188,000 logical reads and 46,000 physical reads per execution to about 17 logical reads and 3 physical reads per execution.
+
+!!!!
+Average wait time for a physical read operation was under a millisecond.
+  The SQL is doing 169,322,896 logical reads.  The SQL needs to be looked at for optimization.  
+
+
+
+
+**********************AWR******************************************************************************
+
+
+sqlplus
+
+
+
+
+@?/rdbms/admin/awrrpt.sql
+
+Export the AWR
+begin
+ DBMS_SWRF_INTERNAL.AWR_EXTRACT(
+       dmpfile => 'awr_data.dmp',
+       dmpdir => 'TMP_DIR',
+       bid => 302,
+       eid => 305);
+end;
+/
+
+The scripts prompt you to enter the report format (html or text), the start snapshot id, the end snapshot id and the report filename. 
+The resulting report can be opend in a browser or text editor accordingly.
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Look at: SQL ordered by CPU Time
+         Under Executions column look for top number that most going to be bad guy. Look at SQL and see if it has index.
+         Even if it has index it may not have include all columns that could be in WHERE cluase. Double check 
+
+
+Look at: SQL ordered by Gets
+         Under Executions column look for top number that most going to be bad guy. Look at SQL and see if it has index.
+         Even if it has index it may not have include all columns that could be in WHERE cluase. Double check 
+
+
+************************************************************************************************************************
+
+Understand AWR Report 
+I mention earlier how to generate AWR , But after you did this how can you read it .
+
+
+
+1) The first thing to be checked in AWR report is the following:- 
+
+
+Snap Id Snap Time Sessions Cursors/Session 
+Begin Snap: 112 11-Jun-09 00:00:57 191 6.7
+End Snap: 113 11-Jun-09 01:00:11 173 7.4
+Elapsed: 59.23 (mins)
+DB Time: 710.73 (mins) 
+Check the "DB Time" metric. If it is much higher than the elapsed time, then it indicates that the sessions are waiting for something.
+
+Here in this example, the Elapsed Time is around 60 minutes while the DB Time is around 700 minutes. This means that 700 minutes of time is spent by the sessions on waiting.
+
+2) Next thing to be looked is the following:- 
+
+
+
+
+Instance Efficiency Percentages (Target 100%) 
+Buffer Nowait %: 100.00 Redo NoWait %: 100.00 
+Buffer Hit %: 98.67 In-memory Sort %: 100.00 
+Library Hit %: 98.60 Soft Parse %: 99.69 
+Execute to Parse %: 5.26 Latch Hit %: 99.31 
+Parse CPU to Parse Elapsd %: 12.78 %Non-Parse CPU: 99.10 
+
+
+As per the thumb rule, Instance Efficieny Percentages should be ideally above 90%.
+
+
+  
+3) Then comes the Shared Pool Statistics.
+
+
+
+
+
+Shared Pool Statistics 
+Begin End 
+Memory Usage %: 85.49 80.93 
+% SQL with executions>1: 42.46 82.96 
+% Memory for SQL w/exec>1: 47.77 81.03 
+
+
+The memory usage statistics of shared pool is shown.
+Idealy this should be lesser. If it is very high like beyond 90, this shows the contention in the shared pool.
+
+
+4) Next thing to be looked after is the Top 5 Timed Events table.
+
+This shows the most significant waits contributing to the DB Time.
+
+
+Top 5 Timed Events 
+Event Waits Time(s) Avg Wait(ms) % Total Call Time Wait Class 
+db file sequential read 4,076,086 28,532 7 66.9 User I/O 
+CPU time 11,214 26.3 
+Backup: sbtbackup 4 4,398 1,099,452 10.3 Administrative 
+log file sync 37,365 2,421 65 5.7 Commit 
+log file parallel write 37,928 1,371 36 3.2 System I/O 
+
+
+Here, the significant wait is the db file sequential read which contributes to 67% of DB Time.
+
+
+
+
+
+5) Then , SQL Statistics can be checked.
+
+
+
+SQL Statistics
+SQL ordered by Elapsed Time 
+SQL ordered by CPU Time 
+SQL ordered by Gets 
+SQL ordered by Reads 
+
+
+SQL Statistics section would have commonly the above four sections.
+
+Each section shows the list of SQLs based on the order of the respective metric.
+For example, SQL ordered by Elapsed Time section shows the list of SQLs in the order
+of the Elapsed Time. High resource consuming SQLs can be spotted out and meant for
+tuning.
+
+Note: All the above four sections of SQL Statistics show the list of SQLs in descending order.
+i.e, For ex: Highest elapsed time is shown as first.
+
+6) Then comes the IO Stats section.
+
+This shows the IO Statistics for each tablespaces in the database.
+
+As the thumb rule, the Av Rd(ms) [Average Reads in milliseconds] should not cross beyond 30, add myself(not greater that 30)
+which is considered to be IO bottleneck.
+
+
+Tablespace IO Stats
+ordered by IOs (Reads + Writes) desc 
+
+
+Tablespace Reads Av Reads/s Av Rd(ms) Av Blks/Rd Writes Av Writes/s Buffer Waits Av Buf Wt(ms)
+TEMP 3,316,082 933 4.91 1.00 28,840 8 0 0.00
+DAT1 520,120 146 16.06 1.21 185,846 52 902 13.00
+DAT3 93,411 26 42.82 2.98 13,442 4 16 23.13
+DAT2 98,171 28 91.97 7.97 5,333 2 325 34.89 
+
+
+In the above example, the Av Rd(ms) is high in all tablespaces indicating the IO contention.
+
+7) Then , Advisory Statistics can be checked.
+
+This section shows the following:-
+
+
+Buffer Pool Advisory 
+PGA Aggr Summary 
+PGA Aggr Target Stats 
+PGA Aggr Target Histogram 
+PGA Memory Advisory 
+Shared Pool Advisory 
+SGA Target Advisory 
+Streams Pool Advisory 
+Java Pool Advisory 
+
+
+It is very commonly used to check the advisories for the most important SGA structures like shared pool, buffer cache etc and PGA.
+
+8) Then finally, init.ora Parameters is shown which shows the list of parameters set at instance level.
+
+
+init.ora Parameters
+
+
+All the above said sections except the DB Time can be checked from Statspack report also.
+
+The statspack snapshots are not generated automatically as in AWR.It has to be generated during the problem period as follows:-
+
+Take 2 snapshots between 60 minutes interval during the problem and generate the statspack report 
+
+exec statspack.snap
+wait for 60 minutes
+exec statspack.snap
+
+
+With CPU load running close to 100%, I created AWR report for 8 hours and checked buffer gets section (I believe buffer gets and hash joins are many times big culprits as far as CPU load is concerned)
+
+*********************
+
+***Warning – long e-mail alert…
+
+Here’s some analysis on the CPU usage on aetnaprod.  Here’s a list of the largest CPU consumers from 9-10am.  If you want a quick summary, there are 3 main contributors:
+1)	A sql statement that is grabbing registered field task data
+2)	The cache command polling query – not so bad today but causes spikes when they push out big chunks of work
+3)	The blocking caused the number of print servers and the locking mechanism used to managed the print queues.
+
+Detailed Analysis
+The easiest to look at first the top CPU-consuming queries.  The one on top is the one mentioned above that is grabbing data from t_registered_field_task_data.  
+
+
+SQL ordered by CPU Time
+•	Resources reported for PL/SQL code includes the resources used by all SQL statements called by the code. 
+•	%Total - CPU Time as a percentage of Total DB CPU 
+•	%CPU - CPU Time as a percentage of Elapsed Time 
+•	%IO - User I/O Time as a percentage of Elapsed Time 
+•	Captured SQL account for 65.3% of Total CPU Time (s): 29,764 
+
+
+•	Captured PL/SQL account for 1.0% of Total CPU Time (s): 29,764 
+CPU Time (s)	Executions 	CPU per Exec (s)	%Total	Elapsed Time (s)	%CPU	%IO	SQL Id	SQL Module	SQL Text
+4,730.67	48,106	0.10	15.89	13,021.99	36.33	0.00	4snmyg15pan8s
+w3wp.exe 	select td.field_value as cons...
+3,862.20	1,127	3.43	12.98	10,086.54	38.29	13.96	1bzqtmhhyuzhc
+  	SELECT DISTINCT TG.COMPANY_ID ...
+1,049.33	104,737	0.01	3.53	2,798.23	37.50	0.06	d47wcjkygkdff
+  	SELECT DISTINCT tr.team_right...
+910.44	29,031	0.03	3.06	2,295.83	39.66	1.28	4dc6vzp6hu25w
+  	SELECT DISTINCT REPLACE(RTRIM(...
+866.77	37,515	0.02	2.91	2,629.67	32.96	0.00	61kn0rk49zm4r
+  	select CommandID, CacheType, C...
+836.08	758	1.10	2.81	2,054.25	40.70	0.00	4169gws7f80nx
+  	SELECT DISTINCT RR.REASON_TYPE...
+794.57	61,801	0.01	2.67	2,411.59	32.95	7.54	fshyjz3m26zcq
+  	SELECT distinct :"SYS_B_000" a...
+592.22	9,293	0.06	1.99	1,615.32	36.66	0.43	2px6vr696sg6k
+  	with Allgroups as ( select dis...
+403.31	10,496	0.04	1.36	1,200.28	33.60	4.24	7jwtur5bxzra7
+  	SELECT ACCIDENT_DATE AS STDACC...
+372.65	264	1.41	1.25	854.31	43.62	0.00	1byc99jjqf0w5
+w3wp.exe 	select s.user_logon from t_sec...
+312.97	4,183	0.07	1.05	758.67	41.25	1.35	cxjky67x8vvtv
+  	with AllTasks as ( select ( se...
+
+The primary consumer is sql id 4snmyg15pan8s for which the full text is:
+SELECT
+      td.field_value AS consent,
+      (
+          SELECT
+               field_value
+               FROM
+               s_registered_field_task_data
+              WHERE
+               is_current =
+               (
+                   SELECT
+                        MAX(is_current)
+                        FROM
+                        s_registered_field_task_data
+                       WHERE
+                       task_instance_id        = ti.task_instance_id
+                        AND registered_field_id = :"SYS_B_0"
+               )
+               AND registered_field_id= :"SYS_B_1"
+               AND task_instance_id   = ti.task_instance_id
+      ) AS consent_id
+      FROM
+      s_registered_field_task_data td,
+      s_task_instance ti
+     WHERE
+      td.registered_field_id  = :"SYS_B_2"
+      AND td.task_instance_id = ti.task_instance_id
+      AND ti.create_date      =
+      (
+          SELECT
+               MAX(create_date)
+               FROM
+               s_task_instance
+              WHERE
+               status          = :"SYS_B_3"
+               AND employee_id = :Parm0
+               AND task_id     = :Parm0
+      )
+      AND td.is_current =
+      (
+          SELECT
+               MAX(is_current)
+               FROM
+               s_registered_field_task_data
+              WHERE
+               task_instance_id        = ti.task_instance_id
+               AND registered_field_id = :"SYS_B_4"
+      )
+
+It has the query plan below.  There are 2 problems with the SQL – first is that though I’m not sure exactly what it is going for, it looks like the logic may be a little more involved than necessary.  I may be able to come up with a suggested re-write with some more analysis time.  The second thing is its frequency of execution – the query is executed 48000 times per hour or 13 times per second.  If there’s anything that can be done to reduce the execution frequency, that would also be a big help.
+
+----------------------------------------------------------------------------------------------------------------
+| Id  | Operation                        | Name                         | Starts | E-Rows |E-Bytes| Cost (%CPU)|
+----------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                 |                              |      1 |        |       | 11130 (100)|
+|   1 |  TABLE ACCESS BY INDEX ROWID     | T_REGISTERED_FIELD_TASK_DATA |      0 |      1 |    30 |     4   (0)|
+|*  2 |   INDEX RANGE SCAN               | IDX2_REGTASKDATA             |      0 |      1 |       |     3   (0)|
+|   3 |    SORT AGGREGATE                |                              |      0 |      1 |    14 |            |
+|   4 |     FIRST ROW                    |                              |      0 |      1 |    14 |     3   (0)|
+|*  5 |      INDEX RANGE SCAN (MIN/MAX)  | IDX2_REGTASKDATA             |      0 |      1 |    14 |     3   (0)|
+|   6 |  NESTED LOOPS                    |                              |      1 |        |       |            |
+|   7 |   NESTED LOOPS                   |                              |      1 |      1 |    60 | 11125   (2)|
+|   8 |    NESTED LOOPS                  |                              |      1 |      2 |    60 | 11120   (2)|
+|   9 |     VIEW                         | VW_SQ_1                      |      1 |  10823 |   158K|    52   (4)|
+|  10 |      SORT GROUP BY               |                              |      1 |  10823 |   147K|    52   (4)|
+|* 11 |       INDEX RANGE SCAN           | IDX2_REGTASKDATA             |      1 |  12942 |   176K|    52   (4)|
+|* 12 |     TABLE ACCESS BY INDEX ROWID  | T_TASK_INSTANCE              |  12853 |      1 |    15 |     3   (0)|
+|* 13 |      INDEX UNIQUE SCAN           | PK_T_TASK_INSTANCE           |  12853 |      1 |       |     2   (0)|
+|  14 |      SORT AGGREGATE              |                              |      1 |      1 |    24 |            |
+|* 15 |       TABLE ACCESS BY INDEX ROWID| T_TASK_INSTANCE              |      1 |      1 |    24 |     5   (0)|
+|* 16 |        INDEX RANGE SCAN          | T_TASK_INSTANCE_IDX101       |      1 |      1 |       |     4   (0)|
+|* 17 |    INDEX RANGE SCAN              | IDX2_REGTASKDATA             |      0 |      1 |       |     2   (0)|
+|  18 |   TABLE ACCESS BY INDEX ROWID    | T_REGISTERED_FIELD_TASK_DATA |      0 |      1 |    30 |     3   (0)|
+----------------------------------------------------------------------------------------------------------------
+
+Another query worth mentioning is the cache command/response polling query (SQL ID 61kn0rk49zm4r).  It runs frequently polling for new commands.  Again, this one is running pretty frequently  (37000 times per hour/10 times per second).  This query isn’t too bad unless they push out big batches of work, but it seems like the polling frequency is pretty high for something that only happens a handful of times every day.
+
+The rest of the top consumers aren’t so new and are things we’ve looked at in the past – not that we can’t do any more – just that they’re nothing new.
+
+The last of the 3 things is nothing new, but it is somewhat worse because of volume and it does cause spikes because of the design.  The print servers poll T_REPORT_QUEUE for work and periodically issue the command:
+
+LOCK TABLE S_REPORT_QUEUE IN EXCLUSIVE MODE
+
+Followed by :
+UPDATE S_REPORT_QUEUE 
+SET REPORT_STATUS_ID = 22, 
+STATUS_DATE = SYSDATE 
+WHERE S_REPORT_QUEUE.REPORT_BATCH_ID IS NOT NULL 
+AND REPORT_STATUS_ID = 21
+
+It holds the lock on the table for about a minute.  During that time 50 or more processes that need to access T_REPORT_QUEUE may pile up waiting on the exclusive lock to be released.  After the lock is released, there are then 50 or more processes waiting to run – and they all hit the CPU at about the same time – causing a spike that trips the alerts.  There are different ways of managing the rows in the queue that might allow us to keep the concurrency without locking the whole table.  
+
+
+
+********************
+
+--Change Frequency  to 15 min
+execute dbms_workload_repository.modify_snapshot_settings(interval => 15); 
+
+--Change Frequency  to 60 min 
+execute dbms_workload_repository.modify_snapshot_settings(interval => 30); 
+
+-- TO change both interval and retention
+
+--Example how to calculate retention  35 days (35x24x60 = 50400)
+exec dbms_workload_repository.modify_snapshot_settings(interval => 30, retention => 50400);
+
+
+select extract( day from snap_interval) *24*60+extract( hour from snap_interval) *60+extract( minute from snap_interval ) 
+snapshot_interval,
+extract( day from retention) *24*60+extract( hour from retention) *60+extract( minute from retention ) 
+retention_interval,
+topnsql
+from dba_hist_wr_control;
+
+
+exec dbms_workload_repository.modify_snapshot_settings(interval => 30, retention => 50400);
+
+************Most important AWR section per Mike**************
+
+SQL ordered by Elapsed Time
+
+•	Resources reported for PL/SQL code includes the resources used by all SQL statements called by the code. 
+•	% Total DB Time is the Elapsed Time of the SQL statement divided into the Total Database Time multiplied by 100 
+•	%Total - Elapsed Time as a percentage of Total DB time 
+•	%CPU - CPU Time as a percentage of Elapsed Time 
+•	%IO - User I/O Time as a percentage of Elapsed Time
+•	Captured SQL account for 118.7% of Total DB Time (s): 9,538
+•	Captured PL/SQL account for 5.1% of Total DB Time (s): 9,538
+Elapsed Time (s)	Executions 	Elapsed Time per Exec (s) 	%Total	%CPU	%IO	SQL Id	SQL Module	SQL Text
+3,606.42	0	 	37.81	54.17	1.33	4cx3rvk1a6vr3
+JDBC Thin Client 	select COUNT(*) COUNT from USE...
+3,527.44	5	705.49	36.98	41.70	6.54	2knzdatyvs3fv
+JDBC Thin Client 	select * from (select DISTINCT...
+840.96	4,175,038	0.00	8.82	45.63	0.45	4nqqpjt4mctyn
+JDBC Thin Client 	SELECT DISTINCT FIRST_VALUE(AD...
+836.80	17,835,555	0.00	8.77	36.82	18.21	351nz3nmf10vt
+JDBC Thin Client 	SELECT ADR.ADR_REGION FROM EMP...
+613.65	11,300,191	0.00	6.43	33.03	31.12	fcm9wv32n376w
+JDBC Thin Client 	SELECT ADR.ADR_COUNTRY FROM EM...
+525.48	1	525.48	5.51	42.95	12.15	gakbrn9mm1a1n
+JDBC Thin Client 	select * from (select DISTINCT...
+226.64	0	 	2.38	43.39	17.67	2197y3xtcmfw7
+DBMS_SCHEDULER 	DECLARE job BINARY_INTEGER := ...
+138.70	2	69.35	1.45	33.63	57.37	daw3rzccjgxtt
+SQL*Plus 	INSERT INTO INTERFACE.TOE_TIMK...
+136.89	1	136.89	1.44	38.41	41.03	75md8x9uft1g7
+JDBC Thin Client 	select * from (select DISTINCT...
+98.91	3	32.97	1.04	47.25	21.32	44szn49307fym
+oracle@aetnaprod (TNS V1-V3) 	SELECT TRIM(SUBSTR("A1"."JOB_N...
+95.94	3,480,155	0.00	1.01	46.39	0.00	bwcg9zjfz75gz
+JDBC Thin Client 	SELECT PLA_ABBREV FROM (SELECT...
+
+
+***************
+
+Buffer gets very important indicator for execution plan
+
+With CPU load running close to 100%, I created AWR report for 8 hours and checked buffer gets section (I believe buffer gets and hash joins are many times big culprits as far as CPU load is concerned)

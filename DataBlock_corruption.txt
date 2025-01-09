@@ -1,0 +1,668 @@
+ORA-01578: Oracle Data Block corrupted (file # 125, Block # 3017250)
+
+SELECT tablespace_name, segment_type, owner, segment_name
+ FROM dba_extents
+ WHERE file_id = 125
+ and 3017250 between block_id AND block_id + blocks - 1;
+ 
+ --INDX	INDEX	PROD	FK_IDENT_NBR_CD_ENTRY
+
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'INDEX' and segment_name IN ( 'FK_IDENT_NBR_CD_ENTRY')
+and owner IN ('PROD')
+
+
+86 GB 
+ ALTER INDEX PROD.FK_IDENT_NBR_CD_ENTRY rebuild online compute statistics;
+
+
+or 
+
+Drop and re create index (it even better we can re claim some space)
+
+
+xhepydbw24d
+
+cd /home/oracle/tls/rbldidx
+
+create_index.sh
+
+DROP INDEX PROD.FK_IDENT_NBR_CD_ENTRY
+/
+
+CREATE INDEX PROD.FK_IDENT_NBR_CD_ENTRY
+    ON PROD.IDENTIFICATION_NUMBER(CD_ENTRY_ID)
+TABLESPACE INDX
+LOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 64K
+        BUFFER_POOL DEFAULT)
+REVERSE
+PARALLEL 8
+NOCOMPRESS
+/
+
+ALTER INDEX PROD.FK_IDENT_NBR_CD_ENTRY NOPARALLEL
+/
+
+
+***************HEPYPRD 01/16/2022 *********
+
+
+file # 629, block # 3868751
+
+data file 629: '+DATA_01/HEPYPRD_XHEPYDBM21P/DATAFILE/indx.910.1041005541'
+
+rmanc
+
+RECOVER DATAFILE 629 BLOCK 3868751;
+
+
+SELECT tablespace_name, segment_type, owner, segment_name
+ FROM dba_extents
+ WHERE file_id = 629
+ and 3868751 between block_id AND block_id + blocks - 1; 
+  
+INDX	INDEX	PROD	UDT_LST_X_UDT_LST_VAL_SET
+
+
+
+DROP INDEX PROD.FK_IDENT_NBR_CD_ENTRY
+/
+CREATE INDEX PROD.FK_IDENT_NBR_CD_ENTRY
+    ON PROD.IDENTIFICATION_NUMBER(CD_ENTRY_ID)
+TABLESPACE INDX
+LOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 64K
+        BUFFER_POOL DEFAULT)
+REVERSE
+PARALLEL 8
+ONLINE
+NOCOMPRESS
+/
+
+
+ALTER INDEX PROD.FK_IDENT_NBR_CD_ENTRY NOPARALLEL
+/
+
+
+Sun Jan 16 20:07:54 2022 ORA-01578: ORACLE data block corrupted 
+
+(file # 880, block # 89460586) Sun Jan 16 20:07:54 2022 ORA-01110: data file 880: '+IND_01/HEPYPRD_XHEPYDBM21P/DATAFILE/indx4.258.1063872049'
+
+SELECT tablespace_name, segment_type, owner, segment_name
+ FROM dba_extents
+ WHERE file_id = 880
+ and 89460586 between block_id AND block_id + blocks - 1; 
+
+
+INDX4	INDEX	PROD	FK_AUDIT_LOG_ENTRY_GEN_VER_REF
+
+
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'INDEX' and segment_name IN ( 'FK_UNMATCHE_DEF_REF_GEN_V_EF')
+and owner IN ('PROD')
+
+29912.4375
+
+
+DROP INDEX PROD.FK_AUDIT_LOG_ENTRY_GEN_VER_REF
+/
+CREATE INDEX PROD.FK_AUDIT_LOG_ENTRY_GEN_VER_REF
+    ON PROD.AUDIT_LOG_ENTRY(GEN_REF_ID)
+TABLESPACE INDX4
+LOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 64K
+        BUFFER_POOL DEFAULT)
+REVERSE
+PARALLEL 6
+ONLINE
+NOCOMPRESS
+/
+
+
+SR #3-28311797781: corrupted index and archive log
+
+
+*** For HEPYPRD use section size ***
+SPOOL LOG TO validatecheck_Level_1_2.log
+
+ backup validate incremental level = 1 check logical database;
+ backup validate incremental level = 1 check logical database section size 80G;
+
+ or
+
+backup validate check logical database;
+
+backup validate check logical database section size 80g;
+
+VALIDATE DATAFILE 877 block 224849331;
+
+recover corruption list preview;
+blockrecover corruption list preview;
+
+SPOOL LOG OFF;
+
+
+ALTER INDEX PROD.OPS_VAL_REF rebuild online PARALLEL 6;
+
+ALTER INDEX PROD.OPS_VAL_REF NOPARALLEL
+/
+
+
+
+SELECT e.owner, e.segment_type, e.segment_name, e.partition_name, c.file#
+, greatest(e.block_id, c.block#) corr_start_block#
+, least(e.block_id+e.blocks-1, c.block#+c.blocks-1) corr_end_block#
+, least(e.block_id+e.blocks-1, c.block#+c.blocks-1)
+- greatest(e.block_id, c.block#) + 1 blocks_corrupted
+, null description
+FROM dba_extents e, v$database_block_corruption c
+WHERE e.file_id = c.file#
+AND e.block_id <= c.block# + c.blocks - 1
+AND e.block_id + e.blocks - 1 >= c.block#
+UNION
+SELECT s.owner, s.segment_type, s.segment_name, s.partition_name, c.file#
+, header_block corr_start_block#
+, header_block corr_end_block#
+, 1 blocks_corrupted
+, 'Segment Header' description
+FROM dba_segments s, v$database_block_corruption c
+WHERE s.header_file = c.file#
+AND s.header_block between c.block# and c.block# + c.blocks - 1
+UNION
+SELECT null owner, null segment_type, null segment_name, null partition_name, c.file#
+, greatest(f.block_id, c.block#) corr_start_block#
+, least(f.block_id+f.blocks-1, c.block#+c.blocks-1) corr_end_block#
+, least(f.block_id+f.blocks-1, c.block#+c.blocks-1)
+- greatest(f.block_id, c.block#) + 1 blocks_corrupted
+, 'Free Block' description
+FROM dba_free_space f, v$database_block_corruption c
+WHERE f.file_id = c.file#
+AND f.block_id <= c.block# + c.blocks - 1
+AND f.block_id + f.blocks - 1 >= c.block#
+order by file#, corr_start_block#
+/
+
+
+
+SELECT DISTINCT owner, segment_name FROM   v$database_block_corruption dbc JOIN dba_extents e ON dbc.file# = e.file_id AND dbc.block# BETWEEN e.block_id and e.block_id+e.blocks-1 ORDER BY 1,2;
+
+
+SR #3-28311797781: corrupted index and archive log
+
+
+grep "Error backing up file" alert_HEPYPRD.log|sort -u|awk '{print "select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#="$5") and "$7" between block_id and block_id + blocks - 1;"}'|sed 's/,)/)/'|sed 's/://' >>object-details.lst
+
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id in  (select file# from v$datafile where rfile#=1024) and 301020442 between block_id and block_id + blocks - 1;
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id in  (select file# from v$datafile where rfile#=1024) and 30230861 between block_id and block_id + blocks - 1;
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=581) and 2998721 between block_id and block_id + blocks - 1;
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=666) and 2583579 between block_id and block_id + blocks - 1;
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=695) and 1795152 between block_id and block_id + blocks - 1;
+
+if error out with 
+ERROR at line 1:
+ORA-01427: single-row subquery returns more than one row 
+
+change where file_id=  to where file_id in 
+
+select owner, segment_name,  segment_type, tablespace_name from dba_extents where file_id in (select file# from v$datafile where rfile#=1024)
+and 560997141 between block_id and block_id + blocks - 1;
+
+
+
+Once objects identfied try to drop index and rebuild
+
+
+-- latest
+
+2022/02/27 Sun 12:30:04 Error backing up file 1024, block 301020442: logical corruption
+2022/02/27 Sun 12:30:05 Error backing up file 581, block 2998721: logical corruption
+2022/02/27 Sun 12:30:06 Error backing up file 666, block 2583579: logical corruption
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id in  (select file# from v$datafile where rfile#=1024) and 301020442 between block_id and block_id + blocks - 1;
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=581) and 2998721 between block_id and block_id + blocks - 1;
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=666) and 2583579 between block_id and block_id + blocks - 1;
+
+
+
+**** 5/13/2022 ***
+
+cd $BDUMP
+
+grep "Error backing up file" alert_HEPYPRD.log|sort -u|awk '{print "select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#="$5") and "$7" between block_id and block_id + blocks - 1;"}'|sed 's/,)/)/'|sed 's/://' >>object-details_2.lst
+
+grep "kdxtul" alert_HEPYPRD.log|sort -u|awk '{print "select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#="$5") and "$7" between block_id and block_id + blocks - 1;"}'|sed 's/,)/)/'|sed 's/://' >>object-details_2.lst
+
+
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=124) and 301020442 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=124) and 30230861 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=51) and 2998721 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=66) and 2583579 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=65) and 1795152 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=124) and 301020442 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=51) and 2998721 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=66) and 2583579 between block_id and block_id + blocks - 1;
+
+~
+
+DROP INDEX PROD.FK_IDENT_NBR_CD_ENTRY
+/
+
+CREATE INDEX PROD.FK_IDENT_NBR_CD_ENTRY
+    ON PROD.IDENTIFICATION_NUMBER(CD_ENTRY_ID)
+TABLESPACE INDX
+LOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 64K
+        BUFFER_POOL DEFAULT)
+REVERSE
+PARALLEL 8
+NOCOMPRESS
+/
+
+ALTER INDEX PROD.FK_IDENT_NBR_CD_ENTRY NOPARALLEL
+/
+
+
+
+
+DROP INDEX PROD.FK_SPPLR_B_TWRK_REF_BNFT_TWRK
+/
+CREATE INDEX PROD.FK_SPPLR_B_TWRK_REF_BNFT_TWRK
+    ON PROD.SPPLR_BNFT_NETWRK_REF(BNFT_NETWRK_ID)
+TABLESPACE INDX4 ONLINE PARALLEL 8;
+
+ALTER INDEX PROD.FK_SPPLR_B_TWRK_REF_BNFT_TWRK NOPARALLEL
+/
+
+
+select count(*) from PROD.SPPLR_BNFT_NETWRK_REF;
+
+
+
+** 05/16/2022**
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id in (select file# from v$datafile where rfile#=1024) and 301020442 between block_id and block_id + blocks - 1;
+CVC_STEP
+SYS_LOB0000295690C00002$$ L
+
+FK_CVC_STEP_CVC_INST_CONTEXT
+PRACT_MEM_ID
+CVC_LATEST_ID_TYPE_TXT
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id in (select file# from v$datafile where rfile#=1024) and 30230861 between block_id and block_id + blocks - 1;
+
+CVC_STEP 
+GENERIC_VERSION_REFERENCE
+CVC_INSTANCE_CONTEXT
+
+STEP_ACTIVE_LAST_DT
+GEN_VER_REF
+CVC_UPPER_TYPE_TXT
+
+	select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=581) and 2998721 between block_id and block_id + blocks - 1;
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=666) and 2583579 between block_id and block_id + blocks - 1;
+BURGESS_EDIT
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=695) and 1795152 between block_id and block_id + blocks - 1;
+SUPP_LOC_OUTST_IDX
+
+
+
+**** 06/15/2022 ***
+
+
+Tue Jun 14 22:00:04 2022 Error backing up file 666, block 2583579: logical corruption
+
+select owner, segment_name, partition_name, segment_type from dba_extents where file_id= (select file# from v$datafile where rfile#=666) and 2583579 between block_id and block_id + blocks - 1;
+
+
+*** 11/14/2022 ****
+
+SEGMENT_NAME
+FK_ADJ_PRICE_RESULT_SERV_COST
+FK_ADJ_SULT_GEN_EF_PAREN_ION
+
+***** 11/15/2022 ****
+
+FK_UNMATCHE_DEF_REF_GEN_V_EF
+
+
+SELECT DISTINCT owner, segment_name, segment_type FROM   v$database_block_corruption dbc JOIN dba_extents e ON dbc.file# = e.file_id AND dbc.block# BETWEEN e.block_id and e.block_id+e.blocks-1 ORDER BY 1,2;
+select * from v$database_block_corruption
+
+************* 11/16/2022 *****
+
+
+CLM_LN_ULT_X_AVAILABLE_NITIONS
+GEN_REF
+GEN_VER_REF
+TRANSFORME_VRD_SERV_X_EXCP_ST
+
+
+***** 11/19/2022 *****
+
+select owner, segment_name,  segment_type, tablespace_name from dba_extents where file_id in (select file# from v$datafile where rfile#=1024)
+and 560997141 between block_id and block_id + blocks - 1;
+
+OWNER	SEGMENT_NAME			SEGMENT_TYPE	TABLESPACE_NAME
+PROD	FEE_DETAIL			TABLE		DATA5
+PROD	VARIABLE_VALUE_DEFINITION	TABLE		DATA2
+PROD	CVC_LATES_ENDOR_EFF		INDEX		INDX3
+PROD	ROW_SEQ_UNIQUE			INDEX		INDX2
+PROD	PRACTITIONER_MEMBER_AEDBA_1	INDEX		INDX5
+PROD	GEN_VER_REF			INDEX		INDX4
+PROD	SYS_LOB0000295636C00002$$	LOBSEGMENT	DATA3
+PROD	SYS_LOB0000295690C00002$$	LOBSEGMENT	DATA4
+
+
+SELECT DISTINCT owner, segment_name, segment_type,dbc.BLOCK#,dbc.BLOCKS FROM   v$database_block_corruption dbc JOIN dba_extents e ON dbc.file# = e.file_id AND dbc.block# BETWEEN e.block_id and e.block_id+e.blocks-1 ORDER BY 1,2;
+
+OWNER	SEGMENT_NAME			SEGMENT_TYPE	BLOCK#		BLOCKS
+PROD	GEN_REF				INDEX		46257128	1
+PROD	GEN_REF				INDEX		386505472	1
+PROD	GEN_VER_REF			INDEX		560997141	1
+PROD	SPPLR_X_SPPLR_CLASS_TYPE	INDEX		696567079	1
+
+
+
+***** 11/20/2022 ****
+
+
+SELECT DISTINCT owner, segment_name, segment_type,dbc.BLOCK#,dbc.BLOCKS FROM   v$database_block_corruption dbc JOIN dba_extents e ON dbc.file# = e.file_id AND dbc.block# BETWEEN e.block_id and e.block_id+e.blocks-1 ORDER BY 1,2;
+
+OWNER	SEGMENT_NAME			SEGMENT_TYPE	BLOCK#		BLOCKS
+PROD	FK_CVC_STEP_CVC_STEP		INDEX		465341445	1 --> 121 G
+PROD	FK_PRACT_OLE_OL_UDT_LST_UDT_T	INDEX		1056876538	1-->  small < 1G
+PROD	GEN_VER_REF			INDEX		560997141	1 --> 200 G
+
+
+alter session set DDL_LOCK_TIMEOUT = 300;
+DROP INDEX PROD.FK_PRACT_OLE_OL_UDT_LST_UDT_T
+/
+CREATE INDEX PROD.FK_PRACT_OLE_OL_UDT_LST_UDT_T
+    ON PROD.PRACT_OLE_X_PRACT_ROL_UDT_LST(UDT_LST_ID,VER_ID)
+TABLESPACE INDX5 ONLINE PARALLEL 6;
+
+ALTER INDEX PROD.FK_PRACT_OLE_OL_UDT_LST_UDT_T NOPARALLEL;
+
+
+
+DROP INDEX PROD.FK_CVC_STEP_CVC_STEP
+/
+CREATE INDEX PROD.FK_CVC_STEP_CVC_STEP
+    ON PROD.CVC_STEP(PREVIOUS_STEP_CVC_STEP_ID)
+TABLESPACE INDX2 ONLINE PARALLEL 6;
+
+ALTER INDEX PROD.FK_CVC_STEP_CVC_STEP NOPARALLEL;
+
+
+ALTER INDEX  PROD.GEN_VER_REF REBUILD ONLINE PARALLEL 6 TABLESPACE INDX4;
+ALTER INDEX  PROD.GEN_VER_REF NOPARALLEL;
+
+
+***** 11/23/2022 ****************
+
+select * from v$database_block_corruption
+
+
+OWNER 	SEGMENT_TYPE              SEGMENT_NAME            PARTITION_NAME              FILE#     CORR_START_BLOCK#   		CORR_END_BLOCK#              BLOCKS_CORRUPTED     			   DESCRIPTION
+[NULL]  [NULL]                    [NULL]  			[NULL]                880        560997141                       560997141                       1                                         Free Block
+
+
+So errors in alert.log 
+
+
+grep "Error backing up file" alert_HEPYPRD.log|sort -u|awk '{print "select owner, segment_name, partition_name, segment_type from dba_extents where file_id in (select file# from v$datafile where rfile#="$5") and "$7" between block_id and block_id + blocks - 1;"}'|sed 's/,)/)/'|sed 's/://' >>object-details_3.lst
+
+
+select owner, segment_name, partition_name, segment_type, tablespace_name from dba_extents where file_id in (select file# from v$datafile where rfile#=
+1024) and 560997141 between block_id and block_id + blocks - 1;
+
+Wed Nov 23 01:56:52 2022
+Error backing up file 1024, block 560997141: logical corruption
+
+Tue Nov 22 22:00:15 2022
+Error backing up file 1024, block 560997141: logical corruption
+
+SEGMENT_NAME			SEGMENT_TYPE
+FEE_DETAIL			TABLE
+VARIABLE_VALUE_DEFINITION	TABLE
+SYS_LOB0000295690C00002$$	LOBSEGMENT
+SYS_LOB0000295636C00002$$	LOBSEGMENT
+ROW_SEQ_UNIQUE			INDEX
+PRACTITIONER_MEMBER_AEDBA_1	INDEX
+CVC_LATES_ENDOR_EFF		INDEX
+
+************** How to get backup to complete with existing corruption *****
+
+See MAXCORRUPT_backups doc.
+
+
+
+**************** HEMPQA *******
+
+Yeah… wondering…..
+Block corruption at    22:02…… BOUNCE was at 23:02 …. Hmmm
+
+Rich suggested  doing the rman validation…    that fixed it! 😉 
+
+
+
+
+
+
+[SYS@HEMPQA:HEMPQA] SQL> select * from v$database_block_corruption ;
+
+     FILE#     BLOCK#     BLOCKS CORRUPTION_CHANGE# CORRUPTIO     CON_ID
+---------- ---------- ---------- ------------------ --------- ----------
+         3     169386          1                  0 FRACTURED          0
+
+1 row selected.
+
+[SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL> select relative_fno,owner,segment_name,segment_type from dba_extents where file_id = 3 and 169386  between block_id and block_id + blocks - 1;
+
+no rows selected
+
+[SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL> alter index sys.I_WRI$_OPTSTAT_OPR_TASKS_TGST rebuild ;
+
+Index altered.
+
+[SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL> select * from v$database_block_corruption ;
+
+     FILE#     BLOCK#     BLOCKS CORRUPTION_CHANGE# CORRUPTIO     CON_ID
+---------- ---------- ---------- ------------------ --------- ----------
+         3     169386          1                  0 FRACTURED          0
+
+1 row selected.
+
+[SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL> select relative_fno,owner,segment_name,segment_type from dba_extents where file_id = 3 and 169386  between block_id and block_id + blocks - 1;
+
+no rows selected
+
+[SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL>
+
+[SYS@HEMPQA:HEMPQA] SQL> analyze index sys.I_WRI$_OPTSTAT_OPR_TASKS_TGST validate structure ;
+ Index analyzed.
+ [SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL>
+[SYS@HEMPQA:HEMPQA] SQL> select * from v$database_block_corruption ;
+ 
+     FILE#     BLOCK#     BLOCKS CORRUPTION_CHANGE# CORRUPTIO     CON_ID
+---------- ---------- ---------- ------------------ --------- ----------
+         3     169386          1                  0 FRACTURED          0
+
+
+
+
+
+
+
+[10:09 AM] Ryan, Richard T
+try  
+VALIDATE DATAFILE 3 BLOCK 169386;
+in rman
+
+
+
+
+
+
+
+
+
+RMAN> VALIDATE DATAFILE 3 BLOCK 169386;
+
+Starting validate at 15-MAR-2023 10:13:11
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=74 device type=DISK
+channel ORA_DISK_1: starting validation of datafile
+channel ORA_DISK_1: specifying datafile(s) for validation
+input datafile file number=00003 name=+DATA_01/HEMPQA_XMEDMDBW21Q/DATAFILE/sysaux.259.1029846439
+channel ORA_DISK_1: validation complete, elapsed time: 00:00:01
+List of Datafiles
+=================
+File Status Marked Corrupt Empty Blocks Blocks Examined High SCN
+---- ------ -------------- ------------ --------------- ----------
+3    OK     0              0            1               13586731816722
+  File Name: +DATA_01/HEMPQA_XMEDMDBW21Q/DATAFILE/sysaux.259.1029846439
+  Block Type Blocks Failing Blocks Processed
+  ---------- -------------- ----------------
+  Data       0              0
+  Index      0              1
+  Other      0              0
+
+Finished validate at 15-MAR-2023 10:13:14
+
+RMAN>
+
+
+
+
+
+
+[SYS@HEMPQA:HEMPQA] SQL> select * from v$database_block_corruption ;
+no rows selected
+[SYS@HEMPQA:HEMPQA] SQL>
+
+
+YEAH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+*** HEDWQA ***************
+
+alert.log errors
+
+***
+Corrupt block seq: 20960 blocknum=127522.
+Bad header found during backing up archived log
+Data in bad block - flag:1. format:130. bno:129570. seq:20953
+beg:2164 cks:30370
+calculated check value: 30370
+
+Reread of seq=20960, blocknum=127522, file=+FLASH_01/HEDWQA_XHEDWDBW21Q/ARCHIVELOG/2024_06_12/thread_1_seq_20960.373.1171458053, found same corrupt data
+Reread of seq=20960, blocknum=127522, file=+FLASH_01/HEDWQA_XHEDWDBW21Q/ARCHIVELOG/2024_06_12/thread_1_seq_20960.373.1171458053, found same corrupt data
+Reread of seq=20960, blocknum=127522, file=+FLASH_01/HEDWQA_XHEDWDBW21Q/ARCHIVELOG/2024_06_12/thread_1_seq_20960.373.1171458053, found same corrupt data
+Reread of seq=20960, blocknum=127522, file=+FLASH_01/HEDWQA_XHEDWDBW21Q/ARCHIVELOG/2024_06_12/thread_1_seq_20960.373.1171458053, found same corrupt data
+Reread of seq=20960, blocknum=127522, file=+FLASH_01/HEDWQA_XHEDWDBW21Q/ARCHIVELOG/2024_06_12/thread_1_seq_20960.373.1171458053, found same corrupt data
+Wed Jun 12 14:30:28 2024
+
+
+
+***** HECVQA2 *******
+
+
+RMAN-03009: failure of backup command on ORA_SBT_TAPE_2 channel at 07/11/2024 07:40:18
+ORA-19599: block number 5973 is corrupt in archived log +FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/thread_1_seq_48583.315.1173994813
+
+ORA-19599 When Backing up an Archivelog that is Corrupt (Doc ID 461239.1)
+
+--> Step 1
+. oraenv
+HECVQA2
+
+rmanc
+validate archivelog all;
+
+cd $BDUMP
+
+view trace file
+
+***
+Corrupt block seq: 48583 blocknum=5973.
+Bad header found during backing up archived log
+Data in bad block - flag:1. format:130. bno:8021. seq:48572
+beg:16 cks:5268
+calculated check value: 5268
+
+2024-07-11 08:21:05.013*:KRB:krb.c@3825:krbrrav(): Reread of seq=48583, blocknum=5973, file=+FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/thread_1_seq_48583.315.1173994813, found same corrupt data
+
+
+2024-07-11 08:21:05.014*:KRB:krb.c@3825:krbrrav(): Reread of seq=48583, blocknum=5973, file=+FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/thread_1_seq_48583.315.1173994813, found same corrupt data
+
+
+2024-07-11 08:21:05.015*:KRB:krb.c@3825:krbrrav(): Reread of seq=48583, blocknum
+=5973, file=+FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/thread_1_seq_485
+83.315.1173994813, found same corrupt data
+2024-07-11 08:21:05.016*:KRB:krb.c@3825:krbrrav(): Reread of seq=48583, blocknum
+=5973, file=+FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/thread_1_seq_485
+83.315.1173994813, found same corrupt data
+2024-07-11 08:21:05.016*:KRB:krb.c@3825:krbrrav(): Reread of seq=48583, blocknum
+=5973, file=+FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/thread_1_seq_485
+83.315.1173994813, found same corrupt data
+
+
+--> Step 2
+
+. oraenv
+
++ASM
+
+asmcmd
+
+cp +FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/thread_1_seq_48583.315.1173994813 /home/oracle/eb/thread_1_seq_48583.315.1173994813 
+
+cd +FLASH_01/HECVQA2_XHECVDBW22Q/ARCHIVELOG/2024_07_10/
+
+rm thread_1_seq_48583.315.1173994813 
+
+# should be gone
+ls -altr thread_1_seq_48583.315.1173994813 
+
+
+--> Step 3
+. oraenv
+HECVQA2
+
+rmanc
+crosscheck copy of archivelog all ;
+
+--> Step 4
+Re run backup

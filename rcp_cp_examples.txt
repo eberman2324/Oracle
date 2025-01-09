@@ -1,0 +1,81 @@
+*********************************USE scp instead of rcp  **************************************
+-->example
+rcp -rp /workability/wkabuat/Backup/01082008223000/ boraw1d:/xxx/oraback/backup_PSPROD_20071211_4bldpsmask
+
+
+## Quick test for boraw1q and it works
+rcp  /workability/wkabuat/Backup/BACKUP_TEST/ora_1486880.aud oracle@boraw1q.add.net:/boraw1qu211/test.aud
+
+##Individual File rcp example
+## Does not work on boraw1d getting (Permission denied error). franz looking into this
+## Works Now!!!
+rcp  /workability/wkabuat/Backup/BACKUP_WKABUAT/ora_1188026.aud.Z boraw1d.add.net:/boraw1du204/BACKUP_TEST/test.aud.Z
+
+*********************************USE scp instead of rcp **************************************
+
+## Directory rcp example
+
+nohup rcp -rp /workability/wkabuat/Backup/01302008223000/Datafiles boraw1d:/boraw1du205/wkabdev3/backups/stage_backup
+
+## Copy directory from one file system to anather. In this case I pre created cold_backup directory on new place
+
+cp /orabackup/pvu350/PLNVPREP/backups/COLDBKP20090718_165300/* /oraexport/pvu370/PLNVPREP/cold_backup/
+
+!!! use scp instead of rcp (per unix Admin) Some times rcp is going to fail so use scp !!!
+
+
+rcp  /orastage/ebsu285/oracle_cd_tars/AIX_Grid_Control_agent_download_11_1_0_1_0.zip boraw1d:/boraw1du204/oracle11g_software/AIX_Grid_Control_agent/AIX_Grid_Control_agent_download_11_1_0_1_0.zip
+
+
+
+scp  /boraw1du101/IVDV01/datapump/nightly_refresh.dmp boraw1q:/boraw1qu101/IVQA01/datapump/nightly_refresh.dmp
+scp /boraw1du101/IVQA01/datapump/test.txt boraw1d:/boraw1qu101/IVDV01/datapump/test.txt
+
+
+*********************************USE scp instead of rcp **************************************
+
+scp -rp /workability/oracle11g_software/11.0.2.2 datarep:/u36/oracle_software/11.0.2.2
+
+scp -rp /workability/oracle11g_software/OPatch_11202  datarep:/u36/oracle_software/OPatch_11202
+
+scp -rp /workability/oracle11g_software/PSU_JAN2011_11202  datarep:/u36/oracle_software/PSU_JAN2011_11202
+
+
+scp -rp /u36/oracle_software/11.0.2.2 datamart:/u36/oracle/oracle_software/11.0.2.2 
+
+scp -rp /u36/oracle_software/OPatch_11202 datamart:/u36/oracle/oracle_software/OPatch_11202 
+
+scp -rp /u36/oracle_software/PSU_JAN2011_11202 datamart:/u36/oracle/oracle_software/PSU_JAN2011_11202 
+
+
+scp -rp /u36/oracle_software/testdirt datamart:/u36/oracle/oracle_software/testdirt
+
+scp -rp /u36/oracle_software/testdirt datamart:/u36/oracle/oracle_software/testdirt
+
+scp -rp /tmp/testdirt datarep:/tmp/testdirt
+
+
+/u36/oracle_software/OPatch_11202
+
+cd /u36/oracle/oracle_software
+scp -rp floradev:/workability/oracle11g_software/OPatch_11202 . 
+
+authorized key
+
+
+scp /workability/aetna/scripts/backup/archivelog_bkup.rman aetnaprod:/orahome/wkab01/aetna/scripts/backup/archivelog_bkup.rman
+
+
+scp /boraw1qu01/app/oracle/admin/wkabqa3/SourceSafe/2011_Sep_Release.1_01/Database/Packages/PK_EXTRACT_TASK_NOTES.pck wkabuat:/workability2/wkabstg2/SourceSafe/2011_Sep_Release.1_07/Database/Packages/PK_EXTRACT_TASK_NOTES.pck
+
+
+scp -rp /orahome/wkab01/upgrades/11203_upgrade/scripts  floradev:/u07/oracle/DBATST/scripts
+
+scp -rp /u07/oracle/DBATST/scripts  datamart:/u37/upgrades/11203_upgrade/scripts
+
+
+scp -rp /orahome/u01/app/oracle/local/scripts/monitor xhecvdbm21p:/orahome/u01/app/oracle/local/scripts/monitor
+scp -rp /orahome/u01/app/oracle/local/scripts/mail xhecvdbm21p:/orahome/u01/app/oracle/local/scripts/mail
+
+
+scp -rp /home/oracle/eb/sqlt xmedmdbm21p:/home/oracle/eb/sqlt

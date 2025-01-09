@@ -1,0 +1,2239 @@
+@---------- Gives DB startup Date/Time and Version ----------
+
+select db_name,version,startup_time from DBA_HIST_DATABASE_INSTANCE;
+SELECT to_char(startup_time,'DD-MON-YYYY HH24:MI:SS') "DB Startup Time"
+FROM   sys.v_$instance;
+
+select name from v$database;
+select version from  v$instance;
+
+******** Gives DB create Date/Time ********************************
+
+select created FROM v$database;
+******************************************************************
+
+Get Info on what kind Oracle 32bin or 64bit installed
+
+cd $ORACLE_HOME/bin
+
+file oracle
+
+oracle: 64-bit XCOFF executable or object module not stripped
+
+or sometimes
+
+cd $ORACLE_HOME
+
+if it has both /lib32 and /lib then 64 bit
+
+if it has only /lib then it 32 bit
+
+
+PATCH APPLIED:
+
+FOR 9.2 and 10g: select * from dba_registry_history
+
+or
+
+   cd ${ORACLE_BASE}/product/10.2.0/OPatch/
+   ./opatch version
+   ...
+   OPatch Version: 10.2.0.3.1
+
+   $ORACLE_HOME/OPatch/opatch lsinventory > HEDWSTS_inventory.out
+   $ORACLE_HOME/OPatch/opatch lsinventory > GI_inventory.out
+   $ORACLE_HOME/OPatch/opatch lsinventory > CXT_inventory.out
+   or
+
+   opatch lsinventory -all
+
+   or
+
+   opatch lsinventory -bugs_fixed asc
+
+   or 
+
+   opatch lsinventory -detail > $HOME/eb/patch.lst 
+
+ 
+
+
+   ## Patch Logs goes there: 
+      /u29/app/oracle/product/10.2.0.4/cfgtoollogs/opatch
+   ...
+
+# to see what was applied when
+$ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+Patch  11072246     : applied on Fri May 11 10:29:15 EDT 2012
+Patch  12412983     : applied on Fri May 11 10:28:23 EDT 2012
+Patch  12596494     : applied on Wed Feb 22 17:20:05 EST 2012
+
+
+or
+
+HEPYDEV> $ORACLE_HOME/OPatch/opatch lspatches
+36092868;DATAPUMP BUNDLE PATCH 19.22.0.0.0
+35949090;JDK BUNDLE PATCH 19.0.0.0.240116
+34774667;TT23.1ASAN  GLOBAL-BUFFER-OVERFLOW IN PGA AT KWQALOCKQTWITHINFO
+34304965;TRACKING BUG FOR KQR FIXES FOR 19C RU
+29213893;DBMS_STATS FAILING WITH ERROR ORA-01422 WHEN GATHERING STATS FOR USER$ TABLE
+35967489;OCW RELEASE UPDATE 19.22.0.0.0 (35967489)
+35926646;OJVM RELEASE UPDATE: 19.22.0.0.240116 (35926646)
+35943157;Database Release Update : 19.22.0.0.240116 (35943157)
+
+
+http://forums.oracle.com/forums/message.jspa?messageID=2286809#2286809
+
+
+******  opatchauto **********
+https://martincarstenbach.com/2015/04/16/little-things-worth-knowing-what-does-opatchauto-actually-do/
+
+Example:
+      To patch GI home and all RAC homes: 
+      '<GI_HOME>/OPatch/opatchauto apply'
+ 
+      To patch multiple homes:
+      '<GI_HOME>/OPatch/opatchauto apply -oh <GI_HOME>,<RAC_HOME1>,<RAC_HOME2>'
+ 
+      To patch databases running from RAC homes only:
+      '<RAC_HOME>/OPatch/opatchauto apply -database db1,db2...dbn'
+ 
+      To patch software-only installation:
+      '<RAC_HOME>/OPatch/opatchauto apply -oh <RAC_HOME>' OR
+      '<GI_HOME>/OPatch/opatchauto apply -oh <GI_HOME>'
+
+
+**** How to find where is oraInventory************
+
+cd /etc
+view *.loc 
+
+---------- Check for invalid objects ----------
+
+Select object_name,object_type,owner from dba_objects where status='INVALID'
+
+---- Check for package or object status --------
+
+select object_name, object_type, status
+from dba_objects 
+where object_name = 'PK_EASY_BUTTON';
+
+If INVALID do this: alter package wkab10.pk_easy_button recompile;
+
+
+
+---------- Check for Oracle Components and their status ----------
+
+select * from dba_registry
+
+select * from dba_registry_history;
+
+select * from v$option;
+
+select * from DBA_FEATURE_USAGE_STATISTICS;
+
+
+!!! for 12c !!!
+
+ select * from DBA_REGISTRY_SQLPATCH;
+------------Database Filesystem Information -------------------------------
+
+select * from dba_data_files
+select * from dba_temp_files
+select * from v$controlfile
+select * from v$logfile order by 3
+select * from dba_tablespaces
+
+--How to find out which tablespace is DEFAULT temp
+SELECT * FROM DATABASE_PROPERTIES where PROPERTY_NAME='DEFAULT_TEMP_TABLESPACE';
+
+
+---------- version 8 and 9 how to check Public DBlink (password) ----------
+
+sys.link$ table could give us passwords for link users in 8,9 Version
+select name, password,userid from sys.link$ where name = 'DPQA89';
+
+
+---------- check for synonyms (DBlink) ----------
+
+select * from dba_synonyms where db_link is not null
+select * from dba_synonyms where synonym_name like '%S_COMM%'
+
+---------- dblink information -----------------------------
+
+select * from dba_db_links
+
+---------- Check if query hang or still running -----------
+
+Select * from V$SESSION_LONGOPS where session = ???
+
+--You can look in to V$SESSION_LONGOPS and see if the SESSION from which you
+--ran the query is executing any thing.
+
+--You could check the expalin plan and see how the query runs.
+
+**********Do things before********Shutdown Immediate on Production***************
+
+--According to Note:375935.1, this kind of situation is mostly caused by 2 things:
+--1. a large query running at the shutdown moment.
+--2. a large transaction running at the shutdown moment.
+
+--So, before issuing the shutdown immediate, it would be recommended
+--to check the following views,
+--especially when the database needs to be brought down for a very short period of time:
+--1. for large queries:
+ select count(*) from v$session_longops where time_remaining>0;
+
+--2. for large transactions:
+select sum(used_ublk) from v$transaction;
+
+--1. For the large queries situation, when the shutdown immediate is hanging,
+--you can just bring down the database using: shutdown abort, as the database could be 
+--easily brought to a consistent state by:
+--startup restrict followed by shutdown immediate.
+--One should take the backup and/or do whatever else need to be done after the shutdown immediate.
+--2. For the second situation, the workaround cannot be applied, especially
+--when it's needed to take a cold backup. The database must be closed in a 
+--consistent state in order to do this and the consistent state cannot be achieved until 
+--all the transactions have completed one way or another (commit/rollback).
+
+**************USERS and their ROLES and PROFILE*******************************************
+***This helpful if somebody need to know list of users with update role...***************
+
+
+
+select username from dba_users where  regexp_like(username, '[A|N][0-9]{6}.*') order by 1
+
+
+select  rp.grantee, u.account_status, rp.granted_role  from dba_role_privs rp, dba_users u
+ where rp.grantee = 'N508892'  and rp.grantee=u.username;
+
+
+select  rp.grantee, u.account_status, rp.granted_role 
+  from dba_role_privs rp, 
+       dba_users u
+ where regexp_like(rp.grantee, '[A|N][0-9]{6}.*')
+   and rp.grantee=u.username and rp.granted_role in ('PHARMACY')
+ order by 1,3;
+
+
+
+--- List of USERS and their roles
+select  rp.grantee, u.account_status, rp.granted_role 
+  from dba_role_privs rp, 
+       dba_users u
+ where regexp_like(rp.grantee, '[A|N][0-9]{6}.*')
+   and rp.grantee=u.username and rp.granted_role not in ('CONNECT','AE_CONNECT_ROLE')
+ order by 1,3;
+
+select  rp.grantee,  rp.granted_role 
+  from dba_role_privs rp, 
+       dba_users u
+ where regexp_like(rp.grantee, '[A|N][0-9]{6}.*')
+   and rp.grantee=u.username and rp.granted_role not in ('CONNECT')
+ order by 1,2;
+
+--- List of USERS with write role
+
+ select rp.grantee, u.account_status, rp.granted_role
+    from dba_role_privs rp,
+           dba_users u
+     where regexp_like(rp.grantee, '[A|N][0-9]{6}.*')
+       and rp.granted_role like 'APP_READ_WRITE%'
+       and rp.grantee=u.username
+    order by 1
+
+
+ select rp.grantee, u.account_status, rp.granted_role
+    from dba_role_privs rp,
+           dba_users u
+     where regexp_like(rp.grantee, '[A|N][0-9]{6}.*')
+       and rp.granted_role like not in ('CONNECT')
+       and rp.grantee=u.username
+    order by 3
+    
+
+
+-- Latest Mike's (I used this to sent report to Justine)
+
+select rp.grantee, u.account_status, rp.granted_role
+from dba_role_privs rp, dba_users u
+where (rp.granted_role like 'APP%' or rp.granted_role = 'CAPACITY_PLANNING_ROLE')
+and regexp_like(rp.grantee, '[A|N][0-9]{6}.*') and rp.grantee=u.username order by 1;
+
+
+
+## Identify Roles with ANY grants
+select role
+from dba_roles a
+where a.role in (select b.grantee from dba_sys_privs b where privilege like '%ANY%') 
+
+
+select USERNAME from dba_users where profile='APP_DATA_MOD_PROFILE' order by USERNAME
+
+select grantee from dba_role_privs where granted_role = 'APP_DATA_MOD_ROLE'
+select grantee from dba_role_privs where granted_role = 'APP_DEVELOPER_ROLE'
+select grantee from dba_role_privs where granted_role = 'APP_USER_ROLE'
+
+select USERNAME, granted_role  from dba_users,dba_role_privs where username = grantee
+and  granted_role IN ('APP_READ_ONLY_NOAETNA_ROLE','APP_READ_ONLY_ALL_DATA_ROLE',
+'APP_READ_WRITE_ALL_DATA_ROLE', 'APP_READ_WRITE_NOAETNA_ROLE') order by granted_role  
+
+select USERNAME, granted_role  from dba_users,dba_role_privs where username = grantee
+and  granted_role IN ('APP_DATA_MOD_ROLE') order by granted_role  
+
+select USERNAME,granted_role from dba_users,dba_role_privs where username = grantee
+and granted_role not in ('CONNECT','RESOURCE','AE_CONNECT_ROLE','AQ_ADMINISTRATOR_ROLE',
+'AQ_USER_ROLE','ANALYZE_ROLE','MGMT_USER','EXP_FULL_DATABASE','IMP_FULL_DATABASE',
+'DATAPUMP_EXP_FULL_DATABASE','DATAPUMP_IMP_FULL_DATABASE','GATHER_SYSTEM_STATISTICS',
+ 'OEM_MONITOR','OEM_ADVISOR','DBA','SELECT_CATALOG_ROLE','CTXAPP','DELETE_CATALOG_ROLE',
+ 'EXECUTE_CATALOG_ROLE','HS_ADMIN_ROLE','JAVADEBUGPRIV','JAVAIDPRIV','JAVASYSPRIV',
+ 'JAVAUSERPRIV','JAVA_ADMIN','JAVA_DEPLOY','LOGSTDBY_ADMINISTRATOR','RECOVERY_CATALOG_OWNER',
+ 'SCHEDULER_ADMIN','TIMESERIES_DBA','TIMESERIES_DEVELOPER','WM_ADMIN_ROLE')
+order by granted_role,USERNAME
+
+
+select USERNAME,granted_role from dba_users,dba_role_privs where username = grantee
+and granted_role not in ('CONNECT','RESOURCE','AE_CONNECT_ROLE','EXP_FULL_DATABASE') and
+USERNAME  not in ('ORACLE','SYS', 'SYSTEM','SYSMAN','DBSNMP','WMSYS','MGMT_VIEW')
+order by granted_role,USERNAME
+
+select USERNAME,granted_role from dba_users,dba_role_privs where username = grantee
+and USERNAME   in ('N202366','N206335', 'N206008','N150001','N204696','N205037')
+order by USERNAME
+
+--This query helps identify who may have direct access (no roles)
+
+SELECT DISTINCT GRANTEE  FROM DBA_TAB_PRIVS,dba_users where username = grantee
+ AND PRIVILEGE IN ('UPDATE','DELETE','INSERT')
+
+select *  from dba_users where profile='APP_DATA_MOD_PROFILE' order by USERNAME
+
+select USERNAME,ACCOUNT_STATUS,LOCK_DATE,EXPIRY_DATE,CREATED,PROFILE 
+ from dba_users where USERNAME = 'A210355'
+
+SELECT * FROM AEDBA.AEDBA_VALID_USERS WHERE USERNAME = 'A210355'
+SELECT * FROM AEDBA.AEDBA_MOD_USER_AUDIT 
+
+SELECT USERID,TIMESTAMP#,TERMINAL,LOGOFF$TIME,COMMENT$TEXT FROM SYS.AUD$ WHERE USERID =  'A236120'
+
+SELECT * FROM SYS.AUD$
+
+SELECT NAME, VALUE FROM V$PARAMETER WHERE NAME LIKE 'audit%'
+
+SELECT *  FROM SYS.AUD$ WHERE USERID IN (PROD_DW') AND
+TO_CHAR(TIMESTAMP#,'MM-DD-YYYY') = '11-04-2020' order by 
+TIMESTAMP# desc
+
+or
+
+SELECT USERID  FROM SYS.AUD$ WHERE
+TO_CHAR(TIMESTAMP#,'MM-DD-YYYY') = '06-15-2016' order by 
+TIMESTAMP# desc;
+
+---Latest
+SELECT *   FROM DBA_AUDIT_TRAIL WHERE
+TO_CHAR(TIMESTAMP,'MM-YYYY') = '01-2022' and USERID = 'S023748 ' order by 
+TIMESTAMP desc;
+
+
+SELECT *   FROM DBA_AUDIT_TRAIL WHERE
+TO_CHAR(TIMESTAMP,'MM-DD-YYYY') = '07-11-2017' and USERNAME = 'SC_BASE' order by 
+TIMESTAMP desc;
+
+
+
+SELECT Count(*) FROM SYS.AUD$ WHERE TO_CHAR(TIMESTAMP#,'YYYY') = '2009';
+
+
+or
+GBLCLMTCM
+SELECT *  FROM DBA_AUDIT_TRAIL WHERE USERNAME IN ('S023748') AND
+TO_CHAR(TIMESTAMP,'MM-YYYY') = '01-2022' order by 
+TIMESTAMP desc
+
+
+SELECT *  FROM DBA_AUDIT_TRAIL WHERE USERNAME IN ('SYSTEM') AND
+TO_CHAR(TIMESTAMP,'MM-YYYY') = '08-2011' order by 
+TIMESTAMP desc
+
+SELECT *   FROM DBA_AUDIT_TRAIL WHERE
+TO_CHAR(TIMESTAMP,'MM-DD-YYYY') = '12-02-2016' and USERNAME = 'DRWKAB' order by 
+TIMESTAMP desc;
+
+
+
+SELECT RETURNCODE FROM SYS.AUD$
+
+28000 - account is locked
+RETURN code = ORA- (add 00 up fornt to get 5 digit number)
+001017
+
+--FAILED attempt---
+select
+    OS_USERNAME,
+    USERNAME,
+    USERHOST,
+    TERMINAL,
+    substr(to_char(timestamp, 'MM/DD/YYYY  hh:mi:ss am'),1,30)  TS,
+    RETURNCODE
+from
+    dba_audit_trail
+where
+    TO_CHAR(TIMESTAMP,'MM-DD-YYYY') = '03-05-2021' and USERNAME = 'S020121' and
+    RETURNCODE = 1017
+ ORDER BY
+    timestamp
+;
+
+select
+    OS_USERNAME,
+    USERNAME,
+    USERHOST,
+    TERMINAL,
+    substr(to_char(timestamp, 'MM/DD/YYYY  hh:mi:ss am'),1,30)  TS,
+    RETURNCODE
+from
+    dba_audit_trail
+where
+    TO_CHAR(TIMESTAMP,'MM-DD-YYYY') = '05-18-2022'  and
+    RETURNCODE = 1017
+ ORDER BY
+    timestamp
+;
+
+
+
+
+SELECT * FROM DBA_AUDIT_EXISTS where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_OBJECT where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_SESSION where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_STATEMENT where SESSIONID = 52785328
+SELECT * FROM DBA_AUDIT_TRAIL where SESSIONID = 52785328
+SELECT * FROM DBA_OBJ_AUDIT_OPTS  
+
+SELECT *  FROM  sys.aud$ WHERE USERID IN ('WKAB10') AND
+trunc(NTIMESTAMP#) = trunc(sysdate)
+order by trunc(NTIMESTAMP#) desc
+
+
+SELECT *  FROM  dba_audit_trail WHERE USERNAME IN ('SYSTEM') AND
+trunc(TIMESTAMP) = trunc(sysdate)
+order by trunc(TIMESTAMP) desc
+
+
+GBLCLMTCM
+
+
+SELECT *  FROM DBA_AUDIT_TRAIL WHERE USERNAME IN ('OPS$S036100') AND
+TO_CHAR(TIMESTAMP,'MM-YYYY') = '04-2012' order by 
+TIMESTAMP desc
+
+
+SELECT *  FROM DBA_AUDIT_TRAIL WHERE 
+TO_CHAR(TIMESTAMP,'MM-YYYY') = '04-2015' and userhost in ('datamart.iwhouse.aetna.com')
+order by username
+
+userhost not in ('datarep.iwhouse.aetna.com', 'datarep')
+and username not in ('DBCMS','DBLINK_IVR','DBLINK_PSOFTPROD','TOM','ORATIVOLI','DBSNMP')
+--and username in ('datamart.iwhouse.aetna.com')
+
+
+SELECT *   FROM DBA_AUDIT_TRAIL WHERE TIMESTAMP
+BETWEEN
+      to_date ('2017-10-11T21:30:00', 'YYYY-MM-DD"T"HH24:MI:SS')
+           AND
+             to_date ('2017-10-11T21:50:00', 'YYYY-MM-DD"T"HH24:MI:SS')
+              and USERNAME IN ('PROD') 
+              ORDER  by TIMESTAMP desc
+              
+              --xhepycpm7p.aetna.com
+
+
+
+----------TABLE SIZE ----------
+
+
+!!! DBA_TABLES will get information, but it depends on how latest statistics,
+    so this could get not accurate result.
+    Use dba_segments to get real size of space taken by any table
+
+
+--- AUD$ table size
+
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'TABLE' and segment_name IN ('AUD$')
+
+
+---->Actual Data Size in Table
+select table_name,round((num_rows*avg_row_len/1024),2)||'kb' "SIZE"
+from dba_tables where owner =  'DRGENERIC' and table_name ='ERROR_LOG'
+
+or
+
+select table_name,round((num_rows*avg_row_len/1024),2) as  "SIZE"
+from dba_tables where owner =  'DRWKAB' 
+order by 2 desc
+
+or 
+
+select segment_name, sum(bytes/1024/1024) as MB from dba_segments where owner = 'DRWKAB' and 
+segment_type= 'TABLE'
+group by segment_name
+order by MB
+
+select segment_name, sum(bytes/1024/1024) as MB from dba_segments where owner = 'SYS' and 
+segment_type= 'TABLE'
+group by segment_name
+order by MB
+
+Sample A:
+
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'TABLE' and segment_name IN ( 'T_ACCOUNT_STRUCTURE',
+'T_DIS_CLAIM','T_DIS_PLAN','T_DIS_PLAN_VERSION','T_ACCOUNT_STRUCTURE',
+'T_ADDRESS',
+'T_COMPANY',
+'T_COMPANY_PARMS',
+'T_DIS_CLAIM',
+'T_DIS_CLINICAL',
+'T_DIS_FINANCIAL',
+'T_DIS_OFFSETS',
+'T_DIS_OVERPAYMENT_BALANCE',
+'T_DIS_PLAN',
+'T_DIS_PLAN_CAT',
+'T_DIS_PLAN_SET_DURTN_TIERS',
+'T_DIS_PLAN_THRESHOLD',
+'T_DIS_PLAN_VALID_OFFSETS',
+'T_DIS_PLAN_VARIABLE_DURTN',
+'T_DIS_PLAN_VERSION',
+'T_DIS_RTW',
+'T_DIS_SOCIAL_SECURITY',
+'T_EMP_RELATIVE',
+'T_EMPLOYEE',
+'T_PERSON',
+'T_RELATIONSHIP_TYPE',
+'T_WKAB_LOOKUP','BENENG_PAYMENT_RQST'
+)
+and owner IN ('WKAB10','BENENG')
+
+
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'TABLE' and segment_name IN ( 'PS_AUDIT_CLNT_FRCO')
+and owner IN ('SYSADM')
+
+Sample B:
+
+SELECT table_name,round((num_rows*avg_row_len/1024),2) "SIZE"
+from dba_tables
+where  TABLE_NAME IN ('T_ACCOUNT_STRUCTURE',
+'T_DIS_CLAIM','T_DIS_PLAN','T_DIS_PLAN_VERSION','T_ACCOUNT_STRUCTURE',
+'T_ADDRESS',
+'T_COMPANY',
+'T_COMPANY_PARMS',
+'T_DIS_CLAIM',
+'T_DIS_CLINICAL',
+'T_DIS_FINANCIAL',
+'T_DIS_OFFSETS',
+'T_DIS_OVERPAYMENT_BALANCE',
+'T_DIS_PLAN',
+'T_DIS_PLAN_CAT',
+'T_DIS_PLAN_SET_DURTN_TIERS',
+'T_DIS_PLAN_THRESHOLD',
+'T_DIS_PLAN_VALID_OFFSETS',
+'T_DIS_PLAN_VARIABLE_DURTN',
+'T_DIS_PLAN_VERSION',
+'T_DIS_RTW',
+'T_DIS_SOCIAL_SECURITY',
+'T_EMP_RELATIVE',
+'T_EMPLOYEE',
+'T_PERSON',
+'T_RELATIONSHIP_TYPE',
+'T_WKAB_LOOKUP','BENENG_PAYMENT_RQST'
+)
+and owner IN ('WKAB10','BENENG')
+
+Sample C:
+
+select table_name,round((blocks*8),2) "SIZE"
+from dba_tables
+where  TABLE_NAME IN ('T_ACCOUNT_STRUCTURE',
+'T_DIS_CLAIM','T_DIS_PLAN','T_DIS_PLAN_VERSION','T_ACCOUNT_STRUCTURE',
+'T_ADDRESS',
+'T_COMPANY',
+'T_COMPANY_PARMS',
+'T_DIS_CLAIM',
+'T_DIS_CLINICAL',
+'T_DIS_FINANCIAL',
+'T_DIS_OFFSETS',
+'T_DIS_OVERPAYMENT_BALANCE',
+'T_DIS_PLAN',
+'T_DIS_PLAN_CAT',
+'T_DIS_PLAN_SET_DURTN_TIERS',
+'T_DIS_PLAN_THRESHOLD',
+'T_DIS_PLAN_VALID_OFFSETS',
+'T_DIS_PLAN_VARIABLE_DURTN',
+'T_DIS_PLAN_VERSION',
+'T_DIS_RTW',
+'T_DIS_SOCIAL_SECURITY',
+'T_EMP_RELATIVE',
+'T_EMPLOYEE',
+'T_PERSON',
+'T_RELATIONSHIP_TYPE',
+'T_WKAB_LOOKUP','BENENG_PAYMENT_RQST'
+)
+and owner IN ('WKAB10','BENENG')
+
+---->Table Size
+
+select table_name,round((blocks*8),2)||'kb' "SIZE"
+from dba_tables where owner =  'PROD_DW' and table_name ='CSTMCACHED_CUR_CLAIMS_EXT_WORK'
+
+select * from dba_tables order by 1
+
+--Latest
+
+--- Table Size
+
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'TABLE' and segment_name IN ( 'CSTMCACHED_CUR_CLAIMS_EXT_WORK')
+and owner IN ('PROD_DW')
+
+
+---> Index size
+
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'INDEX' and segment_name IN ( 'AUDIT_LOG_ENTRY_SUBTYPE_NM_IDX')
+and owner IN ('PROD_DW')
+
+or 
+
+select segment_name,sum(bytes/1024/1024) as M from dba_segments
+where segment_type= 'INDEX' and segment_name IN (
+'SUPPLIER_EXP_ID',
+'SUPP_EXP_ID',
+'IDENT_VER_ID',
+'FK_ORGANIZATION_TAX_ID',
+'POSTAL_ADDRESS_ID',
+'SUPP_DATE_ID',
+'SUPPLIER_END_DT',
+'SUPP_ENDOR_ID'
+)
+and owner IN ('PROD')
+GROUP BY segment_name
+
+-- 5 TB
+
+select count(rowid) from DRGENERIC.ERROR_LOG
+--before purge we had 54 M
+--after purge we have around 10M
+--10,949,034
+
+-schema size
+select sum(bytes/1024/1024) as M from dba_segments
+where segment_type IN ('DATA', 'INDEX') and owner IN ('PROD')
+
+
+12647183.6875
+9578321.5
+----------  DELETE from table where xxcolumn < sysdate - 120 ### or rowid < 100000 
+
+The space will still be allocated to the table, but it should be reused.  
+So, we shouldn't need to add space to the DRGENERIC_DATA or DRGENERIC_INDEX 
+tablespaces for a while.
+
+---------- DATABASE SIZE ----------
+!! Alloated size
+select sum(gb)  from (select sum(bytes)/1024/1024/1024 gb from dba_data_files     
+   union all  
+         select sum(bytes)/1024/1024/1024 gb from dba_temp_files);
+
+
+select sum(bytes/1024/1024/1024) Physical_size_gb from dba_data_files;
+
+!! Used size
+select sum(bytes/1024/1024/1024) Actual_size_gb from dba_segments;
+ or 
+
+ select round(sum(bytes) / 1024 / 1024 / 1024) "Database Size in GB" 
+from ( 
+    select bytes from v$datafile 
+    union all 
+    select bytes from v$tempfile 
+    union all 
+    select bytes from v$log 
+) 
+where  bytes - (select sum(bytes) from dba_free_space) > 0; 
+
+or
+
+select round(sum(used.bytes) / 1024 / 1024 / 1024 ) || ' GB' "Database Size"
+, round(sum(used.bytes) / 1024 / 1024 / 1024 ) -
+round(free.p / 1024 / 1024 / 1024) || ' GB' "Used space"
+, round(free.p / 1024 / 1024 / 1024) || ' GB' "Free space"
+from (select bytes
+from v$datafile
+union all
+select bytes
+from v$tempfile
+union all
+select bytes
+from v$log) used
+, (select sum(bytes) as p
+from dba_free_space) free
+group by free.p
+
+
+select owner, segment_type, round(sum(bytes) / 1024 / 1024 / 1024)  from dba_segments
+where owner not in ('SYS','SYSTEM','CTX','OUTLN','DBSNMP','XDB')
+group by owner, segment_type
+
+
+
+!! History of Used size Login in to first EMCLPRD
+
+select rollup_timestamp, average
+from sysman.mgmt$metric_daily
+where target_name = 'HEPYPRD_xhepydbm1p'
+and column_label = 'Used Space(GB)'
+order by rollup_timestamp;
+
+
+DBA_DATA_FILES will give you the Allocated Space
+DBA_FREE_SPACE will give you the Free Space
+DBA_SEGMENTS will give you the Used Space
+
+
+--- DATABASE GROWTH MONITORING SCRIPT
+SELECT
+(select min(creation_time) from v$datafile) "Create Time",
+(select name from v$database) "Database Name",
+ROUND((SUM(USED.BYTES) / 1024 / 1024 ),2) || ' MB' "Database Size",
+ROUND((SUM(USED.BYTES) / 1024 / 1024 ) - ROUND(FREE.P / 1024 / 1024 ),2) || ' MB' "Used Space",
+ROUND(((SUM(USED.BYTES) / 1024 / 1024 ) - (FREE.P / 1024 / 1024 )) / ROUND(SUM(USED.BYTES) / 1024 / 1024 ,2)*100,2) || '% MB' "Used in %",
+ROUND((FREE.P / 1024 / 1024 ),2) || ' MB' "Free Space",
+ROUND(((SUM(USED.BYTES) / 1024 / 1024 ) - ((SUM(USED.BYTES) / 1024 / 1024 ) - ROUND(FREE.P / 1024 / 1024 )))/ROUND(SUM(USED.BYTES) / 1024 / 1024,2 )*100,2) || '% MB' "Free in %",
+ROUND(((SUM(USED.BYTES) / 1024 / 1024 ) - (FREE.P / 1024 / 1024 ))/(select sysdate-min(creation_time) from v$datafile),2) || ' MB' "Growth DAY",
+ROUND(((SUM(USED.BYTES) / 1024 / 1024 ) - (FREE.P / 1024 / 1024 ))/(select sysdate-min(creation_time) from v$datafile)/ROUND((SUM(USED.BYTES) / 1024 / 1024 ),2)*100,3) || '% MB' "Growth DAY in %",
+ROUND(((SUM(USED.BYTES) / 1024 / 1024 ) - (FREE.P / 1024 / 1024 ))/(select sysdate-min(creation_time) from v$datafile)*7,2) || ' MB' "Growth WEEK",
+ROUND((((SUM(USED.BYTES) / 1024 / 1024 ) - (FREE.P / 1024 / 1024 ))/(select sysdate-min(creation_time) from v$datafile)/ROUND((SUM(USED.BYTES) / 1024 / 1024 ),2)*100)*7,3) || '% MB' "Growth WEEK in %"
+FROM    (SELECT BYTES FROM V$DATAFILE
+UNION ALL
+SELECT BYTES FROM V$TEMPFILE
+UNION ALL
+SELECT BYTES FROM V$LOG) USED,
+(SELECT SUM(BYTES) AS P FROM DBA_FREE_SPACE) FREE
+GROUP BY FREE.P;
+
+
+
+
+---------- YEAR OVERLAP SQL's ----------
+/workability/home/oracle/Monitor/Scripts/send_audit_email.ksh
+
+Do I have to execute send_audit_email.ksh which is under /workability/home/oracle/Monitor/Scripts/ 
+
+
+
+**** This script was originally there and did not work in first week of january overlapping previous year
+
+SELECT DISTINCT MSG_TXT || ',' || COUNT(*) "TOTAL BY MESSAGE" FROM AEDBA.AEDBA_
+OD_USER_AUDIT
+WHERE TO_CHAR(AUDIT_DTS, 'MM-DD-YYYY') >= to_CHAR(SYSDATE-7, 'MM-DD-YYYY') AND
+TO_CHAR(AUDIT_DTS, 'MM-DD-YYYY') <= to_CHAR(SYSDATE-1, 'MM-DD-YYYY')
+AND MSG_TXT <> 'VALID READ ONLY USER LOGON OCCURRED'
+GROUP BY MSG_TXT;
+SELECT MSG_TXT || ',' || USERNAME || ',' || PROGRAM || ',' || OSUSER || ',' ||
+ERMINAL || ',' || AUDIT_DTS FROM AEDBA.AEDBA_MOD_USER_AUDIT
+WHERE TO_CHAR(AUDIT_DTS, 'MM-DD-YYYY') >= to_CHAR(SYSDATE-7, 'MM-DD-YYYY') AND
+TO_CHAR(AUDIT_DTS, 'MM-DD-YYYY') <= to_CHAR(SYSDATE-1, 'MM-DD-YYYY')
+AND MSG_TXT <> 'VALID READ ONLY USER LOGON OCCURRED'
+ORDER BY MSG_TXT, AUDIT_DTS DESC;
+
+
+
+***********PERM fix
+
+alter session set cursor_sharing = exact;
+set pagesize 60
+set linesize 130
+break on MSG_TXT SKIP 1 ON REPORT
+SELECT DISTINCT MSG_TXT || ',' || COUNT(*) "TOTAL BY MESSAGE" FROM AEDBA.AEDBA_MOD_USER_AUDIT
+WHERE trunc(AUDIT_DTS, 'DD') >= trunc(SYSDATE-7, 'DD') AND
+trunc(AUDIT_DTS, 'DD') <= trunc(SYSDATE-1, 'DD')
+AND MSG_TXT <> 'VALID READ ONLY USER LOGON OCCURRED'
+GROUP BY MSG_TXT;
+SELECT MSG_TXT || ',' || USERNAME || ',' || PROGRAM || ',' || OSUSER || ',' || TERMINAL || ',' |
+| AUDIT_DTS FROM AEDBA.AEDBA_MOD_USER_AUDIT
+WHERE trunc(AUDIT_DTS, 'DD') >= trunc(SYSDATE-7, 'DD') AND
+trunc(AUDIT_DTS, 'DD') <= trunc(SYSDATE-1, 'DD')
+AND MSG_TXT <> 'VALID READ ONLY USER LOGON OCCURRED'
+ORDER BY MSG_TXT, AUDIT_DTS DESC;
+
+*************TEMP fix to execute particular dates
+alter session set cursor_sharing = exact;
+set pagesize 60
+set linesize 130
+break on MSG_TXT SKIP 1 ON REPORT
+SELECT DISTINCT MSG_TXT || ',' || COUNT(*) "TOTAL BY MESSAGE" FROM AEDBA.AEDBA_MOD_USER_AUDIT
+WHERE trunc(AUDIT_DTS, 'DD') >= trunc(to_date('06','DD')-7, 'DD') AND
+trunc(AUDIT_DTS, 'DD') <= trunc(to_date('06','DD')-1, 'DD')
+AND MSG_TXT <> 'VALID READ ONLY USER LOGON OCCURRED'
+GROUP BY MSG_TXT;
+SELECT MSG_TXT || ',' || USERNAME || ',' || PROGRAM || ',' || OSUSER || ',' || TERMINAL || ',' |
+| AUDIT_DTS FROM AEDBA.AEDBA_MOD_USER_AUDIT
+WHERE trunc(AUDIT_DTS, 'DD') >= trunc(to_date('06','DD')-7, 'DD') AND
+trunc(AUDIT_DTS, 'DD') <= trunc(to_date('06','DD')-1, 'DD')
+AND MSG_TXT <> 'VALID READ ONLY USER LOGON OCCURRED'
+ORDER BY MSG_TXT, AUDIT_DTS DESC;
+
+
+*****************************PASSWORD CHANGE DATE/TIME ***********
+
+SELECT PTIME from SYS.USER$ WHERE NAME = 'A236120'
+SELECT PTIME from SYS.USER$ WHERE NAME = 'S043334'
+or
+
+SELECT PTIME,NAME FROM SYS.USER$ ORDER BY PTIME DESC;
+
+http://forums.oracle.com/forums/message.jspa?messageID=2291337#2291337
+
+
+************** HOW TO FIND OUT USER PASSWORD *************************
+
+SELECT * FROM sys.user$
+
+select password from sys.user$ where name = 'SYSTEM'
+974C4A570A288427
+
+***************Checked for LOCKED USERS *******************************
+
+SELECT * from dba_users where account_status not in ('OPEN')
+
+*********OBJECT CREATE DATE**********************************************
+
+select * from dba_indexes where owner = 'WKAB10' and last_analyzed is not null  order by last_analyzed desc
+
+select * from dba_objects where owner = 'WKAB10' and object_type = 'INDEX' order by created desc
+
+
+*****************SELECT ANY TABLE ***********************************************
+
+Does SELECT ANY TABLE would give select to SYS type tables? 
+
+ 
+not on 9i and higher, provided o7_dictionary_accessibility=false
+
+SELECT_CATALOG_ROLE is more helpful for SYS objects;
+
+GRANT SELECT ANY DICTIONARY (this is  10g feature but it could be to much)
+
+***************************Monitor HOT BACKUP****************************************************
+select * from dba_data_files
+SELECT * FROM V$BACKUP; 
+
+********Objects with PUBLIC access***************************************************************
+select * from dba_tab_privs where owner = 'WKAB10' and grantee = 'PUBLIC' 
+ and privilege in ('ALTER','UPDATE','INSERT','SELECT','DELETE','REFERENCES')
+
+select * from dba_tab_privs where owner = 'SYSADM' and grantee = 'PUBLIC' 
+ and privilege in ('ALTER','UPDATE','INSERT','SELECT','DELETE','REFERENCES')
+
+## Build actual command on fly for script or DBARTISAN
+select 'REVOKE ' || privilege ||  ' ON ' ||OWNER|| '.' ||TABLE_NAME|| ' FROM PUBLIC;'  from dba_tab_privs where owner = 'SYSADM' and grantee = 'PUBLIC' 
+
+
+select distinct 
+owner,
+table_name, 
+privilege, 
+grantor
+from 
+sys.dba_tab_privs
+where 
+grantee = 'PUBLIC'
+and
+owner not in ('SYS','SYSTEM')
+
+
+**********EXAMPLE OF CORRECT FILE SYSTEM SETUP *********************************
+
+Server name: spsdbw1d
+             xpvdbw1d (latest) See file with more info: Server_FileSystem_Layout.txt
+
+************to check all jobs which is schedulerd in Database by  DBMS_JOB*****************
+
+select * from dba_jobs
+select Job,schema_user,to_char(last_date,'MM/DD/YYYY'),to_char(NEXT_date,'MM/DD/YYYY'),broken,what from dba_jobs
+where broken = 'Y'
+select * from dba_scheduler_jobs
+
+11g new views
+select * from dba_scheduler_windows
+
+SELECT JOB_NAME, STATE FROM DBA_SCHEDULER_JOBS
+
+SELECT *  FROM DBA_SCHEDULER_JOBS
+
+SELECT * FROM DBA_SCHEDULER_JOBS WHERE STATE <> 'DISABLED' and OWNER = 'SYS' and JOB_NAME = 'DAILY_DB_AUDIT_PURGE_JOB'
+
+
+***********to select all db links crated in database ***************
+
+select * from dba_db_links
+
+******************SID and OS PROCESS ID-*****************************
+SELECT	s.saddr, s.sid, s.serial#, s.username,
+	s.osuser, s.machine, s.program, s.logon_time, s.status, 
+	p.program, p.spid as "OS Process"
+FROM v$session s, v$process p
+WHERE s.paddr = p.addr and s.sid = 119;
+
+SELECT	s.saddr, s.sid, s.serial#, s.username,
+	s.osuser, s.machine, s.program, s.logon_time, s.status, 
+	p.program, p.spid as "OS Process"
+FROM v$session s, v$process p
+WHERE s.paddr = p.addr and  p.spid = 1888428;
+
+
+or
+
+
+SELECT	s.sid,  p.spid as "OS Process"
+FROM v$session s, v$process p
+WHERE s.paddr = p.addr and s.sid = 131
+
+SELECT	s.sid,  p.spid as "OS Process"
+FROM v$session s, v$process p
+WHERE s.paddr = p.addr and p.spid = 1941750
+
+
+
+****************HIDDEN PARAMETERS ********************************
+
+# if you know what parameter to look for
+select a.ksppinm  "Parameter", b.ksppstvl "Session Value", c.ksppstvl "Instance Value"
+        from x$ksppi a, x$ksppcv b, x$ksppsv c
+       where a.indx = b.indx and a.indx = c.indx
+         and ksppinm like '%_db_block_lru%'
+
+# to see all parameters
+select a.ksppinm  "Parameter", b.ksppstvl "Session Value", c.ksppstvl "Instance Value"
+        from x$ksppi a, x$ksppcv b, x$ksppsv c
+       where a.indx = b.indx and a.indx = c.indx
+
+
+******************Hep files for Hummingbird *******************************************************
+
+C:\Documents and Settings\a236120\Application Data\Hummingbird\Connectivity\10.00\Profile
+
+
+************************Database character sets and NLS settings ********************************** 
+
+
+select * from nls_database_parameters;
+
+************************how to spot bitmap index*****************
+
+select * from dba_indexes where owner = 'WKAB10' and index_type = 'BITMAP'
+
+********dbms_support package to activate ****************************** 
+
+$ORACLE_HOME/rdbms/admin/dbmssupp.sql
+
+***************How to find Last DDL Date on table ******************************
+
+select to_char(last_ddl_time,'mm/dd/yyyy hh24:mm'),object_name from user_objects where object_name='PSFILEDATA';
+
+********To veiw procedure source code ***************************
+
+select text from dba_source
+where owner = 'SYS' and name like '%LOGON_%';
+
+or (MViews)
+
+select * from dba_mviews
+
+
+***********Query Database event triggers**************************
+
+select *  from dba_triggers where rtrim(triggering_event)='LOGON';
+
+
+******DROP TABLESPACE with DATAFILES **************************
+
+drop tablespace fineos_index including contents and datafiles;
+
+drop tablespace RBS including contents and datafiles;
+
+
+*********VPD, Oracle Label Security, Oracle Vault, Security Wallet *****************
+
+
+
+Oracle VPD ---->
+VPD or Virtual Private Database is a feature of the Enterprise Edition of the Oracle Database. 
+It is also known as Fine-Grained Access Control (FGAC), and some call it Row Level Security (RLS). 
+The database package used for VPD is called DBMS_RLS.
+The main functionality of VPD is to automatically add extra where clauses to SQL statements. 
+Depending on how you defined your VPD policies, it can be applied to select, update, insert, and/or delete statements of specific tables.
+
+What is the difference between Oracle Virtual Private Database (VPD) and Oracle Label Security?
+
+Oracle VPD is a term used for several powerful security features like, fine grained access control (FGAC), application context
+and global application context. VPD policies are written using PL/SQL, and can be assigned to an individual table or view. An information request,
+that accesses a table or view protected by VPD, is modified according to the policy assigned to the table or view.
+VPD policies can be as simple as enforcing access during business hours. VPD policies can restrict access by comparing the value of an attribute 
+in an individual row with an application context value. Global application context allows an application context to be accessed 
+across multiple database sessions, reducing or eliminating the need to create a separate application context for each user session.
+
+What is Oracle Label Security --->
+Oracle Label Security is a security option for the Oracle Enterprise Edition database and was introduced with Oracle 8.1.7. 
+Oracle Label Security mediates access to data rows by comparing a rowlabel or sensitivity label and a set of user labels.
+
+Oracle Label Security is an out-of-the-box solution for row level security. No coding or software development is required, 
+allowing the administrator to focus completely on the policy. Oracle Label Security provides an interface for creating policies, 
+specifying enforcement options, defining data sensitivity labels, establishing user label authorizations, and protecting individual tables or schemes.
+Data sensitivity labels provide a powerful and flexible method of restricting access to data. For example, data belonging to different organizations
+or companies can be separated using data sensitivity labels and selectively shared between companies by changing the data sensitivity label.
+
+Depending on the complexity of the security policy, Oracle Virtual Private Database may be the preferred method for implementing your security policy.
+Oracle Label Security is best suited for situations where access control decisions need to be based on the sensitivity of the information.
+
+Database Vault ---->
+Oracle Database Vault addresses common regulatory compliance requirements and reduces the risk of insider threats
+
+by: 
+Preventing highly privileged users (DBA) from accessing application data 
+Enforcing separation of duty 
+Providing controls over who, when, where and how applications, data and databases can be accessed. 
+
+Payment Card Industry (PCI), Sarbanes-Oxley (SOX), EU Privacy Directive and the Healthcare Insurance Portability and Accountability Act (HIPAA)
+all require strong internal controls on access, disclosure or modification of sensitive information that could lead to fraud, identity theft,
+financial irregularities and financial penalties.
+
+Oracle Database Vault Realms, Command Rules, Factors and Separation of Duty can be added to existing application environments without changes
+to the existing application code. Oracle Database Vault was recently validated with Oracle PeopleSoft Applications. 
+Validation with the Oracle E-business Suite and Siebel is currently underway. Oracle Database Vault is available for Oracle Database 11g, 
+Oracle Database 10g and Oracle Database 9i Release 2.
+
+
+
+
+Audit Vault --->
+
+Oracle Audit Vault automates the audit collection and analysis process, turning audit data into a key security resource to help address today's 
+top business challenges around compliance and insider threats. Oracle Audit Vault helps organizations enforce the trust-but-verify security principle 
+and is part of Oracle's overall defense-in-depth security strategy that includes other components such as Oracle Database Vault for controlling access, 
+Oracle Advanced Security for Transparent Data Encryption, and Oracle Identity Management for user management. 
+For Oracle databases, Audit Vault provides automated cleanup of audit trail data after it has been securely stored in the Audit Vault repository.
+
+Oracle Wallet Manager  ---->
+
+Security administrators use Oracle Wallet Manager to manage public key security credentials on Oracle clients and servers. 
+The wallets it creates can be read by Oracle Database, Oracle Application Server 10g, and the Oracle Identity Management infrastructure.
+
+
+It is often necessary to make connections to the database from shell scripts held on the filesystem.
+This can be a major security issue if these scripts contain the database connection details. 
+One solution is to use Os Authentication, but Oracle 10g Release 2 gives us the option of using a secure external password store where the Oracle
+login credentials are stored in a client-side Oracle wallet. This allows scripts to contain connections using the "/@db_alias" syntax.
+
+
+
+************dbconsole port lookup*****************
+
+$ORACLE_HOME/install/portlist.ini 
+
+***************rollback segment information***************
+
+select * from dba_rollback_segs
+
+
+
+*************Mount - NoMount - Open ***************************
+
+When the database is nomount state, then database instance has been started using initialization file. Thus processes started and memory allocated.
+
+In Mount: The instance started and control file is opened. The control file is read but it's contents are not validated.
+
+In Open: If the database is opened then control file is validated against the physical structure of database. The database is verified that all of it's file are in consistent state. If any of the file is not in consistent state, we may need some sort of recovery.
+
+When you fire startup command following happens:
+
+Nomount------>Mount-------->Opened
+
+
+
+************************* LOG_ARCHIVE_DEST LOCATION keyword rule **********************
+We use the keyword LOCATION to specify local destination for archived redo log files. If you use LOG_ARCHIVE_DEST_1(1-10) then you need to state LOCATION keyword (when you want archived redo log files to be created in local server) 
+If you use LOG_ARCHIVE_DEST parameter, then you can omit LOCATION keyword. See the following example: 
+
+
+SQL> alter system set log_archive_dest_1='c:\';
+alter system set log_archive_dest_1='c:\'
+*
+ERROR at line 1:
+ORA-32017: failure in updating SPFILE
+ORA-16179: incremental changes to "log_archive_dest_1" not allowed with SPFILE
+ 
+ 
+SQL> alter system set log_archive_dest_1='location=c:\';
+ 
+System altered.
+ 
+ 
+SQL> alter system set log_archive_dest='c:\' scope=spfile;
+ 
+System altered.
+ 
+SQL> alter system set log_archive_dest=' location c:\' scope=spfile;
+ 
+System altered.
+
+
+
+**************** Shutdown abort procedures ***************************
+--stop listeners first
+lsnrctl stop  wkabprod
+lsnrctl stop  wkabprod2
+lsnrctl stop  wkabprod3
+lsnrctl stop  wkabprod4
+ALTER SYSTEM CHECKPOINT; 
+shutdown abort;
+
+starup;
+
+lsnrctl start  wkabprod
+lsnrctl start  wkabprod2
+lsnrctl start  wkabprod3
+lsnrctl start  wkabprod4
+
+************************ sqlplus connection *******************
+
+sqlplus -prelim / as sysdba
+
+
+*********** VAS Groups *********
+
+AIX: oradbaix
+SUN: dbaprod or oradbang
+
+Per Tom S on oradbang group in Sun:
+oradbang is a network group.  cannot associate a file with this group.
+  a "unix enabled" group needs to be established.  Cannot be the same name.
+
+
+*************** recyclebin **************************
+
+
+
+SQL> select * from recyclebin;
+
+     purge recyclebin;
+
+or
+  select * from dba_recyclebin
+purge dba_recyclebin;
+ 
+
+SELECT Value FROM V$parameter WHERE Name = 'recyclebin';
+
+ ALTER SYSTEM SET recyclebin = OFF SCOPE = SPFILE; 
+
+--Things to do after purge
+EXEC DBMS_STATS.GATHER_DICTIONARY_STATS;
+
+EXEC DBMS_STATS.GATHER_FIXED_OBJECTS_STATS;
+
+
+EXEC DBMS_STATS.GATHER_TABLE_STATS(OWNNAME =>'SYS',TABNAME => 'X$KTFBUE',ESTIMATE_PERCENT=>100);
+ EXEC DBMS_STATS.GATHER_SCHEMA_STATS('SYS');
+
+
+
+
+********Monitor INDEX Usage ************************
+
+http://www.oracle-base.com/articles/10g/IndexMonitoring.php#
+
+ALTER INDEX my_index_i MONITORING USAGE;
+ALTER INDEX my_index_i NOMONITORING USAGE;
+
+
+select OWNER, OBJECT_NAME, CREATED from dba_objects where owner = 'PROD' and OBJECT_TYPE = 'INDEX' and  to_char(created, 'mm/dd/yyyy') = '06/18/2020'
+
+
+SELECT index_name,
+       table_name,
+       monitoring,
+       used,
+       start_monitoring,
+       end_monitoring
+FROM   dba_object_usage
+WHERE monitoring  = 'YES'
+AND    owner = 'PROD'
+ORDER BY index_name;
+
+SELECT index_name,
+       table_name,
+       monitoring,
+       used,
+       start_monitoring,
+       end_monitoring
+FROM   v$object_usage
+WHERE  index_name = 'MY_INDEX_I'
+ORDER BY index_name;
+
+or
+
+SELECT index_name,
+       table_name,
+       monitoring,
+       used,
+       start_monitoring,
+       end_monitoring
+FROM   dba_object_usage
+WHERE  index_name IN (
+'FK_MEMBERSHIP_CODE_ENTRY_UNITS',
+'FK_MEMBERSHIP_CODE_ENTRY',
+'FK_MBRSHP_CD_ENTRY_EMAIL_FRMT',
+'FK_MBRSHP_RLTP_TO_SUBSCRB_DEF',
+'FK_MBRSHP_CD_ENTRY_VIP_RSN',
+'FK_M_HP_CD_E_RY_HLTH_ST_S_RSN',
+'FK_MBRSHP_CD_ENTRY_EMP_TYPE',
+'FK_MB_HP_CD_E_RY_REDUCTI_RSN',
+'FK_M_HP_CD_TRY_EMPMNT_TUS_CD',
+'FK_M_HP_CD_E_RY_SALARY_ADE_CD',
+'FK_MBRSHP_CD_ENTRY_INFO_SRC',
+'FK_MB_HP_CD_E_RY_DENIAL_SN_CD',
+'FK_CON_CLM_CD_TRY_BNFT_P_TYPE',
+'FK_CON_CLM_DR_CALCULAT_RG_CD',
+'FK_CON_CLM_POSTA_DR_PAY_T_DR',
+'FK_CO_CLM_POST_DR_RESPBL_ADDR',
+'FK_CO_CLM_SPPL_C_RENDE_LOC',
+'FK_C_CLM_CD_Y_CALCULAT_N_TYPE',
+'ALTI_CVC_INSTANCE_SYSTEM_DOM',
+'CVC_CNTX_HCC_ID_UPPER',
+'CVC_ID_TRIGGER_TIME',
+'STEP_END_TIME',
+'CVC_LATES_ENDOR_EFF'
+)
+AND    owner = 'PROD'
+ORDER BY index_name;
+
+
+
+After 12.2/19c
+
+
+select * from dba_index_usage where name = 'INCLUDED_PAYABLE_AEDBA_2'
+
+*********ASSM PCTFREE and PCTUSED usage on table *******************
+
+Automatic segment space management (ASSM) is a simpler and more efficient way of managing space within a segment.
+It completely eliminates any need to specify and tune the pctused, freelists, and freelist groups storage parameters fo
+schema objects created in the tablespace. If any of these attributes are specified, they are ignored.
+
+When you create a locally managed tablespace using the create TABLESPACE statement, 
+the SEGMENT SPACE MANAGEMENT clause lets you specify how free and used space within a segment is to be managed.
+
+For example, the following statement creates tablespace mytbs1 with automatic segment-space management:
+
+CREATE TABLESPACE mytbs1
+DATAFILE '/u01/oracle/data/mytbs01.dbf' SIZE 500M
+EXTENT MANAGEMENT LOCAL
+SEGMENT SPACE MANAGEMENT AUTO;
+
+When an object such as a table or index is created using the locally managed tablespace, 
+with automatic segment-space management enabled, there is no need to specify the pctused or freelists.
+
+The in-segment free/used space is tracked using bitmaps as opposed to the free lists.
+When you cannot use the locally managed tablespace, and therefore the automatic management space feature, 
+you have to depend on the traditional method of managing free lists and free lists groups. 
+
+!!!! PCTFREE is still required even with ASSM because it determines how rows will be packed into blocks,
+while freelists, pctused and pctincrease are ignored with ASSM because they are used for transaction/block management.
+
+
+As you are on oracle 10g, PCTUSED , freelists and freelists groups are ignored as automatic segment space management(ASSM) is by default.
+PCTFREE although is still considered.For those table which have high number of updates keep PCTFREE high, and 
+rest others will be maintained by oracle itself, until unless you change the default automatic segment space management to manual.
+
+
+High PCTFREE, Low PCTUSED --> For when you insert lots of data that will be updated and the
+updates will increase the size of the rows frequently. This reserves a lot of space on the block
+after inserts (high PCTFREE) and makes it so that the block must almost be empty before
+getting back onto the free list (low PCTUSED).
+
+Low PCTFREE, High PCTUSED --> If you tend to only ever INSERT or DELETE from the table or
+if you do UPDATE, the UPDATE tends to shrink the row in size.
+
+*********** Move DB from one Server OS to different Server with different OS *************
+
+endian format!!!
+-- Tells us which platform have which endian format
+select * from V$TRANSPORTABLE_PLATFORM 
+
+Endianness is the pattern for byte ordering in native types for data files.
+There are two main patterns 
+big endian and little endian. In big endian format, the most significant byte comes first while in little endian,
+ the least significant byte comes first. 
+
+
+What is an endian format?
+
+The endian format or Byte ordering is a format that will affect the results when data is written and read. 
+For example, the 2-bytes integer value 1 is written as 0x0001 on a big-endian system and as 0x0100 on a little-endian system. 
+To determine the endian format of a platform do the following query:
+
+SQL> SELECT p.endian_format 
+
+            FROM v$transportable_platform p, v$database d 
+
+            WHERE p.platform_name = d.platform_name 
+
+            / 
+
+The v$transportable_platform view contains all supported platforms. 
+In order to convert form one platform to another platform use the rman utility.
+ The following is an example of how to convert from one platform to another.
+
+A. $ rman TARGET=/ 
+
+ RMAN> CONVERT DATAFILE ‘/local/oradata/school/*’ 
+
+            FROM PLATFORM = ‘Solari [tm] OE (32-bit)’ 
+
+            DB_FILE_NAME_CONVERT = 
+
+            ‘/local/oradata/school/data’ , ‘/remote/oradata/data’; 
+
+  
+
+The DB_FILE_NAME_CONVERT clause will take in a file name, perform the required conversion, and place the converted file in the new location.
+
+B. Convert Datafiles using RMAN
+
+You do not need to convert the datafile to transport a tablespace from an AIX-based platform to a Sun platform, since both platforms use a big endian.
+
+However, to transport a tablespace from a Sun platform (big endian) to a Linux platform (little endian), 
+you need to use the CONVERT command in the RMAN utility to convert the byte ordering. 
+This can be done on either the source platform or the target platform. 
+
+RMAN> CONVERT TABLESPACE ‘USERS’
+      TO PLATFORM = ‘Linux IA (32-bit)’
+      DB_FILE_NAME_CONVERT = ‘/u02/oradata/grid/users01.dbf’, ‘/dba/recovery_area/transport_linux’
+
+
+
+Also, with the Oracle 10g import utility, you can use a network
+connection so that you can directly import either a single or multiple table(s) from one server to another.
+Here are the setps you need to perform in order to import a table or tables from one server to another.
+First, assume that you have two servers, Server A and Server B, and you want to import a table or tables such as "EMP" and "DEPT"
+from server "A" to "B."
+
+1. Go to Server B and create a database link that will access the database in Server A.
+Example:
+SQL> CREATE DATABASE LINK mylink2a CONNECT TO scott IDENTIFIED BY password USING 'mylink2a';
+Note that 'scott' is a user in the database in Server "A" and that its password is 'password'.
+
+2. Then, perform the following import dump command.
+Example:
+# impdp scott2/password2 TABLES=emp,dept DIRECTORY=dpump1 NETWORK_LINK=mylink2a
+Note that 'scott2' is a user in the database in Server B and that its password is 'password2'.
+
+That is all you need to do. Certainly, there are lots of other features that you can use with this command; 
+however, they do not fit in the scope of this article.
+
+
+**************** TRUNCATE grant****************************************************************************************
+
+You can grant DELETE on your table to SOMEONE, but you cannot grant truncate, you must grant DROP ANY TABLE to SOMEONE, 
+in order to let him truncate your table
+
+
+******************* Oracle Default passwords account info finder ************************************************
+
+I wanted to make sure that we didn't have OPEN accounts with default passwords. 
+ Found a few like on wkabstg1 and stuff since these are really old instances that have a long history.
+
+select username, account_status from dba_users where username in (select username from sys.DBA_USERS_WITH_DEFPWD);
+
+
+******************Memory Footprint **************************************************************************************
+
+SELECT SUM(CURRENT_SIZE/1024/1024) AS "MEMORY FOOTPRINT (MB)" FROM V$MEMORY_DYNAMIC_COMPONENTS  WHERE COMPONENT IN ('SGA Target','PGA Target') 
+
+
+************************SEGMENTS EXTENTS BLOCKS **********************************************************
+
+-->Oracle Segments Concepts
+Segments are the storage objects within the Oracle database. 
+A segment might be a table, an index, a cluster or any one of more than 20 object types. 
+
+The DBA creates the segments and assigns them to a specific tablespace. 
+In most cases a single segment cannot reside in more than one tablespace.
+However, you can split up, or partition, a segment into different tablespaces.
+
+
+-->Oracle Extents Concepts
+An extent is an uninterrupted (or contiguous) allocation of blocks within a segment.
+Extents are assigned to a segment automatically by Oracle, so you will rarely deal directly with an extent,
+rather you will deal directly with its associated segment.
+
+An extent must be on contiguous blocks within a single datafile,
+so an extent cannot span multiple Oracle datafiles.
+Oracle will allocate the size of the extents based on the type of tablespace.
+We will discuss more about extent allocation in later chapters when we discuss table and index creation. 
+
+-->Oracle Block Concept
+As we discussed earlier, a block is the smallest unit of storage in Oracle.
+The size of a database block is fixed when the database is created, and can not be changed except by rebuilding the database from scratch.
+The database block size is fixed at 2K, 4K, 8K, 16K, or 32K in size. Once the base block size is defined, 
+you can create new tablespace with alternate block sizes.
+
+Remember that the Oracle instance also includes a RAM buffer cache which is made-up of RAM blocks which map to the data block in the physical datafiles.
+
+
+
+**********************Waits Events what does each mean?*****************************************
+
+"db file sequential read"  - means the database is waiting for indexes to be read.
+
+
+
+********************** Copy Users from one database to anather ********************************
+
+http://www.dba-oracle.com/t_copying_oracle_users.htm
+
+
+***********************Datapump TABLE_EXISTS_ACTION usage ***************************
+
+SKIP: The default value for TABLE_EXISTS_ACTION. If the table exists, then SKIP will cause the table (and any related data) to not be loaded. The table will be skipped. 
+
+TRUNCATE: This will truncate the data in the table and load the data. If the table already exists, no metadata will be applied. 
+
+APPEND: This will append the data to the end of the table. Again, if the table already exists, no metadata will be applied. 
+
+REPLACE: This will drop the existing object, recreate the object with the information from the dumpfile, and then load the data. 
+
+
+
+************************ ezConnect ****************************
+
+Yes. Just playing around.  Something like:
+
+sqlplus system/secretpassword@//boraw1q:1521/wkabqa3
+
+works fine.  You have to have an entry in the sqlnet.ora for NAMES.DIRECTORY_PATH to tell it to try EZ Connect.  Something like:
+
+NAMES.DIRECTORY_PATH=(ezconnect, tnsnames)
+
+sqlplus A/secretpassword@HEDWPRD
+
+******************* Largest Table (NUM_ROWS) and Widest column in table (AVG_ROW_LEN) ****************************************
+
+SELECT OWNER, TABLE_NAME LONGEST, NUM_ROWS FROM DBA_TABLES WHERE NUM_ROWS  = (SELECT MAX(NVL(NUM_ROWS,0)) FROM DBA_TABLES)
+select table_name, owner,NVL(num_rows,0) from dba_tables dba_tables
+order by NVL(num_rows,0) desc;
+
+select table_name, owner,max(num_rows) from dba_tables where num_rows = (select MAX(NVL(NUM_ROWS,0)) from dba_tables) group by table_name,owner;
+
+SELECT OWNER, TABLE_NAME WIDEST, AVG_ROW_LEN  FROM DBA_TABLES WHERE AVG_ROW_LEN = (SELECT MAX(NVL(AVG_ROW_LEN,0)) FROM DBA_TABLES)
+
+******************* Largest Table with (column numbers) *******************************************************************************
+
+select 
+max(numofcols), table_name, owner 
+from 
+(select
+table_name, owner, count(column_name) numofcols from all_tab_columns group by table_name, owner)
+group by numofcols, table_name, owner
+order by 1 desc;
+
+***************** List of all tables and number of columns for each table*************
+****************** was completed to Info for DM02 database so IA can make desicion on scope for Modeling effort  ******
+
+select count(column_name) as numofcols , table_name, owner  from all_tab_columns
+where owner not in ('SYS', 'SYSTEM','DBSNMP','SYSMAN','DR02','APPQOSSYS','OUTLN','TCM')
+group by  table_name, owner
+order by owner, table_name
+
+select count(*)  from dba_tables where
+owner not in ('SYS', 'SYSTEM','DBSNMP','SYSMAN','DR02','APPQOSSYS','OUTLN','TCM')
+
+
+************ Get list of all DBA tables and V$ views from database *************
+
+SELECT * FROM DICT WHERE TABLE_NAME LIKE 'DBA_%' ORDER BY TABLE_NAME;
+
+Select Name  from V$FIXED_TABLE where name like 'V$%' order by name;
+
+
+***************** Oracle Client 32 bit and 64 bit *************************
+
+How To Install Both 32-bit and 64-bit ODP, OLEDB, And ODBC Oracle Software on 64-bit Windows (Doc ID 795602.1)
+
+******************* Query that checks Function based index (s) on datbase ***************
+
+select *  from DBA_IND_EXPRESSIONS where index_owner = 'DRWKAB'
+
+**************** This query can show db size growth trend ************
+
+SELECT b.tsname tablespace_name
+, MAX(b.used_size_mb) cur_used_size_mb
+, round(AVG(inc_used_size_mb),2)avg_increas_mb 
+FROM (
+SELECT a.days,a.tsname
+, used_size_mb
+, used_size_mb - LAG (used_size_mb,1) OVER ( PARTITION BY a.tsname ORDER BY a.tsname,a.days) inc_used_size_mb
+FROM (
+SELECT TO_CHAR(sp.begin_interval_time,'MM-DD-YYYY') days 
+,ts.tsname
+,MAX(round((tsu.tablespace_usedsize* dt.block_size )/(1024*1024),2)) used_size_mb
+FROM DBA_HIST_TBSPC_SPACE_USAGE tsu
+, DBA_HIST_TABLESPACE_STAT ts 
+,DBA_HIST_SNAPSHOT sp, DBA_TABLESPACES dt
+WHERE tsu.tablespace_id= ts.ts# AND tsu.snap_id = sp.snap_id
+AND ts.tsname = dt.tablespace_name AND sp.begin_interval_time > sysdate-7
+GROUP BY TO_CHAR(sp.begin_interval_time,'MM-DD-YYYY'), ts.tsname 
+ORDER BY ts.tsname, days
+) a
+) b GROUP BY b.tsname ORDER BY b.tsname;
+
+
+
+************** Oracle Release Support Matrix ******************************
+
+Release Schedule of Current Database Releases [ID 742060.1]
+Oracle Database (RDBMS) Releases Support Status Summary [ID 161818.1]
+
+
+*********** Difference between version *****************************
+
+The chart from Oracle below shows their release and support schedule for the different Oracle patchsets. 
+We're currently on 11.2.0.2 PSU #3. The hierarchy goes  like this:
+
+Version - 10g, 11g, 12g? - Major architectural changes and new functionality
+Major Release - 11.1, 11.2, etc. - Extension or completion of new features introduced in new version.  Some new functionality.
+Patchset - 11.2.0.1, 11.2.0.2 - Fixes for bugs requiring more extensive changes, other bug fixes, minor new functionality.
+PSU - 11.2.0.2.1, 11.2.0.2.2 - No new functionality, fixes for critical and security bugs.
+
+
+**************** How to rename listener.log *******************
+
+lsnrctl
+
+set current_listener xxxx
+set Log_status off
+
+Go to Unix and rename listener.log file to something different
+
+set Log_status off
+
+exit
+
+*************** DBA_TAB_MODIFICATIONS *************
+
+
+
+Oracle DBA_TAB_MODIFICATIONS describes modifications to all tables in the database that have been modified since the
+last time statistics were gathered on the tables. Since the information in DBA_TAB_MODIFICATIONS is reset after
+statistics gathering therefore you can use it to capture the modification amounts for your segments from the last statistics gathering time. 
+
+
+******** PL/SQL DEVELOPER ISSUE v8 issue **************
+
+Hi Eugene,
+
+It appears that for PL/SQL 8.1, by default the object browser filter is set to <CURRENT USER>,
+ so that you will only see tables owned by the currently connected user. Set it to the
+ corresponding owner or to <ALL USERS> to see other tables and the user will be able to view al l the tables.
+
+or 
+
+I granted the two roles “SELECT ANY DICTIONARY” system priv.
+
+ 
+and In your preferences, please make sure you have selected “Use DBA Views if available”
+
+
+************Build Kill.sql ******************************
+
+set echo off termout off feedback off verify off pagesize 0 trimspool on
+
+whenever sqlerror exit failure;
+
+spool kill.sql
+
+select 'ALTER SYSTEM KILL SESSION '||chr(39)||sid||','||serial#||chr(39)||';'
+FROM v$session
+where ....
+/
+
+spool off
+
+@kill.sql
+
+************* How to check if listener has trace level turn on or not***************
+
+lsnrctl
+set current_listener wkabstg1
+show trc_level
+
+
+*********** Issue after PSU***************************
+
+Target Name=DM02.WORLD 
+Target type=Database Instance 
+Host=datamart 
+Occurred At=Nov 8, 2012 1:37:23 PM EST 
+Message=1 segments in SYSTEM tablespace approaching max extents. 
+Metric=Segments Approaching Maximum Extents Count 
+Metric value=1 
+Tablespace Name=SYSTEM 
+Severity=Warning 
+Acknowledged=No 
+Notification Rule Name=Database E-Mail Notification 
+Notification Rule Owner=SYSMAN 
+
+Per Mike
+
+Looks like maybe something to do with the patch and the fact that DM02 SYSTEM tablespace was converted to locally managed.  The change was still opened until 2pm so I was able to clear it.
+ 
+alter table sys.metastylesheet modify lob (stylesheet) (storage (maxextents unlimited))
+ 
+The lob segment on this table had a maxextents set.
+
+
+
+******** Sequences ***********
+
+
+I checked on Friday and there was nothing other than the one sequence that was in any immanent danger. 
+ Here are the next top 20 in terms of a percent of 2147483647.  The one at the top seems to be an old, unused sequence.  
+The next is the one that blew up Friday.  Then after that, the nearest is still a good way away from the max.
+ 
+
+
+select *
+from ( select sequence_owner, sequence_name, last_number, last_number*100.0/2147483647 as PctOf16bitInt
+from dba_sequences
+where sequence_owner in ('BENENG', 'WKAB10')
+order by 4 desc
+)
+where rownum <=20
+/
+
+
+
+200000099628
+***** 11g Oracle Client SQLPLUS connection *****************
+
+sqlplus
+test/test@DBATST
+
+
+***** How to deinstall Oracle Client *************
+
+It's different with 11.2.  That's why I was asking about version.  
+ 
+Look for 
+%ORACLE_HOME%\deinstall\deinstall.bat
+Run that from a command prompt (may want to run the command prompt it as Administrator as well).
+
+
+
+or
+
+1. Check Oracle Home name 
+/opt/oracle/oraInventory/ContentsXML
+view inventory.xml
+
+cd $ORACLE_HOME/oui/bin
+
+./runInstaller -detachHome -silent ORACLE_HOME="/opt/oracle/product/11g" ORACLE_HOME_NAME="OraClient11g_home1"
+
+or 
+
+$ORACLE_HOME/oui/bin/runInstaller -detachHome -silent ORACLE_HOME="/opt/oracle/product/11g" ORACLE_HOME_NAME="OraClient11g_home1"
+
+2. Remove that Oracle Home directory
+
+
+
+****** check MAXDATAFILES and what  is there now *********************
+
+select 'MAXDATAFILES '||RECORDS_TOTAL, RECORDS_USED from v$controlfile_record_section where type = 'DATAFILE';
+
+************** check if temp tables exist in database *********
+
+
+select * from dba_tables where temporary  = 'Y'
+
+
+***************FLASHBACK ******************************************************
+
+insert into t_tooltip (TOOLTIP_ID, LOOKUP_ID, REGISTEREDFIELD_ID, TOOLTIP_VALUE,
+ COMPANY_ID)
+values ( 86, 7024, null, '<b>Bereavement:-</B> Time off may be requested by the employee for bereavement. ', 501245);
+
+
+commit;
+
+
+08:46:47 SYSTEM@wkabdev2 > select count(*) from wkab10.t_tooltip;
+
+  COUNT(*)
+----------
+        71
+
+08:46:49 SYSTEM@wkabdev2 > select count(*) from wkab10.t_tooltip as of timestamp sysdate-8/24;
+
+  COUNT(*)
+----------
+        70
+
+
+
+select * from wkab10.t_tooltip minus select * from wkab10.t_tooltip as of timestamp sysdate-8/24;
+
+!!! Example not tested how to get deleted or truncated rows back in table !!!!
+
+INSERT INTO wkab10.t_tooltip
+    (SELECT * FROM wkab10.t_tooltip AS OF TIMESTAMP 
+     TO_TIMESTAMP('2005-04-04 09:30:00', 'YYYY-MM-DD HH:MI:SS')
+     WHERE name = 'JOHN');
+
+or
+
+INSERT INTO wkab10.t_tooltip
+    (SELECT * FROM wkab10.t_tooltip AS OF TIMESTAMP sysdate-8/24
+     WHERE name = 'JOHN');
+
+
+
+!! Delete first if second time or trying inserting different rows after first one.
+INSERT INTO test.test
+    (SELECT * FROM test.test AS OF TIMESTAMP sysdate-8/24);
+commit;
+
+INSERT INTO test.test
+    (SELECT * FROM test.test AS OF TIMESTAMP TO_TIMESTAMP('2014-03-19 11:06:00', 'YYYY-MM-DD HH:MI:SS'));
+commit;
+
+
+
+THat shows the difference in the table between now and 8 hours ago.  So the row just got inserted in DEV2 this morning.
+
+No.  that doesn't need supplemental logging.
+It just pulls from undo as long as you have enough undo to go back that far
+
+
+**********How to find out accounts with sysdba priv*************
+
+select * from v$pwfile_users;
+
+
+
+*** How to attach to expdp DataPump Job
+
+select owner_name, state , JOB_NAME from DBA_DATAPUMP_JOBS ;
+
+expdp dpadmin/sysDPPTEST attach=SYS_EXPORT_FULL_01
+
+
+************* eService Request********************
+
+https://eservice.aetna.com/NET/aim/DatabaseSupport.aspx
+
+
+************* Reset Expired Passwords****************
+
+Hi,
+
+While ago Help Desk was given ability to reset Oracle Passwords. 
+
+Please call SPOC and ask help with Oracle database password reset. Provide them your N ID and database name (wkabprod) in your case.
+
+Let me know if this works or not. If not I will help you, but let’s try that first.
+
+Thanks.
+
+
+*****************ORA-00054 during create index
+
+create index prod.fee_table_serv_cd_2 on prod.fee_detail
+(fee_table_id, upper(serv_cd), inst_active_cd, concept_fulfilled_cd, eff_start_dt, ver_eff_Dt, ver_Expire_dt,endor_eff_dt, endor_expire_dt)
+tablespace indx;
+
+ERROR at line 1:
+ORA-00054: resource busy and acquire with NOWAIT specified or timeout expired
+
+
+-- Do this alter session set DDL_LOCK_TIMEOUT = 300;
+
+-- Repeat Index
+
+create index prod.fee_table_serv_cd_2 on prod.fee_detail
+(fee_table_id, upper(serv_cd), inst_active_cd, concept_fulfilled_cd, eff_start_dt, ver_eff_Dt, ver_Expire_dt,endor_eff_dt, endor_expire_dt)
+tablespace indx;
+
+
+
+**** How to turn off OEM advisor ******
+
+dbms_auto_task_admin.disable(
+client_name => 'sql tuning advisor',
+operation => NULL,
+window_name => NULL);
+END;
+/ 
+
+
+***** How to find SQL Profiles applied to sql_id*************
+
+select * from dba_sql_profiles
+
+select
+a.name,
+a.status,
+a.CREATED,
+a.LAST_MODIFIED,
+a.CATEGORY,
+b.sql_id
+from
+DBA_SQL_PROFILES a,
+(select distinct sql_id,sql_profile from (select sql_id,sql_profile from DBA_HIST_SQLSTAT where sql_id ='c09csgz4vum2g'
+union
+select sql_id,sql_profile from v$sql where sql_id ='c09csgz4vum2g')) b
+where a.name=b.sql_profile;
+
+select distinct 
+   p.name      profile_name,
+   s.sql_id    sql_id,
+   p.created   created
+from 
+   dba_sql_profiles p,
+   dba_hist_sqlstat s
+where
+   p.name=s.sql_profile
+   order by created;
+
+or
+
+!! with SQL TEXT
+
+select distinct 
+   p.name      profile_name,
+   s.sql_id    sql_id,
+   p.created   created,
+      dbms_lob.substr(p.sql_TEXT,4000,1)
+from 
+   dba_sql_profiles p,
+   dba_hist_sqlstat s
+where
+   p.name=s.sql_profile
+   order by created desc;
+
+or
+
+  select sql_id, created from dba_sql_profiles
+   where dbms_lob.substr(p.sql_TEXT,4000,1)  Like '%ExactMatch%' and status = 'ENABLED'
+   order by created desc;
+
+
+select sql_id,sql_profile from dba_hist_sqlstat where sql_profile is not null
+
+select * from dba_sql_profiles order by created desc;
+
+
+
+****** Find SQL ID based on SQL BASELINE ********
+
+col sql_id for a20
+col origin for a30
+col created for a30
+col plan_name for a30
+col signature for 9999999999999999999999
+
+set linesize 300 trimspool on pagesize 9999
+
+spool get_sqlid_from_baseline.out
+
+Revised his sql at the bottom
+
+SELECT distinct compute_sql_id(sql_text) sql_id, signature, plan_name, origin, created
+  FROM dba_sql_plan_baselines
+  where plan_name = '&1'
+  order by 1,5
+
+
+
+
+**********How to find create date for index *********
+
+select * from dba_objects where owner = 'PROD' and OBJECT_TYPE = 'INDEX'  order by CREATED DESC
+select * from dba_objects where owner = 'PROD' and OBJECT_TYPE = 'INDEX'  and object_name  IN 
+(
+'CFLS_INDX'
+)
+
+
+select * from dba_objects where owner = 'PROD' and OBJECT_TYPE = 'TABLE'  order by CREATED DESC
+
+select * from dba_objects where owner = 'PROD_DW' and OBJECT_TYPE = 'INDEX'  order by CREATED DESC
+
+**** How to find create for Role *****
+
+    col name format a30
+    col create_time format a20
+    select name, to_char(ctime,'DD-MON-YYYY HH24:MI:SS') create_time from sys.user$ where name = 'ACCHK_READ';
+
+*** How to find creae date for table ***
+
+SELECT object_name,created
+  FROM dba_objects
+ WHERE
+   owner ='PROD'
+   AND object_type = 'TABLE'
+   order by created desc
+
+or
+
+SELECT a.object_name,a.created ,b.column_name,b.data_type,b.DATA_LENGTH
+  FROM dba_objects a,DBA_TAB_COLUMNS b
+ WHERE
+   a.owner ='PROD' and a.object_name = b.table_name
+   AND a.object_type = 'TABLE'
+   order by a.created desc
+
+*** INDEX
+
+SELECT object_name,created
+  FROM dba_objects
+ WHERE
+   owner ='PROD'
+   AND object_type = 'INDEX'
+   AND object_name = 'FK_ATTACHMENT_AUDIT_LOG'
+   order by created desc
+
+
+**** How to write custom error message into alert.log file****
+
+exec sys.dbms_system.ksdwrt(2, 'ORA-07445: SIMULATED ERROR, JUST FOR TESTING, IGNORE!!!');
+
+
+*** Check if database have Global Temporary tables ***
+
+select *  from all_tables where temporary = 'Y';
+
+
+***** Backup copmpletion time ****
+
+Login to particular database
+
+ select SESSION_KEY, INPUT_TYPE, STATUS,
+to_char(START_TIME,'mm/dd/yy hh24:mi') start_time,
+to_char(END_TIME,'mm/dd/yy hh24:mi') end_time,
+elapsed_seconds/3600 hrs from V$RMAN_BACKUP_JOB_DETAILS
+order by session_key;
+
+
+******** Fragmentation ******
+
+set pages 200
+set lines 200
+col OWNER format a20
+col TABLE_NAME format a30
+select owner,table_name,round((blocks*8),2)/1024/1024 "size (Gb)" , 
+round((num_rows*avg_row_len/1024),2)/1024/1024 "actual_data (Gb)",
+(round((blocks*8),2) - round((num_rows*avg_row_len/1024),2))/1024/1024 "wasted_space (Gb)"
+from dba_tables
+where 
+(round((blocks*8),2) > round((num_rows*avg_row_len/1024),2))
+and 
+table_name in 
+(select segment_name from (select owner, segment_name, bytes/1024/1024 meg from dba_segments
+where 
+segment_type = 'TABLE' 
+and
+owner != 'SYS' and owner != 'SYSTEM' and owner != 'OLAPSYS' and owner != 'SYSMAN' and owner != 'ODM' and owner != 'RMAN' and owner != 'ORACLE_OCM' and owner != 'EXFSYS' and owner != 'OUTLN' and owner != 'DBSNMP' and owner != 'OPS' and owner != 'DIP' and owner != 'ORDSYS' and owner != 'WMSYS' and owner != 'XDB' and owner != 'CTXSYS' and owner != 'DMSYS' and owner != 'SCOTT' and owner != 'TSMSYS' and owner != 'MDSYS' and owner != 'WKSYS' and owner != 'ORDDATA' and owner != 'OWBSYS' and owner != 'ORDPLUGINS' and owner != 'SI_INFORMTN_SCHEMA' and owner != 'PUBLIC' and owner != 'OWBSYS_AUDIT' and owner != 'APPQOSSYS' and owner != 'APEX_030200' and owner != 'FLOWS_030000' and owner != 'WK_TEST' and owner != 'SWBAPPS' and owner != 'WEBDB' and owner != 'OAS_PUBLIC' and owner != 'FLOWS_FILES' and owner != 'QMS'
+order by bytes/1024/1024 desc) 
+where rownum <= 20)
+order by 5 desc;
+
+select table_name,round((blocks*8),2) "size (kb)" , 
+round((num_rows*avg_row_len/1024),2) "actual_data (kb)",
+(round((blocks*8),2) - round((num_rows*avg_row_len/1024),2)) "wasted_space (kb)"
+from dba_tables
+where (round((blocks*8),2) > round((num_rows*avg_row_len/1024),2))
+and table_name='CSTMCACHED_CUR_CLAIMS_EXT'
+order by 4 desc;
+
+
+https://dbaclass.com/article/how-to-find-fragmentation-in-oracle-table/
+
+set serveroutput on
+declare
+v_unformatted_blocks number;
+v_unformatted_bytes number;
+v_fs1_blocks number;
+v_fs1_bytes number;
+v_fs2_blocks number;
+v_fs2_bytes number;
+v_fs3_blocks number;
+v_fs3_bytes number;
+v_fs4_blocks number;
+v_fs4_bytes number;
+v_full_blocks number;
+v_full_bytes number;
+begin
+dbms_space.space_usage ('PROD_DW', 'CSTMCACHED_CLAIMS_EXT', 'TABLE', v_unformatted_blocks,
+v_unformatted_bytes, v_fs1_blocks, v_fs1_bytes, v_fs2_blocks, v_fs2_bytes,
+v_fs3_blocks, v_fs3_bytes, v_fs4_blocks, v_fs4_bytes, v_full_blocks, v_full_bytes);
+dbms_output.put_line('Unformatted Blocks = '||v_unformatted_blocks);
+dbms_output.put_line('FS1 Blocks = '||v_fs1_blocks);
+dbms_output.put_line('FS2 Blocks = '||v_fs2_blocks);
+dbms_output.put_line('FS3 Blocks = '||v_fs3_blocks);
+dbms_output.put_line('FS4 Blocks = '||v_fs4_blocks);
+dbms_output.put_line('Full Blocks = '||v_full_blocks);
+end;
+/
+
+
+example:
+FS4 Blocks = 20825 ------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> THIS BLOCKS HAVING 75 TO 100 PERCENT FREE SPACE
+You can see, 20825 blocks are having 75 percent to 100 percent. This is due to the fragmentation. So this table is a candidate for re-org.
+
+
+*** How to see bind variables ****
+
+select
+   *
+from
+    table(dbms_xplan.display_awr('gyy5fb07tg5cd',NULL,NULL,'ADVANCED'))
+
+or
+
+select * from DBA_HIST_SQLBIND where sql_id = 'gyy5fb07tg5cd'
+
+
+**** SGA ADVICE *****
+
+SELECT sga_size, sga_size_factor, estd_db_time_factor
+FROM v$sga_target_advice
+ORDER BY sga_size ASC;
+
+
+**** CREATE spfile from pfile ***************
+
+CREATE SPFILE='/orahome/u01/app/oracle/product/19.18.0/db_1/dbs/spfileHEDWPRD.ora' FROM PFILE='/orahome/u01/app/oracle/product/19.18.0/db_1/dbs/initHEDWPRD.ora';
+
+
+*** Stats locked or not
+
+SELECT OWNER, TABLE_NAME, STATTYPE_LOCKED FROM DBA_TAB_STATISTICS 
+WHERE STATTYPE_LOCKED IS NOT NULL AND OWNER = 'PROD' ORDER BY 2;
+
+
+** How to find what other roles granted to particular role
+
+select grantee, granted_role, default_role
+from dba_role_privs
+where grantee in ('APP_USER_ROLE')
+order by 1,2,3
+;
+
+** what sys priv granted to particular role
+select * from dba_sys_privs
+where grantee in ('APP_ICR_ROLE','APP_USER_ROLE')
+;
+
+*** How to find FK that reference PK in partiuclar table
+
+select constraint_name,owner,constraint_type,table_name,r_constraint_name from dba_constraints where r_constraint_name in (
+select constraint_name from dba_constraints a where constraint_type='P' and table_name = 'BURGESS_GROUPER_ICER_LN_RESULT')
+
+*** OEM Thresholds Tablespace
+
+select tablespace_name,
+   warning_operator, warning_value,
+       critical_operator, critical_value,
+       extent_management, threshold_type,
+      metrics_name
+   from DBA_TABLESPACE_THRESHOLDS
+
+
+**** Tablespace size and free ****
+SELECT /* + RULE */
+	df.tablespace_name AS "Tablespace"
+	,df.bytes / (1024 * 1024 * 1024) AS "Size (GB)"
+	,Trunc(fs.bytes / (1024 * 1024 * 1024)) AS "Free (GB)"
+FROM (
+	SELECT tablespace_name
+		,Sum(bytes) AS bytes
+	FROM dba_free_space
+	GROUP BY tablespace_name
+	) fs
+	,(
+		SELECT tablespace_name
+			,SUM(bytes) AS bytes
+		FROM dba_data_files
+		GROUP BY tablespace_name
+		) df
+WHERE fs.tablespace_name = df.tablespace_name
+ORDER BY 3 
+
+
+********* 
+How to Identify ORA-00060 Deadlock Types Using Deadlock Graphs in Trace (Doc ID 1507093.1)
+
+
+**** select * from ALL_UNUSED_COL_TABS ***
+
+
+*** all_tab_modifications (To get last timestamp when table was updated***
+
+SELECT * FROM all_tab_modifications WHERE TABLE_NAME = 'xxx';
+
+
+
+**** Save query output to HTML ****
+
+set pages 250
+SET MARKUP HTML ON SPOOL ON
+spool sql_out_01.html
+select * from DBA_ADVISOR_EXECUTIONS where EXECUTION_NAME in ('EXEC_341378','EXEC_341349') ;
+SET MARKUP HTML OFF
+spool OFF
+
+
+**** FK Without index ****
+
+WITH constr AS 
+(
+SELECT c.owner, 
+       c.table_name, 
+       c.constraint_name, 
+       listagg(col.column_name, ', ') within group (ORDER BY col.column_name) column_list_alphabetic,
+       listagg(col.column_name, ', ') within group (ORDER BY col.position)    column_list
+  FROM dba_constraints c
+  JOIN dba_cons_columns col ON ( col.owner = c.owner AND col.constraint_name = c.constraint_name AND col.table_name = c.table_name )
+ WHERE c.constraint_type = 'R'
+   AND c.owner           like 'PROD'
+   GROUP BY c.owner, c.table_name, c.constraint_name
+),
+idx AS
+(
+SELECT table_owner, table_name, 
+       listagg(column_name, ', ') within group (ORDER BY column_name)     column_list_alphabetic,
+       listagg(column_name, ', ') within group (ORDER BY column_position) column_list
+  FROM dba_ind_columns
+ WHERE table_owner     like 'PROD'
+ GROUP BY table_owner, table_name, index_owner, index_name
+)
+SELECT constr.owner, constr.table_name, constr.constraint_name, constr.column_list
+  FROM constr
+ WHERE NOT EXISTS ( SELECT 1 FROM idx WHERE constr.owner = idx.table_owner AND constr.table_name = idx.table_name 
+                                        AND ( idx.column_list_alphabetic = constr.column_list_alphabetic 
+                                              OR instr(idx.column_list,constr.column_list) = 1 )
+                  );
+
+
+***** How to Find which Session is Holding a Particular Library Cache Lock (Doc ID 122793.1) ******
+
+************* CDB/PDB***************************************************
+
+[SYS@CDB$ROOT:CIFSPROD] SQL> select cdb from v$database;
+
+CDB
+---
+YES
+
+1 row selected.
+
+[SYS@CDB$ROOT:CIFSPROD] SQL> select name from V$CONTAINERS;
+
+NAME
+-------------------------------------------------------------
+CDB$ROOT
+PDB$SEED
+IFSPROD
+
+Option 1:
+             export ORACLE_PDB_SID=IFSPROD
+             sqlplus / as sysdba
+             show con_name
+
+Option 2:
+              unset ORACLE_PDB_SID
+              sqlplus / as sysdba
+              alter session set container=IFSPROD;
+              show con_name
+
+
+
+******** data file additons rate ****
+
+select name,creation_time  from v$datafile order by creation_time desc
+
+
+ 
+select to_char(creation_time, 'RRRR Month') "Month",
+sum(bytes)/1024/1024/1024 "Growth in GB"
+from sys.v_$datafile
+where creation_time > SYSDATE-365
+group by to_char(creation_time, 'RRRR Month') 
+
+
+
+***** How to run check Tuning advisor recommendations manually ****
+
+select owner,task_name,execution_start,execution_end from dba_advisor_log where execution_start > sysdate-6/24 and owner != 'SYS' order by execution_start;
+select DBMS_SQLTUNE.report_tuning_task(task_name => 'SQL_TUNING_1730909055783', owner_name => 'A738300') AS recommendations FROM dual;
+
+
+***** ddboost version *****
+
+xhepydbm01q.aetna.com (oracle) HEPYMASK::/opt/dpsapps/rmanagent/bin
+
+HEPYMASK> ./ddutil -i
+
+RMAN Agent Version: 19.5.0.0(40)
+
+
+******* disable verify function ****
+
+Login as sys
+
+alter profile TRUSTED_ID_NO_EXPIRE limit PASSWORD_VERIFY_FUNCTION null
+/
+
+ALTER PROFILE TRUSTED_ID_NO_EXPIRE LIMIT 
+PASSWORD_REUSE_MAX UNLIMITED
+/
+
+ALTER  USER S012030
+IDENTIFIED BY "BVInKRhMTcV8cZ9bu22QFqwwnkyg8a"
+/
+
+
+
+ALTER USER S012030
+ACCOUNT UNLOCK
+/
+
+
+
+ALTER PROFILE TRUSTED_ID_NO_EXPIRE limit PASSWORD_VERIFY_FUNCTION  AI_PASSWORD_VALIDATE_V1
+
+/
+
+ALTER PROFILE TRUSTED_ID_NO_EXPIRE LIMIT 
+PASSWORD_REUSE_MAX 6
+/
+
+
+ 

@@ -1,0 +1,211 @@
+
+
+
+### MY query to determine dups
+SELECT  APCOMP,APVEND,APVENDAC,APVCHR FROM LX_STAGE.LX_VOUCHER
+            WHERE ROWID IN (SELECT MIN(ROWID)
+                FROM LX_STAGE.LX_VOUCHER
+                    GROUP BY APCOMP,APVEND,APVENDAC,APVCHR
+                        HAVING COUNT(*) >1);
+
+
+Did not work got same error as Keith. Due to fact that this query was using UNSUABLE index
+
+### Mike's query to determine dups
+
+select /*+ full(a) */ APCOMP,APVEND,APVENDAC,APVCHR, count(*) from lx_stage.LX_VOUCHER a group by APCOMP,APVEND,APVENDAC,APVCHR having count(*) > 1;
+
+
+
+
+
+*******************************Keith's issue ***************************************************************************************************
+
+Hi Mike,
+ 
+You may have already noticed this error that we had this morning on DR02. 
+ Could you please help out with this.  I expect it is a dup record that caused the index issue.
+01:31:43 -E- ERROR
+
+01:31:43 -E- ERROR: ORA-01502: index 'LX_STAGE.PK_LX_VOUCHER' or partition of such index is in unusable state
+
+01:31:43 -E- ERROR
+
+
+************************Mike's response ***********************************************************************************************************
+
+Here are the duplicate rows...  First step will be to get rid of those as Eugene indicated...
+ 
+11:15:39 SQL> select /*+ full(a) */ APCOMP,APVEND,APVENDAC,APVCHR, count(*) from lx_stage.LX_VOUCHER a group by APCOMP,APVEND,APVENDAC,APVCHR having count(*) > 1;
+ 
+APCO APVEN APVE APVCHR   COUNT(*)
+---- ----- ---- ------ ----------
+0104 01880 0001 000094          2
+0252 01506 0001 000042          2
+0256 00015 0007 000878          2
+0256 11542 0001 000879          2
+0258 00025 0001 000234          2
+0259 02279 0001 000256          2
+0259 02279 0001 000267          2
+0266 14363 0001 000061          2
+ 
+8 rows selected.
+ 
+After those are cleaned up, someone just needs to run an...
+ 
+alter index lxstage.PK_LX_VOUCHER rebuild;
+ 
+The only way a PK can go invalid, though, is if:
+1) It's been disabled at some point
+2) It's had a direct load done on it that contained duplicate rows
+
+
+
+********************Keith's response *************************************************
+
+Thanks Mike, I wasn't able to query the table with the unusable index.  The direct load of dup records would be the reason. 
+ Every once and a while the source system sends dups.  
+I'll take a look at the dups and determine what to delete.
+
+*********************Mike's response ******************************************************************
+
+Cool.  The "full" hint on there is the key.  It just tells the optimizer to scan the table rather than use the index.
+
+
+***********Misc********************************************************************************
+ALTER INDEX LX_STAGE.PK_LX_VOUCHER rebuild;
+
+lx_stage  leusr01  
+
+ALTER TABLE LX_STAGE.LX_VOUCHER MODIFY CONSTRAINT PK_LX_VOUCHER NORELY DISABLE VALIDATE
+/
+
+
+
+****New case ******
+
+
+Hi Mike and Eugene,
+
+I have an index in the LUMINX schema on DRQA01 that is unusable. 
+Do I need to do an e-service request for this issue?  This was due to the load of Peoplesoft data required for ARES UAT testing.
+
+INDEX LUMINX.PK_LX_PAYMENT_CHILD was made unusable due to:
+ORA-01652: unable to extend temp segment by 1024 in tablespace LUMINX_INDEX
+
+
+I extended the tablespace and I'm rebuilding the index now. I'll let you know when it's done.
+
+alter tablespace luminx_index add datafile '/u09/oracle/DRQA01/index/LUMINX_INDEX_05.dbf' size 2000M;
+
+alter database datafile '/u09/oracle/DRQA01/index/LUMINX_INDEX_01.dbf' resize 2000M;
+
+Rebuild index
+
+
+************** Error *****************************
+DBMS_INDEX_UTL: Error executing ALTER INDEX "LX_DAILY"."PK_WKAB_OVERPAY_MV" REBUILD  NOPARALLEL 
+
+
+KNS_CLAIM_NO, ASOFDATE, KNS_ENTERED_DTTM, KNS_REASON_CODE, KNS_RQST_STATUS
+
+SELECT  KNS_CLAIM_NO, ASOFDATE, KNS_ENTERED_DTTM, KNS_REASON_CODE, KNS_RQST_STATUS FROM LX_DAILY.WKAB_OVERPAY_MV
+            WHERE ROWID IN (SELECT MIN(ROWID)
+                FROM LX_DAILY.WKAB_OVERPAY_MV
+                    GROUP BY KNS_CLAIM_NO, ASOFDATE, KNS_ENTERED_DTTM, KNS_REASON_CODE, KNS_RQST_STATUS
+                        HAVING COUNT(*) >1);
+
+
+select /*+ full(a) */ KNS_CLAIM_NO, ASOFDATE, KNS_ENTERED_DTTM, KNS_REASON_CODE, KNS_RQST_STATUS, count(*) from LX_DAILY.WKAB_OVERPAY_MV a group by KNS_CLAIM_NO, ASOFDATE, KNS_ENTERED_DTTM, KNS_REASON_CODE, KNS_RQST_STATUS having count(*) > 1;
+
+
+
+
+******************** How to check index status*****************
+SELECT * from DBA_INDEXES WHERE STATUS <> 'VALID'; 
+
+
+ALTER INDEX DRWKAB.NDX_WKAB_TSK_INST_TSK_MV_01 REBUILD;
+
+SELECT INDEX_NAME,status from DBA_INDEXES WHERE owner = 'DRWKAB' and status  = 'UNUSABLE'
+
+INDEX_NAME
+NUK_WKAB_A_ABSENCE_SEG_MV_01
+NUK_WKAB_A_ABSENCE_SEG_MV_02
+
+
+SELECT COUNT(INDEX_NAME) from DBA_INDEXES WHERE owner = 'DRWKAB' and status  = 'UNUSABLE';
+
+
+eNC9#trb
+
+User-Defined SQL Metrics
+
+	UNUSABLE_INDEXES
+
+UsEr#DeF1
+
+
+********************** Latest DR02 case *******************
+
+Anyway.  I spoke with Mike...  he gave me the insight I needed...  (Thanks Mike) Performed the following:
+SQL>
+SQL> SELECT OWNER, INDEX_NAME, STATUS FROM DBA_INDEXES WHERE STATUS LIKE 'UN%';
+OWNER                          INDEX_NAME                     STATUS
+------------------------------ ------------------------------ --------
+DRWKAB                         NDX_WKAB_A_REQ_ACTION_MV_01    UNUSABLE
+DRWKAB                         NDX_WKAB_A_REQ_ACTION_MV_02    UNUSABLE
+DRWKAB                         NDX_WKAB_A_REQ_ACTION_MV_03    UNUSABLE
+SQL>
+SQL>
+SQL> SET ECHO ON
+SQL> SPOOL REBUILD_INDEXES_MCL_1.OUT
+SQL>
+SQL> SET TIME ON TIMING ON
+13:06:59 SQL>
+13:06:59 SQL> ALTER INDEX DRWKAB.NDX_WKAB_A_REQ_ACTION_MV_01 REBUILD;
+Index altered.
+Elapsed: 00:22:14.11
+13:29:23 SQL> 
+13:32:38 SQL> ALTER INDEX DRWKAB.NDX_WKAB_A_REQ_ACTION_MV_03 rebuild;
+13:08:55 SQL>
+13:08:55 SQL>
+13:08:55 SQL> spool REBUILD_INDEXES_MCL_2.out
+13:09:03 SQL>
+13:09:03 SQL>
+13:09:04 SQL> ALTER INDEX DRWKAB.NDX_WKAB_A_REQ_ACTION_MV_02 REBUILD;
+Index altered.
+Elapsed: 00:17:03.72
+13:26:24 SQL> 
+
+
+
+*** Mikes way
+
+alter index drwkab.NUK_WKAB_A_ABSENCE_SEG_MV_01 rebuild online;
+alter index drwkab.NUK_WKAB_A_ABSENCE_SEG_MV_02 rebuild online;
+
+
+
+Reeves, Andrew; Ahuja, Amit; Saxena, Pallav; 
+
+
+
+***********HEPYPRD****
+
+
+--alter index PROD.ALIAS_SPPLR_LOC_LATEST rebuild oline parallel 4;
+---alter index PROD.ALIAS_SPPLR_LOC_LATEST noparallel;
+
+
+select ' rebuild online parallel 4;'||chr(10)||
+       'alter index '||owner||'.'||index_name||' noparallel;'||chr(10)
+from
+(
+select index_name,
+       owner
+from  dba_indexes
+where owner = 'PROD'
+and   index_type not like 'LOB%'
+and   status = 'UNUSABLE'
+) 

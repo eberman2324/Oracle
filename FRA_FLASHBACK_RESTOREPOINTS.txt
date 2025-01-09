@@ -1,0 +1,1571 @@
+*********************** Oscar  example *********************
+Sharing.   I am sure many of you may know all this but I am all ears if anybody wants to comment, improve or question.
+
+We had a recent release were a backout would have required a database restore.  We estimated this would have taken anywhere between 2-4 hours depending on TSM performance and channels.   Se we decided to look into flashback guarantee restores.  Below is what we did and the post release analysis of the log space used.  The benefits, ease of implementing and low risk speak for themselves.
+
+Create guarantee restore point (not to be confused with ALTER DATABASE FLASHBACK ON;)
+
+
+SELECT FLASHBACK_ON FROM V$DATABASE;
+
+
+
+1. Enable flash recovery area:
+•	ALTER SYSTEM SET db_recovery_file_dest='/oraexport/srxu800/oscar_flash' SCOPE=BOTH;
+•	ALTER SYSTEM SET db_recovery_file_dest_size='250G' SCOPE=BOTH;
+
+2. Create guarantee flashback restore point:  
+•	After the system is quiesced - create restore point TLS_BACKOUT_GRP guarantee flashback database;
+
+Done!  You now can use the guarantee restore point to restore the database. 
+
+Backout
+
+•	shutdown immediate;
+•	startup mount;
+•	flashback database to restore point TLS_BACKOUT_GRP;
+•	alter database open resetlogs;
+•	Drop restore point TLS_BACKOUT_GRP;
+
+No Backout
+
+•	Drop restore point TLS_BACKOUT_GRP;
+
+Notes:  
+
+•	You must drop guarantee restore points when done or your FRA will fill-up.
+
+•	Space - After release was signed off: we created 51 archies and 15 flb logs from the time we created the guaranteed restore point (GRP), to the time we dropped the GRP.  So give or take …. 3-1 archies to flashback logs.
+
+Total archies size = 204 gb            (4gb * 51)
+Total flb size         =    60 gb            (4gb * 15)
+
+•	FRA size relates more to the update activity to be restored from that db size. 
+
+This query can help in determining FRA size.
+How much archive log space used in a day: 
+select trunc(COMPLETION_TIME) TIME, ROUND(SUM(BLOCKS * BLOCK_SIZE)/1024/1024/1024) SIZE_GB from V$ARCHIVED_LOG group by trunc (COMPLETION_TIME) order by 1 desc;
+
+O/P
+TIME         SIZE_GB
+--------- ----------
+29-APR-20       1142
+28-APR-20       1238
+27-APR-20       1200
+26-APR-20       1591
+
+•	Standby DB - If you have a standby database make sure you disable the recovery manager BEFORE creating the restore point.
+
+I found guarantee restore points so useful I can not think of a reason not to use it when needed.
+
+Thanks… 
+
+*********************** RR example *********************
+
+Flashback to a restore point with a physical standby database
+
+In order to flashback  a primary database and its physical standby database to a restore point, you must enable flashback logging on both the primary and standby databases prior to creating the restore point.
+Without flashback logging enabled, you will still be able to flashback the primary but you will need to rebuild the standby.
+
+Here are the steps
+
+1.	Enable flashback logging on primary
+
+TSTDWNGR> sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Tue Jun 16 09:41:45 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.6.0.0.0
+
+SQL> alter database flashback on;  
+
+Database altered.
+
+2.	Enable flashback logging on standby
+
+TSTDWNGR> dgmgrl
+DGMGRL for Linux: Release 19.0.0.0.0 - Production on Tue Jun 16 09:44:54 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Welcome to DGMGRL, type "help" for information.
+DGMGRL> connect /
+Connected to "TSTDWNGR_xdopsdbw1d"
+Connected as SYSDG.
+DGMGRL> edit database "TSTDWNGR_xdopsdbw1d" set state='apply-off';
+Succeeded.
+DGMGRL> quit
+
+xdopsdbw1d.aetna.com (oracle) TSTDWNGR::/orahome/u01/app/oracle/diag/rdbms/tstdwngr_xdopsdbw1d/TSTDWNGR/trace
+TSTDWNGR> sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Tue Jun 16 09:45:54 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.6.0.0.0
+
+SQL> alter database flashback on;
+
+Database altered.
+
+SQL> quit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.6.0.0.0
+
+TSTDWNGR> dgmgrl
+DGMGRL for Linux: Release 19.0.0.0.0 - Production on Tue Jun 16 09:46:11 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Welcome to DGMGRL, type "help" for information.
+DGMGRL> connect /
+Connected to "TSTDWNGR_xdopsdbw1d"
+Connected as SYSDG.
+DGMGRL> edit database "TSTDWNGR_xdopsdbw1d" set state='apply-on';
+Succeeded.
+DGMGRL>
+
+
+3.	Create guaranteed restore point on primary
+
+SQL> create restore  point BEFORE_TEST GUARANTEE FLASHBACK DATABASE;
+
+Restore point created.
+
+SQL> select scn,NAME from v$restore_point;
+
+                     SCN NAME
+------------------------ --------------------------------
+           9106747149464 BEFORE_TEST
+
+4.	Flashback primary database
+
+SQL> connect / as sysdba
+Connected.
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount;
+ORACLE instance started.
+
+Total System Global Area 2147481656 bytes
+Fixed Size                  8898616 bytes
+Variable Size             503316480 bytes
+Database Buffers         1627389952 bytes
+Redo Buffers                7876608 bytes
+Database mounted.
+SQL> flashback database to restore point BEFORE_TEST;
+
+Flashback complete.
+
+SQL> alter database open resetlogs;
+
+Database altered.
+
+5.	Flashback standby database
+
+
+TSTDWNGR> dgmgrl
+DGMGRL for Linux: Release 19.0.0.0.0 - Production on Tue Jun 16 09:56:29 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Welcome to DGMGRL, type "help" for information.
+DGMGRL> connect /
+Connected to "TSTDWNGR_xdopsdbw1d"
+Connected as SYSDG.
+DGMGRL> edit database "TSTDWNGR_xdopsdbw1d" set state='apply-off';
+Succeeded.
+DGMGRL> quit
+
+xdopsdbw1d.aetna.com (oracle) TSTDWNGR::/orahome/u01/app/oracle/diag/rdbms/tstdwngr_xdopsdbw1d/TSTDWNGR/trace
+TSTDWNGR> sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Tue Jun 16 09:56:57 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.6.0.0.0
+
+SQL> flashback standby database to scn 9106747149464;
+
+Flashback complete.
+
+SQL> quit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.6.0.0.0
+
+xdopsdbw1d.aetna.com (oracle) TSTDWNGR::/orahome/u01/app/oracle/diag/rdbms/tstdwngr_xdopsdbw1d/TSTDWNGR/trace
+TSTDWNGR> dgmgrl
+DGMGRL for Linux: Release 19.0.0.0.0 - Production on Tue Jun 16 09:58:07 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Welcome to DGMGRL, type "help" for information.
+DGMGRL> connect /
+Connected to "TSTDWNGR_xdopsdbw1d"
+Connected as SYSDG.
+DGMGRL> edit database "TSTDWNGR_xdopsdbw1d" set state='apply-on';
+Succeeded.
+DGMGRL> quit
+
+6.	Disable flashback logging on standby
+
+xdopsdbw1d.aetna.com (oracle) TSTDWNGR::/orahome/u01/app/oracle/diag/rdbms/tstdwngr_xdopsdbw1d/TSTDWNGR/trace
+TSTDWNGR> sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Tue Jun 16 09:58:46 2020
+Version 19.6.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.6.0.0.0
+
+SQL> alter database flashback off;
+
+Database altered.
+
+SQL>
+
+7.	Disable flashback logging on primary
+
+SQL> alter database flashback off;
+
+Database altered.
+
+SQL>
+
+8.	Drop guaranteed restore point on primary
+
+SQL> drop restore point BEFORE_TEST;
+
+Restore point dropped.
+
+
+************* Issue with HEMPSTS*************************
+
+!!! errors were in alert.log and also nothing I was able to do in DB even changing my own password 
+
+
+Unable to allocate flashback log of 3891 blocks from
+current recovery area of size 53687091200 bytes.
+Recovery Writer (RVWR) is stuck until more space
+is available in the recovery area.
+Unable to write Flashback database log data because the
+recovery area is full, presence of a guaranteed
+restore point and no reusable flashback logs.
+
+
+-- Make sure we have space to increase db_recovery_file_dest_size
+. oraenv
+
++ASM
+
+sqlplus / as sysdba
+
+@showasm
+
+MOUNT_STATUS HEADER_STATUS       OS_MB   TOTAL_MB    FREE_MB SECTOR_SIZE LOGICAh
+------------ -------------- ---------- ---------- ---------- ----------- -------
+CACHED       MEMBER             204800     204800     135912         512       1
+CACHED       MEMBER             204800     204800     135912         512       2
+CACHED       MEMBER             204800     204800     135912         512       3
+CACHED       MEMBER             204800     204800     135924         512       4
+CACHED       MEMBER             204800     204800     135916         512       5
+CACHED       MEMBER             204800     204800     135916         512       6
+CACHED       MEMBER             204800     204800     135916         512       7
+CACHED       MEMBER             204800     204800     135912         512       8
+
+CACHED       MEMBER              32768      32768      19508         512       1
+CACHED       MEMBER              32768      32768      19432         512       2
+CACHED       MEMBER              32768      32768      19484         512       3
+CACHED       MEMBER              32768      32768      19556         512       4
+
+CACHED       MEMBER               4096       4096       3959         512       1
+CACHED       MEMBER               4096       4096       3961         512       2
+CACHED       MEMBER               4096       4096       3958         512       3
+CACHED       MEMBER               4096       4096       3962         512       4
+
+
+
+
+
+
+alter system set db_recovery_file_dest_size = 60G scope=BOTH;
+
++ASM> asmcmd
+ASMCMD> ls
+DATA_01/
+FLASH_01/
+REDOA_01/
+REDOB_01/
+ASMCMD> cd FLASH_01/
+ASMCMD> ls
+HEMPSTS_XMEDMDBW21S/
+ASMCMD> cd HEMPSTS_XMEDMDBW21S/
+ASMCMD> ls
+ARCHIVELOG/
+CONTROLFILE/
+ FLASHBACK/
+ASMCMD>
+
+SQL> SELECT FLASHBACK_ON FROM V$DATABASE;
+
+FLASHBACK_ON
+------------------------------------------------------
+RESTORE POINT ONLY
+
+SQL> show parameter db_recovery_file_dest
+
+NAME                                 TYPE
+------------------------------------ ---------------------------------
+VALUE
+------------------------------
+db_recovery_file_dest                string
++FLASH_01
+db_recovery_file_dest_size           big integer
+60G
+SQL>
+
+
+**** Tom's example **********
+
+References - How to perform Flashback in a Data Guard/RAC Environment (Doc ID 1342165.1)
+             How to create, use and drop a Guaranteed restore point in a Data Guard configuration (Doc ID 2338328.1)
+
+            Guaranteed Restore Point with Flashback Database disabled generates too many flashback logs (Doc ID 566647.1)
+                When you update a table block you also modify data in an undo segment in the UNDO tablespace.  
+                So you have to take before images of 2 blocks - the table block you changed and the undo segment block you just modified
+
+
+Below was used in a non RAC environment for testing flashback database with a physical standby in place
+Flashback logging is not turned on as the intent here is to rollback an application upgrade.  Therefore,
+a guaranteed restore point is created to minimize the flashback logging activity.
+ 
+
+
+Servers:
+
+  Primary - xhepydbw21d
+  Standby - xsrxdbw1q
+
+
+Databases:
+
+  Primary - HEPYDBA_xhepydbw21d
+  Standby - HEPYDBA_xsrxdbw1q
+
+
+Run OEM archivelog backup job BACKUP_HEPYDBA_XHEPYDBW21D_LOGS for primary database
+Run OEM standby archivelog backup job HEPYDBA_STDBY1_ARCHIVE_LOG_PURGE for standby database
+
+
+Suspend OEM archivelog backup job BACKUP_HEPYDBA_XHEPYDBW21D_LOGS for primary database
+Suspend OEM standby archivelog job HEPYDBA_STDBY1_ARCHIVE_LOG_PURGE for standby database
+
+
+Open an exceed session for the primary server and one for the standby server
+
+
+Comment heartbeat in cron on primary server
+#*/4 * * * * /home/oracle/tls/rman/heartbeat.ksh HEPYDBA AEDBA > /dev/null 2>&1
+
+
+Update RMAN HeartBeat Table in Primary Database
+
+  /home/oracle/tls/rman/heartbeat.ksh HEPYDBA AEDBA
+
+  DBNAME                      Start Time
+  --------------------------- ----------------------
+  HEPYDBA                     01-06-2021 12:38:35 PM
+
+  Current TimeStamp
+  --------------------------------------------------
+  01-06-2021 12:38:35 PM
+
+  End Time
+  ----------------------
+  01-06-2021 12:38:35 PM
+
+Get Flashback Database status in primary database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+Get Flashback Database status in standby database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+Suspend log shipping via the Broker from Primary server
+
+  $SCRIPTS/DISable_log_shipping.sh HEPYDBA
+
+  OR
+
+  dgmgrl => edit database 'HEPYDBA_xhepydbw21d' set state = 'TRANSPORT-OFF';
+
+  dgmgrl => show database verbose 'HEPYDBA_xhepydbw21d';
+
+
+Perform a Log Switch on Primary Database
+
+  sql => alter system switch logfile;
+
+
+Stop Managed Recovery on the Standby Database from Standby server
+
+  Confirm MRP0 Process is up
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+       THREAD# REDO LOG BEING APPLIED PROCESS                     STATUS                                   BLOCK#     BLOCKS
+    ---------- ---------------------- --------------------------- ------------------------------------ ---------- ----------
+         1                    929 ARCH                        CLOSING                                    2304        186
+         1                    926 ARCH                        CLOSING                                    9984         49
+         0                      0 ARCH                        CONNECTED                                     0          0
+         1                    925 ARCH                        CLOSING                                   40960         63
+         0                      0 RFS                         IDLE                                          0          0
+         1                    930 MRP0                        WAIT_FOR_LOG                                  0          0
+
+  Stop Managed Recovery
+
+    dgmgrl => edit database 'HEPYDBA_xsrxdbw1q' set state = 'APPLY-OFF';
+
+    dgmgrl => show database verbose 'HEPYDBA_xsrxdbw1q';
+
+
+  Confirm MRP0 Process is down
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+Note:  FRA was already defined in HEPYDBA (Otherwise would need to create)
+
+       From primary or standby database
+
+       SQL> show parameter db_recovery_file_dest
+
+       NAME                                 TYPE          VALUE                            
+       ------------------------------------ -------       ---------
+       db_recovery_file_dest                string        +FLASH_01
+       db_recovery_file_dest_size           big integer   7G
+
+
+Create restore points.
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT Standby_flashback GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           NAME                                    SCN TIME
+	   ------------------------- ----------------- -----------------------------------
+           STANDBY_FLASHBACK            13573202147076 06-JAN-21 12.47.55.000000000 PM
+
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           RESTORE POINT ONLY
+
+
+  Primary:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT Primary_flashback GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           NAME                                    SCN TIME
+           ------------------------- ----------------- -------------------------------
+           PRIMARY_FLASHBACK            13573202147910 06-JAN-21 12.49.48.000000000 PM
+
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           RESTORE POINT ONLY
+
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+Test Flashback 
+
+In Primary:
+
+
+  Pull current stat information
+
+   sql => select * from v$flashback_database_stat;
+
+          BEGIN_TIME                 END_TIME                   FLASHBACK_DATA    DB_DATA  REDO_DATA ESTIMATED_FLASHBACK_SIZE CON_ID
+          -------------------------- -------------------------- -------------- ---------- ---------- ------------------------ ----------
+          1/6/2021 12:49:48 PM	     1/6/2021 12:51:47 PM	598016	           131072     675840 0			      0
+
+  Create test table
+
+   create table A738300.FLASHBACK_TEST
+   as
+   select * from dba_objects;
+
+   110247 row(s) affected.
+
+  Get table space information
+
+   cd /home/oracle/tls/space
+
+   SQL> @usedsp.sql A738300 FLASHBACK_TEST TABLE
+
+   TABLE A738300.FLASHBACK_TEST
+   total mb     14
+   total blks   1792
+   used mb      13
+   used blks    1774
+   % used blks  98
+
+
+
+  Update all rows in the table
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'y'  
+    where oracle_maintained = 'Y';
+
+    93998 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'n'  
+    where oracle_maintained = 'N';
+
+    16249 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+  Pull current stat information
+
+   sql => select * from v$flashback_database_stat;
+
+          BEGIN_TIME                 END_TIME                   FLASHBACK_DATA  DB_DATA    REDO_DATA   ESTIMATED_FLASHBACK_SIZE CON_ID
+          -------------------------- -------------------------- --------------  ---------- ----------  ------------------------ ----------
+          1/6/2021 12:49:48 PM       1/6/2021 12:57:25 PM	15638528	14925824   55640064    0			0
+
+
+  Update all rows in the table
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'Y'  
+    where oracle_maintained = 'y';
+
+    93998 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'N'  
+    where oracle_maintained = 'n';
+
+    16249 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+
+   Pull current stat information
+
+
+   sql => select * from v$flashback_database_stat;
+
+          BEGIN_TIME                 END_TIME                   FLASHBACK_DATA  DB_DATA    REDO_DATA  ESTIMATED_FLASHBACK_SIZE  CON_ID
+          -------------------------- -------------------------- --------------  ---------- ---------- ------------------------  ----------
+          1/6/2021 12:49:48 PM	     1/6/2021 1:33:14 PM	38289408	54779904   104529920  0				0
+
+
+  Update all rows in the table
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'y'  
+    where oracle_maintained = 'Y';
+
+    93998 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'n'  
+    where oracle_maintained = 'N';
+    
+    16249 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+
+  Pull current stat information
+
+   sql => select * from v$flashback_database_stat;
+
+          BEGIN_TIME                 END_TIME                   FLASHBACK_DATA  DB_DATA    REDO_DATA  ESTIMATED_FLASHBACK_SIZE  CON_ID
+          -------------------------- -------------------------- --------------  ---------- ---------- ------------------------  ----------
+          1/6/2021 12:49:48 PM       1/6/2021 1:35:47 PM	51871744	62513152   148242432  0				0
+
+  Update all rows in the table
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'Y'  
+    where oracle_maintained = 'y';
+
+    93998 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'N'  
+    where oracle_maintained = 'n';
+
+    16249 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+  Pull current stat information
+
+   sql => select * from v$flashback_database_stat;
+
+          BEGIN_TIME                 END_TIME                   FLASHBACK_DATA  DB_DATA    REDO_DATA  ESTIMATED_FLASHBACK_SIZE  CON_ID
+          -------------------------- -------------------------- --------------  ---------- ---------- ------------------------  ---------
+          1/6/2021 12:49:48 PM       1/6/2021 1:38:26 PM	58073088	89571328   189136896  0				0
+
+
+   Pull space info from primary database
+
+   select space_limit/1024/1024/1024, space_used/1024/1024/1024 from v$recovery_file_dest;
+
+   SPACE_LIMIT/1024/1024/1024	SPACE_USED/1024/1024/1024
+ 			    7	0.4150390625
+   
+   select * from v$flashback_database_logfile;
+
+   NAME								LOG#	THREAD#	SEQUENCE#	BYTES		FIRST_CHANGE#	FIRST_TIME		TYPE		CON_ID
+   +FLASH_01/HEPYDBA_XHEPYDBW21D/FLASHBACK/log_1.527.1061124589	1	1	1		209715200	13573202147910	1/6/2021 12:49:48 PM	NORMAL		0
+   +FLASH_01/HEPYDBA_XHEPYDBW21D/FLASHBACK/log_2.516.1061124591	2	1	1		209715200	0		[NULL]			RESERVED	0
+
+
+   create table A738300.tom99
+   (col1 number)
+   /
+   insert into A738300.tom99 values(1);
+   insert into A738300.tom99 values(2);
+   insert into A738300.tom99 values(3);
+   insert into A738300.tom99 values(4);
+   insert into A738300.tom99 values(5);
+   insert into A738300.tom99 values(6);
+   insert into A738300.tom99 values(7);
+   insert into A738300.tom99 values(8);
+   insert into A738300.tom99 values(9);
+   insert into A738300.tom99 values(10);
+
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+   1 row(s) affected.
+
+   commit;
+
+   The command completed with no results returned
+
+
+   sql => select * from v$flashback_database_stat;
+
+          BEGIN_TIME                 END_TIME                   FLASHBACK_DATA  DB_DATA    REDO_DATA  ESTIMATED_FLASHBACK_SIZE  CON_ID
+          -------------------------- -------------------------- --------------  ---------- ---------- ------------------------  ----------
+	  1/6/2021 1:49:52 PM	     1/6/2021 1:50:46 PM	73728	        73728	   516096     0				0
+	  1/6/2021 12:49:48 PM	     1/6/2021 1:49:52 PM	58195968	132194304  192249856  1395130368	        0
+
+
+  Update all rows in the table
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'y'  
+    where oracle_maintained = 'Y';
+
+    93998 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+    update A738300.FLASHBACK_TEST
+    set oracle_maintained = 'n'  
+    where oracle_maintained = 'N';
+
+    16249 row(s) affected.
+
+    commit;
+
+    The command completed with no results returned
+
+  Get table space information
+
+   cd /home/oracle/tls/space
+
+   SQL> @usedsp.sql A738300 FLASHBACK_TEST TABLE
+
+        TABLE A738300.FLASHBACK_TEST
+        total mb     14
+        total blks   1792
+        used mb      13
+        used blks    1774
+        % used blks  98
+
+   sql => select * from v$flashback_database_stat;
+
+          BEGIN_TIME                 END_TIME                   FLASHBACK_DATA  DB_DATA     REDO_DATA   ESTIMATED_FLASHBACK_SIZE CON_ID
+          -------------------------- -------------------------- --------------  ----------  ----------  ------------------------ ----------
+          1/6/2021 1:49:52 PM	     1/6/2021 1:58:44 PM	14860288	27271168    43229184	0			 0
+          1/6/2021 12:49:48 PM	     1/6/2021 1:49:52 PM	58195968	132194304   192249856	1395130368	         0
+
+
+   Pull space info from primary database
+
+   select space_limit/1024/1024/1024, space_used/1024/1024/1024 from v$recovery_file_dest;
+
+   SPACE_LIMIT/1024/1024/1024	SPACE_USED/1024/1024/1024
+   7				0.4150390625
+
+
+   select * from v$flashback_database_logfile;
+
+   NAME								LOG#	THREAD#		SEQUENCE#	BYTES		FIRST_CHANGE#	FIRST_TIME		TYPE		CON_ID
+   +FLASH_01/HEPYDBA_XHEPYDBW21D/FLASHBACK/log_1.527.1061124589	1	1		1		209715200	13573202147910	1/6/2021 12:49:48 PM	NORMAL		0
+   +FLASH_01/HEPYDBA_XHEPYDBW21D/FLASHBACK/log_2.516.1061124591	2	1		1		209715200	0		[NULL]			RESERVED	0
+
+   Roughly 800 gb of redo generated during the test.
+
+
+   Switch Log File
+
+   alter system switch logfile;
+
+   Update RMAN HeartBeat Table in Primary Database
+ 
+   /home/oracle/tls/rman/heartbeat.ksh HEPYDBA AEDBA
+
+   DBNAME                      Start Time
+   --------------------------- ----------------------
+   HEPYDBA                     01-06-2021 02:10:20 PM
+
+   Current TimeStamp
+   --------------------------------------------------
+   01-06-2021 02:10:20 PM
+
+   End Time
+   --------------------------------------------------
+   01-06-2021 02:10:20 PM 
+
+
+   Change archive log destination (mimicing running low on space)
+
+   ALTER SYSTEM SET log_archive_dest_1='location=+DATA_01';
+
+   Switch logfile
+
+   alter system switch logfile;
+
+   Take an archivelog backup (Mimic prod OEM activity)
+
+   /orahome/u01/app/oracle/local/scripts/backup_archive_logs.sh HEPYDBA
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+Rollback databases prior to the beginning of the test
+
+
+
+Shutdown the Primary Database
+
+  sqlplus / as sysdba
+
+  sql => shutdown immediate;
+
+  OR
+
+  run => srvctl stop database -d HEPYDBA_xhepydbw21d -o immediate
+
+
+Startup mount the Primary Database
+
+  sqlplus / as sysdba
+
+  sql => startup mount;
+
+  OR
+
+  run => srvctl start database -d HEPYDBA_xhepydbw21d -o mount
+
+
+Flashback the Primary Database to the desired Restore Point:
+
+  sqlplus / as sysdba
+
+  sql => flashback database to restore point Primary_flashback;
+
+
+Open the primary database READ ONLY to confirm restore time
+
+  sqlplus / as sysdba
+
+  sql => alter database open read only;
+
+  sql => select * from aedba.rman_heartbeat;
+
+         Confirm restored to appropriate timeframe
+
+  
+Open the primary database with RESETLOGS (if above restore time was correct)
+
+  sqlplus / as sysdba
+
+  sql => shutdown immediate;
+
+  sql => startup mount;
+
+  sql => alter database open resetlogs;
+
+
+Flashback the Standby Database to the desired Restore Point: (Will need to mount the database if this is an ADG standby)
+
+  sqlplus / as sysdba
+
+  sql => flashback database to restore point Standby_flashback;
+
+
+Enable Log Transport Services to the Standby Database from the Primary server
+
+  $SCRIPTS/ENable_log_shipping.sh HEPYDBA
+
+  OR
+
+  dgmgrl => edit database 'HEPYDBA_xhepydbw21d' set state = 'TRANSPORT-ON';
+
+  dgmgrl => show database verbose 'HEPYDBA_xhepydbw21d';
+
+
+Perform a Log Switch on Primary Database
+
+  sqlplus / as sysdba
+
+  sql => alter system switch logfile;
+
+  sql => select group#,thread#,sequence# from v$log where status = 'CURRENT';
+
+  Confirm log sent to standby server
+
+  run => view $BDUMP/alert_HEPYDBA.log
+
+
+Once Log Transport Services is running again, enable Managed Recovery on the Standby Database:
+
+
+  dgmgrl => edit database 'HEPYDBA_xsrxdbw1q' set state = 'APPLY-ON';
+
+  dgmgrl => show database verbose 'HEPYDBA_xsrxdbw1q';
+
+
+Verify the Standby Database is now following the Primary Database into the new Incarnation
+
+   Run the following against the primary and standby databases
+
+   sqlplus / as sysdba
+
+   select incarnation# from V$DATABASE_INCARNATION where status = 'CURRENT';
+
+
+
+Check BCT
+
+ SELECT status, filename FROM V$BLOCK_CHANGE_TRACKING;
+
+ May be needed
+ ALTER DATABASE ENABLE BLOCK CHANGE TRACKING;
+
+
+Drop restore points
+
+  Primary:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT Primary_flashback; 
+
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT Standby_flashback; 
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+
+   Change archive log destination back to original setting
+
+   ALTER SYSTEM SET log_archive_dest_1='location=+FLASH_01';
+
+   Switch logfile
+
+   alter system switch logfile;
+
+
+Resync RMAN catalog from primary server while connected to the primary database and catalog
+
+    rman => resync catalog;
+
+            new incarnation of database registered in recovery catalog
+            starting full resync of recovery catalog
+
+
+Take an archivelog backup (Mimic prod OEM activity)
+
+/orahome/u01/app/oracle/local/scripts/backup_archive_logs.sh HEPYDBA
+
+
+Take a differential level 1 database backup (optional)
+
+Resume OEM archivelog backup job BACKUP_HEPYDBA_XHEPYDBW21D_LOGS for primary database
+
+Resume OEM standby archive delete job HEPYDBA_STDBY1_ARCHIVE_LOG_PURGE for standby database
+
+Uncomment heartbeat in cron on primary server
+*/4 * * * * /home/oracle/tls/rman/heartbeat.ksh HEPYDBA AEDBA > /dev/null 2>&1
+
+
+*******My own test ***************************
+
+References - How to perform Flashback in a Data Guard/RAC Environment (Doc ID 1342165.1)
+             How to create, use and drop a Guaranteed restore point in a Data Guard configuration (Doc ID 2338328.1)
+
+            Guaranteed Restore Point with Flashback Database disabled generates too many flashback logs (Doc ID 566647.1)
+                When you update a table block you also modify data in an undo segment in the UNDO tablespace.  
+                So you have to take before images of 2 blocks - the table block you changed and the undo segment block you just modified
+
+
+Below was used in a non RAC environment for testing flashback database with a physical standby in place
+Flashback logging is not turned on as the intent here is to rollback an application upgrade.  Therefore,
+a guaranteed restore point is created to minimize the flashback logging activity.
+ 
+
+
+Servers:
+
+  Primary - xhepydbw21d
+  Standby - xsrxdbw1q
+
+
+Databases:
+
+  Primary - HEPYDBA_xhepydbw21d
+  Standby - HEPYDBA_xsrxdbw1q
+
+
+Run OEM archivelog backup job BACKUP_HEPYDBA_XHEPYDBW21D_LOGS for primary database
+Run OEM standby archivelog backup job HEPYDBA_STDBY1_ARCHIVE_LOG_PURGE for standby database
+
+
+Suspend OEM archivelog backup job BACKUP_HEPYDBA_XHEPYDBW21D_LOGS for primary database
+Suspend OEM standby archivelog job HEPYDBA_STDBY1_ARCHIVE_LOG_PURGE for standby database
+
+
+Open an exceed session for the primary server and one for the standby server
+
+
+Comment heartbeat in cron on primary server
+#*/4 * * * * /home/oracle/tls/rman/heartbeat.ksh HEPYDBA AEDBA > /dev/null 2>&1
+
+
+Update RMAN HeartBeat Table in Primary Database
+
+DBNAME                      Start Time
+--------------------------- ------------------------------------------------------------------
+HEPYDBA                     01-13-2021 07:57:42 AM
+
+
+Previous TimeStamp
+------------------------------------------------------------------
+01-06-2021 12:38:35 PM
+
+
+
+Current TimeStamp
+------------------------------------------------------------------
+01-13-2021 07:57:42 AM
+
+
+End Time
+------------------------------------------------------------------
+01-13-2021 07:57:42 AM
+
+
+
+
+Get Flashback Database status in primary database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+Get Flashback Database status in standby database 
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+Suspend log shipping via the Broker from Primary server
+
+  $SCRIPTS/DISable_log_shipping.sh HEPYDBA
+
+  OR
+
+  dgmgrl => edit database 'HEPYDBA_xhepydbw21d' set state = 'TRANSPORT-OFF';
+
+  dgmgrl => show database verbose 'HEPYDBA_xhepydbw21d';
+
+
+Perform a Log Switch on Primary Database
+
+  sql => alter system switch logfile;
+
+
+Stop Managed Recovery on the Standby Database from Standby server
+
+  Confirm MRP0 Process is up
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+       THREAD# REDO LOG BEING APPLIED PROCESS                     STATUS                                   BLOCK#     BLOCKS
+    ---------- ---------------------- --------------------------- ------------------------------------ ---------- ----------
+         1                    929 ARCH                        CLOSING                                    2304        186
+         1                    926 ARCH                        CLOSING                                    9984         49
+         0                      0 ARCH                        CONNECTED                                     0          0
+         1                    925 ARCH                        CLOSING                                   40960         63
+         0                      0 RFS                         IDLE                                          0          0
+         1                    930 MRP0                        WAIT_FOR_LOG                                  0          0
+
+  Stop Managed Recovery
+
+    dgmgrl 
+  
+    connect /
+
+   edit database 'HEPYDBA_xsrxdbw1q' set state = 'APPLY-OFF';
+    show database verbose 'HEPYDBA_xsrxdbw1q';
+
+
+
+  Confirm MRP0 Process is down
+
+    sqlplus / as sysdba
+
+    set line 140
+    select thread#,
+           sequence# as "REDO LOG BEING APPLIED",
+           process,
+           status,
+           block#,
+           blocks
+    from   v$managed_standby;
+
+
+Note:  FRA was already defined in HEPYDBA (Otherwise would need to create)
+
+       From primary or standby database
+
+       SQL> show parameter db_recovery_file_dest
+
+       NAME                                 TYPE          VALUE                            
+       ------------------------------------ -------       ---------
+       db_recovery_file_dest                string        +FLASH_01
+       db_recovery_file_dest_size           big integer   7G
+
+
+Create restore points.
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT Standby_flashback_20210113 GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+        NAME                                    SCN TIME
+	------------------------- ----------------- -----------------------------------
+	STANDBY_FLASHBACK_2021011    13573203580916 13-JAN-21 08.27.23.000000000 AM
+	3
+
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           RESTORE POINT ONLY
+
+
+  Primary:
+
+    sqlplus / as sysdba
+
+    sql => CREATE RESTORE POINT Primary_flashback_20210113 GUARANTEE FLASHBACK DATABASE; 
+
+    col name for a25
+    col SCN for 9999999999999999
+    col TIME for a35
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+	NAME                                    SCN TIME
+	------------------------- ----------------- -----------------------------------
+	PRIMARY_FLASHBACK_2021011    13573203584302 13-JAN-21 08.29.19.000000000 AM 3
+
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           RESTORE POINT ONLY
+
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+Test Flashback 
+
+In Primary:
+
+
+  Pull current stat information
+
+   sql => select * from v$flashback_database_stat;
+
+
+BEGIN_TIME                 END_TIME                   FLASHBACK_DATA    DB_DATA
+-------------------------- -------------------------- -------------- ----------
+ REDO_DATA ESTIMATED_FLASHBACK_SIZE     CON_ID
+---------- ------------------------ ----------
+13-JAN-2021 08:29:19       13-JAN-2021 08:32:40              6651904     827392
+   3624960                        0          0
+
+
+
+  truncate table A236120.TEST;
+
+
+BEGIN_TIME                 END_TIME                   FLASHBACK_DATA    DB_DATA
+-------------------------- -------------------------- -------------- ----------
+ REDO_DATA ESTIMATED_FLASHBACK_SIZE     CON_ID
+---------- ------------------------ ----------
+13-JAN-2021 08:29:19       13-JAN-2021 08:36:16              6873088    7168000
+   4685824                        0          0
+
+
+
+
+  		
+
+
+   Pull space info from primary database
+
+   select space_limit/1024/1024/1024, space_used/1024/1024/1024 from v$recovery_file_dest;
+
+  SPACE_LIMIT/1024/1024/1024	SPACE_USED/1024/1024/1024
+7	0.4150390625
+
+
+   select * from v$flashback_database_logfile;
+
+  NAME	LOG#	THREAD#	SEQUENCE#	BYTES	FIRST_CHANGE#	FIRST_TIME	TYPE	CON_ID
++FLASH_01/HEPYDBA_XHEPYDBW21D/FLASHBACK/log_1.345.1061713759	1	1	1	209715200	13573203584300	1/13/2021 8:29:19 AM	NORMAL	0
++FLASH_01/HEPYDBA_XHEPYDBW21D/FLASHBACK/log_2.531.1061713763	2	1	1	209715200	0	[NULL]	RESERVED	0
+
+
+   
+
+
+   Switch Log File
+
+   alter system switch logfile;
+
+   Update RMAN HeartBeat Table in Primary Database
+ 
+   /home/oracle/tls/rman/heartbeat.ksh HEPYDBA AEDBA
+
+  DBNAME                      Start Time
+--------------------------- ---------------------------------------------
+HEPYDBA                     01-13-2021 08:38:40 AM
+
+
+Previous TimeStamp
+------------------------------------------------------------------
+01-13-2021 07:57:42 AM
+
+
+
+Current TimeStamp
+------------------------------------------------------------------
+01-13-2021 08:38:40 AM
+
+
+End Time
+------------------------------------------------------------------
+01-13-2021 08:38:40 AM
+
+
+
+
+
+   Change archive log destination (mimicing running low on space)
+
+   ALTER SYSTEM SET log_archive_dest_1='location=+DATA_01';
+
+   Switch logfile
+
+   alter system switch logfile;
+
+   Take an archivelog backup (Mimic prod OEM activity)
+
+   /orahome/u01/app/oracle/local/scripts/backup_archive_logs.sh HEPYDBA
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+Rollback databases prior to the beginning of the test
+
+
+
+Shutdown the Primary Database
+
+  sqlplus / as sysdba
+
+  sql => shutdown immediate;
+
+  OR
+
+  run => srvctl stop database -d HEPYDBA_xhepydbw21d -o immediate
+
+
+Startup mount the Primary Database
+
+  sqlplus / as sysdba
+
+  sql => startup mount;
+
+  OR
+
+  run => srvctl start database -d HEPYDBA_xhepydbw21d -o mount
+
+
+Flashback the Primary Database to the desired Restore Point:
+
+  sqlplus / as sysdba
+
+  sql => flashback database to restore point Primary_flashback_20210113;
+
+
+Open the primary database READ ONLY to confirm restore time
+
+  sqlplus / as sysdba
+
+  sql => alter database open read only;
+
+  sql => select * from aedba.rman_heartbeat;
+
+         Confirm restored to appropriate timeframe
+
+DBNAME                      TIMESTMP
+--------------------------- --------------------------
+HEPYDEV                     15-MAY-2019 12:55:02
+HEPYDBA                     13-JAN-2021 07:57:42
+
+  
+Open the primary database with RESETLOGS (if above restore time was correct)
+
+  sqlplus / as sysdba
+
+  sql => shutdown immediate;
+
+  sql => startup mount;
+
+  sql => alter database open resetlogs;
+
+
+Flashback the Standby Database to the desired Restore Point: (Will need to mount the database if this is an ADG standby)
+
+  sqlplus / as sysdba
+
+  sql => flashback database to restore point Standby_flashback_20210113;
+
+
+-- double check Standby
+alter database open read only;
+SQL> select * from aedba.rman_heartbeat;
+
+DBNAME                      TIMESTMP
+--------------------------- --------------------------
+HEPYDEV                     15-MAY-2019 12:55:02
+HEPYDBA                     13-JAN-2021 07:57:42
+
+
+  sqlplus / as sysdba
+
+  sql => shutdown immediate;
+
+  sql => startup mount;
+
+
+
+
+Enable Log Transport Services to the Standby Database from the Primary server
+
+  $SCRIPTS/ENable_log_shipping.sh HEPYDBA
+
+  OR
+
+  dgmgrl => edit database 'HEPYDBA_xhepydbw21d' set state = 'TRANSPORT-ON';
+
+  dgmgrl => show database verbose 'HEPYDBA_xhepydbw21d';
+
+
+Perform a Log Switch on Primary Database
+
+  sqlplus / as sysdba
+
+  sql => alter system switch logfile;
+
+  sql => select group#,thread#,sequence# from v$log where status = 'CURRENT';
+
+  Confirm log sent to standby server
+
+  run => view $BDUMP/alert_HEPYDBA.log
+
+
+Once Log Transport Services is running again, enable Managed Recovery on the Standby Database:
+
+
+  dgmgrl
+  
+  connect /
+
+ edit database 'HEPYDBA_xsrxdbw1q' set state = 'APPLY-ON';
+
+ show database verbose 'HEPYDBA_xsrxdbw1q';
+
+
+Verify the Standby Database is now following the Primary Database into the new Incarnation
+
+   Run the following against the primary and standby databases
+
+   sqlplus / as sysdba
+
+   select incarnation# from V$DATABASE_INCARNATION where status = 'CURRENT';
+
+
+
+Check BCT
+
+ SELECT status, filename FROM V$BLOCK_CHANGE_TRACKING;
+
+ May be needed
+ ALTER DATABASE ENABLE BLOCK CHANGE TRACKING;
+
+
+Drop restore points
+
+  Primary:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT Primary_flashback_20210113;
+
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+  Standby:
+
+    sqlplus / as sysdba
+
+    sql => DROP RESTORE POINT Standby_flashback_20210113; 
+
+    sql => select name,scn,time from v$restore_point where guarantee_flashback_database='YES';
+
+           no rows selected
+
+    sql => select flashback_on from v$database;
+
+           FLASHBACK_ON
+           ------------------
+           NO
+
+
+
+   Change archive log destination back to original setting
+
+   ALTER SYSTEM SET log_archive_dest_1='location=+FLASH_01';
+
+   Switch logfile
+
+   alter system switch logfile;
+
+
+Resync RMAN catalog from primary server while connected to the primary database and catalog
+
+    rman => resync catalog;
+
+            new incarnation of database registered in recovery catalog
+            starting full resync of recovery catalog
+
+
+Take an archivelog backup (Mimic prod OEM activity)
+
+/orahome/u01/app/oracle/local/scripts/backup_archive_logs.sh HEPYDBA
+
+
+Take a differential level 1 database backup (optional)
+
+Resume OEM archivelog backup job BACKUP_HEPYDBA_XHEPYDBW21D_LOGS for primary database
+
+Resume OEM standby archive delete job HEPYDBA_STDBY1_ARCHIVE_LOG_PURGE for standby database
+
+Uncomment heartbeat in cron on primary server
+*/4 * * * * /home/oracle/tls/rman/heartbeat.ksh HEPYDBA AEDBA > /dev/null 2>&1
