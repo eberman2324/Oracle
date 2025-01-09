@@ -1,0 +1,62 @@
+http://www.idevelopment.info/data/Oracle/DBA_tips/Oracle10gRAC/CLUSTER_10.shtml
+
+hello,
+there is no nothing called ASM file system.ASM is a method for storing data and it doesnot use file system it uses the concept of raw devices.
+To install ASM i recommend doing the following:
+1-Install database software only.
+2-configure the raw devices using linux raw devices method or oracle utlity asmLib tool.
+3-run dbca and install ASM.
+4-Run dbca again and install The database.
+Please refer to:
+http://www.oracle-base.com/articles/10g/ASMUsingASMLibAndRawDevices.php
+
+
+
+****** On call case study********
+
+1. Got page/alert
+
+DEDBAOracle p s Pls cal mission control 860 636 9854 Tony XORACLDM1P RCAT PROD Tablespace CXTPROD is 100 percent full
+
+Basically this is RCATPROD  database one of it tablespace reach max space. Need to extand.
+
+2. Get Oracle password from eDMZ for XORACLDM1P
+
+
+3. Login to box either first login to boraw1d and then ssh oracle@XORACLDM1P
+
+                   or
+
+                   use RCATPROD_and_GRIDPROD_xoracldm1p.hep - Shortcut 
+
+
+4. Determine current file location, name and size
+
+ .$SETUPENV RCATPROD
+
+sqlplus / as sysdba
+--Get desire file name first
+select file_name from dba_data_files order by 1;
+
+5. .$SETUPENV ASM
+
+--login with asmcmd utility to find current datafile size
+asmcmd
+
+ls
+cd +DATA/rcatprod/datafile
+
+--find file size in bytes
+ls -ls
+
+
+6. .$SETUPENV RCATPROD
+
+
+sqlplus / as sysdba
+
+ALTER DATABASE DATAFILE '+DATA/rcatprod/datafile/cxtprod.297.814049911' AUTOEXTEND ON MAXSIZE 700M;
+
+ALTER DATABASE DATAFILE '+DATA/rcatprod/datafile/cxtprod.297.814049911' RESIZE 700M;
+
+exit

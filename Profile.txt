@@ -1,0 +1,234 @@
+---WKABDEV1
+
+CREATE PROFILE DEFAULT
+    LIMIT SESSIONS_PER_USER         UNLIMITED
+          CPU_PER_SESSION           UNLIMITED
+          CPU_PER_CALL              UNLIMITED
+          CONNECT_TIME              UNLIMITED
+          IDLE_TIME                 UNLIMITED
+          LOGICAL_READS_PER_SESSION UNLIMITED
+          LOGICAL_READS_PER_CALL    UNLIMITED
+          COMPOSITE_LIMIT           UNLIMITED
+          PRIVATE_SGA               UNLIMITED
+          FAILED_LOGIN_ATTEMPTS     5
+          PASSWORD_LIFE_TIME        90
+          PASSWORD_REUSE_TIME       180
+          PASSWORD_REUSE_MAX        25
+          PASSWORD_LOCK_TIME        UNLIMITED
+          PASSWORD_GRACE_TIME       5
+          PASSWORD_VERIFY_FUNCTION  AI_PASSWORD_VALIDATE
+/
+
+CREATE PROFILE AETNA_SERVICE_ACCOUNT_PROFILE
+    LIMIT SESSIONS_PER_USER         DEFAULT
+          CPU_PER_SESSION           DEFAULT
+          CPU_PER_CALL              DEFAULT
+          CONNECT_TIME              DEFAULT
+          IDLE_TIME                 DEFAULT
+          LOGICAL_READS_PER_SESSION DEFAULT
+          LOGICAL_READS_PER_CALL    DEFAULT
+          COMPOSITE_LIMIT           DEFAULT
+          PRIVATE_SGA               DEFAULT
+          FAILED_LOGIN_ATTEMPTS     DEFAULT
+          PASSWORD_LIFE_TIME        UNLIMITED
+          PASSWORD_REUSE_TIME       DEFAULT
+          PASSWORD_REUSE_MAX        DEFAULT
+          PASSWORD_LOCK_TIME        DEFAULT
+          PASSWORD_GRACE_TIME       DEFAULT
+          PASSWORD_VERIFY_FUNCTION  DEFAULT
+/
+
+
+--WKABPROD
+
+CREATE PROFILE DEFAULT
+    LIMIT SESSIONS_PER_USER         UNLIMITED
+          CPU_PER_SESSION           UNLIMITED
+          CPU_PER_CALL              UNLIMITED
+          CONNECT_TIME              UNLIMITED
+          IDLE_TIME                 30
+          LOGICAL_READS_PER_SESSION UNLIMITED
+          LOGICAL_READS_PER_CALL    UNLIMITED
+          COMPOSITE_LIMIT           UNLIMITED
+          PRIVATE_SGA               UNLIMITED
+          FAILED_LOGIN_ATTEMPTS     10
+          PASSWORD_LIFE_TIME        UNLIMITED
+          PASSWORD_REUSE_TIME       UNLIMITED
+          PASSWORD_REUSE_MAX        UNLIMITED
+          PASSWORD_LOCK_TIME        UNLIMITED
+          PASSWORD_GRACE_TIME       UNLIMITED
+          PASSWORD_VERIFY_FUNCTION  AE_PW_VERIFY_FUNCTION
+/
+
+CREATE PROFILE APP_DATA_MOD_PROFILE
+    LIMIT SESSIONS_PER_USER         2
+          CPU_PER_SESSION           DEFAULT
+          CPU_PER_CALL              DEFAULT
+          CONNECT_TIME              DEFAULT
+          IDLE_TIME                 60
+          LOGICAL_READS_PER_SESSION DEFAULT
+          LOGICAL_READS_PER_CALL    DEFAULT
+          COMPOSITE_LIMIT           DEFAULT
+          PRIVATE_SGA               DEFAULT
+          FAILED_LOGIN_ATTEMPTS     3
+          PASSWORD_LIFE_TIME        90
+          PASSWORD_REUSE_TIME       DEFAULT
+          PASSWORD_REUSE_MAX        2
+          PASSWORD_LOCK_TIME        UNLIMITED
+          PASSWORD_GRACE_TIME       DEFAULT
+          PASSWORD_VERIFY_FUNCTION  DEFAULT
+/
+CREATE PROFILE APP_DEVELOPER_PROFILE
+    LIMIT SESSIONS_PER_USER         1
+          CPU_PER_SESSION           DEFAULT
+          CPU_PER_CALL              60
+          CONNECT_TIME              DEFAULT
+          IDLE_TIME                 60
+          LOGICAL_READS_PER_SESSION DEFAULT
+          LOGICAL_READS_PER_CALL    DEFAULT
+          COMPOSITE_LIMIT           DEFAULT
+          PRIVATE_SGA               DEFAULT
+          FAILED_LOGIN_ATTEMPTS     3
+          PASSWORD_LIFE_TIME        90
+          PASSWORD_REUSE_TIME       DEFAULT
+          PASSWORD_REUSE_MAX        2
+          PASSWORD_LOCK_TIME        UNLIMITED
+          PASSWORD_GRACE_TIME       DEFAULT
+          PASSWORD_VERIFY_FUNCTION  DEFAULT
+/
+
+
+
+CREATE OR REPLACE FUNCTION SYS.AI_PASSWORD_VALIDATE
+(username varchar2,
+  password varchar2,
+  old_password varchar2)
+  RETURN boolean IS
+   n boolean;
+   m integer;
+   differ integer;
+   counter integer;
+   digitarray varchar2(20);
+   punctarray varchar2(25);
+   lowerchararray varchar2(26);
+   upperchararray varchar2(26);
+BEGIN
+   digitarray:= '0123456789';
+   lowerchararray:= 'abcdefghijklmnopqrstuvwxyz';
+   upperchararray:= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+   punctarray:='!"#$%&()``*+,-/:;<=>?_';
+   counter := 0;
+
+   -- Check if the password contains the username
+   IF ( instr(NLS_LOWER(password), NLS_LOWER(username)) > 0) THEN
+     raise_application_error(-20001, 'Password contains the username.');
+   END IF;
+
+   -- Check for the minimum length of the password
+   IF length(password) < 8 THEN
+      raise_application_error(-20002, 'Password length less than 8.');
+   END IF;
+
+   -- Check if the password is too simple. A dictionary of words may be
+   -- maintained and a check may be made so as not to allow the words
+   -- that are too simple for the password.
+   IF NLS_LOWER(password) IN
+     ('welcome', 'database', 'account', 'user', 'password', 'oracle',
+      'computer', 'abcd',
+      'aetna') THEN
+      raise_application_error(-20003, 'Password too simple.');
+   END IF;
+
+   -- Check if the password contains at least 3 of 4 from the following list:
+   -- -- one lowercase character
+   -- -- one uppercase character
+   -- -- one digit (numeric)
+   -- -- one punctuation mark
+
+   -- 1. Check for the digit
+   m := length(password);
+   <<finddigit>>
+   FOR i IN 1..length(digitarray) LOOP
+      FOR j IN 1..m LOOP
+         IF substr(password,j,1) = substr(digitarray,i,1) THEN
+            counter := counter + 1;
+            GOTO findlowerchar;
+         END IF;
+      END LOOP;
+   END LOOP;
+
+  -- 2. Check for the lowercase character
+   <<findlowerchar>>
+   FOR i IN 1..length(lowerchararray) LOOP
+      FOR j IN 1..m LOOP
+         IF substr(password,j,1) = substr(lowerchararray,i,1) THEN
+            counter := counter + 1;
+            GOTO findupperchar;
+         END IF;
+      END LOOP;
+   END LOOP;
+
+  -- 3. Check for the uppercase character
+   <<findupperchar>>
+   FOR i IN 1..length(upperchararray) LOOP
+      FOR j IN 1..m LOOP
+         IF substr(password,j,1) = substr(upperchararray,i,1) THEN
+            counter := counter + 1;
+            IF counter = 3 THEN
+               GOTO endsearch;
+            ELSE
+               GOTO findpunct;
+            END IF;
+         END IF;
+      END LOOP;
+   END LOOP;
+
+   -- 4. Check for the punctuation
+   <<findpunct>>
+   FOR i IN 1..length(punctarray) LOOP
+      FOR j IN 1..m LOOP
+         IF substr(password,j,1) = substr(punctarray,i,1) THEN
+            counter := counter + 1;
+            IF counter = 3 THEN
+               GOTO endsearch;
+            ELSE
+               GOTO notmet3of4;
+            END IF;
+         END IF;
+      END LOOP;
+   END LOOP;
+
+   <<notmet3of4>>
+   -- if you made it to here then you did not meet 3 out of 4 from the list.
+   IF counter < 3 THEN
+      raise_application_error(-20004, 'Password should contain 3 out of 4 from this list (one lower case character, one upper case character, one numeric, one punctuation.');
+   END IF;
+
+   <<endsearch>>
+   -- Check if the password differs from the previous password by at least
+   -- 3 letters
+   IF old_password = '' THEN
+      raise_application_error(-20005, 'Old password is null.');
+   END IF;
+
+   differ := abs(length(old_password) - length(password));
+   IF abs(differ) < 3 THEN
+      IF length(password) < length(old_password) THEN
+         m := length(password);
+      ELSE
+         m := length(old_password);
+      END IF;
+      --differ := abs(differ);
+      FOR i IN 1..m LOOP
+          IF substr(password,i,1) != substr(old_password,i,1) THEN
+             differ := differ + 1;
+          END IF;
+      END LOOP;
+      IF differ < 3 THEN
+          raise_application_error(-20005, 'Password should differ by at least 3 characters.');
+      END IF;
+   END IF;
+   -- Everything is fine; return TRUE ;
+   RETURN(TRUE);
+END;
+/

@@ -1,0 +1,25 @@
+You issued: alter system kill session... which marked session KILLED in v$session
+
+It should disapear in several minutes. However in some cases when you user
+lost VpN connection during transaction or if connection was doing Insert via
+DBlink. Entry in v$session can stay forever.
+
+To indentify OS level Id do this: Note - 1020720.102
+
+SELECT spid
+FROM v$process
+WHERE NOT EXISTS ( SELECT 1
+FROM v$session
+WHERE paddr = addr);
+
+On OS level make sure it still exist
+
+ps -ef | grep 6033520
+
+kill -9 6033520
+
+It should remove entry from v$session in couple of minutes.
+
+If not instance bounce may needed.
+
+

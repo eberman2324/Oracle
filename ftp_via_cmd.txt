@@ -1,0 +1,28 @@
+
+1.	Open a command prompt, easiest way is to go to start – run and type in CMD.
+2.	In the line that comes up type in: “ftp ftp5.accessdata.com” Yes, type in the ftp in the front as well. 
+3.	Hit Enter
+4.	You should be prompted then for the User, type it in and hit enter.  
+5.	Then you will be prompted for the password, type it in and hit enter.  
+6.	Something should come up saying you are logged in and you will have a ftp prompt
+7.	Type in: cd Jennifer 
+8.	That will change the folder to the Jennifer folder, you should be ready to upload now.
+9.	To upload type the word “Put” and then the entire file directory and file name (ex: C:\data\test.txt)
+10.	Hit enter and then it will start copying it up.  You will need to do this for each file you need to copy up.  
+11.	When it is done it will tell you it is successful and a ftp prompt will come up again, type in “bye” to logout.  
+
+
+
+Here is the FTP link:
+
+ftp5.accessdata.com <http://ftp5.accessdata.com/> 
+username: eklipp
+password: P@ssword1
+folder: \Jennifer
+
+cd Jennifer
+Put C:\EugeneFolder\Temp\ADG_20141103.zip
+
+Put C:\EugeneFolder\Temp\ADG_20141103.csv
+
+Put E:\Dumps\ADG_20141103.csv

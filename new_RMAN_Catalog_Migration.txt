@@ -1,0 +1,228 @@
+As you know, we are in the process of re-hosting our Enterprise Manager and RMAN recovery catalog environments.
+ As such, we need move our test recover catalogs
+   from xoragridw1d to xoracldw1d and
+our prod catalogs
+   from xoragridm1p to xoracldm1p.
+
+   The new RCATDEV and RCATPROD databases as well as their standbys have been built  on the new hardware. 
+
+
+I have  developed a script to aid in the migration.
+The script for dev is located on xoragridw1d at $ORACLE_BASE/local/scripts/migrate_catalog.ksh.
+The script will export your catalog, copy it to the new server, create the catalog owner and tablespace in the new database,
+import the catalog the new database and lock the catalog owner account in the  old database.
+
+You need to provide the catalog instance, catalog owner and catalog owner password as parameters to the script.
+For example:   migrate_catalog.ksh RCATDEV ASECDEVRCAT newskates4u
+
+In addition to migrating your catalog, you will need to update the tns entry  for your test catalogs on your application database servers to the following:
+
+
+RCATDEV.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldw1d)(PORT = 1524))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldm1d)(PORT = 1524))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = RCAT_DEV)
+      (SERVER = DEDICATED)
+    )
+  )
+
+
+RCATPROD.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldm1p)(PORT = 1524))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldw1p)(PORT = 1524))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = RCAT_PROD)
+    )
+  )
+
+
+--0ld entry ---
+
+RCATDEV.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = emgriddev)(PORT = 1524))
+    )
+    (CONNECT_DATA =
+      (SID = RCATDEV)
+      (SERVER = DEDICATED)
+    )
+  )
+
+--Old prod entry
+
+RCATPROD.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = emgridprod)(PORT = 1524))
+    )
+    (CONNECT_DATA =
+      (SID = RCATPROD)
+      (SERVER = DEDICATED)
+    )
+  )
+
+The new environment will enable us to fail or switch over our recovery catalogs independent of the Enterprise Manager environment and will not require any dns changes. Also, the environment has been configured with the data guard broker so database role changes will be easier to perform.
+We have been delayed with upgrade to 12c in our prod environment due to a snmp trap format issue. I will provide the details for the prod recovery catalog moves after I work out how new RCATPROD will be monitored in the interim.
+Please let me know if there are any questions, comments or concerns.
+
+
+
+xoragridw1d/T20w3nty!
+ xoracldw1d :
+ oracle/Bl0ckhe@d
+
+xoracldm1p
+
+
+--RCATDEV
+Login: xoragridw1dT20w3nty!
+$ORACLE_BASE/local/scripts
+migrate_catalog.ksh RCATDEV DRSTG DRSTGnamr
+
+migrate_catalog.ksh RCATDEV DMSTG DMSTGnamr
+
+
+Test backup job:
+
+REMOTE_JOB="$REMOTE_SCRIPTS/backup/rman_general_purpose.ksh DRSTG RCATDEV rman_archivelog_bkp_tdp.rman
+
+
+--RCATPROD
+xoragridm1p
+$ORACLE_BASE/local/scripts
+
+migrate_catalog.ksh RCATPROD DR02 DR02namr
+
+migrate_catalog.ksh RCATPROD DM02 DM02namr
+
+Login back to datarep and datamart
+
+cd $ORACLE_HOME/network/admin
+
+vi tnsnames.ora
+
+tnsping RCATPROD
+. $SETUPENV DR02
+
+
+Backup schedule for DR02 8:30 AM
+                    DM02 7:00 AM
+
+
+
+***********dppdev*************
+
+oracle 16580858        1   0   Apr 21      -  1:22 ora_pmon_DPDEV91
+oracle 66453686        1   0 05:51:37      -  0:00 ora_pmon_DPDEVUG
+oracle 16646524        1   0 22:01:00      -  0:02 ora_pmon_DPDEMO91
+
+
+
+--RCATDEV
+Login: xoragridw1d/T20w3nty!
+$ORACLE_BASE/local/scripts
+
+--ANy time before 10 PM
+migrate_catalog.ksh RCATDEV DPDEMO91 DPDEMO91namr
+
+--Any time
+migrate_catalog.ksh RCATDEV DPDEVUG DPDEVUGnamr
+
+--Good time between 9 AM and 12
+migrate_catalog.ksh RCATDEV DPDEV91 DPDEV91namr
+
+
+**********dppqa***********
+
+oracle:DPUAT91:>ps -ef |grep pmon
+  oracle 19988578        1   0   Apr 22      -  1:16 ora_pmon_DPDRYRUN
+  oracle 34078812        1   0   May 01      -  0:33 ora_pmon_DPUAT91
+
+
+
+--Any time
+migrate_catalog.ksh RCATDEV DPDRYRUN DPDRYRUNnamr
+
+--Good time between 9 AM and 11
+migrate_catalog.ksh RCATDEV DPUAT91 DPUAT91namr
+
+
+
+************PIHMS Dev aphmm1d ************
+
+  oracle  8978686        1   0   Mar 24      -  4:36 ora_pmon_DDV3T000
+
+  oracle 11337922        1   0   May 03      -  0:56 ora_pmon_DNTMT000
+  oracle 20119588        1   0   May 12      -  0:06 ora_pmon_DNTMTRP1
+
+          --RCATDEV
+Login: xoragridw1d/T20w3nty!
+$ORACLE_BASE/local/scripts
+
+migrate_catalog.ksh RCATDEV DNTMT000 DNTMT000namr
+migrate_catalog.ksh RCATDEV DNTMTRP1 DNTMTRP1namr
+migrate_catalog.ksh RCATDEV DDV3T000 DDV3T000namr
+
+
+
+
+USERNAME           
+ACBUDEVLRCAT                  
+ACBUQARCAT      
+ACBURCAT             
+AEBSQA4                
+ASDBDEV2             
+ASDBTRN_RMAN                
+ASDBUAT               
+BIPHIMQ1              
+DATEST    
+DDV3T000              
+DEMO_RMAN      
+DEOPT001              
+DEOPT002              
+DEOPT004              
+DHPXQ000             
+DHPXT000              
+DJVAT000               
+DJVTT000                
+DNTMQ000            
+DNTMQRP1           
+DNTMT000             
+DNTMTRP1            
+DPMASK                 
+DPUGTST                
+DQA3T000              
+DXBEQ001              
+DXBET001               
+DXRTQ001              
+DXRTT001               
+DXRTU001              
+EBSHPERF               
+IASDB_RMAN       
+JIVEADEV               
+JIVEAQA                 
+JIVEEDEV                
+JIVEEQA                  
+JIVETDEV                
+JIVETQA                  
+MERCBDEV            
+MERCBQA              
+OASDB_RMAN     
+OPTMDEV              
+PPMP03RCAT       
+QASDB_RMAN     
+SRXADM_11G_RMAN      
+SRXASDBINTRCAT               
+SRXIT_RMAN        
+SRXPATCHRMAN                
+SRXUAT_RMAN                   
+TOMDB                   
+WKABQA4              

@@ -1,0 +1,43 @@
+Host=atnam1p.iwhouse.aetna.com 
+Target type=Database Instance 
+Target name=wkabprod 
+Categories=Diagnostics, Fault 
+Message=Internal error (ORA 600 [kkoipt:invalid aptyp]) detected in /orahome/wkab01/app/oracle/diag/rdbms/wkabprod/wkabprod/alert/log.xml at time/line number: Sat Jan 3 10:05:03 2015/34282. 
+Severity=Critical 
+Event reported time=Jan 3, 2015 10:06:43 AM EST 
+Target Lifecycle Status=Production 
+Contact=Eugene Berman/Mike Swafford
+Operating System=AIX
+Platform=powerpc 
+Associated Incident Id=21298 
+Associated Incident Status=New 
+Associated Incident Owner= 
+Associated Incident Acknowledged By Owner=No 
+Associated Incident Priority=None 
+Associated Incident Escalation Level=0 
+Event Type=Metric Alert 
+Event name=adrAlertLogIncidentError:genericInternalErrStack 
+Metric Group=Incident
+Metric=Generic Internal Error
+Metric value=Errors in file /orahome/wkab01/app/oracle/diag/rdbms/wkabprod/wkabprod/trace/wkabprod_j000_8718322.trc (incident=1396091):~ORA-00600: internal error code, arguments: [kkoipt:invalid aptyp], [0], [0], [], [], [], [], [], [], [], [], []
+Key Value=Sat Jan 3 10:05:03 2015/34282
+Key Column 1=Time/Line Number
+Rule Name=Database E-Mail Notification,Metric Alerts Event Rule 
+Rule Owner=SYSMAN 
+Update Details:
+Internal error (ORA 600 [kkoipt:invalid aptyp]) detected in /orahome/wkab01/app/oracle/diag/rdbms/wkabprod/wkabprod/alert/log.xml at time/line number: Sat Jan 3 10:05:03 2015/34282. 
+
+
+
+Mikes response/action
+
+Looks like this was due to gathering stats on a new table that came in in December release.  There’s a bug associated with this that was supposed to be fixed in 11.2.0.3, but perhaps not…
+
+Bug 10198126  ORA-600 [15160] / ORA-600 [kkoipt:invalid aptyp] / dump [kkogbro] from DBMS_STATS on IOT
+
+Anyway – what I did for now was to lock stats on the table just so that the DBMS_STATS job would skip this table.  I’ll open a case with Oracle to see if there’s a fix out there for it.
+exec dbms_stats.lock_table_stats(ownname=>'WKAB10', tabname=>'T_ALERT_NOTIF_QUEUE');
+
+So hopefully these errors should stop now.
+
+Mike
