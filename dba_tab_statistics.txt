@@ -1,2 +1,0 @@
---if you see other DRWKAB tables with 0 rows for stats, it means the stats job ran before the refresh finished.
-Select OWNER, TABLE_NAME, NUM_ROWS, LAST_ANALYZED from dba_tab_statistics where owner='DRWKAB' and table_name like '%MV' and num_rows=0;
