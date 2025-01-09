@@ -1,1 +1,0 @@
-https://www.oracle.com/technical-resources/articles/database/sql-11g-sqlplanmanagement.html
