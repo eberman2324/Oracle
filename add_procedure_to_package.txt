@@ -1,0 +1,287 @@
+---Add to Procedure PK_WKAB_ADMIN packages
+
+PROCEDURE sp_GetAllRightsForUser1
+(
+  i_employee_id            IN  s_employee.employee_id%type,
+  i_company_id             IN  s_employee.company_id%type,
+  cur_employee_rights     OUT  refcur_Output
+);
+
+
+
+------
+
+--Add to package PK_WKAB_ADMIN package Body
+-- ----------------------------------------------------------------------
+PROCEDURE sp_GetAllRightsForUser1
+(
+  i_employee_id           IN  s_employee.employee_id%type,
+  i_company_id            IN  s_employee.company_id%type,
+  cur_employee_rights     OUT refcur_Output
+)
+IS
+  tempid                  number default 0;
+  parentgroup             number default 1;
+BEGIN
+
+  tempid := NVL(i_company_id, 0);
+
+  IF tempid = 0 THEN   
+    --
+    -- Return all records
+    -- 
+
+    OPEN cur_employee_rights for 
+  
+      SELECT 
+        t_g.company_id          TargetCompanyID,
+        t_g.GROUP_ID            Target_group_id,
+        t_g.GROUP_NAME          TargetGroupName ,
+        t_group.GROUP_ID        TeamGroupID,
+        t_group.GROUP_NAME      TeamGroupName,
+        t_righttype.right_name, 
+        t_rights.read_access,
+        t_rights.insert_access, 
+        t_rights.delete_access, 
+        t_rights.update_access,
+        t_e.employee_id, 
+        t_person.first_name, 
+        t_person.last_name,
+        t_s.user_id
+
+      FROM 
+        s_employee         t_e,
+        s_person           t_person,
+        s_team_employee    t_t,
+        s_group            t_group,
+        s_team_rights      t_rights,
+        s_team_right_types t_righttype,
+        s_team_access      t_access,
+        s_group            t_g,
+        s_security         t_s 
+   
+      WHERE 
+      (
+        ( t_t.employee_id                 = t_e.employee_id              ) AND 
+        ( t_group.active                  = 'T'                          ) AND 
+        ( t_group.GROUP_ID                = t_t.team_group_id            ) AND 
+        ( t_group.GROUP_ID                = t_rights.team_group_id       ) AND 
+        ( t_righttype.team_right_types_id = t_rights.team_rights_type_id ) AND   
+        ( t_s.person_id                   = t_e.person_id                ) AND 
+        ( t_s.active                      = 'T'                          ) AND 
+        ( t_group.GROUP_ID 
+          IN 
+          (
+            Select group_id from s_group g  
+              start with group_id = t_access.team_group_id  
+              connect by parent_group_id = prior group_id 
+          )
+        ) AND 
+        ( t_access.target_group_id = t_g.GROUP_ID  ) AND 
+        ( t_person.person_id       = t_e.person_id ) AND 
+        ( t_e.employee_id          = i_employee_id )
+      ) 
+      Order by t_g.GROUP_ID, t_group.GROUP_ID;
+    ELSE
+    --
+    -- Return all records for company
+    -- 
+
+    OPEN cur_employee_rights for 
+    with Allgroups as 
+      (
+        select /*+ materialize */
+          g.group_id                      as GroupWithAccess,
+          CONNECT_BY_ROOT group_id        as GroupWithRight   
+        from
+          s_group g
+          start with
+            g.group_id in
+          (
+             select distinct 
+               te.team_group_id
+             from
+               s_team_employee    te,
+               s_team_rights      tr
+             where
+               te.team_group_id = tr.team_group_id and
+               te.employee_id = i_employee_id 
+          )
+          connect by
+          g.group_id = prior g.parent_group_id
+      ),
+      ParentCompanyGroup as 
+      (
+        select /*+ materialize */
+         g.group_id
+        from 
+          s_group g 
+        where
+          g.parent_group_id = parentgroup  and
+          g.company_id      = i_company_id
+      ) 
+      select distinct
+        tr.team_rights_type_id  RightTypeID,
+        trt.right_type          RightType,
+        trt.description         RightDescription,
+        tr.read_access          ReadAccess,
+        tr.insert_access        InsertAccess,
+        tr.delete_access        DeleteAccess,
+        tr.update_access        UpdateAccess
+      from
+        s_team_rights      tr,
+        s_team_right_types trt,
+        s_team_access      ta,
+        ParentCompanyGroup,
+        Allgroups
+      where
+        tr.team_group_id =  Allgroups.GroupWithRight      and
+        tr.team_rights_type_id  = trt.team_right_types_id and
+        ta.team_group_id =  Allgroups.GroupWithAccess     and
+        ParentCompanyGroup.group_id = ta.target_group_id;
+  
+    END IF;
+
+End sp_GetAllRightsForUser1;
+
+
+
+---- Modified verson of procedure below (added rownum > 0 stuff)
+---- Also _optimizer_mjc_enabled=FALSE 
+---- Not sure what helped both or one of these changes.
+
+PROCEDURE sp_GetAllRightsForUser1
+(
+  i_employee_id           IN  s_employee.employee_id%type,
+  i_company_id            IN  s_employee.company_id%type,
+  cur_employee_rights     OUT refcur_Output
+)
+IS
+  tempid                  number default 0;
+  parentgroup             number default 1;
+BEGIN
+
+  tempid := NVL(i_company_id, 0);
+
+  IF tempid = 0 THEN   
+    --
+    -- Return all records
+    -- 
+
+    OPEN cur_employee_rights for 
+  
+      SELECT 
+        t_g.company_id          TargetCompanyID,
+        t_g.GROUP_ID            Target_group_id,
+        t_g.GROUP_NAME          TargetGroupName ,
+        t_group.GROUP_ID        TeamGroupID,
+        t_group.GROUP_NAME      TeamGroupName,
+        t_righttype.right_name, 
+        t_rights.read_access,
+        t_rights.insert_access, 
+        t_rights.delete_access, 
+        t_rights.update_access,
+        t_e.employee_id, 
+        t_person.first_name, 
+        t_person.last_name,
+        t_s.user_id
+
+      FROM 
+        s_employee         t_e,
+        s_person           t_person,
+        s_team_employee    t_t,
+        s_group            t_group,
+        s_team_rights      t_rights,
+        s_team_right_types t_righttype,
+        s_team_access      t_access,
+        s_group            t_g,
+        s_security         t_s 
+   
+      WHERE 
+      (
+        ( t_t.employee_id                 = t_e.employee_id              ) AND 
+        ( t_group.active                  = 'T'                          ) AND 
+        ( t_group.GROUP_ID                = t_t.team_group_id            ) AND 
+        ( t_group.GROUP_ID                = t_rights.team_group_id       ) AND 
+        ( t_righttype.team_right_types_id = t_rights.team_rights_type_id ) AND   
+        ( t_s.person_id                   = t_e.person_id                ) AND 
+        ( t_s.active                      = 'T'                          ) AND 
+        ( t_group.GROUP_ID 
+          IN 
+          (
+            Select group_id from s_group g  
+              start with group_id = t_access.team_group_id  
+              connect by parent_group_id = prior group_id 
+          )
+        ) AND 
+        ( t_access.target_group_id = t_g.GROUP_ID  ) AND 
+        ( t_person.person_id       = t_e.person_id ) AND 
+        ( t_e.employee_id          = i_employee_id )
+      ) 
+      Order by t_g.GROUP_ID, t_group.GROUP_ID;
+    ELSE
+    --
+    -- Return all records for company
+    -- 
+
+    OPEN cur_employee_rights for 
+    with Allgroups as 
+      (
+        select * from (
+        select /* materialize */
+          g.group_id                      as GroupWithAccess,
+          CONNECT_BY_ROOT group_id        as GroupWithRight   
+        from
+          s_group g
+          start with
+            g.group_id in
+          (
+             select distinct 
+               te.team_group_id
+             from
+               s_team_employee    te,
+               s_team_rights      tr
+             where
+               te.team_group_id = tr.team_group_id and
+               te.employee_id = i_employee_id 
+          )
+          connect by
+          g.group_id = prior g.parent_group_id
+          ) where rownum > 0
+      ),
+      ParentCompanyGroup as 
+      (
+        select * from (
+        select /* materialize */
+         g.group_id
+        from 
+          s_group g 
+        where
+          g.parent_group_id = parentgroup  and
+          g.company_id      = i_company_id
+        ) where rownum > 0
+      ) 
+      select distinct
+        tr.team_rights_type_id  RightTypeID,
+        trt.right_type          RightType,
+        trt.description         RightDescription,
+        tr.read_access          ReadAccess,
+        tr.insert_access        InsertAccess,
+        tr.delete_access        DeleteAccess,
+        tr.update_access        UpdateAccess
+      from
+        s_team_rights      tr,
+        s_team_right_types trt,
+        s_team_access      ta,
+        ParentCompanyGroup,
+        Allgroups
+      where
+        tr.team_group_id =  Allgroups.GroupWithRight      and
+        tr.team_rights_type_id  = trt.team_right_types_id and
+        ta.team_group_id =  Allgroups.GroupWithAccess     and
+        ParentCompanyGroup.group_id = ta.target_group_id;
+  
+    END IF;
+
+End sp_GetAllRightsForUser1;
+

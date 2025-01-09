@@ -1,0 +1,68 @@
+Clone Home1 to Home2 on same server.
+
+##### http://www.dba-oracle.com/t_patching_cloning_oracle_home.htm
+
+1.  Create Directory Structure for second home
+    cd /u27
+    mkdir app
+    mkdir app/oracle
+    mkdir app/oracle/product
+    mkdir app/oracle/product/11.1.0
+
+    Copy existing ORACLE HOME DIRECTORY STRUCTURE to new one.
+    cd /u29/app/oracle/product/11.1.0
+    cp -R /u29/app/oracle/product/11.1.0/db_1 /u27/app/oracle/product/11.1.0/db_2
+
+
+
+    !!!cp: ORACA.FOR: A file or directory in the path name does not exist.
+
+
+
+2. cd /u27/app/oracle/product/11.1.0/db_2/rdbms/lib
+   mv config.o config.o_backup
+
+3. Change an entry to the /etc/oratab
+   vi /etc/oratab
+   Add the following entry:
+
+
+    #ORA11:/u29/app/oracle/product/11.1.0/db_1:N:/u01
+    ORA11:/u27/app/oracle/product/11.1.0/db_2:N:/u01 
+
+
+4. Set environment to new home
+  . $SETUPENV ORA11
+
+
+5. Clone the home
+   cd $ORACLE_HOME/clone/bin
+   perl clone.pl ORACLE_HOME="/u27/app/oracle/product/11.1.0/db_2" ORACLE_HOME_NAME="11gHOME2" ORACLE_BASE="/u27/app/oracle"
+
+
+6. Have Unix admin run root.sh as root
+   /u27/app/oracle/product/11.1.0/db_2/root.sh 
+
+
+7. Set permissions so that non-oracle IDs can run things
+   cd $ORACLE_HOME/bin
+   chmod og+r $ORACLE_HOME/bin/sqlldr
+   chmod og+r $ORACLE_HOME/bin/sqlplus
+   chmod og+r $ORACLE_HOME/bin/tnsping
+   chmod u+x /u27/app/oracle/product/11.1.0/db_2/inventory
+   chmod og+rwx /u27/app/oracle/product/11.1.0/db_2/inventory/ContentsXML
+   chmod og+rw /u27/app/oracle/product/11.1.0/db_2/inventory/ContentsXML/oraclehomeproperties.xml
+
+
+
+8. cd ${ORACLE_BASE}/product/11.1.0/db_2/OPatch/
+   ./opatch version
+   ...
+   OPatch Version: 10.2.0.3.1
+
+
+   opatch lsinventory
+
+   ## Patch Logs goes there: 
+       ${ORACLE_BASE}/product/11.1.0/db_2/cfgtoollogs/opatch
+

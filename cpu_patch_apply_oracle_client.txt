@@ -1,0 +1,17 @@
+1. Install Base Oracle Client for example: 11.1.0.6
+
+2. Install Patchset for example: 11.1.0.7 (really Oracle for Windows 32 bit Oracle Server  Install)
+
+3. Download appropriate CPU patchset (really Oracle for Windows 32 bit Oracle Server CPU patch Install)
+set ORACLE_HOME=C:\oracle\product\11.1.0\client_1
+
+cd C:\OracleClient\8343061
+
+%ORACLE_HOME%\OPatch\opatch apply
+
+
+
+--Check to make sure patch registered in inventory
+set ORACLE_HOME=C:\oracle\product\11.1.0\client_1
+
+%ORACLE_HOME%\OPatch\opatch lsinventory > inventory.out

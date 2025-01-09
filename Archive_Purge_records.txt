@@ -1,0 +1,23 @@
+Berman, Eugene [11:41 AM]:
+  Project Manager was asking me on Monday space benefits after purge project in place. He was asking for some specific numbers or % in terms of space (DASD). I did not have answer. Refer him to Dan M.
+Swafford, Mike [11:42 AM]:
+  Yes.  If they give us more specifics, we can translate it to space.  It's too far up for us to determine what the requirements mean, though.
+Swafford, Mike [11:44 AM]:
+  The real driver in all of Workability space is the CLOB column in t_script_instance_detail
+Berman, Eugene [11:45 AM]:
+  DO you we know if they going to include this table in purge plan?
+Swafford, Mike [11:45 AM]:
+  I asked Dan about it and he said yes.
+Berman, Eugene [11:46 AM]:
+  Ok. I think if they would give us list of all tables and date ranges we could come up with space benefits
+Swafford, Mike [11:47 AM]:
+  Yes.  I think it will be more than date ranges too.  
+  Claims opened/closed, etc
+Berman, Eugene [11:49 AM]:
+  My understanding that this process is not going to reduce physical size of DB. It may just slow down growth going forward. Since new records will be using space from deleted within tables. 
+Swafford, Mike [11:50 AM]:
+  Yes.  We could do re-orgs if they are going to permanently reduce the number of rows out there.  That would let us reclaim some space.
+  I think, like you, though, that really there's not so much data out there older than 10 years so I don't think we're going to reduce the size much.
+Berman, Eugene [11:51 AM]:
+  yes plus we probobly add more records now then we had before
+  Kind more in then out...

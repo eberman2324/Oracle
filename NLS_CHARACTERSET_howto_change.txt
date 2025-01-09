@@ -1,0 +1,14 @@
+225912.1
+
+Note:260192.1 Changing the NLS_CHARACTERSET to AL32UTF8 / UTF8 (Unicode)
+
+it might also be usefull to read
+
+Note:788156.1 AL32UTF8 / UTF8 (Unicode) Database Character Set Implications
+
+
+select value from NLS_DATABASE_PARAMETERS where parameter = 'NLS_CHARACTERSET'
+
+WE8ISO8859P1
+
+AL32UTF8

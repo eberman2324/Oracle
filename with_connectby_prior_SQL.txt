@@ -1,0 +1,8 @@
+WITH
+http://www.oracle.com/technology/products/oracle9i/daily/oct10.html
+http://www.dba-oracle.com/t_sql99_with_clause.htm
+
+START WITH , connect by , prior  
+http://www.compshack.com/sql/start-with-and-connect-by-oracle-sql
+http://www.java2s.com/Code/Oracle/Hierarchical-Query/HierarchicalQueriesSTARTWITHandCONNECTBYPRIORclauses.htm
+http://www.oradev.com/connect_by.jsp

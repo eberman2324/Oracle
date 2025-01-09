@@ -1,0 +1,25 @@
+
+. $SETUPENV xxxx
+
+cd /????/???/bdump
+
+
+****DBATST**************************************************************
+ALERTLOG=/u07/oracle/DBATST/log/bdump/alert_DBATST.log
+tail -n -500 $ALERTLOG  > /u07/oracle/DBATST/log/bdump/$ORACLE_SID.log
+cp /u07/oracle/DBATST/log/bdump/$ORACLE_SID.log $ALERTLOG
+rm /u07/oracle/DBATST/log/bdump/$ORACLE_SID.log
+
+*****ivpr01************************************************************
+ALERTLOG=/orabin/admin/ivpr01/bdump/alert_ivpr01.log
+tail -n -500 $ALERTLOG  > /orabin/admin/ivpr01/bdump/$ORACLE_SID.log
+cp /orabin/admin/ivpr01/bdump/$ORACLE_SID.log $ALERTLOG
+rm /orabin/admin/ivpr01/bdump/$ORACLE_SID.log
+
+
+
+In Sun Solaris do this (-n) does not work:
+
+tail -500 $ALERTLOG  > /orabin/admin/ivpr01/bdump/$ORACLE_SID.log
+cp /orabin/admin/ivpr01/bdump/$ORACLE_SID.log $ALERTLOG
+rm /orabin/admin/ivpr01/bdump/$ORACLE_SID.log
