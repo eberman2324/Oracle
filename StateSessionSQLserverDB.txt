@@ -1,6 +1,0 @@
-A Critical alert has been issued by the Workability SQL Server session state database monitor job indicating a possible problem with the Workability SQL Server session state database (WINPSHD51SQL300) affecting the Workability application
-
-A critical alert has been issued by the Workability SQL Server session state database monitoring job.  This indicates a possible issue with the Workability application connecting to its SQL Server session state database. 
-The job (U108WK90) monitors the WKAB10.T_ERROR_LOG table on the Oracle database (AetnaProd) for application errors within the last monitoring interval that indicate problems with the application connecting to the SQL Server session state database for Workability.
-
-SQL 2K5 (Session State Database): (DB Instance: WINPSHD51SQL300; DB Name: DWSRP001; Alias: WKABAspStateProd)
