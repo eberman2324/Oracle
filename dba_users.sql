@@ -1,1 +1,0 @@
-select * from dba_users where username = 'A220948'
