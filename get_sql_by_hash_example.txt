@@ -1,0 +1,3169 @@
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 2600808716
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_DIS_CLAIM SET EMPLOYEE_ID = :EMPLOYEE_ID, CREATE_USER_I
+D = :CREATE_USER_ID, CREATE_DATE = :CREATE_DATE, EDIT_USER_ID =
+:EDIT_USER_ID, EDIT_DATE = :EDIT_DATE, PRODUCT_ID = :PRODUCT_ID,
+ OWNER_ID = :OWNER_ID, LAST_DAY_WORKED = :LAST_DAY_WORKED, FIRST
+_DAY_ABSENT = :FIRST_DAY_ABSENT, FIRST_TREATMENT_DATE = :FIRST_T
+REATMENT_DATE, DISABILITY_DATE = :DISABILITY_DATE, ACCIDENT_DATE
+ = :ACCIDENT_DATE, OVERRIDE_EP = :OVERRIDE_EP, DATE_OF_LOSS = :D
+ATE_OF_LOSS, WORKERS_COMP_STATUS_ID = :WORKERS_COMP_STATUS_ID, W
+ORKERS_COMP_CARRIER_ID = :WORKERS_COMP_CARRIER_ID, MEDICAL_RELEA
+SE_DATE = :MEDICAL_RELEASE_DATE, REIMBURSE_AGREE_DATE = :REIMBUR
+SE_AGREE_DATE, CLAIM_STATUS_ID = :CLAIM_STATUS_ID, CLAIM_START_D
+ATE = :CLAIM_START_DATE, CLAIM_THRU_DATE = :CLAIM_THRU_DATE, EE_
+PAID_THRU_DATE = :EE_PAID_THRU_DATE, PREFERRED_ADDRESS_ID = :PRE
+FERRED_ADDRESS_ID, FIRST_HOSPITALIZATION_DATE = :FIRST_HOSPITALI
+ZATION_DATE, WORKERS_COMP_DESC = :WORKERS_COMP_DESC, CLIENT_INFO
+RMATION = :CLIENT_INFORMATION, EST_DELIVERY_DATE = :EST_DELIVERY
+_DATE, ACT_DELIVERY_DATE = :ACT_DELIVERY_DATE, PROJECTED_RTW_DAT
+E = :PROJECTED_RTW_DATE, WORK_STATUS_ID = :WORK_STATUS_ID, CALLE
+R_DIAGNOSIS = :CALLER_DIAGNOSIS, SOCIAL_SECURITY_STATUS_ID = :SO
+CIAL_SECURITY_STATUS_ID, BENEFIT_DURATION = :BENEFIT_DURATION, B
+ENEFIT_BEGIN_DATE = :BENEFIT_BEGIN_DATE, BENEFIT_THRU_DATE = :BE
+NEFIT_THRU_DATE, ELIMINATION_PERIOD = :ELIMINATION_PERIOD, BP_SI
+CKNESS_DURATION = :BP_SICKNESS_DURATION, BP_ACCIDENT_DURATION =
+:BP_ACCIDENT_DURATION, BP_SICKNESS_EP = :BP_SICKNESS_EP, BP_ACCI
+DENT_EP = :BP_ACCIDENT_EP, BP_START_TIME_EVENT_ID = :BP_START_TI
+ME_EVENT_ID, BP_FIRST_DAY_HOSP_COVERAGE_ID = :BP_FIRST_DAY_HOSP_
+COVERAGE_ID, BP_BENEFITS_START_AFTER = :BP_BENEFITS_START_AFTER,
+ DAYS_APPROVED = :DAYS_APPROVED, OTHER_DIAGNOSIS = :OTHER_DIAGNO
+SIS, WORKERS_COMP_TYPE = :WORKERS_COMP_TYPE, WORKERS_COMP_END_DA
+TE = :WORKERS_COMP_END_DATE, PHYSICAL_REQUIREMENTS_ID = :PHYSICA
+L_REQUIREMENTS_ID, ACCIDENT_ID = :ACCIDENT_ID, WORK_RELATED_ID =
+ :WORK_RELATED_ID, MEDICAL_RELEASE_ID = :MEDICAL_RELEASE_ID, THI
+RD_PARTY_SUBRO_ID = :THIRD_PARTY_SUBRO_ID, HOSPITAL_ID = :HOSPIT
+AL_ID, VERSION_ID = :VERSION_ID, SVP_LEVEL_ID = :SVP_LEVEL_ID, D
+IS_CAT_ID = :DIS_CAT_ID, ACT_RTW_DATE = :ACT_RTW_DATE, PS_PROCES
+S_STATUS_ID_SALARYCHG = :PS_PROCESS_STATUS_ID_SALARYCHG, FMLA_RE
+QUEST = :FMLA_REQUEST, PS_PROCESS_STATUS_ID_OFFST_DED = :PS_PROC
+ESS_STATUS_ID_OFFST_DED, WORKERS_COMP_CLAIM = :WORKERS_COMP_CLAI
+M, CLAIM_ID_STAT = :CLAIM_ID_STAT, CLAIM_ID_LTD = :CLAIM_ID_LTD,
+ EP_TYPE_ID = :EP_TYPE_ID, THRESHOLD_TYPE_ID = :THRESHOLD_TYPE_I
+D, BP_DURATION_FROM_EVENT_ID = :BP_DURATION_FROM_EVENT_ID, LAST_
+STATUS_CHANGE_DATE = :LAST_STATUS_CHANGE_DATE, REVIEW_STATUS_ID
+= :REVIEW_STATUS_ID, REVIEW_DATE = :REVIEW_DATE, MANAGEMENT_END_
+DATE = :MANAGEMENT_END_DATE, CLAIM_ID_STD = :CLAIM_ID_STD, BP_DU
+RTN_TO_AGE_ID = :BP_DURTN_TO_AGE_ID, BP_VDP_DURTN_END_EVENT_ID =
+ :BP_VDP_DURTN_END_EVENT_ID, BP_MAX_AGE = :BP_MAX_AGE, BP_MAX_DU
+RATION = :BP_MAX_DURATION, RTW_DAYS = :RTW_DAYS, BP_DURATION_QUA
+LIFER_ID = :BP_DURATION_QUALIFER_ID, TRANSITION_DATE = :TRANSITI
+ON_DATE, ACTIVE_PROVIDER_ID = :ACTIVE_PROVIDER_ID, TOTAL_DAYS_AP
+PROVED = :TOTAL_DAYS_APPROVED, TAKEOVER_ID = :TAKEOVER_ID, REASO
+N_ID = :REASON_ID, CONTINUITY_ID = :CONTINUITY_ID, RELATED_PREG_
+ID = :RELATED_PREG_ID, BP_RETRO_ACCIDENT_EP = :BP_RETRO_ACCIDENT
+_EP, BP_RETRO_SICKNESS_EP = :BP_RETRO_SICKNESS_EP, BP_RETRO_EP_T
+YPE_ID = :BP_RETRO_EP_TYPE_ID, BP_RETRO_TRIGGER_EVENT_ID = :BP_R
+ETRO_TRIGGER_EVENT_ID, BP_RETRO_TRIGGER_TYPE_ID = :BP_RETRO_TRIG
+GER_TYPE_ID, BP_RETRO_TRIGGER_QTY = :BP_RETRO_TRIGGER_QTY, BP_PH
+YSICAL_NO_COUNT_FLAG = :BP_PHYSICAL_NO_COUNT_FLAG, BP_HOURLY_NO_
+COUNT_FLAG = :BP_HOURLY_NO_COUNT_FLAG, BP_ROLLING_DURTN_QTY = :B
+P_ROLLING_DURTN_QTY, BP_ROLLING_DURTN_TYPE_ID = :BP_ROLLING_DURT
+N_TYPE_ID, OVERRIDE_DOD_FLAG = :OVERRIDE_DOD_FLAG, BP_DURTN_TYPE
+_ID = :BP_DURTN_TYPE_ID, BP_MATERITY_PCT = :BP_MATERITY_PCT, BP_
+MATERITY_PCT_DURN_QTY = :BP_MATERITY_PCT_DURN_QTY, BP_MATERNITY_
+PCT_DURN_TYPE_ID = :BP_MATERNITY_PCT_DURN_TYPE_ID, SB_DURTN_QTY
+= :SB_DURTN_QTY, SB_DURTN_TYPE_ID = :SB_DURTN_TYPE_ID, SB_DURTN_
+DOD = :SB_DURTN_DOD, BP_MEDICAL_MNGT_FLAG = :BP_MEDICAL_MNGT_FLA
+G, BP_ROLLING_DURTN_COUNT = :BP_ROLLING_DURTN_COUNT, ADD_EE_FLAG
+ = :ADD_EE_FLAG, STATUTORY_FLAG = :STATUTORY_FLAG, SHIVA_HCC_CAS
+E_NUMBER = :SHIVA_HCC_CASE_NUMBER, UNION_1 = :UNION_1, UNION_2 =
+ :UNION_2, UNION_3 = :UNION_3, UNION_4 = :UNION_4, UNION_5 = :UN
+ION_5, UNION_6 = :UNION_6, UNION_7 = :UNION_7, UNION_8 = :UNION_
+8, DIVISION_ID = :DIVISION_ID, BP_SICKNESS_EP_DAYS_TYPE_ID = :BP
+_SICKNESS_EP_DAYS_TYPE_ID, BP_ACCIDENT_EP_DAYS_TYPE_ID = :BP_ACC
+IDENT_EP_DAYS_TYPE_ID, ACCOUNT_STRUCTURE_ID = :ACCOUNT_STRUCTURE
+_ID, ROI_DATE = :ROI_DATE, ROI_EXPIRE_DATE = :ROI_EXPIRE_DATE, W
+ORKED_FULLORPARTIAL_ON_DOA = :WORKED_FULLORPARTIAL_ON_DOA, INTAK
+E_METHOD = :INTAKE_METHOD, SUBSTANCE_ABUSE_REVIEW_DATE = :SUBSTA
+NCE_ABUSE_REVIEW_DATE, MENTAL_NERVOUS_REVIEW_DATE = :MENTAL_NERV
+OUS_REVIEW_DATE, SUPPLEMENTAL_FLAG = :SUPPLEMENTAL_FLAG, VACATIO
+N_FLAG = :VACATION_FLAG, LIFE_UNIT_OPTION = :LIFE_UNIT_OPTION, P
+REV_CLAIM_NUMBER = :PREV_CLAIM_NUMBER, ROI_REVOKED_DATE = :ROI_R
+EVOKED_DATE, PREV_CLAIM_NUMBER2 = :PREV_CLAIM_NUMBER2, BHU_AUTH_
+FROM_DATE = :BHU_AUTH_FROM_DATE, BHU_AUTH_TO_DATE = :BHU_AUTH_TO
+_DATE, MAINTENANCE_REVIEW_ID = :MAINTENANCE_REVIEW_ID, PACKET_RC
+VD_DATE = :PACKET_RCVD_DATE WHERE CLAIM_ID = :CLAIM_ID
+
+84 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+2600808716 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT    27269731      23767     938810
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         2
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         1
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+
+Filter Predicates
+
+no rows selected
+
+
+
+*************************************************************************************************
+
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 4173548206
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_ABSENCE_SEGMENT SET LAST_DAY_WORKED = :B2 WHERE LEAVE_I
+D = :B1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+4173548206 w3wp.exe
+
+CHOOSE                        1610537       4035      72358
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         6
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_ABSENCE_SEGMENT)  MODE=ANALYZED
+         6
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_ABSSEG2LEAVE)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_ABSENCE_SEGMENT"."LEAVE_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+###########################################################################################################################
+02/15/2008
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 506402698
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        1332959      51341      31910
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+
+****************************************************************************************************************************
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        2376112      91197      56798
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+#######################################################################################################################
+02/15/2008
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 2662524178
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_BENEFIT_PERIOD SET BENEFIT_PERIOD_START = :B18 , BENEFI
+T_PERIOD_END = :B17 , TIME_TAKEN_AMT = :B16 , TIME_BALANCE_AMT =
+ :B15 , FUTURE_TIME_APPROVED_AMT = :B14 , FUTURE_TIME_APPROVED_A
+S_OF = :B13 , TIME_APPROVED_MINUTES = :B12 , FUTURE_TIME_APPROVE
+D_MINUTES = :B11 , EXHAUSTED_75_PCT = :B10 , EXHAUSTED_100_PCT =
+ :B9 , POTENTIAL_EXHAUST_DATE = :B8 , RECORD_OUTDATED = 'F', REC
+ORD_OUTDATED_DATE = NULL, BENEFIT_AMOUNT = :B7 , BENEFIT_AMOUNT_
+UNIT_LOOKUP_ID = :B6 , SHARED_BENEFIT_AMOUNT = :B5 , SHARED_BENE
+FIT_AMOUNT_MINUTES = :B4 , SHARED_FUTURE_BENEFIT_AMOUNT = :B3 ,
+SHARED_FUTURE_BEN_AMT_MINUTES = :B2 WHERE BENEFIT_PERIOD_ID = :B
+1
+
+11 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+2662524178 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT      232752      32877       3452
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_BENEFIT_PERIOD)  MODE=ANALYZED
+         3
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.PK_BENEFIT_PERIOD)  MODE=ANALYZED
+         2
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_BENEFIT_PERIOD"."BENEFIT_PERIOD_ID"=:B1
+
+Filter Predicates
+
+**********************************************************************************************************
+02/21/2008 12:20 PM
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 506402698
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        1942066      75054      52779
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+****************************************************************************************************************
+02/21/2008 12:30 PM
+
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 2662524178
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_BENEFIT_PERIOD SET BENEFIT_PERIOD_START = :B18 , BENEFI
+T_PERIOD_END = :B17 , TIME_TAKEN_AMT = :B16 , TIME_BALANCE_AMT =
+ :B15 , FUTURE_TIME_APPROVED_AMT = :B14 , FUTURE_TIME_APPROVED_A
+S_OF = :B13 , TIME_APPROVED_MINUTES = :B12 , FUTURE_TIME_APPROVE
+D_MINUTES = :B11 , EXHAUSTED_75_PCT = :B10 , EXHAUSTED_100_PCT =
+ :B9 , POTENTIAL_EXHAUST_DATE = :B8 , RECORD_OUTDATED = 'F', REC
+ORD_OUTDATED_DATE = NULL, BENEFIT_AMOUNT = :B7 , BENEFIT_AMOUNT_
+UNIT_LOOKUP_ID = :B6 , SHARED_BENEFIT_AMOUNT = :B5 , SHARED_BENE
+FIT_AMOUNT_MINUTES = :B4 , SHARED_FUTURE_BENEFIT_AMOUNT = :B3 ,
+SHARED_FUTURE_BEN_AMT_MINUTES = :B2 WHERE BENEFIT_PERIOD_ID = :B
+1
+
+11 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+2662524178 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT      193420      26327       2689
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_BENEFIT_PERIOD)  MODE=ANALYZED
+         3
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.PK_BENEFIT_PERIOD)  MODE=ANALYZED
+         2
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_BENEFIT_PERIOD"."BENEFIT_PERIOD_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+
+**********************************************************************
+04/07/2008 04:05 PM
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_EMP_ALTERNATE_SCHEDULE WHERE EMPLOYEE_ID = :B3 AND
+ START_DATE >= TO_DATE(:B2 , 'mm/dd/yyyy') AND START_DATE <= TO_
+DATE(:B1 , 'mm/dd/yyyy')
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+3227479230 dllhost.exe
+
+MULTIPLE CHILDREN PRESENT      726268       1093       8970
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         5
+         1          0
+  DELETE
+
+         2          1
+    FILTER
+
+         3          2
+      TABLE ACCESS BY INDEX ROWID (WKAB10.T_EMP_ALTERNATE_SCHEDULE)  MODE=ANALYZ
+ED
+         5
+         4          3
+        INDEX RANGE SCAN (WKAB10.FK_EMPALTCHED2EMPLOYEE)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         4
+"S_EMP_ALTERNATE_SCHEDULE"."EMPLOYEE_ID"=:B3
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+         2
+TO_DATE(:B2,'mm/dd/yyyy')<=TO_DATE(:B1,'mm/dd/yyyy')
+         3
+"S_EMP_ALTERNATE_SCHEDULE"."START_DATE">=TO_DATE(:B2,'mm/dd/yyyy') AND "S_EMP_AL
+TERNATE_SCHEDULE"."START_DATE"<=TO_DATE(:B1,'mm/dd/yyyy')
+
+SQL> 
+
+************************************************************************************************************
+
+04/16/2008 10:35 AM
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 dllhost.exe
+
+CHOOSE                        1468713      56693      35797
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+SQL>
+
+
+*******************************************************************************************************
+
+04/16/2008 10:35 AM
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_REQUEST SET CONFIRMED_RTW = :B2 , EXPECTED_RTW = NULL W
+HERE LEAVE_ID = :B1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+3083834890 w3wp.exe
+
+CHOOSE                           4441        422         39
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         6
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST)  MODE=ANALYZED
+         6
+         3          2
+      INDEX RANGE SCAN (WKAB10.REQUEST_LEAVE_ID_IDX)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST"."LEAVE_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+
+*************************************************************************************************************************
+
+07/03/2008 10:05 AM
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        3256641     120856     107669
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+
+*************************************************************************************************************************
+
+07/14/2008 11:25 AM
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_DIS_CLAIM SET EMPLOYEE_ID = :EMPLOYEE_ID, CREATE_USER_I
+D = :CREATE_USER_ID, CREATE_DATE = :CREATE_DATE, EDIT_USER_ID =
+:EDIT_USER_ID, EDIT_DATE = :EDIT_DATE, PRODUCT_ID = :PRODUCT_ID,
+ OWNER_ID = :OWNER_ID, LAST_DAY_WORKED = :LAST_DAY_WORKED, FIRST
+_DAY_ABSENT = :FIRST_DAY_ABSENT, FIRST_TREATMENT_DATE = :FIRST_T
+REATMENT_DATE, DISABILITY_DATE = :DISABILITY_DATE, ACCIDENT_DATE
+ = :ACCIDENT_DATE, OVERRIDE_EP = :OVERRIDE_EP, DATE_OF_LOSS = :D
+ATE_OF_LOSS, WORKERS_COMP_STATUS_ID = :WORKERS_COMP_STATUS_ID, W
+ORKERS_COMP_CARRIER_ID = :WORKERS_COMP_CARRIER_ID, MEDICAL_RELEA
+SE_DATE = :MEDICAL_RELEASE_DATE, REIMBURSE_AGREE_DATE = :REIMBUR
+SE_AGREE_DATE, CLAIM_STATUS_ID = :CLAIM_STATUS_ID, CLAIM_START_D
+ATE = :CLAIM_START_DATE, CLAIM_THRU_DATE = :CLAIM_THRU_DATE, EE_
+PAID_THRU_DATE = :EE_PAID_THRU_DATE, PREFERRED_ADDRESS_ID = :PRE
+FERRED_ADDRESS_ID, FIRST_HOSPITALIZATION_DATE = :FIRST_HOSPITALI
+ZATION_DATE, WORKERS_COMP_DESC = :WORKERS_COMP_DESC, CLIENT_INFO
+RMATION = :CLIENT_INFORMATION, EST_DELIVERY_DATE = :EST_DELIVERY
+_DATE, ACT_DELIVERY_DATE = :ACT_DELIVERY_DATE, PROJECTED_RTW_DAT
+E = :PROJECTED_RTW_DATE, WORK_STATUS_ID = :WORK_STATUS_ID, CALLE
+R_DIAGNOSIS = :CALLER_DIAGNOSIS, SOCIAL_SECURITY_STATUS_ID = :SO
+CIAL_SECURITY_STATUS_ID, BENEFIT_DURATION = :BENEFIT_DURATION, B
+ENEFIT_BEGIN_DATE = :BENEFIT_BEGIN_DATE, BENEFIT_THRU_DATE = :BE
+NEFIT_THRU_DATE, ELIMINATION_PERIOD = :ELIMINATION_PERIOD, BP_SI
+CKNESS_DURATION = :BP_SICKNESS_DURATION, BP_ACCIDENT_DURATION =
+:BP_ACCIDENT_DURATION, BP_SICKNESS_EP = :BP_SICKNESS_EP, BP_ACCI
+DENT_EP = :BP_ACCIDENT_EP, BP_START_TIME_EVENT_ID = :BP_START_TI
+ME_EVENT_ID, BP_FIRST_DAY_HOSP_COVERAGE_ID = :BP_FIRST_DAY_HOSP_
+COVERAGE_ID, BP_BENEFITS_START_AFTER = :BP_BENEFITS_START_AFTER,
+ DAYS_APPROVED = :DAYS_APPROVED, OTHER_DIAGNOSIS = :OTHER_DIAGNO
+SIS, WORKERS_COMP_TYPE = :WORKERS_COMP_TYPE, WORKERS_COMP_END_DA
+TE = :WORKERS_COMP_END_DATE, PHYSICAL_REQUIREMENTS_ID = :PHYSICA
+L_REQUIREMENTS_ID, ACCIDENT_ID = :ACCIDENT_ID, WORK_RELATED_ID =
+ :WORK_RELATED_ID, MEDICAL_RELEASE_ID = :MEDICAL_RELEASE_ID, THI
+RD_PARTY_SUBRO_ID = :THIRD_PARTY_SUBRO_ID, HOSPITAL_ID = :HOSPIT
+AL_ID, VERSION_ID = :VERSION_ID, SVP_LEVEL_ID = :SVP_LEVEL_ID, D
+IS_CAT_ID = :DIS_CAT_ID, ACT_RTW_DATE = :ACT_RTW_DATE, PS_PROCES
+S_STATUS_ID_SALARYCHG = :PS_PROCESS_STATUS_ID_SALARYCHG, FMLA_RE
+QUEST = :FMLA_REQUEST, PS_PROCESS_STATUS_ID_OFFST_DED = :PS_PROC
+ESS_STATUS_ID_OFFST_DED, WORKERS_COMP_CLAIM = :WORKERS_COMP_CLAI
+M, CLAIM_ID_STAT = :CLAIM_ID_STAT, CLAIM_ID_LTD = :CLAIM_ID_LTD,
+ EP_TYPE_ID = :EP_TYPE_ID, THRESHOLD_TYPE_ID = :THRESHOLD_TYPE_I
+D, BP_DURATION_FROM_EVENT_ID = :BP_DURATION_FROM_EVENT_ID, LAST_
+STATUS_CHANGE_DATE = :LAST_STATUS_CHANGE_DATE, REVIEW_STATUS_ID
+= :REVIEW_STATUS_ID, REVIEW_DATE = :REVIEW_DATE, MANAGEMENT_END_
+DATE = :MANAGEMENT_END_DATE, CLAIM_ID_STD = :CLAIM_ID_STD, BP_DU
+RTN_TO_AGE_ID = :BP_DURTN_TO_AGE_ID, BP_VDP_DURTN_END_EVENT_ID =
+ :BP_VDP_DURTN_END_EVENT_ID, BP_MAX_AGE = :BP_MAX_AGE, BP_MAX_DU
+RATION = :BP_MAX_DURATION, RTW_DAYS = :RTW_DAYS, BP_DURATION_QUA
+LIFER_ID = :BP_DURATION_QUALIFER_ID, TRANSITION_DATE = :TRANSITI
+ON_DATE, ACTIVE_PROVIDER_ID = :ACTIVE_PROVIDER_ID, TOTAL_DAYS_AP
+PROVED = :TOTAL_DAYS_APPROVED, TAKEOVER_ID = :TAKEOVER_ID, REASO
+N_ID = :REASON_ID, CONTINUITY_ID = :CONTINUITY_ID, RELATED_PREG_
+ID = :RELATED_PREG_ID, BP_RETRO_ACCIDENT_EP = :BP_RETRO_ACCIDENT
+_EP, BP_RETRO_SICKNESS_EP = :BP_RETRO_SICKNESS_EP, BP_RETRO_EP_T
+YPE_ID = :BP_RETRO_EP_TYPE_ID, BP_RETRO_TRIGGER_EVENT_ID = :BP_R
+ETRO_TRIGGER_EVENT_ID, BP_RETRO_TRIGGER_TYPE_ID = :BP_RETRO_TRIG
+GER_TYPE_ID, BP_RETRO_TRIGGER_QTY = :BP_RETRO_TRIGGER_QTY, BP_PH
+YSICAL_NO_COUNT_FLAG = :BP_PHYSICAL_NO_COUNT_FLAG, BP_HOURLY_NO_
+COUNT_FLAG = :BP_HOURLY_NO_COUNT_FLAG, BP_ROLLING_DURTN_QTY = :B
+P_ROLLING_DURTN_QTY, BP_ROLLING_DURTN_TYPE_ID = :BP_ROLLING_DURT
+N_TYPE_ID, OVERRIDE_DOD_FLAG = :OVERRIDE_DOD_FLAG, BP_DURTN_TYPE
+_ID = :BP_DURTN_TYPE_ID, BP_MATERITY_PCT = :BP_MATERITY_PCT, BP_
+MATERITY_PCT_DURN_QTY = :BP_MATERITY_PCT_DURN_QTY, BP_MATERNITY_
+PCT_DURN_TYPE_ID = :BP_MATERNITY_PCT_DURN_TYPE_ID, SB_DURTN_QTY
+= :SB_DURTN_QTY, SB_DURTN_TYPE_ID = :SB_DURTN_TYPE_ID, SB_DURTN_
+DOD = :SB_DURTN_DOD, BP_MEDICAL_MNGT_FLAG = :BP_MEDICAL_MNGT_FLA
+G, BP_ROLLING_DURTN_COUNT = :BP_ROLLING_DURTN_COUNT, ADD_EE_FLAG
+ = :ADD_EE_FLAG, STATUTORY_FLAG = :STATUTORY_FLAG, SHIVA_HCC_CAS
+E_NUMBER = :SHIVA_HCC_CASE_NUMBER, UNION_1 = :UNION_1, UNION_2 =
+ :UNION_2, UNION_3 = :UNION_3, UNION_4 = :UNION_4, UNION_5 = :UN
+ION_5, UNION_6 = :UNION_6, UNION_7 = :UNION_7, UNION_8 = :UNION_
+8, DIVISION_ID = :DIVISION_ID, BP_SICKNESS_EP_DAYS_TYPE_ID = :BP
+_SICKNESS_EP_DAYS_TYPE_ID, BP_ACCIDENT_EP_DAYS_TYPE_ID = :BP_ACC
+IDENT_EP_DAYS_TYPE_ID, ACCOUNT_STRUCTURE_ID = :ACCOUNT_STRUCTURE
+_ID, ROI_DATE = :ROI_DATE, ROI_EXPIRE_DATE = :ROI_EXPIRE_DATE, W
+ORKED_FULLORPARTIAL_ON_DOA = :WORKED_FULLORPARTIAL_ON_DOA, INTAK
+E_METHOD = :INTAKE_METHOD, SUBSTANCE_ABUSE_REVIEW_DATE = :SUBSTA
+NCE_ABUSE_REVIEW_DATE, MENTAL_NERVOUS_REVIEW_DATE = :MENTAL_NERV
+OUS_REVIEW_DATE, SUPPLEMENTAL_FLAG = :SUPPLEMENTAL_FLAG, VACATIO
+N_FLAG = :VACATION_FLAG, LIFE_UNIT_OPTION = :LIFE_UNIT_OPTION, P
+REV_CLAIM_NUMBER = :PREV_CLAIM_NUMBER, ROI_REVOKED_DATE = :ROI_R
+EVOKED_DATE, PREV_CLAIM_NUMBER2 = :PREV_CLAIM_NUMBER2, BHU_AUTH_
+FROM_DATE = :BHU_AUTH_FROM_DATE, BHU_AUTH_TO_DATE = :BHU_AUTH_TO
+_DATE, MAINTENANCE_REVIEW_ID = :MAINTENANCE_REVIEW_ID, PACKET_RC
+VD_DATE = :PACKET_RCVD_DATE, BP_VDP_AGE_CALC_EVENT = :BP_VDP_AGE
+_CALC_EVENT, CLIENT_FORM1_STATUS_ID = :CLIENT_FORM1_STATUS_ID, C
+LIENT_FORM1_STATUS_DATE = :CLIENT_FORM1_STATUS_DATE, CLIENT_FORM
+2_STATUS_ID = :CLIENT_FORM2_STATUS_ID, CLIENT_FORM2_STATUS_DATE
+= :CLIENT_FORM2_STATUS_DATE, CLIENT_FORM3_STATUS_ID = :CLIENT_FO
+RM3_STATUS_ID, CLIENT_FORM3_STATUS_DATE = :CLIENT_FORM3_STATUS_D
+ATE, BP_ROLLING_START_EVENT_ID = :BP_ROLLING_START_EVENT_ID, BP_
+ROLLING_DIRECTION_ID = :BP_ROLLING_DIRECTION_ID WHERE CLAIM_ID =
+ :CLAIM_ID
+
+92 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+1518030763 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT     5865948       3976     322253
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+
+32 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+
+8 rows selected.
+
+Filter Predicates
+
+no rows selected
+
+SQL> 
+ADDWEB22--Server
+ 
+**********************************************************************************************************
+
+07/15/2008 2:35
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        1910062      67843      85661
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+
+*************************************************************************************************************
+07/18/2008 9:20 AM
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        4867592     169905     223305
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+SQL> 
+
+
+***********************************************************************************************************
+07/28/2008 8:20 AM
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_TASK_INSTANCE SET TASK_ID = :TASK_ID, SCRIPT_INSTANCE_I
+D = :SCRIPT_INSTANCE_ID, CREATOR = :CREATOR, OWNER = :OWNER, ASS
+IGNEE = :ASSIGNEE, STATUS = :STATUS, REQUEST_ID = :REQUEST_ID, L
+EAVE_ID = :LEAVE_ID, EMPLOYEE_ID = :EMPLOYEE_ID, PARENT_TASK_ID
+= :PARENT_TASK_ID, DUE_DATE = :DUE_DATE, COMPLETE_DATE = :COMPLE
+TE_DATE, OFFSET = :OFFSET, CREATE_USER_ID = :CREATE_USER_ID, EDI
+T_USER_ID = :EDIT_USER_ID, CREATE_DATE = :CREATE_DATE, EDIT_DATE
+ = :EDIT_DATE, CLAIM_TYPE = :CLAIM_TYPE, CLAIM_NUMBER = :CLAIM_N
+UMBER, ASSIGNMENT_DATE = :ASSIGNMENT_DATE, CALC_DUE_DATE = :CALC
+_DUE_DATE WHERE TASK_INSTANCE_ID = :TASK_INSTANCE_ID
+
+10 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+4195918283 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT     1207364       5761      21869
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_TASK_INSTANCE)  MODE=ANALYZED
+         3
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.PK_T_TASK_INSTANCE)  MODE=ANALYZED
+         2
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_TASK_INSTANCE"."TASK_INSTANCE_ID"=:TASK_INSTANCE_ID
+
+Filter Predicates
+
+no rows selected
+
+SQL>
+
+
+***************************************************************************************************************************************
+07/28/2008 2:50 PM
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT     1296036      53685      47487
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+SQL>  
+
+
+**********************************************************************************************************
+
+11:30 AM 07/29/2008
+
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT     2081549      81291      95331
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+SQL>
+
+
+*********************************************************************************************************
+
+08/04 11:20 AM
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT      507913      20893      39033
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+
+********************************************************************************************************************
+
+04:04 PM 8/04
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_DIS_CLAIM SET EMPLOYEE_ID = :EMPLOYEE_ID, CREATE_USER_I
+D = :CREATE_USER_ID, CREATE_DATE = :CREATE_DATE, EDIT_USER_ID =
+:EDIT_USER_ID, EDIT_DATE = :EDIT_DATE, PRODUCT_ID = :PRODUCT_ID,
+ OWNER_ID = :OWNER_ID, LAST_DAY_WORKED = :LAST_DAY_WORKED, FIRST
+_DAY_ABSENT = :FIRST_DAY_ABSENT, FIRST_TREATMENT_DATE = :FIRST_T
+REATMENT_DATE, DISABILITY_DATE = :DISABILITY_DATE, ACCIDENT_DATE
+ = :ACCIDENT_DATE, OVERRIDE_EP = :OVERRIDE_EP, DATE_OF_LOSS = :D
+ATE_OF_LOSS, WORKERS_COMP_STATUS_ID = :WORKERS_COMP_STATUS_ID, W
+ORKERS_COMP_CARRIER_ID = :WORKERS_COMP_CARRIER_ID, MEDICAL_RELEA
+SE_DATE = :MEDICAL_RELEASE_DATE, REIMBURSE_AGREE_DATE = :REIMBUR
+SE_AGREE_DATE, CLAIM_STATUS_ID = :CLAIM_STATUS_ID, CLAIM_START_D
+ATE = :CLAIM_START_DATE, CLAIM_THRU_DATE = :CLAIM_THRU_DATE, EE_
+PAID_THRU_DATE = :EE_PAID_THRU_DATE, PREFERRED_ADDRESS_ID = :PRE
+FERRED_ADDRESS_ID, FIRST_HOSPITALIZATION_DATE = :FIRST_HOSPITALI
+ZATION_DATE, WORKERS_COMP_DESC = :WORKERS_COMP_DESC, CLIENT_INFO
+RMATION = :CLIENT_INFORMATION, EST_DELIVERY_DATE = :EST_DELIVERY
+_DATE, ACT_DELIVERY_DATE = :ACT_DELIVERY_DATE, PROJECTED_RTW_DAT
+E = :PROJECTED_RTW_DATE, WORK_STATUS_ID = :WORK_STATUS_ID, CALLE
+R_DIAGNOSIS = :CALLER_DIAGNOSIS, SOCIAL_SECURITY_STATUS_ID = :SO
+CIAL_SECURITY_STATUS_ID, BENEFIT_DURATION = :BENEFIT_DURATION, B
+ENEFIT_BEGIN_DATE = :BENEFIT_BEGIN_DATE, BENEFIT_THRU_DATE = :BE
+NEFIT_THRU_DATE, ELIMINATION_PERIOD = :ELIMINATION_PERIOD, BP_SI
+CKNESS_DURATION = :BP_SICKNESS_DURATION, BP_ACCIDENT_DURATION =
+:BP_ACCIDENT_DURATION, BP_SICKNESS_EP = :BP_SICKNESS_EP, BP_ACCI
+DENT_EP = :BP_ACCIDENT_EP, BP_START_TIME_EVENT_ID = :BP_START_TI
+ME_EVENT_ID, BP_FIRST_DAY_HOSP_COVERAGE_ID = :BP_FIRST_DAY_HOSP_
+COVERAGE_ID, BP_BENEFITS_START_AFTER = :BP_BENEFITS_START_AFTER,
+ DAYS_APPROVED = :DAYS_APPROVED, OTHER_DIAGNOSIS = :OTHER_DIAGNO
+SIS, WORKERS_COMP_TYPE = :WORKERS_COMP_TYPE, WORKERS_COMP_END_DA
+TE = :WORKERS_COMP_END_DATE, PHYSICAL_REQUIREMENTS_ID = :PHYSICA
+L_REQUIREMENTS_ID, ACCIDENT_ID = :ACCIDENT_ID, WORK_RELATED_ID =
+ :WORK_RELATED_ID, MEDICAL_RELEASE_ID = :MEDICAL_RELEASE_ID, THI
+RD_PARTY_SUBRO_ID = :THIRD_PARTY_SUBRO_ID, HOSPITAL_ID = :HOSPIT
+AL_ID, VERSION_ID = :VERSION_ID, SVP_LEVEL_ID = :SVP_LEVEL_ID, D
+IS_CAT_ID = :DIS_CAT_ID, ACT_RTW_DATE = :ACT_RTW_DATE, PS_PROCES
+S_STATUS_ID_SALARYCHG = :PS_PROCESS_STATUS_ID_SALARYCHG, FMLA_RE
+QUEST = :FMLA_REQUEST, PS_PROCESS_STATUS_ID_OFFST_DED = :PS_PROC
+ESS_STATUS_ID_OFFST_DED, WORKERS_COMP_CLAIM = :WORKERS_COMP_CLAI
+M, CLAIM_ID_STAT = :CLAIM_ID_STAT, CLAIM_ID_LTD = :CLAIM_ID_LTD,
+ EP_TYPE_ID = :EP_TYPE_ID, THRESHOLD_TYPE_ID = :THRESHOLD_TYPE_I
+D, BP_DURATION_FROM_EVENT_ID = :BP_DURATION_FROM_EVENT_ID, LAST_
+STATUS_CHANGE_DATE = :LAST_STATUS_CHANGE_DATE, REVIEW_STATUS_ID
+= :REVIEW_STATUS_ID, REVIEW_DATE = :REVIEW_DATE, MANAGEMENT_END_
+DATE = :MANAGEMENT_END_DATE, CLAIM_ID_STD = :CLAIM_ID_STD, BP_DU
+RTN_TO_AGE_ID = :BP_DURTN_TO_AGE_ID, BP_VDP_DURTN_END_EVENT_ID =
+ :BP_VDP_DURTN_END_EVENT_ID, BP_MAX_AGE = :BP_MAX_AGE, BP_MAX_DU
+RATION = :BP_MAX_DURATION, RTW_DAYS = :RTW_DAYS, BP_DURATION_QUA
+LIFER_ID = :BP_DURATION_QUALIFER_ID, TRANSITION_DATE = :TRANSITI
+ON_DATE, ACTIVE_PROVIDER_ID = :ACTIVE_PROVIDER_ID, TOTAL_DAYS_AP
+PROVED = :TOTAL_DAYS_APPROVED, TAKEOVER_ID = :TAKEOVER_ID, REASO
+N_ID = :REASON_ID, CONTINUITY_ID = :CONTINUITY_ID, RELATED_PREG_
+ID = :RELATED_PREG_ID, BP_RETRO_ACCIDENT_EP = :BP_RETRO_ACCIDENT
+_EP, BP_RETRO_SICKNESS_EP = :BP_RETRO_SICKNESS_EP, BP_RETRO_EP_T
+YPE_ID = :BP_RETRO_EP_TYPE_ID, BP_RETRO_TRIGGER_EVENT_ID = :BP_R
+ETRO_TRIGGER_EVENT_ID, BP_RETRO_TRIGGER_TYPE_ID = :BP_RETRO_TRIG
+GER_TYPE_ID, BP_RETRO_TRIGGER_QTY = :BP_RETRO_TRIGGER_QTY, BP_PH
+YSICAL_NO_COUNT_FLAG = :BP_PHYSICAL_NO_COUNT_FLAG, BP_HOURLY_NO_
+COUNT_FLAG = :BP_HOURLY_NO_COUNT_FLAG, BP_ROLLING_DURTN_QTY = :B
+P_ROLLING_DURTN_QTY, BP_ROLLING_DURTN_TYPE_ID = :BP_ROLLING_DURT
+N_TYPE_ID, OVERRIDE_DOD_FLAG = :OVERRIDE_DOD_FLAG, BP_DURTN_TYPE
+_ID = :BP_DURTN_TYPE_ID, BP_MATERITY_PCT = :BP_MATERITY_PCT, BP_
+MATERITY_PCT_DURN_QTY = :BP_MATERITY_PCT_DURN_QTY, BP_MATERNITY_
+PCT_DURN_TYPE_ID = :BP_MATERNITY_PCT_DURN_TYPE_ID, SB_DURTN_QTY
+= :SB_DURTN_QTY, SB_DURTN_TYPE_ID = :SB_DURTN_TYPE_ID, SB_DURTN_
+DOD = :SB_DURTN_DOD, BP_MEDICAL_MNGT_FLAG = :BP_MEDICAL_MNGT_FLA
+G, BP_ROLLING_DURTN_COUNT = :BP_ROLLING_DURTN_COUNT, ADD_EE_FLAG
+ = :ADD_EE_FLAG, STATUTORY_FLAG = :STATUTORY_FLAG, SHIVA_HCC_CAS
+E_NUMBER = :SHIVA_HCC_CASE_NUMBER, UNION_1 = :UNION_1, UNION_2 =
+ :UNION_2, UNION_3 = :UNION_3, UNION_4 = :UNION_4, UNION_5 = :UN
+ION_5, UNION_6 = :UNION_6, UNION_7 = :UNION_7, UNION_8 = :UNION_
+8, DIVISION_ID = :DIVISION_ID, BP_SICKNESS_EP_DAYS_TYPE_ID = :BP
+_SICKNESS_EP_DAYS_TYPE_ID, BP_ACCIDENT_EP_DAYS_TYPE_ID = :BP_ACC
+IDENT_EP_DAYS_TYPE_ID, ACCOUNT_STRUCTURE_ID = :ACCOUNT_STRUCTURE
+_ID, ROI_DATE = :ROI_DATE, ROI_EXPIRE_DATE = :ROI_EXPIRE_DATE, W
+ORKED_FULLORPARTIAL_ON_DOA = :WORKED_FULLORPARTIAL_ON_DOA, INTAK
+E_METHOD = :INTAKE_METHOD, SUBSTANCE_ABUSE_REVIEW_DATE = :SUBSTA
+NCE_ABUSE_REVIEW_DATE, MENTAL_NERVOUS_REVIEW_DATE = :MENTAL_NERV
+OUS_REVIEW_DATE, SUPPLEMENTAL_FLAG = :SUPPLEMENTAL_FLAG, VACATIO
+N_FLAG = :VACATION_FLAG, LIFE_UNIT_OPTION = :LIFE_UNIT_OPTION, P
+REV_CLAIM_NUMBER = :PREV_CLAIM_NUMBER, ROI_REVOKED_DATE = :ROI_R
+EVOKED_DATE, PREV_CLAIM_NUMBER2 = :PREV_CLAIM_NUMBER2, BHU_AUTH_
+FROM_DATE = :BHU_AUTH_FROM_DATE, BHU_AUTH_TO_DATE = :BHU_AUTH_TO
+_DATE, MAINTENANCE_REVIEW_ID = :MAINTENANCE_REVIEW_ID, PACKET_RC
+VD_DATE = :PACKET_RCVD_DATE, BP_VDP_AGE_CALC_EVENT = :BP_VDP_AGE
+_CALC_EVENT, CLIENT_FORM1_STATUS_ID = :CLIENT_FORM1_STATUS_ID, C
+LIENT_FORM1_STATUS_DATE = :CLIENT_FORM1_STATUS_DATE, CLIENT_FORM
+2_STATUS_ID = :CLIENT_FORM2_STATUS_ID, CLIENT_FORM2_STATUS_DATE
+= :CLIENT_FORM2_STATUS_DATE, CLIENT_FORM3_STATUS_ID = :CLIENT_FO
+RM3_STATUS_ID, CLIENT_FORM3_STATUS_DATE = :CLIENT_FORM3_STATUS_D
+ATE, BP_ROLLING_START_EVENT_ID = :BP_ROLLING_START_EVENT_ID, BP_
+ROLLING_DIRECTION_ID = :BP_ROLLING_DIRECTION_ID WHERE CLAIM_ID =
+ :CLAIM_ID
+
+92 rows selected.
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+1518030763 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT     9075082       6750     761341
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         1          0
+  UPDATE
+
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)  MODE=ANALYZED
+         3
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.SYS_C002729)  MODE=ANALYZED
+         2
+
+8 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+         3
+"S_DIS_CLAIM"."CLAIM_ID"=:CLAIM_ID
+
+Filter Predicates
+
+no rows selected
+
+SQL> 
+
+*****************************************************************************************************************************
+
+08/04 04:50 PM
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_TASK_INSTANCE SET TASK_ID = :TASK_ID, SCRIPT_INSTANCE_I
+D = :SCRIPT_INSTANCE_ID, CREATOR = :CREATOR, OWNER = :OWNER, ASS
+IGNEE = :ASSIGNEE, STATUS = :STATUS, REQUEST_ID = :REQUEST_ID, L
+EAVE_ID = :LEAVE_ID, EMPLOYEE_ID = :EMPLOYEE_ID, PARENT_TASK_ID
+= :PARENT_TASK_ID, DUE_DATE = :DUE_DATE, COMPLETE_DATE = :COMPLE
+TE_DATE, OFFSET = :OFFSET, CREATE_USER_ID = :CREATE_USER_ID, EDI
+T_USER_ID = :EDIT_USER_ID, CREATE_DATE = :CREATE_DATE, EDIT_DATE
+ = :EDIT_DATE, CLAIM_TYPE = :CLAIM_TYPE, CLAIM_NUMBER = :CLAIM_N
+UMBER, ASSIGNMENT_DATE = :ASSIGNMENT_DATE, CALC_DUE_DATE = :CALC
+_DUE_DATE WHERE TASK_INSTANCE_ID = :TASK_INSTANCE_ID
+
+10 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+4195918283 w3wp.exe
+
+MULTIPLE CHILDREN PRESENT    14630285      68929     268429
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         3
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_TASK_INSTANCE)  MODE=ANALYZED
+         3
+         3          2
+      INDEX UNIQUE SCAN (WKAB10.PK_T_TASK_INSTANCE)  MODE=ANALYZED
+         2
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_TASK_INSTANCE"."TASK_INSTANCE_ID"=:TASK_INSTANCE_ID
+
+Filter Predicates
+
+no rows selected
+
+SQL> ADDWEB22 and PLAWEB18
+
+SQL>  
+
+
+****************************************************************************************************************
+
+09/16/2008 11:10 AM
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        1573489      54240      36396
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+SQL> 
+
+
+
+*************************************************************************************************************
+09/16/2008 11:10 AM
+
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 4173548206
+
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_ABSENCE_SEGMENT SET LAST_DAY_WORKED = :B2 WHERE LEAVE_I
+D = :B1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+4173548206 w3wp.exe
+
+CHOOSE                         279365       1473      28298
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+
+
+******************************************************************************************************************
+09/17/2008 9:50 AM
+
+SQL_TEXT
+----------------------------------------------------------------
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+ 506402698 w3wp.exe
+
+CHOOSE                        2409126      80731      54855
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+DELETE STATEMENT  MODE=CHOOSE
+         4
+         1          0
+  DELETE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_REQUEST_ACTION_REASON)  MODE=ANALYZED
+         4
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_REQACTRSN2REQACT)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         3
+"S_REQUEST_ACTION_REASON"."REQUEST_ACTION_ID"=:B1
+
+Filter Predicates
+
+no rows selected
+
+*******************************************************************************************
+
+09/17/2008 10:08 AM
+SQL_TEXT
+----------------------------------------------------------------
+UPDATE S_ABSENCE_SEGMENT SET LAST_DAY_WORKED = :B2 WHERE LEAVE_I
+D = :B1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION
+----------------------------------------------------------------
+OPTIMIZER_MODE            BUFFER_GETS EXECUTIONS DISK_READS
+------------------------- ----------- ---------- ----------
+4173548206 w3wp.exe
+
+CHOOSE                         491231       2657      45395
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+UPDATE STATEMENT  MODE=CHOOSE
+         6
+         1          0
+  UPDATE
+
+         2          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_ABSENCE_SEGMENT)  MODE=ANALYZED
+         6
+         3          2
+      INDEX RANGE SCAN (WKAB10.FK_ABSSEG2LEAVE)  MODE=ANALYZED
+         3
+
+Access Predicates
+
+
+
+12/01/2008
+
+UPDATE S_LEAVE L SET L.EST_DELIVERY_DATE = :B3, L.ACTUAL_DELIVERY_DATE = :B2, L.DISABILITY_DATE
+= :B1 
+WHERE L.LEAVE_ID = (
+SELECT LEAVE_ID
+FROM S_REQUEST 
+WHERE REQUEST_ID = :B4 )
+
+and 
+
+DELETE 
+FROM S_SECURITY 
+WHERE USER_ID = :Parm0
+
+
+11/30/2009
+
+QL_TEXT
+----------------------------------------------------------------
+WITH TTYPE AS ( SELECT DISTINCT S_GE.GROUP_ID FROM S_COMPANY_ROL
+E_MATRIX S_CRM, S_GROUP_EMPLOYEE S_GE, S_COMPANY_ROLE S_CR, S_EM
+PLOYEE E WHERE S_GE.EMPLOYEE_ID = :B2 AND S_GE.EMPLOYEE_ID = E.E
+MPLOYEE_ID AND S_CR.COMPANY_ID = E.COMPANY_ID AND S_GE.ROLE_ID =
+ S_CR.FILE_ROLE_CODE AND S_CR.COMPANY_ROLE_ID = S_CRM.COMPANY_RO
+LE_ID AND S_CR.PRIVILEGED_ROLE = 'Y' AND S_CRM.TEAM_RIGHT_TYPES_
+ID = :B1 ) SELECT * FROM ( SELECT ROWNUM R, LEAVE_ID, CONFIRMATI
+ON_NUMBER, PRODUCT, COMPANY_NAME, EMPLOYEE_ID, EMP_ID, LAST_NAME
+, FIRST_NAME, EMP_STATUS_CODE, TERMINATION_DATE FROM ( SELECT ''
+ AS LEAVE_ID, '' AS CONFIRMATION_NUMBER, '' AS PRODUCT, '' AS CO
+MPANY_NAME, E.EMPLOYEE_ID, E.EMP_ID, P.LAST_NAME, P.FIRST_NAME,
+DECODE(E.EMP_STATUS_CODE,'T','Resigned','A','Active','I','Inacti
+ve','L','Leave','R','Retired','D','Deceased') AS EMP_STATUS_CODE
+, E.TERMINATION_DATE FROM S_EMPLOYEE E, S_PERSON P WHERE P.PERSO
+N_ID = E.PERSON_ID AND P.FIRST_NAME LIKE :B4 AND P.LAST_NAME LIK
+E :B3 AND E.GROUP_ID IN ( SELECT DISTINCT GROUP_ID FROM S_GROUP
+G START WITH GROUP_ID IN ( SELECT GROUP_ID FROM TTYPE ) CONNECT
+BY PARENT_GROUP_ID = PRIOR GROUP_ID ) ORDER BY P.LAST_NAME, P.FI
+RST_NAME ) ) WHERE R >= :B6 AND R <= :B5
+
+19 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION                                                           OPTIMIZER_
+---------------------------------------------------------------- ----------
+BUFFER_GETS EXECUTIONS DISK_READS
+----------- ---------- ----------
+4238385696 w3wp.exe
+                                                                 ALL_ROWS
+   57538137         67     102320
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+SELECT STATEMENT  MODE=ALL_ROWS
+        13
+         1          0
+  FILTER
+
+         2          1
+    VIEW
+        13
+         3          2
+      COUNT
+
+         4          3
+        VIEW
+        13
+         5          4
+          NESTED LOOPS
+
+         6          5
+            NESTED LOOPS
+        13
+         7          6
+              MERGE JOIN CARTESIAN
+        10
+         8          7
+                TABLE ACCESS BY INDEX ROWID (WKAB10.T_PERSON)
+         4
+         9          8
+                  INDEX RANGE SCAN (WKAB10.T_PERSON_IDX_002)
+         3
+        10          7
+                BUFFER SORT
+         6
+        11         10
+                  VIEW  (.VW_NSO_1)
+         6
+        12         11
+                    SORT UNIQUE
+
+        13         12
+                      CONNECT BY WITH FILTERING
+
+        14         13
+                        TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+
+        15         14
+                          NESTED LOOPS
+        16
+        16         15
+                            NESTED LOOPS
+        14
+        17         16
+                              NESTED LOOPS
+        13
+        18         17
+                                NESTED LOOPS
+         7
+        19         18
+                                  INDEX RANGE SCAN (WKAB10.GROUP_EMPLOYEE_IDX1)
+         3
+        20         18
+                                  INDEX RANGE SCAN (WKAB10.T_EMPLOYEE_IDX3)
+         2
+        21         17
+                                TABLE ACCESS BY INDEX ROWID (WKAB10.T_COMPANY_RO
+LE)
+         2
+        22         21
+                                  INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_IX)
+         1
+        23         16
+                              INDEX UNIQUE SCAN (WKAB10.PK_GROUP)
+         1
+        24         15
+                            INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_MATRIX_IDX03
+)
+         2
+        25         13
+                        NESTED LOOPS
+
+        26         25
+                          CONNECT BY PUMP
+
+        27         25
+                          TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+         6
+        28         27
+                            INDEX RANGE SCAN (WKAB10.FK_GROUP2PARENT_GROUP)
+         3
+        29          6
+              INDEX RANGE SCAN (WKAB10.FK_EMPLOYEE2PERSON)
+         2
+        30          5
+            TABLE ACCESS BY INDEX ROWID (WKAB10.T_EMPLOYEE)
+         3
+
+31 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         9
+"P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4
+        13
+"PARENT_GROUP_ID"=PRIOR NULL
+        19
+"S_GE"."EMPLOYEE_ID"=:B2
+        20
+"S_GE"."EMPLOYEE_ID"="E"."EMPLOYEE_ID"
+        22
+"S_CR"."COMPANY_ID"="E"."COMPANY_ID" AND "S_GE"."ROLE_ID"="S_CR"."FILE_ROLE_CODE
+"
+        23
+"GROUP_ID"="S_GE"."GROUP_ID"
+        24
+"S_CRM"."TEAM_RIGHT_TYPES_ID"=:B1 AND "S_CR"."COMPANY_ROLE_ID"="S_CRM"."COMPANY_
+ROLE_ID"
+        28
+"PARENT_GROUP_ID"=PRIOR NULL
+        29
+"P"."PERSON_ID"="E"."PERSON_ID"
+
+9 rows selected.
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+         1
+:B6<=:B5
+         2
+("R"<=:B5 AND "R">=:B6)
+         9
+("P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4)
+        21
+"S_CR"."PRIVILEGED_ROLE"='Y'
+        30
+"E"."GROUP_ID"="GROUP_ID"
+
+SQL> 
+
+
+***** 12/18/2009
+
+PIECE	SQL_TEXT	   
+0	DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B	   
+1	1	   
+		
+
+SQL_TEXT
+WITH TTYPE AS ( SELECT DISTINCT S_GE.GROUP_ID FROM S_COMPANY_ROL
+E_MATRIX S_CRM, S_GROUP_EMPLOYEE S_GE, S_COMPANY_ROLE S_CR, S_EM
+PLOYEE E WHERE S_GE.EMPLOYEE_ID = :B2 AND S_GE.EMPLOYEE_ID = E.E
+MPLOYEE_ID AND S_CR.COMPANY_ID = E.COMPANY_ID AND S_GE.ROLE_ID =
+ S_CR.FILE_ROLE_CODE AND S_CR.COMPANY_ROLE_ID = S_CRM.COMPANY_RO
+LE_ID AND S_CR.PRIVILEGED_ROLE = 'Y' AND S_CRM.TEAM_RIGHT_TYPES_
+ID = :B1 ) SELECT * FROM ( SELECT ROWNUM R, LEAVE_ID, CONFIRMATI
+ON_NUMBER, PRODUCT, COMPANY_NAME, EMPLOYEE_ID, EMP_ID, LAST_NAME
+, FIRST_NAME, EMP_STATUS_CODE, TERMINATION_DATE FROM ( SELECT ''
+ AS LEAVE_ID, '' AS CONFIRMATION_NUMBER, '' AS PRODUCT, '' AS CO
+MPANY_NAME, E.EMPLOYEE_ID, E.EMP_ID, P.LAST_NAME, P.FIRST_NAME, 
+DECODE(E.EMP_STATUS_CODE,'T','Resigned','A','Active','I','Inacti
+ve','L','Leave','R','Retired','D','Deceased') AS EMP_STATUS_CODE
+, E.TERMINATION_DATE FROM S_EMPLOYEE E, S_PERSON P WHERE P.PERSO
+N_ID = E.PERSON_ID AND P.FIRST_NAME LIKE :B4 AND P.LAST_NAME LIK
+E :B3 AND E.GROUP_ID IN ( SELECT DISTINCT GROUP_ID FROM S_GROUP 
+G START WITH GROUP_ID IN ( SELECT GROUP_ID FROM TTYPE ) CONNECT 
+BY PARENT_GROUP_ID = PRIOR GROUP_ID ) ORDER BY P.LAST_NAME, P.FI
+RST_NAME ) ) WHERE R >= :B6 AND R <= :B5 
+
+
+**** 12/22/2009 (11:15 AM - 11:50 AM)
+
+
+
+SQL_TEXT
+DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B
+1
+
+
+
+***** DR02 Mar 25 2010
+
+SQL_TEXT
+SELECT CODE_VALUE
+ FROM WKAB_LOOKUP_MV L ,
+          WKAB_PLAN_MV P
+      WHERE P.VERSION_ID = :B1 AND
+         LOOKUP_ID = P.STATUTORY_STATE_CODE AND ROWNUM = 1 
+
+SQL_TEXT
+----------------------------------------------------------------
+SELECT CODE_VALUE FROM WKAB_LOOKUP_MV L , WKAB_PLAN_MV P WHERE P
+.VERSION_ID = :B1 AND LOOKUP_ID = P.STATUTORY_STATE_CODE AND ROW
+NUM = 1
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION                                                           OPTIMIZER_
+---------------------------------------------------------------- ----------
+BUFFER_GETS EXECUTIONS DISK_READS
+----------- ---------- ----------
+2176029114 PL/SQL Developer
+SQL Window - New                                                 CHOOSE
+ 1770422637      97571      10199
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+SELECT STATEMENT  MODE=CHOOSE
+      1300
+         1          0
+  COUNT STOPKEY
+
+         2          1
+    NESTED LOOPS
+      1300
+         3          2
+      TABLE ACCESS FULL (DRWKAB.WKAB_PLAN_MV)
+      1163
+         4          2
+      TABLE ACCESS FULL (DRWKAB.WKAB_LOOKUP_MV)
+        11
+
+Access Predicates
+
+no rows selected
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+         1
+ROWNUM=1
+         3
+("P"."VERSION_ID"=:B1 AND "P"."STATUTORY_STATE_CODE" IS NOT NULL)
+         4
+"LOOKUP_ID"="P"."STATUTORY_STATE_CODE"
+
+SQL> 
+
+
+**************** 03/30/2010  3:30 PM (blocking)
+
+PIECE	SQL_TEXT	   
+0	DELETE FROM S_REQUEST_ACTION_REASON WHERE REQUEST_ACTION_ID = :B	
+
+
+
+***************** 04/02/2010 11:30 AM Long Running query
+
+
+
+PIECE	SQL_TEXT	   
+0	WITH TTYPE AS ( SELECT DISTINCT S_GE.GROUP_ID FROM S_COMPANY_ROL	   
+1	E_MATRIX S_CRM, S_GROUP_EMPLOYEE S_GE, S_COMPANY_ROLE S_CR, S_EM	   
+2	PLOYEE E WHERE S_GE.EMPLOYEE_ID = :B2 AND S_GE.EMPLOYEE_ID = E.E	   
+3	MPLOYEE_ID AND S_CR.COMPANY_ID = E.COMPANY_ID AND S_GE.ROLE_ID =	   
+4	 S_CR.FILE_ROLE_CODE AND S_CR.COMPANY_ROLE_ID = S_CRM.COMPANY_RO	   
+5	LE_ID AND S_CR.PRIVILEGED_ROLE = 'Y' AND S_CRM.TEAM_RIGHT_TYPES_	   
+6	ID = :B1 ) SELECT * FROM ( SELECT ROWNUM R, LEAVE_ID, CONFIRMATI	   
+7	ON_NUMBER, PRODUCT, COMPANY_NAME, EMPLOYEE_ID, EMP_ID, LAST_NAME	   
+8	, FIRST_NAME, EMP_STATUS_CODE, TERMINATION_DATE FROM ( SELECT ''	   
+9	 AS LEAVE_ID, '' AS CONFIRMATION_NUMBER, '' AS PRODUCT, '' AS CO	   
+10	MPANY_NAME, E.EMPLOYEE_ID, E.EMP_ID, P.LAST_NAME, P.FIRST_NAME, 	   
+11	DECODE(E.EMP_STATUS_CODE,'T','Resigned','A','Active','I','Inacti	   
+12	ve','L','Leave','R','Retired','D','Deceased') AS EMP_STATUS_CODE	   
+13	, E.TERMINATION_DATE FROM S_EMPLOYEE E, S_PERSON P WHERE P.PERSO	   
+14	N_ID = E.PERSON_ID AND P.FIRST_NAME LIKE :B4 AND P.LAST_NAME LIK	   
+15	E :B3 AND E.GROUP_ID IN ( SELECT DISTINCT GROUP_ID FROM S_GROUP 	   
+16	G START WITH GROUP_ID IN ( SELECT GROUP_ID FROM TTYPE ) CONNECT 	   
+17	BY PARENT_GROUP_ID = PRIOR GROUP_ID ) ORDER BY P.LAST_NAME, P.FI	   
+18	RST_NAME ) ) WHERE R >= :B6 AND R <= :B5 
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION                                                           OPTIMIZER_
+---------------------------------------------------------------- ----------
+BUFFER_GETS EXECUTIONS DISK_READS
+----------- ---------- ----------
+4238385696 w3wp.exe
+                                                                 ALL_ROWS
+   58595193         40      39865
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+SELECT STATEMENT  MODE=ALL_ROWS
+        13
+         1          0
+  FILTER
+
+         2          1
+    VIEW
+        13
+         3          2
+      COUNT
+
+         4          3
+        VIEW
+        13
+         5          4
+          NESTED LOOPS
+
+         6          5
+            NESTED LOOPS
+        13
+         7          6
+              MERGE JOIN CARTESIAN
+        10
+         8          7
+                TABLE ACCESS BY INDEX ROWID (WKAB10.T_PERSON)
+         4
+         9          8
+                  INDEX RANGE SCAN (WKAB10.T_PERSON_IDX_002)
+         3
+        10          7
+                BUFFER SORT
+         6
+        11         10
+                  VIEW  (.VW_NSO_1)
+         6
+        12         11
+                    SORT UNIQUE
+
+        13         12
+                      CONNECT BY WITH FILTERING
+
+        14         13
+                        TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+
+        15         14
+                          NESTED LOOPS
+        16
+        16         15
+                            NESTED LOOPS
+        14
+        17         16
+                              NESTED LOOPS
+        13
+        18         17
+                                NESTED LOOPS
+         7
+        19         18
+                                  INDEX RANGE SCAN (WKAB10.GROUP_EMPLOYEE_IDX1)
+         3
+        20         18
+                                  INDEX RANGE SCAN (WKAB10.T_EMPLOYEE_IDX3)
+         2
+        21         17
+                                TABLE ACCESS BY INDEX ROWID (WKAB10.T_COMPANY_RO
+LE)
+         2
+        22         21
+                                  INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_IX)
+         1
+        23         16
+                              INDEX UNIQUE SCAN (WKAB10.PK_GROUP)
+         1
+        24         15
+                            INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_MATRIX_IDX03
+)
+         2
+        25         13
+                        NESTED LOOPS
+
+        26         25
+                          CONNECT BY PUMP
+
+        27         25
+                          TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+         6
+        28         27
+                            INDEX RANGE SCAN (WKAB10.FK_GROUP2PARENT_GROUP)
+         3
+        29          6
+              INDEX RANGE SCAN (WKAB10.T_EMPLOYEE_IDX1)
+         2
+        30          5
+            TABLE ACCESS BY INDEX ROWID (WKAB10.T_EMPLOYEE)
+         3
+
+31 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         9
+"P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4
+        13
+"PARENT_GROUP_ID"=PRIOR NULL
+        19
+"S_GE"."EMPLOYEE_ID"=:B2
+        20
+"S_GE"."EMPLOYEE_ID"="E"."EMPLOYEE_ID"
+        22
+"S_CR"."COMPANY_ID"="E"."COMPANY_ID" AND "S_GE"."ROLE_ID"="S_CR"."FILE_ROLE_CODE
+"
+        23
+"GROUP_ID"="S_GE"."GROUP_ID"
+        24
+"S_CRM"."TEAM_RIGHT_TYPES_ID"=:B1 AND "S_CR"."COMPANY_ROLE_ID"="S_CRM"."COMPANY_
+ROLE_ID"
+        28
+"PARENT_GROUP_ID"=PRIOR NULL
+        29
+"P"."PERSON_ID"="E"."PERSON_ID"
+
+9 rows selected.
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+         1
+:B6<=:B5
+         2
+("R"<=:B5 AND "R">=:B6)
+         9
+("P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4)
+        21
+"S_CR"."PRIVILEGED_ROLE"='Y'
+        30
+"E"."GROUP_ID"="GROUP_ID"
+
+SQL> 
+
+
+**************************05/12/2010 1:15 PM
+SQL_TEXT
+WITH TTYPE AS ( SELECT DISTINCT S_GE.GROUP_ID FROM S_COMPANY_ROL
+E_MATRIX S_CRM, S_GROUP_EMPLOYEE S_GE, S_COMPANY_ROLE S_CR, S_EM
+PLOYEE E WHERE S_GE.EMPLOYEE_ID = :B2 AND S_GE.EMPLOYEE_ID = E.E
+MPLOYEE_ID AND S_CR.COMPANY_ID = E.COMPANY_ID AND S_GE.ROLE_ID =
+ S_CR.FILE_ROLE_CODE AND S_CR.COMPANY_ROLE_ID = S_CRM.COMPANY_RO
+LE_ID AND S_CR.PRIVILEGED_ROLE = 'Y' AND S_CRM.TEAM_RIGHT_TYPES_
+ID = :B1 ) SELECT * FROM ( SELECT ROWNUM R, LEAVE_ID, CONFIRMATI
+ON_NUMBER, PRODUCT, COMPANY_NAME, EMPLOYEE_ID, EMP_ID, LAST_NAME
+, FIRST_NAME, EMP_STATUS_CODE, TERMINATION_DATE FROM ( SELECT ''
+ AS LEAVE_ID, '' AS CONFIRMATION_NUMBER, '' AS PRODUCT, '' AS CO
+MPANY_NAME, E.EMPLOYEE_ID, E.EMP_ID, P.LAST_NAME, P.FIRST_NAME, 
+DECODE(E.EMP_STATUS_CODE,'T','Resigned','A','Active','I','Inacti
+ve','L','Leave','R','Retired','D','Deceased') AS EMP_STATUS_CODE
+, E.TERMINATION_DATE FROM S_EMPLOYEE E, S_PERSON P WHERE P.PERSO
+N_ID = E.PERSON_ID AND P.FIRST_NAME LIKE :B4 AND P.LAST_NAME LIK
+E :B3 AND E.GROUP_ID IN ( SELECT DISTINCT GROUP_ID FROM S_GROUP
+G START WITH GROUP_ID IN ( SELECT GROUP_ID FROM TTYPE ) CONNECT 
+BY PARENT_GROUP_ID = PRIOR GROUP_ID ) ORDER BY P.LAST_NAME, P.FI
+RST_NAME ) ) WHERE R >= :B6 AND R <= :B5 
+
+
+************************* Latest MuteX waits SQL
+
+SQL_TEXT
+"select 
+                      CommandID,
+                      C"
+"acheType,
+                      CacheItemKey,
+                  "
+"    CommandTypeID
+                    from 
+                    "
+"(
+                      select
+                       ar.*,
+    "
+"                   ac.cache_command_id CommandID,
+              "
+"         ac.cache_type       CacheType,
+                       a"
+"c.cache_item_key   CacheItemKey,
+                       ac.cache"
+"_command_type_id CommandTypeID
+                      from 
+     "
+"                 (
+                        select
+              "
+"            ci.CACHE_COMMAND_ID,
+                          ci.ca"
+"che_type,
+                          ci.cache_item_key,
+         "
+"                 ci.cache_command_type_id,
+                     "
+"     :Parm0 server_name,
+                          :Parm0   proc"
+"ess_id
+                        from 
+                          s"
+"_cache_command ci
+                        where
+                "
+"          ci.create_date > to_date( :Parm0 , :""SYS_B_0"")
+       "
+"               )ac,
+                      (
+                    "
+"    select 
+                          ccr.*,
+                   "
+"       ccr.cache_response_id completed
+                        f"
+"rom 
+                          s_cache_response ccr
+            "
+"            where
+                          ccr.create_date > to"
+"_date( :Parm0 , :""SYS_B_1"")
+                      ) ar
+         "
+"             where
+                        ar.cache_command_id(+"
+") = ac.cache_command_id and
+                        ar.server_na"
+"me(+)           = ac.server_name           and 
+                "
+"        ar.process_id (+)           = ac.process_id 
+           "
+"         )
+                    where
+                     comple"
+ted is null
+
+
+****************************** 6/22/2010 9:45 AM 
+
+SQL_TEXT
+----------------------------------------------------------------
+SELECT V_CLAIM.LEAVE_ID, '' AS CONFIRMATION_NUMBER, PRODUCT, ''
+AS COMPANY_NAME, S_EMPLOYEE.EMPLOYEE_ID, S_EMPLOYEE.EMP_ID, S_PE
+RSON.LAST_NAME, S_PERSON.FIRST_NAME, DECODE(S_EMPLOYEE.EMP_STATU
+S_CODE,'T','Resigned','A','Active','I','Inactive','L','Leave','R
+','Retired','D','Deceased') AS EMP_STATUS_CODE, S_EMPLOYEE.TERMI
+NATION_DATE
+ FROM S_EMPLOYEE,
+           S_PERSON,
+         (SELECT L.LEAVE_ID AS LEAVE _ID, L.EMPLOYEE_ID, 'FML' AS PRODUCT FROM S_LEAVE L
+         UNION
+        SELECT C.CLAIM_ID AS LEAVE_ID, C.EMPLOYEE_ID, 'DIS' AS PRODUCT FROM S_DIS_CLAIM C, S_DIS_PLAN_VERSION PV
+          WHERE C.VERSION_ID = PV.VERSION_ID 
+                       AND PV.ASO_INSURED_ID = 114001)
+                  V_CLAIM WHERE S_PERSON.PERSON_ID = S_EMPLOYEE.PERSON_ID
+                AND GROUP_ID IN ( SELECT DISTINCT
+                                             GROUP_ID
+                                             FROM S_GROUP G START WITH GROUP_ID IN ( SELECT DISTINCT
+ S_GE.GROUP_ID FROM S_COMPANY_ROLE_MATRIX S_CRM, S_GROUP_EMPLOYE
+E S_GE, S_COMPANY_ROLE S_CR WHERE S_GE.EMPLOYEE_ID = :B2 AND S_G
+E.ROLE_ID = S_CR.FILE_ROLE_CODE AND S_CR.COMPANY_ROLE_ID = S_CRM
+.COMPANY_ROLE_ID AND S_CR.PRIVILEGED_ROLE = 'Y' AND S_CRM.TEAM_R
+IGHT_TYPES_ID = 302 ) CONNECT BY PARENT_GROUP_ID = PRIOR GROUP_I
+D ) AND S_EMPLOYEE.EMPLOYEE_ID = V_CLAIM.EMPLOYEE_ID AND V_CLAIM
+.LEAVE_ID = :B1
+
+19 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION                                                           OPTIMIZER_
+---------------------------------------------------------------- ----------
+BUFFER_GETS EXECUTIONS DISK_READS
+----------- ---------- ----------
+3277099501 w3wp.exe
+                                                                 ALL_ROWS
+    8491539          7       7495
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+SELECT STATEMENT  MODE=ALL_ROWS
+       169
+         0
+SELECT STATEMENT  MODE=ALL_ROWS
+       170
+         1          0
+  NESTED LOOPS
+       169
+         1          0
+  NESTED LOOPS
+       170
+         2          1
+    NESTED LOOPS
+       167
+         2          1
+    NESTED LOOPS
+       168
+         3          2
+      NESTED LOOPS
+        26
+         3          2
+      NESTED LOOPS
+        28
+         4          3
+        VIEW  (.VW_NSO_1)
+         6
+         4          3
+        VIEW  (.VW_NSO_1)
+         6
+         5          4
+          SORT UNIQUE
+
+         5          4
+          SORT UNIQUE
+
+         6          5
+            CONNECT BY WITH FILTERING
+
+         6          5
+            CONNECT BY WITH FILTERING
+
+         7          6
+              TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+
+         7          6
+              TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+
+         8          7
+                HASH JOIN
+       108
+         8          7
+                HASH JOIN
+       108
+         9          8
+                  HASH JOIN
+        49
+         9          8
+                  HASH JOIN
+        49
+        10          9
+                    NESTED LOOPS
+         6
+        10          9
+                    NESTED LOOPS
+         6
+        11         10
+                      INDEX RANGE SCAN (WKAB10.GROUP_EMPLOYEE_IDX1)
+         3
+        11         10
+                      INDEX RANGE SCAN (WKAB10.GROUP_EMPLOYEE_IDX1)
+         3
+        12         10
+                      INDEX UNIQUE SCAN (WKAB10.PK_GROUP)
+         1
+        12         10
+                      INDEX UNIQUE SCAN (WKAB10.PK_GROUP)
+         1
+        13          9
+                    INDEX FAST FULL SCAN (WKAB10.T_COMPANY_ROLE_IX3)
+        41
+        13          9
+                    INDEX FAST FULL SCAN (WKAB10.T_COMPANY_ROLE_IX3)
+        41
+        14          8
+                  INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_MATRIX_IDX03)
+        57
+        14          8
+                  INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_MATRIX_IDX03)
+        57
+        15          6
+              NESTED LOOPS
+
+        15          6
+              NESTED LOOPS
+
+        16         15
+                CONNECT BY PUMP
+
+        16         15
+                CONNECT BY PUMP
+
+        17         15
+                TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+         6
+        17         15
+                TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+         6
+        18         17
+                  INDEX RANGE SCAN (WKAB10.FK_GROUP2PARENT_GROUP)
+         3
+        18         17
+                  INDEX RANGE SCAN (WKAB10.FK_GROUP2PARENT_GROUP)
+         3
+        19          3
+        TABLE ACCESS BY INDEX ROWID (WKAB10.T_EMPLOYEE)
+        12
+        19          3
+        TABLE ACCESS BY INDEX ROWID (WKAB10.T_EMPLOYEE)
+        11
+        20         19
+          INDEX RANGE SCAN (WKAB10.FK_GROUP2EMPLOYEE)
+         2
+        20         19
+          INDEX RANGE SCAN (WKAB10.FK_GROUP2EMPLOYEE)
+         2
+        21          2
+      VIEW
+         4
+        21          2
+      VIEW
+         4
+        22         21
+        SORT UNIQUE
+
+        22         21
+        SORT UNIQUE
+
+        23         22
+          UNION-ALL PARTITION
+
+        23         22
+          UNION-ALL PARTITION
+
+        24         23
+            INDEX RANGE SCAN (WKAB10.T_LEAVE_IDX3)
+         3
+        24         23
+            INDEX RANGE SCAN (WKAB10.T_LEAVE_IDX3)
+         3
+        25         23
+            NESTED LOOPS
+         4
+        25         23
+            NESTED LOOPS
+         4
+        26         25
+              TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)
+         3
+        26         25
+              TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_CLAIM)
+         3
+        27         26
+                INDEX UNIQUE SCAN (WKAB10.SYS_C002729)
+         2
+        27         26
+                INDEX UNIQUE SCAN (WKAB10.SYS_C002729)
+         2
+        28         25
+              TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_PLAN_VERSION)
+         1
+        28         25
+              TABLE ACCESS BY INDEX ROWID (WKAB10.T_DIS_PLAN_VERSION)
+         1
+        29         28
+                INDEX UNIQUE SCAN (WKAB10.SYS_C009606)
+         0
+        29         28
+                INDEX UNIQUE SCAN (WKAB10.SYS_C009606)
+         0
+        30          1
+    INDEX RANGE SCAN (WKAB10.T_PERSON_IDX01)
+         2
+        30          1
+    INDEX RANGE SCAN (WKAB10.T_PERSON_IDX4)
+         2
+
+62 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         6
+"PARENT_GROUP_ID"=PRIOR NULL
+         6
+"PARENT_GROUP_ID"=PRIOR NULL
+         8
+"S_CR"."COMPANY_ROLE_ID"="S_CRM"."COMPANY_ROLE_ID"
+         8
+"S_CR"."COMPANY_ROLE_ID"="S_CRM"."COMPANY_ROLE_ID"
+         9
+"S_GE"."ROLE_ID"="S_CR"."FILE_ROLE_CODE"
+         9
+"S_GE"."ROLE_ID"="S_CR"."FILE_ROLE_CODE"
+        11
+"S_GE"."EMPLOYEE_ID"=:B2
+        11
+"S_GE"."EMPLOYEE_ID"=:B2
+        12
+"GROUP_ID"="S_GE"."GROUP_ID"
+        12
+"GROUP_ID"="S_GE"."GROUP_ID"
+        14
+"S_CRM"."TEAM_RIGHT_TYPES_ID"=302
+        14
+"S_CRM"."TEAM_RIGHT_TYPES_ID"=302
+        18
+"PARENT_GROUP_ID"=PRIOR NULL
+        18
+"PARENT_GROUP_ID"=PRIOR NULL
+        20
+"GROUP_ID"="GROUP_ID"
+        20
+"GROUP_ID"="GROUP_ID"
+        24
+"L"."EMPLOYEE_ID"="S_EMPLOYEE"."EMPLOYEE_ID" AND "L"."LEAVE_ID"=:B1
+        24
+"L"."EMPLOYEE_ID"="S_EMPLOYEE"."EMPLOYEE_ID" AND "L"."LEAVE_ID"=:B1
+        27
+"C"."CLAIM_ID"=:B1
+        27
+"C"."CLAIM_ID"=:B1
+        29
+"C"."VERSION_ID"="PV"."VERSION_ID"
+        29
+"C"."VERSION_ID"="PV"."VERSION_ID"
+        30
+"S_PERSON"."PERSON_ID"="S_EMPLOYEE"."PERSON_ID"
+        30
+"S_PERSON"."PERSON_ID"="S_EMPLOYEE"."PERSON_ID"
+
+24 rows selected.
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+        13
+"S_CR"."PRIVILEGED_ROLE"='Y'
+        13
+"S_CR"."PRIVILEGED_ROLE"='Y'
+        26
+("C"."EMPLOYEE_ID"="S_EMPLOYEE"."EMPLOYEE_ID" AND "C"."VERSION_ID" IS NOT NULL)
+        26
+("C"."EMPLOYEE_ID"="S_EMPLOYEE"."EMPLOYEE_ID" AND "C"."VERSION_ID" IS NOT NULL)
+        28
+"PV"."ASO_INSURED_ID"=114001
+        28
+"PV"."ASO_INSURED_ID"=114001
+
+6 rows selected.
+
+SQL> 
+
+
+*********************** 08/04 4 PM
+
+SQL_TEXT
+WITH TTYPE AS ( SELECT DISTINCT S_GE.GROUP_ID FROM S_COMPANY_ROL
+E_MATRIX S_CRM, S_GROUP_EMPLOYEE S_GE, S_COMPANY_ROLE S_CR, S_EM
+PLOYEE E WHERE S_GE.EMPLOYEE_ID = :B2 AND S_GE.EMPLOYEE_ID = E.E
+MPLOYEE_ID AND S_CR.COMPANY_ID = E.COMPANY_ID AND S_GE.ROLE_ID =
+ S_CR.FILE_ROLE_CODE AND S_CR.COMPANY_ROLE_ID = S_CRM.COMPANY_RO
+LE_ID AND S_CR.PRIVILEGED_ROLE = 'Y' AND S_CRM.TEAM_RIGHT_TYPES_
+ID = :B1 ) SELECT * FROM ( SELECT ROWNUM R, LEAVE_ID, CONFIRMATI
+ON_NUMBER, PRODUCT, COMPANY_NAME, EMPLOYEE_ID, EMP_ID, LAST_NAME
+, FIRST_NAME, EMP_STATUS_CODE, TERMINATION_DATE FROM ( SELECT ''
+ AS LEAVE_ID, '' AS CONFIRMATION_NUMBER, '' AS PRODUCT, '' AS CO
+MPANY_NAME, E.EMPLOYEE_ID, E.EMP_ID, P.LAST_NAME, P.FIRST_NAME, 
+DECODE(E.EMP_STATUS_CODE,'T','Resigned','A','Active','I','Inacti
+ve','L','Leave','R','Retired','D','Deceased') AS EMP_STATUS_CODE
+, E.TERMINATION_DATE FROM S_EMPLOYEE E, S_PERSON P WHERE P.PERSO
+N_ID = E.PERSON_ID AND P.FIRST_NAME LIKE :B4 AND P.LAST_NAME LIK
+E :B3 AND E.GROUP_ID IN ( SELECT DISTINCT GROUP_ID FROM S_GROUP 
+G START WITH GROUP_ID IN ( SELECT GROUP_ID FROM TTYPE ) CONNECT 
+BY PARENT_GROUP_ID = PRIOR GROUP_ID ) ORDER BY P.LAST_NAME, P.FI
+RST_NAME ) ) WHERE R >= :B6 AND R <= :B5 
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION                                                           OPTIMIZER_
+---------------------------------------------------------------- ----------
+BUFFER_GETS EXECUTIONS DISK_READS
+----------- ---------- ----------
+4238385696 w3wp.exe
+                                                                 ALL_ROWS
+  100109238        220    3243965
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+SELECT STATEMENT  MODE=ALL_ROWS
+        13
+         1          0
+  FILTER
+
+         2          1
+    VIEW
+        13
+         3          2
+      COUNT
+
+         4          3
+        VIEW
+        13
+         5          4
+          NESTED LOOPS
+
+         6          5
+            NESTED LOOPS
+        13
+         7          6
+              NESTED LOOPS
+        10
+         8          7
+                TABLE ACCESS BY INDEX ROWID (WKAB10.T_PERSON)
+         4
+         9          8
+                  INDEX RANGE SCAN (WKAB10.T_PERSON_IDX_002)
+         3
+        10          7
+                VIEW  (.VW_NSO_1)
+         6
+        11         10
+                  SORT UNIQUE
+
+        12         11
+                    CONNECT BY WITH FILTERING
+
+        13         12
+                      TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+
+        14         13
+                        NESTED LOOPS
+        16
+        15         14
+                          NESTED LOOPS
+        14
+        16         15
+                            NESTED LOOPS
+        13
+        17         16
+                              NESTED LOOPS
+         7
+        18         17
+                                INDEX RANGE SCAN (WKAB10.GROUP_EMPLOYEE_IDX1)
+         3
+        19         17
+                                INDEX RANGE SCAN (WKAB10.T_EMPLOYEE_IDX3)
+         2
+        20         16
+                              TABLE ACCESS BY INDEX ROWID (WKAB10.T_COMPANY_ROLE
+)
+         2
+        21         20
+                                INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_IX)
+         1
+        22         15
+                            INDEX UNIQUE SCAN (WKAB10.PK_GROUP)
+         1
+        23         14
+                          INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_MATRIX_IDX03)
+         2
+        24         12
+                      NESTED LOOPS
+
+        25         24
+                        CONNECT BY PUMP
+
+        26         24
+                        TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+         6
+        27         26
+                          INDEX RANGE SCAN (WKAB10.FK_GROUP2PARENT_GROUP)
+         3
+        28          6
+              INDEX RANGE SCAN (WKAB10.FK_EMPLOYEE2PERSON)
+         2
+        29          5
+            TABLE ACCESS BY INDEX ROWID (WKAB10.T_EMPLOYEE)
+         3
+
+30 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         9
+"P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4
+        12
+"PARENT_GROUP_ID"=PRIOR NULL
+        18
+"S_GE"."EMPLOYEE_ID"=:B2
+        19
+"S_GE"."EMPLOYEE_ID"="E"."EMPLOYEE_ID"
+        21
+"S_CR"."COMPANY_ID"="E"."COMPANY_ID" AND "S_GE"."ROLE_ID"="S_CR"."FILE_ROLE_CODE
+"
+        22
+"GROUP_ID"="S_GE"."GROUP_ID"
+        23
+"S_CRM"."TEAM_RIGHT_TYPES_ID"=:B1 AND "S_CR"."COMPANY_ROLE_ID"="S_CRM"."COMPANY_
+ROLE_ID"
+        27
+"PARENT_GROUP_ID"=PRIOR NULL
+        28
+"P"."PERSON_ID"="E"."PERSON_ID"
+
+9 rows selected.
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+         1
+:B6<=:B5
+         2
+("R"<=:B5 AND "R">=:B6)
+         9
+("P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4)
+        20
+"S_CR"."PRIVILEGED_ROLE"='Y'
+        29
+"E"."GROUP_ID"="GROUP_ID"
+
+SQL> 
+
+
+**********************************************************************************
+
+SQL*Plus: Release 10.2.0.4.0 - Production on Wed Nov 17 14:04:09 2010
+
+Copyright (c) 1982, 2007, Oracle.  All Rights Reserved.
+
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.1.0.7.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> @C:\Data\Misc\SQL\get_sql_by_hash.sql
+Enter value for what_hash: 4238385696
+
+SQL_TEXT
+----------------------------------------------------------------
+WITH TTYPE AS ( SELECT DISTINCT S_GE.GROUP_ID FROM S_COMPANY_ROL
+E_MATRIX S_CRM, S_GROUP_EMPLOYEE S_GE, S_COMPANY_ROLE S_CR, S_EM
+PLOYEE E WHERE S_GE.EMPLOYEE_ID = :B2 AND S_GE.EMPLOYEE_ID = E.E
+MPLOYEE_ID AND S_CR.COMPANY_ID = E.COMPANY_ID AND S_GE.ROLE_ID =
+ S_CR.FILE_ROLE_CODE AND S_CR.COMPANY_ROLE_ID = S_CRM.COMPANY_RO
+LE_ID AND S_CR.PRIVILEGED_ROLE = 'Y' AND S_CRM.TEAM_RIGHT_TYPES_
+ID = :B1 ) SELECT * FROM ( SELECT ROWNUM R, LEAVE_ID, CONFIRMATI
+ON_NUMBER, PRODUCT, COMPANY_NAME, EMPLOYEE_ID, EMP_ID, LAST_NAME
+, FIRST_NAME, EMP_STATUS_CODE, TERMINATION_DATE FROM ( SELECT ''
+ AS LEAVE_ID, '' AS CONFIRMATION_NUMBER, '' AS PRODUCT, '' AS CO
+MPANY_NAME, E.EMPLOYEE_ID, E.EMP_ID, P.LAST_NAME, P.FIRST_NAME,
+DECODE(E.EMP_STATUS_CODE,'T','Resigned','A','Active','I','Inacti
+ve','L','Leave','R','Retired','D','Deceased') AS EMP_STATUS_CODE
+, E.TERMINATION_DATE FROM S_EMPLOYEE E, S_PERSON P WHERE P.PERSO
+N_ID = E.PERSON_ID AND P.FIRST_NAME LIKE :B4 AND P.LAST_NAME LIK
+E :B3 AND E.GROUP_ID IN ( SELECT DISTINCT GROUP_ID FROM S_GROUP
+G START WITH GROUP_ID IN ( SELECT GROUP_ID FROM TTYPE ) CONNECT
+BY PARENT_GROUP_ID = PRIOR GROUP_ID ) ORDER BY P.LAST_NAME, P.FI
+RST_NAME ) ) WHERE R >= :B6 AND R <= :B5
+
+19 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION                                                           OPTIMIZER_
+---------------------------------------------------------------- ----------
+BUFFER_GETS EXECUTIONS DISK_READS
+----------- ---------- ----------
+4238385696 w3wp.exe
+                                                                 ALL_ROWS
+  111822454         97    1081177
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+SELECT STATEMENT  MODE=ALL_ROWS
+        13
+         1          0
+  FILTER
+
+         2          1
+    VIEW
+        13
+         3          2
+      COUNT
+
+         4          3
+        VIEW
+        13
+         5          4
+          NESTED LOOPS
+
+         6          5
+            NESTED LOOPS
+        13
+         7          6
+              NESTED LOOPS
+        10
+         8          7
+                TABLE ACCESS BY INDEX ROWID (WKAB10.T_PERSON)
+         4
+         9          8
+                  INDEX RANGE SCAN (WKAB10.T_PERSON_IDX_002)
+         3
+        10          7
+                VIEW  (.VW_NSO_1)
+         6
+        11         10
+                  SORT UNIQUE
+
+        12         11
+                    CONNECT BY WITH FILTERING
+
+        13         12
+                      TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+
+        14         13
+                        NESTED LOOPS
+        16
+        15         14
+                          NESTED LOOPS
+        14
+        16         15
+                            NESTED LOOPS
+        13
+        17         16
+                              NESTED LOOPS
+         7
+        18         17
+                                INDEX RANGE SCAN (WKAB10.GROUP_EMPLOYEE_IDX1)
+         3
+        19         17
+                                INDEX RANGE SCAN (WKAB10.T_EMPLOYEE_IDX3)
+         2
+        20         16
+                              TABLE ACCESS BY INDEX ROWID (WKAB10.T_COMPANY_ROLE
+)
+         2
+        21         20
+                                INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_IX)
+         1
+        22         15
+                            INDEX UNIQUE SCAN (WKAB10.PK_GROUP)
+         1
+        23         14
+                          INDEX RANGE SCAN (WKAB10.T_COMPANY_ROLE_MATRIX_IDX03)
+         2
+        24         12
+                      NESTED LOOPS
+
+        25         24
+                        CONNECT BY PUMP
+
+        26         24
+                        TABLE ACCESS BY INDEX ROWID (WKAB10.T_GROUP)
+         6
+        27         26
+                          INDEX RANGE SCAN (WKAB10.FK_GROUP2PARENT_GROUP)
+         3
+        28          6
+              INDEX RANGE SCAN (WKAB10.T_EMPLOYEE_IDX1)
+         2
+        29          5
+            TABLE ACCESS BY INDEX ROWID (WKAB10.T_EMPLOYEE)
+         3
+
+30 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         9
+"P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4
+        12
+"PARENT_GROUP_ID"=PRIOR NULL
+        18
+"S_GE"."EMPLOYEE_ID"=:B2
+        19
+"S_GE"."EMPLOYEE_ID"="E"."EMPLOYEE_ID"
+        21
+"S_CR"."COMPANY_ID"="E"."COMPANY_ID" AND "S_GE"."ROLE_ID"="S_CR"."FILE_ROLE_CODE
+"
+        22
+"GROUP_ID"="S_GE"."GROUP_ID"
+        23
+"S_CRM"."TEAM_RIGHT_TYPES_ID"=:B1 AND "S_CR"."COMPANY_ROLE_ID"="S_CRM"."COMPANY_
+ROLE_ID"
+        27
+"PARENT_GROUP_ID"=PRIOR NULL
+        28
+"P"."PERSON_ID"="E"."PERSON_ID"
+
+9 rows selected.
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+         1
+:B6<=:B5
+         2
+("R"<=:B5 AND "R">=:B6)
+         9
+("P"."LAST_NAME" LIKE :B3 AND "P"."FIRST_NAME" LIKE :B4)
+        20
+"S_CR"."PRIVILEGED_ROLE"='Y'
+        29
+"E"."GROUP_ID"="GROUP_ID"
+
+
+HASH_VALUE           CHILD_NUMBER NAME      POSITION    VALUE_STRING    VALUE_ANYDATA                         
+-------------------- --------------------   ---------- ------------ ------------------------------ ----------
+4238385696            0 :B2                 1     154830803       
+
+4238385696            0 :B1                                     2
+302
+4238385696            0 :B4                                     3
+%                    %
+4238385696            0 :B3                                     4
+1586435%             1586435%
+4238385696            0 :B6                                     5
+0
+4238385696            0 :B5                                     6
+10
+
+6 rows selected.
+
+SQL>
+
+
+************************** 1/05/2011 
+
+SQL_TEXT
+----------------------------------------------------------------
+SELECT DECODE(SID.VALUE, 1001, 'Y', 1002, 'N', NULL, '(N/A)') FD
+A_UNKNOWN FROM S_QUESTION Q, S_SCRIPT_DETAIL SD, S_SCRIPT_INSTAN
+CE_DETAIL SID, S_TASK_INSTANCE TI WHERE Q.QUESTION_ID = SD.QUEST
+ION_ID AND SD.SCRIPT_DETAIL_ID = SID.SCRIPT_DETAIL_ID AND SID.SC
+RIPT_INSTANCE_ID = TI.SCRIPT_INSTANCE_ID AND Q.REGISTEREDFIELD_I
+D = 42 AND Q.QUESTION_TYPE_ID = 13 AND TI.CLAIM_NUMBER = :B1
+
+6 rows selected.
+
+
+HASH_VALUE MODULE
+---------- ----------------------------------------------------------------
+ACTION                                                           OPTIMIZER_
+---------------------------------------------------------------- ----------
+BUFFER_GETS EXECUTIONS DISK_READS
+----------- ---------- ----------
+1103199079 w3wp.exe
+                                                                 ALL_ROWS
+    3531709         33    1413402
+
+
+        ID  PARENT_ID
+---------- ----------
+PLAN
+--------------------------------------------------------------------------------
+      COST
+----------
+         0
+SELECT STATEMENT  MODE=ALL_ROWS
+       116
+         1          0
+  NESTED LOOPS
+
+         2          1
+    NESTED LOOPS
+       116
+         3          2
+      NESTED LOOPS
+        82
+         4          3
+        HASH JOIN
+        64
+         5          4
+          TABLE ACCESS BY INDEX ROWID (WKAB10.T_QUESTION)
+        15
+         6          5
+            INDEX RANGE SCAN (WKAB10.T_QUESTION_IDX01)
+         1
+         7          4
+          INDEX FAST FULL SCAN (WKAB10.T_SCRIPT_DETAIL_IX)
+        45
+         8          3
+        TABLE ACCESS BY INDEX ROWID (WKAB10.T_TASK_INSTANCE)
+        18
+         9          8
+          INDEX RANGE SCAN (WKAB10.T_TASK_INSTANCE_IDX100)
+         3
+        10          2
+      INDEX RANGE SCAN (WKAB10.FK_SCRIPTINSTANCEDETAIL2SCRIPT)
+         3
+        11          1
+    TABLE ACCESS BY INDEX ROWID (WKAB10.T_SCRIPT_INSTANCE_DETAIL)
+         5
+
+12 rows selected.
+
+Access Predicates
+
+        ID
+----------
+ACCESS_PREDICATES
+--------------------------------------------------------------------------------
+         4
+"SD"."QUESTION_ID"="Q"."QUESTION_ID"
+         6
+"Q"."REGISTEREDFIELD_ID"=42
+         9
+"TI"."CLAIM_NUMBER"=:B1
+        10
+"SID"."SCRIPT_INSTANCE_ID"="TI"."SCRIPT_INSTANCE_ID"
+
+Filter Predicates
+
+        ID
+----------
+FILTER_PREDICATES
+--------------------------------------------------------------------------------
+         5
+"Q"."QUESTION_TYPE_ID"=13
+        11
+"SD"."SCRIPT_DETAIL_ID"="SID"."SCRIPT_DETAIL_ID"
+
+
+HASH_VALUE CHILD_NUMBER NAME                             POSITION
+---------- ------------ ------------------------------ ----------
+VALUE_STRING         VALUE_ANYDATA
+-------------------- --------------------
+1103199079            0 :B1                                     1
+3549285
+
+SQL> 
+
+
+****************** 02/16/2011
+
+SQL_TEXT
+SELECT DECODE(SID.VALUE, 1001, 'Y', 1002, 'N', NULL, '(N/A)') FD
+A_UNKNOWN FROM S_QUESTION Q, S_SCRIPT_DETAIL SD, S_SCRIPT_INSTAN
+CE_DETAIL SID, S_TASK_INSTANCE TI WHERE Q.QUESTION_ID = SD.QUEST
+ION_ID AND SD.SCRIPT_DETAIL_ID = SID.SCRIPT_DETAIL_ID AND SID.SC
+RIPT_INSTANCE_ID = TI.SCRIPT_INSTANCE_ID AND Q.REGISTEREDFIELD_I
+D = 42 AND Q.QUESTION_TYPE_ID = 13 AND TI.CLAIM_NUMBER = :B1 
+
+
+
+******************** July 2011
+
+SQL_TEXT
+Begin PK_WKAB_LOAD_PROGRAMS.LoadEmployee(:v0, :v1, :v2, :v3, :v4
+, :v5, :v6, :v7, :v8, :v9, :v10, :v11, :v12, :v13, :v14, :v15, :
+v16, :v17, :v18, :v19, :v20, :v21, :v22, :v23, :v24, :v25, :v26,
+ :v27, :v28, :v29, :v30, :v31, :v32, :v33, :v34, :v35, :v36, :v3
+7, :v38, :v39, :v40, :v41, :v42, :v43, :v44, :v45, :v46, :v47, :
+v48, :v49, :v50); End;
+
+
+select count(*) from v$sql_shared_cursor where sql_id='5c3fxgmvggqyp';
+
+

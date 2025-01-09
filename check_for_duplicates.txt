@@ -1,0 +1,8 @@
+select script_instance_id, count(*) from s_script_instance_xml group by script_instance_id having count(*) > 1;
+
+
+select keycol1, keycol2, ..., keycoln 
+  from lx_daliy.wkab_overpay_mv
+group by keycol1, keycol2, ..., keycoln
+having count(*) > 1
+
