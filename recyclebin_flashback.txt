@@ -1,5 +1,0 @@
-select * from DBA_RECYCLEBIN WHERE ORIGINAL_NAME LIKE '%T_COMPANY_HOLIDAY%'
-
-select * from DBA_RECYCLEBIN WHERE ORIGINAL_NAME LIKE  = 'T_COMPANY_HOLIDAY'
-
-  SQL> flashback table wkab10.t_company_holiday to before drop;
