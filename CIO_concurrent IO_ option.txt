@@ -1,0 +1,149 @@
+
+I've done some more analysis and I think I see what's going on. 
+It appears to be a problem with inode locking caused when syncd runs. 
+If I watch the box with nmon and using the v$session_wait table in Oracle, I see that what happens is that when syncd runs, 
+i see sessions in Oracle begin to stack up waiting on "log file sync".  When syncd finishes, the sessions free up. 
+You can also see this looking at the run queue.  When syncd finishes running, you get a burst of runable processes. 
+I saw the run queue hit 70 for just a second at one point yesterday afternoon.  
+ 
+From vmstat with a 1-second interval ...
+kthr     memory             page              faults          cpu             
+----- ----------- ------------------------ ------------ -----------           
+ r  b   avm   fre  re  pi  po  fr   sr  cy  in   sy  cs us sy id wa           
+ 1  7 3862808 17679   0   0   0   0    0   0 4896 55313 7341  6  6 52 36      
+70  4 3867798 12253   0   0   0   0    0   0 7712 137862 25787 28 10 35 28    
+42  2 3890284   936   0   0   0 11954 30629   0 12596 295921 53380 89 10  0  0
+24  0 3889410  2487   0   0   0 1052 1773   0 11175 257555 40134 77  6 15  2  
+13  1 3895347   801   0   0   0 4480 7677   0 9723 199191 32990 71  5 22  2   
+ 5  0 3894051  5249   0   0   0 3520 6390   0 9874 165233 32130 48  4 44  4   
+11  3 3889551  9416   0   0   0   0    0   0 8676 147009 27702 44  4 46  6    
+ 
+Anyway, Oracle is configured to do direct I/O so I don't think syncd really has any work to do on the log files since we don't use
+the file cache.  It's just hanging us up while it figures that out.  So, there are several possibilities for addressing the problem.
+
+The most strategic solution would be to do some re-working of the aetnaprod filesystems: converting them over to JFS2 and setting
+up concurrent I/O (cio) on some of them to support the Oracle online redologs, datafiles, and tempfiles. 
+Using the concurrent I/O option should greatly reduce any issues with inode contention.  This would be no small undertaking, though.
+
+As a near-term solution, mounting the /aetnaprod/workability filesystem with the direct I/O option (dio) might tell syncd not to
+mess with those files since it would change the default mode for opening files in that filesystem to be direct rather than cached.  
+might want to check with IBM on this one since I'm just guessing here.
+
+Another near-term solution would be to try setting the AIX tuning parameter sync_release_ilock to 1.  
+This changes the way syncd does it's inode locking so that it would reduce the time that it holds the locks.  This might be an easy solution for now and would let us think about the more strategic solution of concurrent I/O later in the year.
+Mike
+
+----
+
+I spoke with Franz Friday afternoon and he had some good insight into the problem. 
+
+He also expressed some concern at the amount of load being placed on the single JFS log for the filesystem we're using now. 
+The good new is that we came up with a very low-risk solution that can be done without downtime.
+We can allocate 2 new small JFS2 filesystems (something like 1GB each) using storage already out there
+and mount those using the CIO (concurrent I/O) option.
+We can then dynamically migrate the online redologs over to the 2 new filesystems.
+This should eliminate the global freeze we see due to the activity of the sync process and should also help reduce the load on the JFS logs.
+
+
+http://www.dba-oracle.com/oracle_news/2005_10_7_ibm_aix_direct.htm
+
+Q.
+Would you do that to Test or Stress first?  And if so  - would we see it there or is it only going to make a difference in Prod?
+How soon do you think it can be done?
+
+
+A.
+The stress environment (boraw1s) is set up differently as far as filesystems go. 
+It's already on a couple of mount points and is already on JFS2 (though not mounted with concurrent I/O). 
+I've never seen this behavior during a stress test, so we can do it there to confirm that there are no detrimental effects, but I don't think we'll see the benefit much there.  
+
+Mike
+_____________________________________________ 
+
+Note:418714.1
+
+Oracle Server - Enterprise Edition - Version: 9.2.0.6
+AIX5L Based Systems (64-bit)
+
+Goal
+Running benchmarks with Direct IO and Concurrent IO. 
+
+disk_asynch_io is set to true, filesystemio_options = setall and db_block_size=8k
+
+Will DIO and CIO be used when the operating system uses 4k blocks and Oracle is set to 8k blocks or is it required to set the db_block_size to 4k so it matches exactly what the OS has?
+
+Solution
+The following is extracted from IBM paper- Oracle Architecture and Tuning on AIX :
+
+For applications such as Oracle Database that provide their own I/O serialization mechanisms,
+JFS2 (beginning with AIX 5.2.10) offers the Concurrent I/O (CIO) option. Under Concurrent I/O,
+multiple threads may simultaneously perform reads and writes on a shared file. Applications that
+do not enforce serialization for accesses to shared files (including operating system level
+utilities) should not use Concurrent I/O, as this could result in data corruption due to competing
+accesses and /or severe performance penalties.
+
+© 2006 International Business Machines, Inc. Page 33 IBM Americas Advanced Technical Support
+
+
+Concurrent I/O should only be used for Oracle .dbf files (data & index, rbs or undo, system and
+temp). When used for online redo logs or control files, these files should be isolated in their
+own JFS2 filesystem(s) that have been created with agblksize=512.
+(it's ok to have CIO for online redologs just size-512)
+
+Filesystem containing .dbf files should be created with agblksize=2048 if DB_BLOCK_SIZE=2k, or
+agblksize=4096 if DB_BLOCK_SIZE>= 4k. Failure to implement these agblksize guidelines is likely to
+result in a severe performance penalty.
+
+The following command can be used to query agblksize (needs to be run as root):
+
+% lsfs -q <filesystem_name>
+
+% lsfs -q /oraredologs/dpu22
+
+Do not under any circumstances, use CIO mount option for the filesystem containing the Oracle
+binaries. Additionally, do not use DIO/CIO options for filesystem containing archive logs or any
+other files not already discussed. 
+
+
+-----
+Q.
+
+Mike,
+ 
+Steve is going to add new file system for Aetnaprod. This will be for data. Should I request JFS2 with Concurrent I/O option on ?
+
+A.
+
+Yes.  It should be JFS2, CIO, and agblksize=4096
+
+___________________________________________________________________________________
+
+
+
+From: Ryan, Richard T 
+Sent: Thursday, February 20, 2014 1:52 PM
+To: DBA Oracle
+Subject: CIO
+
+Please see oracle doc ID 14789241.1 concerning recommendations for  CIO options when mount JFS2 file systems on AIX.
+
+Here is a snippet from the doc that explains the reason for not specifying cio as a mount option and specifying setall  for filesystemio_options in the init.ora
+
+With AIX 6.1, IBM introduced a new open flag O_CIOR which is same as O_CIO, but this allows subsequent open calls without CIO. The advantage of this enhancement is that other applications like cp, dd, cpio, dbv can access database files in read only mode without having to open them with CIO.
+
+Starting with Oracle 11.2.0.2 when AIX 6.1 is detected, Oracle will use  O_CIOR option to open a file on JFS2.Therefore you should no longer mount the filesystems with mount option  "-o cio".
+Also,  if you have a database at 11.2.0.2 or above on aix 6.1  you will have concurrency issues if the file systems are mounted with cio and setall is specified in filesystemio_options.
+
+
+
+2 additional notes.
+
+1)	If you remove the mount option, you do need to make sure that you have the FILESYSTEMIO_OPTIONS parameter set to SETALL so that you’ll continue to use CIO.
+2)	Oracle and IBM recommend that if using CIO, your online redologs and controlfiles should be on filesystems that have an agblksize of 512.  Datafiles can stay on filesystems with the default blocksize of 4K.
+
+Additionl references:
+http://docs.oracle.com/cd/E11882_01/server.112/e10839/appa_aix.htm#UNXAR281
+and
+Metalink doc 1507249.1
+
+

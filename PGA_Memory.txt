@@ -1,0 +1,143 @@
+Hi 
+
+This might help
+
+Make a first estimate for PGA_AGGREGATE_TARGET based on the following rule 
+
+- For OLTP systems 
+
+PGA_AGGREGATE_TARGET = (<Total Physical Memory > * 80%) * 20%
+
+- For DSS systems 
+
+PGA_AGGREGATE_TARGET = (<Total Physical Memory > * 80%) * 50%
+
+
+The value of the PGA_AGGREGATE_TARGET initialization parameter (for example 100000 KB, 2500 MB, or 50 GB) should be set based on the total amount of memory available for the Oracle instance. Its not on user based.
+
+Refer to http://download.oracle.com/docs/cd/B14117_01/server.101/b10752/memory.htm#49321
+
+If pga is not set , a lot of temp will used for the sort operations .... i believe.
+
+
+HTH
+ANand
+
+Edited by: Anand... on Nov 11, 2008 7:17 PM
+
+
+Good article on Oracle Memory
+
+Memory article to read: http://www.dbazine.com/oracle/or-articles/burleson9
+
+
+http://download.oracle.com/docs/cd/B19306_01/server.102/b14211/memory.htm#PFGRF014
+
+This view gives instance-level statistics on the PGA memory usage and the automatic PGA memory manager. For example:
+
+The V$MEMORY_TARGET_ADVICE view porvide the tuning advice for the MEMORY_TARGET parameter
+
+The view V$MEMORY_RESIZE_OPS will show the history of your memory resizes.
+
+
+
+
+Memory Footprint
+
+SELECT SUM(CURRENT_SIZE/1024/1024) AS "MEMORY FOOTPRINT (MB)" FROM V$MEMORY_DYNAMIC_COMPONENTS  WHERE COMPONENT IN ('SGA Target','PGA Target') 
+
+SELECT * FROM V$MEMORY_DYNAMIC_COMPONENTS
+
+
+---->10g
+
+select sum(value)/1024/1024 SGA_MB from v$sga;
+
+select sum(value)/1024/1024 SGA_MB from v$pga;
+
+
+SELECT * FROM V$PGASTAT;
+The output of this query might look like the following:
+
+NAME                                                          VALUE UNIT
+-------------------------------------------------------- ---------- ------------
+aggregate PGA target parameter                             41156608 bytes
+aggregate PGA auto target                                  21823488 bytes
+global memory bound                                         2057216 bytes
+total PGA inuse                                            16899072 bytes
+total PGA allocated                                        35014656 bytes
+maximum PGA allocated                                     136795136 bytes
+total freeable PGA memory                                    524288 bytes
+PGA memory freed back to OS                              1713242112 bytes
+total PGA used for auto workareas                                 0 bytes
+maximum PGA used for auto workareas                         2383872 bytes
+total PGA used for manual workareas                               0 bytes
+maximum PGA used for manual workareas                       8470528 bytes
+over allocation count                                           291
+bytes processed                                          2124600320 bytes
+extra bytes read/written                                   39949312 bytes
+cache hit percentage                                          98.15 percent
+The main statistics displayed in V$PGASTAT are as follows:
+
+aggregate PGA target parameter: This is the current value of the initialization parameter 
+PGA_AGGREGATE_TARGET. The default value is 20% of the SGA size. If you set this parameter to 0, automatic management of the PGA memory is disabled.
+
+
+
+
+--------------------------------------------------------------------------------
+From: Swafford, Mike 
+Sent: Tuesday, December 09, 2008 1:22 PM
+To: Sillasen, John A
+Cc: Berman, Eugene
+Subject: aetnaprod memory
+
+
+John, 
+   How does memory look on aetnaprod?  Because we're increasing the number of Workability 
+instances on the web servers, the number of idle connections on the database 
+(and therefore the number of back-end Unix processes) is also increasing 
+as we add 64-bit servers into the pool.  This is due to the connection pool settings
+ in the app. 
+
+ It's something that can be adjusted, but for now we just want to make sure we don't end
+ up with a memory problem.
+ 
+Mike
+
+
+--------------------------------------------------------------------------------
+From: Sillasen, John A 
+Sent: Tuesday, December 09, 2008 1:31 PM
+To: Swafford, Mike
+Cc: Berman, Eugene
+Subject: RE: aetnaprod memory
+
+
+Just a very slight increase in memory since midnight - looks pretty good so far!
+ 
+John
+
+
+
+
+Thanks John.  By the time we're done with this 64-bit migration,
+ we'll have about double the number of peak-hour connections we had 
+prior to the migration.  Their primary impact is memory. 
+We may look to see about having them adjust the connection pool parameters to compensate,
+but it doesn't look like we're approaching any crisis, though, so that gives us a 
+little room to have them put it into a release.
+ 
+Thanks,
+Mike
+
+
+
+
+
+
+
+******* How to check for pga ****
+
+show parameter pga;
+

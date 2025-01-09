@@ -1,0 +1,180 @@
+**** Find infrequently used indexes 8i and 9i ****************************
+select
+
+   to_char(sn.begin_interval_time,'Month') c1,
+
+   p.object_owner c2,
+
+   p.object_name c3,
+
+   sum(executions_delta) c4
+
+from
+
+   dba_hist_snapshot   sn,
+
+   dba_hist_sql_plan   p,
+
+   dba_hist_sqlstat    st
+
+where
+SEE CODE DEPOT FOR WORKING SCRIPT
+
+   st.sql_id = p.sql_id
+
+and
+
+   sn.snap_id = st.snap_id 
+and 
+   sn.dbid = st.dbid 
+and 
+   sn.instance_number = st.instance_number
+
+and
+
+   p.object_type = 'INDEX'
+
+and
+
+   p.object_owner not in ('SYS', 'SYSMAN', 'SYSTEM', 'MDSYS', 'WMSYS', 'TSMSYS', 'DBSNMP')
+
+group by
+
+   to_char(sn.begin_interval_time, 'Month'),
+
+   p.object_owner,
+
+   p.object_name
+
+having 
+   sum(executions_delta) < 50
+
+order by 
+   1, 4 desc, 2, 3
+
+/
+
+
+*********** INFO FROM AWR tables 10g, 11g ************************
+
+select
+   p.object_name c1,
+   p.operation   c2,
+   p.options     c3,
+   count(1)      c4
+from
+   dba_hist_sql_plan p,
+   dba_hist_sqlstat s
+where
+   p.object_owner NOT IN ('SYS', 'SYSMAN', 'SYSTEM', 'MDSYS', 'WMSYS', 'TSMSYS', 'DBSNMP')
+and
+   p.operation like '%INDEX%'
+and
+   p.sql_id = s.sql_id
+group by
+   p.object_name,
+   p.operation,
+   p.options
+order by
+   4;
+
+
+****************** FUNCTION BASED INDEX *********************
+
+The index is needed because the query has an UPPER wrapped around the user_logon column.
+
+select user_id from s_security where upper(user_logon) = :Parm0
+
+So really the best option is to not have any mixed-case in there if we’re going to ignore it anyway.  It may also create an issue at some point if we’re not ensuring that only upper case goes in there, then we can have an issue where the query above would return multiple rows if we allow N217924 and n217924 both in the table.  Just a thought.  Anyway, the DDL for the index is below since I assume it’s not an option to remove the UPPER in the query.
+
+create index wkab10.t_security_idx06 on wkab10.t_security(upper(user_logon)) tablespace wkab_index online;
+
+
+SELECT s.user_logon FROM t_security s WHERE lower(s.user_logon) = lower(:Parm0)
+
+create index wkab10.t_security_idx06 on wkab10.t_security(LOWER(user_logon)) tablespace wkab_index online;
+
+
+
+************* How to speed up index creation on big table ****************
+
+1. Create Index with parallel 3
+
+CREATE INDEX DRWKAB.NDX_WKAB_TASK_INSTANCE_03
+    ON DRWKAB.WKAB_TASK_INSTANCE_MV(TASK_ID,CLAIM_NUMBER)
+TABLESPACE DRWKAB_INDEX
+NOLOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 1M
+        BUFFER_POOL DEFAULT)
+PARALLEL 3
+NOCOMPRESS
+/
+--- You can monitor via longloop view.
+
+2. Alter index back to parallel 1
+
+1. Create Index with parallel 3
+
+CREATE INDEX DRWKAB.NDX1_CARMAX_REDSGN_HIST_PAR
+    ON DRWKAB.T_CARMAX_REDSGN_HIST_PARALLEL(EMPLOYEE_ID, FEED_DATE)
+TABLESPACE DRWKAB_INDEX
+NOLOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 1M
+        BUFFER_POOL DEFAULT)
+PARALLEL 3
+NOCOMPRESS
+/
+
+2. Alter index back to parallel 1
+
+
+
+
+
+
+CREATE INDEX DRWKAB.NDX1_CARMAX_REDSGN_HIST
+    ON DRWKAB.T_CARMAX_REDSGN_HIST(EMPLOYEE_ID, FEED_DATE)
+TABLESPACE DRWKAB_INDEX
+NOLOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 1M
+        BUFFER_POOL DEFAULT)
+PARALLEL 3
+NOCOMPRESS
+/
+
+2. Alter index back to parallel 1
+
+
+CREATE INDEX DRWKAB.NDX2_CARMAX_REDSGN_HIST
+    ON DRWKAB.T_CARMAX_REDSGN_HIST(ACTION_REASON,ACTION,EMP_ID,FEED_DATE,SEQUENCE_ID)
+TABLESPACE DRWKAB_INDEX
+NOLOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 1M
+        BUFFER_POOL DEFAULT)
+PARALLEL 3
+NOCOMPRESS
+/
+
+2. Alter index back to parallel 1
+
+
+
+******************** Slow queries after release index creation on production. first test in Stress ***************
+
+create index wkab10.idx2_regtaskdata on wkab10.t_registered_field_task_data(registered_field_id, task_instance_id, is_current) tablespace wkab_index online;
+create index wkab10.t_paperless_idx02 on wkab10.t_paperless(employee_id, paperless) tablespace wkab_index online;
+create index wkab10.t_stage_message_idx01 on wkab10.T_STAGE_MESSAGE(claim, type) tablespace wkab_index online;
+create index wkab10.T_ATTACHMENT_INSTANCE_IDX03 on wkab10.T_ATTACHMENT_INSTANCE(report_queue_id, s_att_id) tablespace wkab_index online;
+

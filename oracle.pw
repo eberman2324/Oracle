@@ -1,0 +1,174 @@
+
+ 
+h3No5psL
+
+cd /orahome/wkab01/app/oracle
+cat .oracle.pw
+
+
+
+
+
+ 
+
+Investigation/Monitoring/Job Output Review/Other
+
+            Use one of the keywords to start and as detailed a description as possible
+
+            EX.       Investigation - disk space warning from Grid Control for /orahome
+
+                        Monitoring - high CPU warnings from Grid Control for aoradbm1p
+
+                        Job Output Review - review backup job output from xx/xx/xxxx
+
+                        Other - as detailed a description as possible
+
+                        Other - Database feed build for wkabstg1 and wkabstg2
+                        Other - Database build for wkabstg2 and wkabstgc
+                        Other - job code investigation
+
+zz236120 - ?8Df7JS!
+           
+           
+
+awkaw1p  -  wkabuat
+atnam1p - aetnaprod
+AORADBM1P - shared prod
+aspnm1p - spnode45
+xwel60p
+
+ACRXM1Q/Bun4$Gee
+
+Floradev - Rock#123
+boraw1q - Or^cleR0cks
+
+aorinfw1d
+
+system - Z00mZ00m!
+
+boraw1d - Rock#123
+boraw1q
+boraw1s
+floradev  
+aphmm1d
+aphmm1q
+
+dpp oracle servers
+dppdev - Rock#123
+dppqa  - Rock#123
+
+
+dpp app servers-  move2s10
+
+#PpMApp#12
+
+xppmm3p 
+
+
+
+wkabstg2/system = B33n_G0n3
+
+PPM databases: Loopnow1
+ 
+Apsdbw1r - DPP
+Aprodw1r - WKAB
+
+have gone through a DBAR
+
+
+system - M^rkw00d 
+
+ivpr01, - #Loopnow1
+
+
+
+****A236120**********************************************************
+
+DEDYP001 - #Loopnow2
+
+DM02 -  #ValiaGusev1
+
+DR02  - #ValiaGusev1
+
+wkabprod  -  #PatriOts1
+            
+DPNTP000 - #ValiaGusev1
+
+ICRDEV.cvty.com  - EuB69vmn1
+
+PPMDEBIZ old - #PatriOts1
+
+DPDEV92 = #PatriOts1
+DPUAT91 - #Loopnow1
+
+JUPITER - #Loopnow1 
+**********************************************************************
+
+
+
+
+PIHMS Dev
+
+PIHMS/pihms_devntmt
+INTERFACE/interface_devntmt 
+
+PIHMS QA
+
+PIHMS/pihms_qantmt
+
+
+
+AETH\zz236120  
+
+
+https://oemdev.aetna.com/em
+
+
+
+%xoracldw2d-EMCLDDEV%
+
+C4fXlk!d
+
+
+ZZ236120
+ZZ236120
+
+https://oemprod.aetna.com/em
+
+
+%xoracldm2p-EMCLDPRD%
+
+
+zz236120
+temp123
+
+
+oracledba
+
+offduty
+
+User Name and Password are required
+
+
+ServiceNow replaces the old and very clunky HP Service Center for Incident management, and it replaces Remedy for Change management.
+
+S-Now is live for Incident management today and on-call DBAs are responsible to address tickets for the week they are on call.
+S-Now for Change is live now but any changes with an implementation date of PRIOR to 4/1 go in Remedy and anything 4/1 or after go in S-Now.
+
+
+eService Requests
+
+For now, yes.  There is a potential to use ICR for DBA requests but that will be a long term potential transition.  Just in the consideration stage at this point.
+
+
+
+
+
+. $SETUPENV DNTMPRP1
+
+cd $SCRIPTS/standby/
+
+./standby_status.ksh > status2.out
+
+skip_transaction.ksh  11,12,1162701
+

@@ -1,0 +1,357 @@
+
+
+--> log in to datarep server as oracle user
+
+-->Command #1 (example)
+dsmc q fi
+
+
+ANS2036W  Pruning functions cannot open one of the Tivoli Storage Manager prune
+files: /usr/tivoli/tsm/client/ba/logs/dsmprune.log. errno = 13, The file access
+permissions do not allow the specified action.
+IBM Tivoli Storage Manager
+Command Line Backup/Archive Client Interface
+  Client Version 5, Release 4, Level 0.0
+  Client date/time: 12/10/07   13:23:02
+(c) Copyright by IBM Corporation and other(s) 1990, 2007. All Rights Reserved.
+
+Node Name: DATAREP_FILE
+Session established with server BCLEW1P_TSM: AIX-RS/6000
+  Server Version 5, Release 3, Level 4.2
+  Server date/time: 12/10/07   13:22:20  Last access: 12/10/07   13:21:56
+
+  #     Last Incr Date      Type    File Space Name
+---     --------------      ----    ---------------
+  1   12/09/07   22:00:09   JFS     /
+  2   12/10/07   01:56:57   JFS     /com
+  3   12/10/07   01:56:27   JFS     /dr
+  4   12/10/07   01:42:33   JFS     /dr2
+  5   12/10/07   01:56:57   JFS     /home
+  6   12/09/07   22:02:48   JFS     /ksrm
+  7   12/10/07   02:04:35   JFS2    /mksysb/images
+  8   12/09/07   22:02:49   JFS     /opt
+  9   12/09/07   22:02:51   JFS     /opt/Tivoli
+ 10   12/09/07   22:05:12   JFS     /u21
+ 11   00/00/00   00:00:00   JFS     /u22
+ 12   12/09/07   22:33:04   JFS     /u30
+ 13   12/09/07   22:45:45   JFS     /u33
+ 14   12/10/07   01:42:17   JFS     /u35
+ 15   12/09/07   22:01:46   JFS     /usr
+ 16   12/10/07   02:04:36   JFS2    /usr/local/zteam2.2
+ 17   12/09/07   22:02:46   JFS     /var
+
+
+-->Command #2 (example)
+dsmc q ba -inact /u35/
+dsmc q ba -inact /boraw1du101/
+dsmc q ba -inact /aetnaprod/backup/save
+dsmc q ba -inact /backup/Backup/
+dsmc q ba -inact /aetnaprod/workability/wkabprod/oracle/oradata/ben*
+dsmc q ba -inact /boraw1qu101/wkabqa1/rman_backups/bkp*
+dsmc q ba -inact /wkabuat/workability_train/* > f.txt
+
+dsmc q ba -inact /orahome/u01/app/oracle/product/12.1.0.2.160719/db_1/network/admin/*
+
+dsmc q ba -inact /u35/
+
+dsmc q ba -inact /aetnaprod/backup/save/*
+
+dsmc q ba -inact /u01/app/oracle/crontab.current
+
+dsmc q ba -inact /boraw1qu101/wkabqa1/rman_backups/ > tsm.txt
+
+dsmc q ba  /boraw1qu101/wkabqa1/rman_backups/bkp*
+
+    10,489,856  B  12/07/07   02:06:45    DRP14DB     I  /u35/oracle/DR02/data/
+intradev_data_01.dbf
+    10,489,856  B  12/08/07   02:03:11    DRP14DB     I  /u35/oracle/DR02/data/
+intradev_data_01.dbf
+    10,489,856  B  12/09/07   01:29:07    DRP14DB     I  /u35/oracle/DR02/data/
+intradev_data_01.dbf
+
+-->More Commands #3 (example)
+
+dsmc q schedule
+q filesystem
+q b /dumpdev/*
+
+q b /orahome/u01/app/oracle/product/12.1.0.2.160719/*
+/app/oracle/product/12.1.0.2.160719/db_1/network/*
+
+q b -inactive /dumpdev/*
+dsmc q b /aetnaprod/backup/fullwkabprod*
+q b /workability/*
+dsmc q b /workability/wkabstg1/Backup/10062008223000/full*
+#restore to it's original  location
+dsmc restore /aetnaprod/backup/fullwkabprod.exp.09152008010000.log.Z
+
+****More detail information *****************************************
+http://tms.aetna.com/midstor/TSM%20Backup%20Overview_files/frame.htm
+
+http://www.redbooks.ibm.com/redbooks/pdfs/sg246249.pdf
+
+Good stuff for restore commands
+http://publib.boulder.ibm.com/tividd/td/TSMC/GC32-0789-04/en_US/HTML/ans50000127.htm
+
+
+***********************************************************************
+
+
+How to find out what TSM Vesion?
+
+/home/oracle: dsmc
+ANS2036W  Pruning functions cannot open one of the Tivoli Storage Manager prune
+files: /usr/tivoli/tsm/client/ba/logs/dsmprune.log. errno = 13, The file access
+permissions do not allow the specified action.
+IBM Tivoli Storage Manager
+Command Line Backup/Archive Client Interface
+  Client Version 5, Release 4, Level 0.0
+  Client date/time: 04/01/08   10:55:41
+(c) Copyright by IBM Corporation and other(s) 1990, 2007. All Rights Reserved.
+
+Node Name: DATAREP_FILE
+Session established with server BCLEW1P_TSM: AIX-RS/6000
+  Server Version 5, Release 3, Level 4.2
+  Server date/time: 04/01/08   10:55:41  Last access: 04/01/08   03:00:19
+
+or by chacking RMAN LOG
+
+RMAN-08500: channel t1: sid=13 devtype=SBT_TAPE
+RMAN-08526: channel t1: Tivoli Data Protection for Oracle: version 5.2.0.0
+
+
+Tivoli Data Protection for Oracle:
+ version 5.2.0.0 - This version will work with Oracle 8i to 11g . You can upgrade to 10.2.0.3 (64bit) 
+
+
+
+
+***********Check TSM Running Jobs on particular Server *************
+
+dsmadmc -id=query -pa=query q sess
+
+cd /usr/tivoli/tsm/client/ba/logs
+
+view dsmsched.log
+or
+view dsmerror.log
+or
+tail -f dsmerror.log
+
+ps -ef | grep dsmc (Identify process running)
+
+
+****************Check to Make sure WKABUAT/AETNAPROD Backup Files are getting backed up *****
+
+Login: wkabuat
+
+cd /workability/home/oracle/Cron_Out
+ls -ltr *tsm*.log 
+
+Login: aetnaprod
+cd /home/oracle/Cron_Out
+ls -ltr *tsm*.log
+q b /aetnaprod/backup/Backup/full*
+or 
+q b /backup/Backup/10072008010000/fullwkabprod*
+ 
+q b /backup/Backup/rman_backups/
+
+q b full*
+then to make sure stuff in TSM
+
+dscm
+
+q b /workability/wkabstg1/Backup/10062008223000/full*
+or
+q b /workability/wkabstg1/Backup/full*
+
+
+
+**********Manual Backup of archivelogs******************************
+The steps would be:
+ 
+1) cd to /workability/wkabprod/oraarch
+2) at the command prompt, run:
+     dsmc
+3) Type the command:
+     backup *.arc
+ 
+It will take a few minutes because it has to mount tapes and stuff.  At the end of the output, it should tell you how many files succeeded and how many failed.  The failed should be 0.
+
+
+****************RESTORE EXAMPLE**************************************************************
+
+You may find this useful.  I will take no questions....
+ 
+
+
+Enter TSM (interactive):
+ 
+    > dsmc
+ 
+Query backed up files:
+ 
+    tsm> q b -inactive "path"
+ 
+    ex: tsm> q b -inactive /srxqu199/APMPERF/backups/sept_rel2_cbkup_APMPERF_080408-1923/*
+
+    q b -inactive /u37/aetna/scripts/standby/resync_standby.ksh
+   
+
+
+    q b -inactive -pitdate=07/07/18 /u37/aetna/scripts/standby/skip_transaction.ksh
+                                                           export_tbls_DPDEVUG_b4_dbrefresh.dmp 
+Restore files:
+ 
+    tsm> restore -inactive "path"
+ 
+    ex: restore -inactive /srxqu199/APMPERF/backups/sept_rel2_cbkup_APMPERF_080408-1923/*
+
+restore -inactive /u37/aetna/scripts/standby/resync_standby.ksh
+restore -inactive -pitdate=08/23/19 /opt/u10/oraback/export/expdp_tbls_DPDEVUG_b4_dbrefresh.dmp
+Exit:
+ expdp_tbls_DPDEVUG_b4_dbrefresh.dmp
+    tsm> quit
+
+
+***********************Archive files to TSM *******************************************************************
+
+Archive Using Commands
+You can use wildcards to archive more than one file at a time. 
+You can archive all the files in a directory, and you can use the subdir=yes option to include files 
+in all subdirectories under that directory.
+Use the deletefiles option if you want TSM to delete the files from your local workstation after
+they are archived and committed to storage. 
+
+For example, to archive the files in the /home/jones/proj directory and the files in its subdirectories, enter: 
+
+   dsmc archive /home/jones/proj/ -subdir=yes -deletefiles
+
+You can use more than one file specification on the archive command. For example, to archive the /home/jones/h1.doc and /home/jones/test.doc files, use: 
+
+   dsmc archive /home/jones/h1.doc /home/jones/test.doc
+
+Use the description option to assign a description to the archive: 
+
+   dsmc archive /home/jones/h1.doc -description="Chapter 1, first version"
+
+
+or
+
+How Do I Use TSM Archive?
+The CAC supports user-level archiving on all platforms, allowing users to archive files/directories until later needed. There is a maximum time the archive will exist. Here are some examples: 
+
+To archive a directory and delete the files after archiving: 
+% dsmc archive -subdir -deletefiles "directory_name" or "/path/to/directory" 
+To retrieve a file or directory:
+
+% dsmc retrieve -subdir (if it's a directory) "name" or "/path/to/name" 
+
+To query archives (which will tell you the date it will be deleted): % dsmc query archive "*" 
+
+
+########################################################################################################################
+If Dennis says to go ahead and put it on tape, then the command we've been using for archiving there is:
+ 
+dsmc archive -archmc=A9999D myfile.data
+
+
+Thanks. Would this work to archive directory with all sub directories/files under it ? or only individual files
+
+Yes.  I believe if you give it a directory rather than a file, it will do everything under it.
+
+You can use the following cmds to use TSM to archive the files to tape for 3 years:
+ 
+dsmc
+
+archive -archmc=A3Y /u39/2007_original_dm20_data/ 
+
+archive -archmc=A3Y /u35/2007_data_correction/ 
+
+archive -archmc=A3Y /u35/oraclehome_tar/10204.tar
+archive -archmc=a26w /u35/oraclehome_tar/*
+
+dsmc archive -archmc=A9999D 10204.tar
+     archive -archmc=A9999D db_1.tar
+
+     archive -archmc=A9999D db_1.tar.gz
+     archive -archmc=A9999D db_1.tar
+    
+or 
+
+From the AIX prompt enter: dsmc
+To archive the files for 6 months (26 weeks):
+
+ archive -archmc=a26w /u28/oracle/DRDV01/backup/COLD/*
+
+ archive -archmc=A3Y /u28/oracle/DMDV01/backup/COLD/* 
+ archive -archmc=A3Y /u28/oracle/DMQA01/backup/COLD/* 
+ archive -archmc=A3Y /u28/DRQA01/backups/*
+ archive -archmc=A3Y /soradb1du353/OPSOM01/rman_backups/* 
+ archive -archmc=a26w /soradb1du353/OPSOM01/rman_backups/* 
+ archive -archmc=A3Y 
+ 
+To list these files: query archive /u28/oracle/DRDV01/backup/COLD/*
+
+query archive /u35/oraclehome_tar/*
+query archive /u36/oracle/oraclehome_tar/*
+
+##TO check archive files on TSM
+
+dsmc query archive "*"
+
+or
+
+dsmc q ba -inact /u28/DRQA01/backups/COLDBKP20090408_06:22:18/*
+
+quit
+
+query archive *
+########################################################################################################################
+
+dsmc q ba -inact /u28/oracle/DRDV01/backup/COLD/*
+dsmc q ba -inact /u28/oracle/DMDV01/backup/COLD/*
+
+
+
+************** RMAN BACKUP TO TAPE. How to check whihc TSM Server it goes to ********************************************
+
+
+# TSM Server Name that RMAN Backup goes to 
+view /usr/tivoli/tsm/client/api/bin/dsm.opt
+or 
+
+view /usr/tivoli/tsm/client/api/bin64/dsm.opt
+SErvername btsmm1p
+
+********** archive keep forever backupsets from wkabqa1******************
+
+-rw-r-----    1 oracle   dba        76459520 Sep 14 03:00 bkp_df761799646_s5913_s1
+-rw-r-----    1 oracle   dba      6165602304 Sep 14 03:14 bkp_df761799663_s5914_s1
+-rw-r-----    1 oracle   dba         1243136 Sep 14 03:14 bkp_df761800480_s5915_s1
+-rw-r-----    1 oracle   dba         6873088 Sep 14 03:14 snapcf_wkabqa1.f
+-rw-r-----    1 oracle   dba         6914048 Sep 14 03:14 c-472815084-20110914-00
+
+
+Eugene, use the management class  B30D_A1Y 
+ 
+- Jeff
+
+
+
+
+
+
+dsmc archive -archmc=B30D_A1Y /boraw1qu101/wkabqa1/rman_backups/bkp_df761799646_s5913_s1
+dsmc archive -archmc=B30D_A1Y /boraw1qu101/wkabqa1/rman_backups/bkp_df761799663_s5914_s1
+dsmc archive -archmc=B30D_A1Y /boraw1qu101/wkabqa1/rman_backups/bkp_df761800480_s5915_s1
+dsmc archive -archmc=B30D_A1Y /boraw1qu101/wkabqa1/rman_backups/c-472815084-20110914-00
+
+
+************** New Archive Tool when file(s) need to be stored for long term **********
+
+
+The archive function has been changed to use a product called Hitachi Content Platform. 
+Malayananda Paul from storman can help get you hooked up.
+

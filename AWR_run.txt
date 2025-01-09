@@ -1,0 +1,22 @@
+@?/rdbms/admin/awrrpt.sql
+
+Export the AWR
+begin
+ DBMS_SWRF_INTERNAL.AWR_EXTRACT(
+       dmpfile => 'awr_data.dmp',
+       dmpdir => 'TMP_DIR',
+       bid => 302,
+       eid => 305);
+end;
+/
+
+
+Export the AWR
+begin
+ DBMS_SWRF_INTERNAL.AWR_EXTRACT(
+       dmpfile => 'awr_dpdevug.dmp',
+       dmpdir => 'EXP_DUMP_DIR',
+       bid => 24130,
+       eid => 24131);
+end;
+/

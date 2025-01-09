@@ -1,0 +1,53 @@
+SELECT OWNER, LOCAL, SCHEMA_URL FROM DBA_XML_SCHEMAS where owner = 'PIHMS';
+
+
+
+
+
+
+
+SELECT owner, schema_url, qual_schema_url, int_objname
+   FROM dba_xml_schemas
+  WHERE owner = 'PIHMS'
+  AND schema_url = 'customer_setup.xsd';
+      
+
+PIHMS	customer_setup.xsd	http://xmlns.oracle.com/xdb/schemas/PIHMS/customer_setup.xsd	XDT74EGc5CACzgU6dFJm//aQ==
+
+
+SELECT
+     ses.username,
+      'alter system disconnect session '||''''||ses.SID||','||ses.serial#||''''||' immediate;' DISCONNECT
+    FROM
+      x$kglpn pn,
+      v$session ses,
+      x$kglob lob,
+      dba_xml_schemas sch
+    WHERE sch.owner = 'PIHMS'
+     AND sch.schema_url = 'customer_setup.xsd'
+     AND sch.int_objname = lob.KGLNAOBJ
+     AND lob.kglobtyp = 55
+     AND lob.KGLHDADR = pn.KGLPNHDL
+     AND pn.KGLPNUSE = ses.saddr;
+
+
+alter system disconnect session '452,17' immediate;
+
+
+
+or
+
+the library cache latches are the problem
+something with that package holds them open if you don't exit the session
+
+
+select * 
+from v$session s where s.last_call_et > 600 and sid 
+in (select sid from v$session_wait where event='latch free');
+
+select *  from v$session_wait where event='latch free';
+
+
+select 'alter system kill session ''' || sid || ',' || serial# || ''';' last_call_et 
+from v$session s where s.last_call_et > 600 and sid 
+in (select sid from v$session_wait where event='latch free');

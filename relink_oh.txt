@@ -1,0 +1,110 @@
+#!/bin/ksh
+
+# This script can relink many $ORACLE_HOME
+# directories (11.2x onward) with an oratab
+# entry like "app/oracle" or a particular 
+# $ORACLE_HOME (e.g. db_2) directory.
+# If you want to relink many $ORACLE_HOME directories
+# be sure to have uncommented entries in the oratab for
+# each directory to be relinked.
+#
+# For example:
+#
+#  DPPRD01:/u01/app/oracle/product/11.2.0/db_1:Y
+#  ORA11_2:/u01/app/oracle/product/11.2.0/db_2:N
+#
+# There are two cat statements below that drive the relink process.
+# The statement not needed has to be commented.
+
+# Change Directory
+cd $HOME/relink
+
+# Define oratab
+oratab=/etc/oratab
+
+# Define Script Variable
+ERRCNT=0
+
+# Set To Current Date/Time
+DATE=`date +%Y_%m_%d_Time:%H:%M:%S`
+
+# Define Script OutPut File
+LOGOUT=relink_oh_dirs_${DATE}.out
+
+# Redirect standard output and standard error to log file
+exec 1> ${LOGOUT} 2>&1
+
+sudo genkld | wc -l
+sudo slibclean
+sudo genkld | wc -l
+
+# This will relink all $ORACLE_HOME dirs with an oratab entry like
+# "app/oracle" except those being excluded in the egrep
+cat ${oratab}|egrep -iv "^#|gcagent|11\.1" | grep app/oracle | awk -F: '{print $2}'|sort -u|while read OH
+
+# This will relink the specific $ORACLE_HOME dir (e.g. db_2)
+# specified in the grep
+#cat ${oratab}|egrep -iv "^#|gcagent|11\.1" | grep db_2 | awk -F: '{print $2}'|sort -u|while read OH
+
+do
+
+    echo "===================================================================="
+    echo "===================================================================="
+
+    if [ ! -d ${OH} ] ; then
+       echo
+       echo "Directory ${OH} Not Found - Skipping Relink "
+       echo
+       continue
+    fi
+
+    DBName=`cat ${oratab}|egrep -iv "^#|gcagent|11\.1" | grep $OH | head -1 |awk -F: '{print $1}'`
+
+    # Set Oracle Environment
+    #. ${HOME}/aetna/scripts/oraprof ${DBName} > oraprof.out
+     . /orahome/allu01/aetna/scripts/setupenv.ksh ${DBName} > setupenv_start.out
+
+    echo
+    echo "Relinking Oracle Home Directory ${OH} "
+    echo
+   
+    # Relink 
+    ${OH}/bin/relink all
+
+    if [ ! -f ${ORACLE_HOME}/install/relink.log ] ; then
+       echo
+       echo "File ${OH}/install/relink.log Not Found after relinking ${OH} "
+       echo
+       continue
+    fi
+
+    # Following error can be ignored
+    # libknlopt.a: No such file or directory
+    # Doc ID 1348007.1
+    # Also, references to pcscfg.cfg can be safely ignored
+
+    ERRCNT=`egrep -i "fatal|error|cannot|warning|severe" ${OH}/install/relink.log |egrep -v "Duplicate symbol|TOC overflow|0711-773|0711-415|0711-319|0711-301|0711-224|0711-345|libpfo.a|pcscfg|Cannot find a rule to create target install from dependencies.|vpxoci_StmtGetErrorCode"|wc -l`
+
+    if [ ${ERRCNT} -gt 0 ] ; then
+       echo
+       echo "Error encountered relinking ${OH} "
+       echo
+    else
+       echo
+       echo "No Errors Encountered relinking ${OH} "
+       echo
+    fi
+
+    # Append ${OH}/install/relink.log to ${LOGOUT}
+    echo
+    echo "Appending ${OH}/install/relink.log"
+    echo
+    cat ${OH}/install/relink.log
+    echo "===================================================================="
+    echo "===================================================================="
+
+done
+
+# Change File Permissions
+chmod 600 ${LOGOUT}
+

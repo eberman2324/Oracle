@@ -1,0 +1,3 @@
+Login to DBArtisan: RCATPROD
+A236120/Mar01#2019
+select completion_time,sequence#,first_change#,next_change# from hepyprd.rc_backup_redolog order by sequence# desc; 

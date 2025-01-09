@@ -1,0 +1,518 @@
+ADA updated Standby directly first. Then realized they updated Primary. Getting Errors from Standby
+
+1. Cleanup (skip transaction) on Standby
+
+2. Resync this particular table. In this case only Record in question (usr_uid=8)
+
+OK.  All good now.  Here's an outline of the procedure if you need for the future:
+
+
+•	Make sure your own account password matches between prod and standby
+•	Log on as yourself to the standby
+•	create database link x using 'DPNTP000';
+•	confirm that things are out of sync:
+select * from Pihms.usr_user minus select * from Pihms.usr_user@x;
+select * from Pihms.usr_user@x minus select * from Pihms.usr_user;
+•	alter table Pihms.usr_user disable all triggers;
+•	Use SQL to generate SQL for disabling related constraints:
+select 'alter table ' || owner || '.' || table_name || ' disable constraint ' || constraint_name || ';' from dba_constraints where (r_owner, r_constraint_name) in (select owner, constraint_name from dba_constraints where table_name='USR_USER' and owner='PIHMS' and constraint_type='P');
+•	Run the generated sql to disable constraints
+•	delete from Pihms.usr_user where usr_uid=8 -- the out of sync row from above
+/
+insert into Pihms.usr_user select * from Pihms.usr_user@x where usr_uid=8
+/
+commit;
+•	alter table Pihms.usr_user enable all triggers;
+•	Use SQL to generate SQL to re-enable constraints
+select 'alter table ' || owner || '.' || table_name || ' enable constraint ' || constraint_name || ';' from dba_constraints where (r_owner, r_constraint_name) in (select owner, constraint_name from dba_constraints where table_name='USR_USER' and owner='PIHMS' and constraint_type='P');
+•	Run the sql to enable constraints
+•	Compare tables again to make sure they are in sync.  No rows should be returned
+select * from Pihms.usr_user minus select * from Pihms.usr_user@x;
+select * from Pihms.usr_user@x minus select * from Pihms.usr_user;
+
+
+or
+
+1)	Create a database link on the standby that points back to prod
+2)	Disable all triggers on the table in standby
+3)	Disable all referential constraints on the standby that point to the primary key of the table you’re resyncing
+4)	Truncate the table on the standby
+5)	Insert into the standby table – select * from table@link
+6)	commit
+7)	re-enable constraints
+8)	re-enable triggers
+9)	drop link
+
+
+
+
+**************************
+
+PIHMS.COC_CORRESP_CERTIFICATION
+
+
+CREATE DATABASE LINK BERMAN.WORLD
+    USING 'DPNTP000'
+/
+
+select * from PIHMS.COC_CORRESP_CERTIFICATION
+ minus select * from PIHMS.COC_CORRESP_CERTIFICATION@BERMAN.WORLD;
+select * from PIHMS.COC_CORRESP_CERTIFICATION@BERMAN.WORLD minus select * from PIHMS.COC_CORRESP_CERTIFICATION;
+
+
+insert into PIHMS.COC_CORRESP_CERTIFICATION select * from PIHMS.COC_CORRESP_CERTIFICATION@BERMAN.WORLD
+/
+commit;
+
+
+
+
+*********************************
+
+
+1)	Create a database link on the standby that points back to prod. if not already there
+                   
+        ## Login as A236120 to standby    
+        CREATE DATABASE LINK BERMAN.WORLD
+          USING 'DPNTP000'
+        /
+
+
+2)	Disable all triggers on the table in standby
+
+        Table:  PIHMS.LTR_ADT_LOST_TIME_REST_DUTY
+
+      #confirm that things are out of sync:
+      select * from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY minus select * from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY@BERMAN;
+      select * from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY@BERMAN minus select * from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY;
+      select count(*) from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY@BERMAN minus select count(*) from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY;
+
+ 
+      alter table PIHMS.LTR_ADT_LOST_TIME_REST_DUTY disable all triggers;
+
+3)	Disable all referential constraints on the standby that point to the primary key of the table you’re resyncing
+
+       select 'alter table ' || owner || '.' || table_name || ' disable constraint ' || constraint_name || ';' from dba_constraints where (owner, constraint_name) in (select owner, constraint_name from dba_constraints where table_name='LTR_ADT_LOST_TIME_REST_DUTY' and owner='PIHMS' and constraint_type='P');
+
+select 'alter table ' || owner || '.' || table_name || ' disable constraint ' || constraint_name || ';' from dba_constraints where (owner, constraint_name) in
+(select owner, constraint_name from dba_constraints where table_name='LTR_ADT_LOST_TIME_REST_DUTY' and owner='PIHMS' and  constraint_type in ('P','R')  );
+
+
+
+   select owner, constraint_name, constraint_type from dba_constraints where table_name='LTR_ADT_LOST_TIME_REST_DUTY'  and owner = 'PIHMS' 
+   and constraint_type = 'P'
+
+
+
+   
+    alter table PIHMS.LTR_ADT_LOST_TIME_REST_DUTY disable constraint LTR_PK;
+
+
+4)	Truncate the table on the standby
+
+       TRUNCATE TABLE PIHMS.LTR_ADT_LOST_TIME_REST_DUTY
+
+       select count(*) from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY;
+
+5)	Insert into the standby table – select * from table@link
+
+       insert into PIHMS.LTR_ADT_LOST_TIME_REST_DUTY select * from PIHMS.LTR_ADT_LOST_TIME_REST_DUTY@BERMAN;
+      
+
+	commit;
+
+or
+
+
+      On aphmw1p
+
+	cd /oraexport/pihmsu000/DPNTP000
+
+	expdp PHIMS_EXPIMP/#Phims_Expimp directory=DATA_PUMP_DIR dumpfile=tbl1.dmp logfile=tbl1.log tables=PIHMS.LTR_ADT_LOST_TIME_REST_DUTY
+
+	scp -p /oraexport/pihmsu000/DPNTP000/tbl1.dmp datamart:/oraexport/pihmsu000/DNTMPRP1/tbl1.dmp
+
+
+	On Datamart
+
+	cd /oraexport/pihmsu000/DNTMPRP1
+
+	impdp PHIMS_EXPIMP/#Phims_Expimp DIRECTORY=DATA_PUMP_DIR DUMPFILE=tbl.dmp tables=PIHMS.LTR_ADT_LOST_TIME_REST_DUTY LOGFILE = tbl1.log TABLE_EXISTS_ACTION=TRUNCATE
+
+
+
+
+
+
+7)	##re-enable constraints
+        alter table PIHMS.LTR_ADT_LOST_TIME_REST_DUTY enable constraint LTR_PK;
+
+8)	##re-enable triggers
+        alter table PIHMS.LTR_ADT_LOST_TIME_REST_DUTY enable all triggers;
+
+9)	drop link
+
+
+****************************** DELETE no commit then insert and after commit. Only if app updating table running ********************
+
+
+Sure.  They were pretty much the same as last time, but the generic steps for resyncing an entire table are below.  This won’t work so well if the table is being actively updated so it has to either be a quiet time for the table or the app has to be offline.
+
+1.	alter table <owner>.<table> disable all triggers;
+2.	Disable any referential integrity constraints.  You can generate the DDL with:
+select 'alter table ' || owner || '.' || table_name || ' disable constraint ' || constraint_name ||';'
+from dba_constraints where (r_owner, r_constraint_name) in (select owner, constraint_name from dba_constraints where owner='<owner>' and table_name='<table_name>' and constraint_type='P');
+3.	delete from <owner>.<table>;
+4.	insert into <owner>.<table> select * from <owner>.<table>@x -- (where x is a link to the primary database)
+5.	commit;
+6.	To verify, run:
+select * from <owner>.<table>@x minus select * from <owner>.<table>;
+select * from <owner>.<table> minus select * from <owner>.<table>@x;
+-- No rows should be returned from either query
+7.	alter table <owner>.<table> enable all triggers;
+8.	Re-enable the constraints you disabled above.  You can use the same sql to generate it, but change the “disable” to “enable novalidate”
+
+
+
+
+
+*********************************
+
+E.B.
+1)	Create a database link on the standby that points back to prod. if not already there
+                   
+        ## Login as A236120 to standby    
+        CREATE DATABASE LINK BERMAN.WORLD
+          USING 'DPNTP000'
+        /
+
+
+2)	Disable all triggers on the table in standby
+
+        Table:  PIHMS.DOC_DOCUMENT
+
+      #confirm that things are out of sync:
+      select * from PIHMS.DOC_DOCUMENT minus select * from PIHMS.DOC_DOCUMENT@BERMAN;
+      select * from PIHMS.DOC_DOCUMENT@BERMAN minus select * from PIHMS.DOC_DOCUMENT;
+      select count(*) from PIHMS.DOC_DOCUMENT@BERMAN minus select count(*) from PIHMS.DOC_DOCUMENT;
+
+ 
+      alter table PIHMS.DOC_DOCUMENT disable all triggers;
+
+3)	Disable all referential constraints on the standby that point to the primary key of the table you’re resyncing
+
+       select 'alter table ' || owner || '.' || table_name || ' disable constraint ' || constraint_name || ';' from dba_constraints where (owner, constraint_name) in (select owner, constraint_name from dba_constraints where table_name='DOC_DOCUMENT' and owner='PIHMS' and constraint_type='P');
+
+
+select 'alter table ' || owner || '.' || table_name || ' disable constraint ' || constraint_name || ';' from dba_constraints where (owner, constraint_name) in
+(select owner, constraint_name from dba_constraints where table_name='DOC_DOCUMENT' and owner='PIHMS' and  constraint_type in ('P','R')  );
+
+
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_STU_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_CLI_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_LVE_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_LEG_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_TRM_KF;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_CST_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_FNL_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_ERR_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_ERA_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_ADT_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_IDT_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_SAM_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_WSC_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_EMP_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_BATCH_ADT_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_POS_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_BATCH_TRM_FK;
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_USR_CREATED_BY_FK;
+
+
+alter table PIHMS.DBB_DOC_BLOB disable constraint DBB_DOC_UID_FK;
+alter table PIHMS.DPA_DOCUMENT_PRINT_AUDIT disable constraint DPA_DOC_FK;
+
+
+alter table PIHMS.DOC_DOCUMENT disable constraint DOC_PK;
+
+
+ALTER TABLE PIHMS.DBB_DOC_BLOB
+    ADD CONSTRAINT DBB_DOC_UID_FK
+    FOREIGN KEY (DBB_DOC_UID)
+    REFERENCES PIHMS.DOC_DOCUMENT (DOC_UID)
+    ENABLE
+    VALIDATE
+/
+ALTER TABLE PIHMS.DPA_DOCUMENT_PRINT_AUDIT
+    ADD CONSTRAINT DPA_DOC_FK
+    FOREIGN KEY (DPA_DOC_UID)
+    REFERENCES PIHMS.DOC_DOCUMENT (DOC_UID)
+    ENABLE
+    VALIDATE
+/
+
+
+   select owner, constraint_name, constraint_type from dba_constraints where table_name='DOC_DOCUMENT'  and owner = 'PIHMS' 
+   and constraint_type = 'P'
+
+
+
+   
+
+
+4)	Truncate the table on the standby
+
+       TRUNCATE TABLE PIHMS.DOC_DOCUMENT;
+
+       select count(*) from PIHMS.DOC_DOCUMENT;
+
+5)	Insert into the standby table – select * from table@link
+
+       insert into PIHMS.DOC_DOCUMENT select * from PIHMS.DOC_DOCUMENT@BERMAN;
+      
+
+	commit;
+
+or
+
+
+      On aphmw1p
+
+	cd /oraexport/pihmsu000/DPNTP000
+
+	expdp PHIMS_EXPIMP/#Phims_Expimp directory=DATA_PUMP_DIR dumpfile=tbl1.dmp logfile=tbl1.log tables=PIHMS.LTR_ADT_LOST_TIME_REST_DUTY
+
+	scp -p /oraexport/pihmsu000/DPNTP000/tbl1.dmp datamart:/oraexport/pihmsu000/DNTMPRP1/tbl1.dmp
+
+
+	On Datamart
+
+	cd /oraexport/pihmsu000/DNTMPRP1
+
+	impdp PHIMS_EXPIMP/#Phims_Expimp DIRECTORY=DATA_PUMP_DIR DUMPFILE=tbl.dmp tables=PIHMS.LTR_ADT_LOST_TIME_REST_DUTY LOGFILE = tbl1.log TABLE_EXISTS_ACTION=TRUNCATE
+
+
+
+
+
+
+7)	##re-enable constraints
+
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_STU_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_CLI_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_LVE_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_LEG_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_TRM_KF;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_CST_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_FNL_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_ERR_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_ERA_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_ADT_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_IDT_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_SAM_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_WSC_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_EMP_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_BATCH_ADT_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_POS_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_BATCH_TRM_FK;
+alter table PIHMS.DOC_DOCUMENT enable constraint DOC_USR_CREATED_BY_FK;
+
+alter table PIHMS.DBB_DOC_BLOB enable constraint DBB_DOC_UID_FK;
+alter table PIHMS.DPA_DOCUMENT_PRINT_AUDIT enable constraint DPA_DOC_FK;
+
+
+8)	##re-enable triggers
+        alter table PIHMS.DOC_DOCUMENT enable all triggers;
+
+9)	drop link
+
+
+
+*****************
+
+
+on the standby
+
+
+skipped that table and restarted apply
+
+EXECUTE DBMS_LOGSTDBY.SKIP (stmt => 'DML', schema_name => 'PIHMS', => object_name => 'DOC_DOCUMENT'); 
+
+
+alter database stop logical standby apply;
+
+EXECUTE DBMS_LOGSTDBY.UNSKIP (stmt => 'DML', schema_name => 'PIHMS', object_name => 'DOC_DOCUMENT');
+select count(*) from (select * from doc_document@x minus select * from doc_document);
+
+  COUNT(*)
+----------
+         0
+
+ select count(*) from (select * from doc_document minus select * from doc_document@x);
+
+  COUNT(*)
+----------
+         0 
+ alter database start logical standby apply;
+that turns the rule off so it should start applying transactions for that table again.
+
+
+
+*************** Resync PIHMS"."USR_USER 9/2019***
+
+
+ORA-26786: A row with key update "PIHMS"."USR_USER"   
+                                ("USR_UID") = (49141)     set
+                                exists but has            "USR_FIRST_NAME" = 'BEVERLY',
+                                conflicting column(s)     "USR_LAST_NAME" = 'HILL',
+                                "USR_UPDATE_DATE" in      "USR_UPDATE_ID" =
+                                table PIHMS.USR_USER      'hillbeverly',
+                                                          "USR_UPDATE_DATE" = '21-SEP-19 07.13.46 PM',
+                                                          "USR_FORMATTED_NAME" = 'HILL,BEVERLY',
+                                                          "USR_SUCCESSFUL_LOGIN_DATE" =
+                                                          '21-SEP-19 07.13.46 PM',
+                                                          "USR_ACCOUNT_STATUS" = 'OPEN'
+                                                          where
+                                                          "USR_UID" = 49141 and
+                                                          "USR_FIRST_NAME" = 'BEVERLY'
+                                                          and
+                                                          "USR_LAST_NAME" = 'HILL' and
+                                                          "USR_UPDATE_ID" =
+                                                          'hillbeverly' and
+                                                          "USR_UPDATE_DATE" = '21-SEP-19
+                                                          08.59.19 AM' and
+                                                          "USR_FORMATTED_NAME" = 'HILL,
+                                                          BEVERLY' and
+                                                          "USR_SUCCESSFUL_LOGIN_DATE" =
+                                                         '21-SEP-19 02.41.47 AM' and
+                                                          "USR_ACCOUNT_STATUS" ='OPEN'
+                                                           and
+                                                          ROWID = 'AABe6rAAWAAAKjLAAl'
+
+
+
+
+
+To avoide constanly skiping records fisrt do this to let flow complete
+
+EXECUTE DBMS_LOGSTDBY.SKIP (stmt => 'DML', schema_name => 'PIHMS', object_name => 'USR_USER'); 
+
+alter database start logical standby apply;
+
+
+Do following after Standby catched up
+
+
+Make sure your AID password same on Primary and Standby
+
+
+ALTER USER A236120
+IDENTIFIED BY "Sep22#2019"
+
+/
+
+ALTER USER A236120
+ACCOUNT UNLOCK
+/
+
+
+
+1. 
+        ## Login as A236120 to standby    
+CREATE DATABASE LINK BERMAN.WORLD
+       USING 'DPNTP000'
+/
+
+ #confirm that things are out of sync:
+      select * from PIHMS.USR_USER minus select * from PIHMS.USR_USER@BERMAN;
+      select * from PIHMS.USR_USER@BERMAN minus select * from PIHMS.USR_USER;
+      select count(*) from PIHMS.USR_USER@BERMAN minus select count(*) from PIHMS.USR_USER;
+
+
+2. 
+       alter database stop logical standby apply;
+
+
+2)	Disable all triggers on the table in standby database for USR_USER
+
+        Table:  PIHMS.USR_USER
+ 
+      alter table PIHMS.USR_USER disable all triggers;
+
+3)	Disable all referential constraints on the standby that point to the primary key of the table you’re resyncing
+
+
+	select 'alter table ' || owner || '.' || table_name || ' disable constraint ' || constraint_name || ';' from dba_constraints where (owner, constraint_name) in
+	(select owner, constraint_name from dba_constraints where table_name='USR_USER' and owner='PIHMS' and  constraint_type in ('P','R')  );
+
+
+	alter table PIHMS.USR_USER disable constraint USR_USER_PK;
+	alter table PIHMS.USR_USER disable constraint USR_EMP_FK;
+	alter table PIHMS.USR_USER disable constraint USR_AST_FK;
+
+4)	Truncate the table on the standby
+
+       TRUNCATE TABLE PIHMS.USR_USER;
+
+       select count(*) from PIHMS.USR_USER;
+
+5)	Insert into the standby table – select * from table@link
+
+       insert into PIHMS.USR_USER select * from PIHMS.USR_USER@BERMAN;
+      
+
+	commit;
+
+or (if table is really big)
+
+      On aphmw1p
+
+	cd /oraexport/pihmsu000/DPNTP000
+
+	expdp PHIMS_EXPIMP/#Phims_Expimp directory=DATA_PUMP_DIR dumpfile=USR_USER.dmp logfile=USR_USER.log tables=PIHMS.USR_USER
+
+	scp -p /oraexport/pihmsu000/DPNTP000/USR_USER.dmp datamart:/oraexport/pihmsu000/DNTMPRP1/USR_USER.dmp
+
+
+	On Datamart
+
+	cd /oraexport/pihmsu000/DNTMPRP1
+
+	impdp PHIMS_EXPIMP/#Phims_Expimp DIRECTORY=DATA_PUMP_DIR DUMPFILE=tbl.dmp tables=PIHMS.USR_USER LOGFILE = USR_USER.log TABLE_EXISTS_ACTION=TRUNCATE
+
+
+7)	##re-enable constraints
+
+        alter table PIHMS.USR_USER enable constraint USR_USER_PK;
+	alter table PIHMS.USR_USER enable constraint USR_EMP_FK;
+	alter table PIHMS.USR_USER enable constraint USR_AST_FK;
+
+
+
+8)	##re-enable triggers
+        alter table PIHMS.USR_USER enable all triggers;
+
+
+9)     sqlplus / as sysdba
+
+      alter database start logical standby apply immediate;
+
+
+
+**** How to skip table ***
+
+EXECUTE DBMS_LOGSTDBY.SKIP (stmt => 'DML', schema_name => 'PIHMS', => object_name => 'USR_USER'); 
+
+alter database start logical standby apply;
+
+**** How to Un skip table ***
+alter database stop logical standby apply;
+
+EXECUTE DBMS_LOGSTDBY.UNSKIP (stmt => 'DML', schema_name => 'PIHMS', object_name => 'USR_USER');
+
+ alter database start logical standby apply;
+
+
+****************
+
+
+ 

@@ -1,0 +1,99 @@
+cd /workability/home/oracle/SourceSafe/
+
+cd 0621_MIGRATION_PROD_ONLY
+
+--What is out there .sql
+
+	Aetna_PostMigration_VERIFY_UPDATE_Eff_Status_AtoS.sql
+	Block_0_0_Duplicate_user_logon.sql
+	Block_0_1Remove_Access_Backup.sql
+	Block_0_2_Remove_Access.sql
+	Block_0_3_Enable_NewCo_Param.sql
+	Block_1_1_NewCoSecurityUpdate.sql
+	Block_2_1SetProcessCode.sql
+	Block_2_3_BenEngEffStatus.sql
+        Block_2_3_Disable_Task_Script_Company.sql
+	Block_2_4_Deactivate_Report_Schedules.sql
+        Block_2_5_CloseClaims.sql
+		Block_3_1_Shareplex_Ignore_Employee.sql
+		Block_3_2_Shareplex_Ignore_A_REQUEST_ACTION.sql
+		Block_3_3_ShareplexIgnore_A_TASK_INSTANCE.sql
+		Block_3_4_ShareplexIgnore_BENENG_PAY_RQST_HIST.sql
+        	Block_3_5_ShareplexIgnore_Script_Instance_based.sql
+	MIGR_BLK6_03_PW validate status of migrated claims WKAB.sql 
+
+--What is out there .sh
+
+Block_3a.sh
+
+run_sql Block_3_4_ShareplexIgnore_BENENG_PAY_RQST_HIST.sql &
+run_sql Block_3_2_Shareplex_Ignore_A_REQUEST_ACTION.sql &
+run_sql Block_3_1_Shareplex_Ignore_Employee.sql &
+
+
+
+Block_3b.sh
+
+run_sql Block_3_5_ShareplexIgnore_Script_Instance_based.sql
+run_sql Block_3_3_ShareplexIgnore_A_TASK_INSTANCE.sql
+
+
+x.sh
+x2.sh
+x3.sh
+
+
+--Edit with current day
+vi Block_0_1Remove_Access_Backup.sql 
+
+
+view Block_0_2_Remove_Access.sql
+view Block_1_1_NewCoSecurityUpdate.sql
+view MIGR_BLK0_00_Duplicate_user_logon ? --> Block_0_0_Duplicate_user_logon.sql
+
+view Block_0_3_Enable_NewCo_Param.sql
+
+view exp_0622_DRGENERIC.par
+view exp_0622_DRWKAB.par
+view exp_0622_LUMINX.par
+
+
+view TeamAccess_Restore_For_MMYYCompanies.sql
+This isn't actually a script (unless you create it).  It is just putting back the rows you saved off with the CTAS on Friday night.  So the script is like this (but you will change the date to match your CTAS):
+ insert into wkab10.t_team_access select * from wkab10.t_team_access_20190621;
+
+view Block_2_1SetProcessCode.sql
+
+view Block_2_3_BenEngEffStatus.sql (DBA_Aetna_PostMigration_Update_Eff_Status_AtoS) ? Does not have / after END 
+
+
+B) Update Indicator for Shareplex Migration tables at Aetna ** Note please run the shareplex steps under SPEX_IGNORE and run them concurrently***
+
+view Block_3_1_Shareplex_Ignore_Employee.sql 
+view Block_3_2_Shareplex_Ignore_A_REQUEST_ACTION.sql 
+view Block_3_3_ShareplexIgnore_A_TASK_INSTANCE.sql
+view Block_3_4_ShareplexIgnore_BENENG_PAY_RQST_HIST.sql ? Run as  beneng ?
+view Block_3_5_ShareplexIgnore_Script_Instance_based.sql
+
+
+view Block_2_3_Disable_Task_Script_Company.sql
+
+
+view Block_2_4_Deactivate_Report_Schedules.sql ? No / after the end
+view Block_2_5_CloseClaims.sql
+
+
+view Aetna_PostMigration_VERIFY_UPDATE_Eff_Status_AtoS.sql
+
+@"MIGR_BLK6_03_PW validate status of migrated claims WKAB"
+
+
+./Block_3b.sh[23]: echc:  not found ?
+
+
+
+*******************************
+
+cd /workability/home/oracle/SourceSafe/
+
+cd 0726_MIGRATION_PROD_ONLY

@@ -1,0 +1,701 @@
+DPUPG01 --->DPQA89
+
+
+DRDV01
+
+***************************************************
+DRQA01
+      OWNER:DRGENERIC
+      LINK NAME: DPUG01.WORLD
+      USER: DBLINK_DATAREP
+
+      OWNER:LUMINX
+      LINK NAME: DPUG01.WORLD
+      USER: DBLINK_DATAREP
+
+--OWNER:DRGENERIC
+CREATE DATABASE LINK DPQA89.WORLD
+    CONNECT TO DBLINK_DATAREP
+    IDENTIFIED BY DPUSR01
+    USING 'dpqa89'
+/
+--- OWNER:LUMINX
+CREATE DATABASE LINK DPQA89.WORLD
+    CONNECT TO DBLINK_DATAREP
+    IDENTIFIED BY DPUSR01
+    USING 'dpqa89'
+/
+
+
+
+****************************************************
+WKABUAT 
+      OWNER: PUBLIC
+      LINK NAME: DPUG01
+      USER: WKABUAT_LNK_USER
+      **Password: wrusr01 *****
+--OWNER:PUBLIC
+CREATE DATABASE LINK DPQA89
+    USING ''
+/
+
+**************************************************************
+
+sys.link$ table could give us passwords for link users in 8,9 Version
+select name, password,userid from sys.link$ where name = 'DPQA89';
+select * from dba_synonyms where db_link is not null
+
+***************************************************************
+
+dpqa89  dppqa  system  sysdpqa89 
+
+
+DPQA89.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPQA)(Port = 1528))
+    )
+    (CONNECT_DATA = (SID = DPQA89.WORLD)
+    )
+  )
+
+DPQA89 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPQA)(Port = 1528))
+    )
+    (CONNECT_DATA = (SID = DPQA89)
+    )
+  )
+
+
+
+DPUPG01.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS =
+          (COMMUNITY = tcp.world)
+          (PROTOCOL = TCP)
+          (Host = dppdev.add.net)
+          (Port = 1521)
+        )
+    )
+    (CONNECT_DATA = (SID = DPUPG01)
+    )
+  )
+
+*** to TEST DBLINK***********
+SELECT * FROM SYSADM.PS_LOCAL_TAX_TBL@DPQA89.WORLD
+
+or re compile one of the Packages if you know which one is used with DBlink/Synonym
+
+
+
+
+DPQA89 ***************************************
+CREATE PUBLIC SYNONYM S_PSXLATITEM
+    FOR SYSADM.PSXLATITEM@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PSXLATITEM
+    FOR SYSADM.PSXLATITEM@DPQA89
+/
+**********************************************
+CREATE PUBLIC SYNONYM S_PS_DEDUCTION_TBL
+    FOR SYSADM.PS_DEDUCTION_TBL@DPUPG01
+/
+
+CREATE PUBLIC SYNONYM S_PS_DEDUCTION_TBL
+    FOR SYSADM.PS_DEDUCTION_TBL@DPQA89
+/
+*****************************************
+CREATE PUBLIC SYNONYM S_PS_EARNINGS_TBL
+    FOR SYSADM.PS_EARNINGS_TBL@DPUPG01
+/
+
+CREATE PUBLIC SYNONYM S_PS_EARNINGS_TBL
+    FOR SYSADM.PS_EARNINGS_TBL@DPQA89
+/
+******************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_BAL
+    FOR SYSADM.PS_KNS_OVPD_BAL@DPUPG01
+/
+
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_BAL
+    FOR SYSADM.PS_KNS_OVPD_BAL@DPQA89
+/
+******************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_CALC
+    FOR SYSADM.PS_KNS_OVPD_CALC@DPUPG01
+/
+
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_CALC
+    FOR SYSADM.PS_KNS_OVPD_CALC@DPQA89
+/
+*******************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_CLAIMS
+    FOR SYSADM.PS_KNS_OVPD_CLAIMS@DPUPG01
+/
+
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_CLAIMS
+    FOR SYSADM.PS_KNS_OVPD_CLAIMS@DPQA89
+/
+*******************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_NOTES
+    FOR SYSADM.PS_KNS_OVPD_NOTES@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_KNS_OVPD_NOTES
+    FOR SYSADM.PS_KNS_OVPD_NOTES@DPQA89
+/
+*********************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_RQST_NOTESV
+    FOR SYSADM.PS_KNS_RQST_NOTESV@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_KNS_RQST_NOTESV
+    FOR SYSADM.PS_KNS_RQST_NOTESV@DPQA89
+/
+*******************************************
+CREATE PUBLIC SYNONYM S_PS_PAY_CHECK
+    FOR SYSADM.PS_PAY_CHECK@DPUPG01
+/
+
+CREATE PUBLIC SYNONYM S_PS_PAY_CHECK
+    FOR SYSADM.PS_PAY_CHECK@DPQA89
+/
+****************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_PAY_CHECK
+    FOR SYSADM.PS_KNS_PAY_CHECK@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_KNS_PAY_CHECK
+    FOR SYSADM.PS_KNS_PAY_CHECK@DPQA89
+/
+***************************************
+CREATE PUBLIC SYNONYM S_PS_PAY_TAX
+    FOR SYSADM.PS_PAY_TAX@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_PAY_TAX
+    FOR SYSADM.PS_PAY_TAX@DPQA89
+/
+*******************************************
+CREATE PUBLIC SYNONYM S_PS_PAYGROUP_TBL
+    FOR SYSADM.PS_PAYGROUP_TBL@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_PAYGROUP_TBL
+    FOR SYSADM.PS_PAYGROUP_TBL@DPQA89
+/
+*****************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_EMPLID
+    FOR SYSADM.PS_KNS_EMPLID@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_KNS_EMPLID
+    FOR SYSADM.PS_KNS_EMPLID@DPQA89
+/
+******************************************
+CREATE PUBLIC SYNONYM S_PS_JOB
+    FOR SYSADM.PS_JOB@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_JOB
+    FOR SYSADM.PS_JOB@DPQA89
+/
+********************************************
+CREATE PUBLIC SYNONYM S_PS_DEDUCTION_CLASS
+    FOR SYSADM.PS_DEDUCTION_CLASS@DPUPG01
+/
+
+CREATE PUBLIC SYNONYM S_PS_DEDUCTION_CLASS
+    FOR SYSADM.PS_DEDUCTION_CLASS@DPQA89
+/
+*********************************************
+CREATE PUBLIC SYNONYM S_PS_EARNINGS_SPCL
+    FOR SYSADM.PS_EARNINGS_SPCL@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_EARNINGS_SPCL
+    FOR SYSADM.PS_EARNINGS_SPCL@DPQA89
+/
+*****************************************
+CREATE PUBLIC SYNONYM S_PS_KNS_XLAT_TBL
+    FOR SYSADM.PS_KNS_XLAT_TBL@DPUPG01
+/
+CREATE PUBLIC SYNONYM S_PS_KNS_XLAT_TBL
+    FOR SYSADM.PS_KNS_XLAT_TBL@DPQA89
+/
+
+
+***********CREATE BRAND NEW LINK *******************************
+
+
+OWNER: LUMINX
+DR02******************************************
+
+CREATE DATABASE LINK WKABPROD.WORLD
+    CONNECT TO DR02_LNK_USER
+    IDENTIFIED BY DRUSR01
+    USING 'WKABPROD'
+/
+
+OWNER: LUMINX
+DRQA01 ****************************************
+CREATE DATABASE LINK WKABUAT.WORLD
+    CONNECT TO DRQA01_LNK_USER
+    IDENTIFIED BY DRUSR01
+    USING 'wkabuat'
+/
+
+############################################################################################
+1. Create user on other database WKABDEV2 with appropriate priveleges
+
+CREATE USER DRDV01_LNK_USER IDENTIFIED BY "DRUSR01"
+    DEFAULT TABLESPACE USERS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT CREATE SESSION TO DRDV01_LNK_USER
+/
+GRANT SELECT ANY TABLE TO DRDV01_LNK_USER
+/
+
+
+2. Make sure correct tnsnames.ora entry exist in Floradev over to WKABDEV2
+
+wkabdev2.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = boraw1d)(PORT = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabdev2.world))
+ )
+
+3. Login to DRDV01 as LUMINX
+
+
+CREATE DATABASE LINK WKABDEV2.WORLD
+    CONNECT TO DRDV01_LNK_USER
+    IDENTIFIED BY DRUSR01
+    USING 'WKABDEV2.WORLD'
+/
+
+
+CREATE DATABASE LINK WKABDEV2.WORLD
+    CONNECT TO DRDV01_LNK_USER
+    IDENTIFIED BY DRUSR01
+    USING '(DESCRIPTION = (ADDRESS_LIST = (
+    ADDRESS = (PROTOCOL = TCP) (HOST = boraw1d)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = wkabdev2.world)))'
+/
+
+
+
+4. Test Link
+
+select * from t_person@wkabdev2.world 
+
+Did not work with first dblink. After some research due to some 8i bug had to recreate link and it works now.
+
+
+
+**************************Private and Public DBLInks************************************************
+
+If creating private dblink this user have to have create dblink system perm...
+
+Creating a Connected User Database Link (this would not need to have passwrod hardcoded)
+
+http://download.oracle.com/docs/cd/B10501_01/server.920/a96521/ds_admin.htm#24897
+
+On #6, I think if we can, we should either make it a private link or, if it's a public link, we should not hard-code the credentials.  That way we would have to keep the passwords synchronized between instances, but it wouldn't be an audit problem.  I think the public links with hard-coded credentials are an audit problem.
+
+CREATE DATABASE LINK DRDV01.WORLD USING 'DRDV01.WORLD';
+select 1 from dual@DRDV01.WORLD;
+
+
+
+
+GRANT DELETE ON LUMINX.WKAB_LTD_STD_FEED_MV TO APP_WKAB_ROLE
+/
+GRANT INSERT ON LUMINX.WKAB_LTD_STD_FEED_MV TO APP_WKAB_ROLE
+/
+GRANT SELECT ON LUMINX.WKAB_LTD_STD_FEED_MV TO APP_WKAB_ROLE
+/
+GRANT UPDATE ON LUMINX.WKAB_LTD_STD_FEED_MV TO APP_WKAB_ROLE
+/
+
+select * from LUMINX.WKAB_LTD_STD_FEED_MV@DRDV01.WORLD;
+
+--------------------------------------------------------------------------------
+From: Berman, Eugene 
+Sent: Friday, July 18, 2008 12:50 PM
+To: Swafford, Mike
+Subject: FW: Request for Database Support #18898025 for PLA
+
+
+Mike,
+ 
+Just want to share my thoughts for Roger's request below. Let me know if I missed anything? Thanks.
+ 
+1. Unix ID created on each WKAB Server by Admin. ---  Looks like this completed already
+2. DBA would create appropriate S id in each Oracle Database specified.
+3. DBA would create DBLink User account on each corresponding DR database. ---> DB Link ID does not have to be same as S ID name? Could it be something like WKABDEV2_LNK_USER?
+4. Developers would provide list of tables and what type access required.
+5. DBA would create new ROLE with appropriate privileges on each DR database and assign this role to this WKABDEV2_LNK_USER
+6. DBA would create new Public  DBLINK from each WKAB database specified in request.
+7. Developers would place Unix scripts which would invoke sqlplus for data push over to DR  by using this DB Link
+
+
+
+
+
+********** Task: re point DBLINKS from wkabdev1 and wkabdev2 to newly created DPDEV90 ***************************
+
+
+1. Make sure boraw1d has latest tnsnames.ora entry
+
+
+. $SETUPENV wkabdev1
+
+cd $ORACLE_HOME/network/admin
+
+vi tnsnames.ora
+
+DPDEV90.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS =
+          (COMMUNITY = tcp.world)
+          (PROTOCOL = TCP)
+          (Host = dppdev)
+          (Port = 1597)
+        )
+    )
+    (CONNECT_DATA = (SID = DPDEV90)
+    )
+  )
+
+
+
+2. Research for what user should use.
+
+System/bpsdpdev89 old db
+System/sysdpdev90 new db
+DPP  - user
+
+PWMDEV9_LNK_USER/wrusr01
+select * from dba_users where username like '%PWM%'
+
+****************************************************************************
+Connect to wkabdev1 as wkab10/WKAB10_WKABDEV1
+
+CREATE DATABASE LINK DPDEV90.WORLD
+    CONNECT TO WKABDEV_LNK_USER 
+    IDENTIFIED BY wrusr01
+    USING 'DPDEV90.WORLD'
+/
+
+
+Connect to wkabdev1 as beneng/BENENG_WKABDEV1 
+
+CREATE DATABASE LINK DPDEV90.WORLD
+    CONNECT TO WKABDEV_LNK_USER 
+    IDENTIFIED BY wrusr01
+    USING 'DPDEV90.WORLD'
+/
+
+
+Re create Synomyms
+
+
+CREATE OR REPLACE PUBLIC SYNONYM S_PSXLATITEM
+    FOR SYSADM.PSXLATITEM@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_PAYGROUP_TBL
+    FOR SYSADM.PS_PAYGROUP_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_PAY_TAX
+    FOR SYSADM.PS_PAY_TAX@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_PAY_CHECK
+    FOR SYSADM.PS_PAY_CHECK@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_XLAT_TBL
+    FOR SYSADM.PS_KNS_XLAT_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_RQST_NOTESV
+    FOR SYSADM.PS_KNS_RQST_NOTESV@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_PAY_CHECK
+    FOR SYSADM.PS_KNS_PAY_CHECK@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_NOTES
+    FOR SYSADM.PS_KNS_OVPD_NOTES@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_CLAIMS
+    FOR SYSADM.PS_KNS_OVPD_CLAIMS@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_CALC
+    FOR SYSADM.PS_KNS_OVPD_CALC@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_BAL
+    FOR SYSADM.PS_KNS_OVPD_BAL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_EMPLID
+    FOR SYSADM.PS_KNS_EMPLID@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_JOB
+    FOR SYSADM.PS_JOB@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_EARNINGS_TBL
+    FOR SYSADM.PS_EARNINGS_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_EARNINGS_SPCL
+    FOR SYSADM.PS_EARNINGS_SPCL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_DEDUCTION_TBL
+    FOR SYSADM.PS_DEDUCTION_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_DEDUCTION_CLASS
+    FOR SYSADM.PS_DEDUCTION_CLASS@DPDEV90.WORLD
+/
+
+
+To test sqlplus as wkab10
+
+select count(*) from S_PS_DEDUCTION_CLASS;
+
+****************************************************************************
+
+
+
+. $SETUPENV wkabdev2
+
+cd $ORACLE_HOME/network/admin
+
+vi tnsnames.ora
+
+DPDEV90.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS =
+          (COMMUNITY = tcp.world)
+          (PROTOCOL = TCP)
+          (Host = dppdev)
+          (Port = 1597)
+        )
+    )
+    (CONNECT_DATA = (SID = DPDEV90)
+    )
+  )
+
+
+
+Connect to wkabdev2 as wkab10/wkab10_wkabdev2
+
+CREATE DATABASE LINK DPDEV90.WORLD
+    CONNECT TO WKABDEV_LNK_USER 
+    IDENTIFIED BY wrusr01
+    USING 'DPDEV90.WORLD'
+/
+
+
+Connect to wkabdev1 as beneng/beneng_wkabdev2 
+
+CREATE DATABASE LINK DPDEV90.WORLD
+    CONNECT TO WKABDEV_LNK_USER 
+    IDENTIFIED BY wrusr01
+    USING 'DPDEV90.WORLD'
+/
+
+
+Re create Synomyms
+
+
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_DEDUCTION_CLASS
+    FOR SYSADM.PS_DEDUCTION_CLASS@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_DEDUCTION_TBL
+    FOR SYSADM.PS_DEDUCTION_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_EARNINGS_SPCL
+    FOR SYSADM.PS_EARNINGS_SPCL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_EARNINGS_TBL
+    FOR SYSADM.PS_EARNINGS_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_JOB
+    FOR SYSADM.PS_JOB@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_EMPLID
+    FOR SYSADM.PS_KNS_EMPLID@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_BAL
+    FOR SYSADM.PS_KNS_OVPD_BAL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_CALC
+    FOR SYSADM.PS_KNS_OVPD_CALC@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_CLAIMS
+    FOR SYSADM.PS_KNS_OVPD_CLAIMS@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_OVPD_NOTES
+    FOR SYSADM.PS_KNS_OVPD_NOTES@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_PAY_CHECK
+    FOR SYSADM.PS_KNS_PAY_CHECK@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_RQST_NOTESV
+    FOR SYSADM.PS_KNS_RQST_NOTESV@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_KNS_XLAT_TBL
+    FOR SYSADM.PS_KNS_XLAT_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_PAY_CHECK
+    FOR SYSADM.PS_PAY_CHECK@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_PAY_TAX
+    FOR SYSADM.PS_PAY_TAX@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PS_PAYGROUP_TBL
+    FOR SYSADM.PS_PAYGROUP_TBL@DPDEV90.WORLD
+/
+CREATE OR REPLACE PUBLIC SYNONYM S_PSXLATITEM
+    FOR SYSADM.PSXLATITEM@DPDEV90.WORLD
+/
+
+
+To test log sqlplus wkabdev2 as wkab10
+
+
+select count(*) from S_PS_DEDUCTION_CLASS;
+
+select * from sysadm.ps_kns_demo_hist@DPUAT92;
+
+
+Complete below once new links tested.
+
+
+. $SETUPENV wkabdev1
+
+sqlplus wkab10/WKAB10_WKABDEV1
+
+DROP DATABASE LINK DPDEV89.WORLD
+/ 
+
+sqlplus beneng/BENENG_WKABDEV1
+
+DROP DATABASE LINK DPDEV89.WORLD
+/ 
+
+
+
+
+. $SETUPENV wkabdev2
+
+sqlplus wkab10/wkab10_wkabdev2
+
+DROP DATABASE LINK DPDEV89.WORLD
+/ 
+
+sqlplus beneng/beneng_wkabdev2
+
+DROP DATABASE LINK DPDEV89.WORLD
+/ 
+
+
+****************  HOW to check if DPP dblink working fine
+
+
+1. Login to wkab database as wkab10
+
+2. select * from global_name@DPDEV90.WORLD
+
+
+
+CREATE DATABASE LINK DPDEV91.WORLD
+    CONNECT TO "WKABDEV_LNK_USER"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'DPDEV91.WORLD'
+/
+
+
+CREATE DATABASE LINK DPPRD01.WORLD
+    CONNECT TO "WKABPROD_LNK_USER"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'DPPRD01'
+/
+
+
+
+CREATE USER WKABUAT_LNK_USER IDENTIFIED BY VALUES '4ACB27672BAB0428'
+    DEFAULT TABLESPACE USERS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+GRANT DEVELOPER_SELECT TO WKABUAT_LNK_USER
+/
+ALTER USER WKABUAT_LNK_USER DEFAULT ROLE DEVELOPER_SELECT
+/
+GRANT CREATE SESSION TO WKABUAT_LNK_USER
+/
+wrusr01
+
+
+
+CREATE DATABASE LINK DPUAT91.WORLD
+    CONNECT TO WKABUAT_LNK_USER
+    IDENTIFIED wrusr01
+    USING 'DPUAT91'
+/
+
+
+
+CREATE DATABASE LINK "DPNIP000.WORLD"
+CONNECT TO "PIHMS" IDENTIFIED BY VALUES '06C0EEB597F17B737A8960762B749B8D6826FF1
+7FBD60D91FB982DD3FBD2B2279D60BA431A3C8010441D1CFEE23F533483AF05CAB8FE211ADA2B431
+2704523F4A34C4DAE62C3AE274844308BD24D44AD4FE11E699FE05EC687178AFC034E0C1FE98F99F
+99596F4760AAB712445D091C77C8278A55CB2F7E6088C552F219B5DFF'
+USING 'DPNIP000'
+
+
+
+*******************LUMINX DBLINK from DR02 to wkabprod ****************
+
+
+1. Login to wkabprod
+
+CREATE USER DR02_LUMINX_DBLINK IDENTIFIED BY "#LuM24y#"
+    DEFAULT TABLESPACE USERS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE AETNA_SERVICE_ACCOUNT_PROFILE
+    ACCOUNT UNLOCK
+/
+GRANT "CONNECT" TO DR02_LUMINX_DBLINK
+/
+GRANT "RESOURCE" TO DR02_LUMINX_DBLINK
+/
+ALTER USER DR02_LUMINX_DBLINK DEFAULT ROLE "CONNECT",
+                                "RESOURCE"
+/
+GRANT SELECT ANY TABLE TO DR02_LUMINX_DBLINK
+/
+GRANT UNLIMITED TABLESPACE TO DR02_LUMINX_DBLINK
+/
+
+
+
+3. Login to DR02 as sysdba
+
+GRANT CREATE DATABASE LINK TO LUMINX
+/
+
+3. Login to DR02 as LUMINX
+
+CREATE DATABASE LINK WKABPROD.WORLD
+    CONNECT TO DR02_LUMINX_DBLINK
+    IDENTIFIED BY "#LuM24y#"
+    USING 'wkabprod'
+/
+
+4. Create synonym if needed
+
+s_mda_icd9
+
+CREATE OR REPLACE PUBLIC SYNONYM s_mda_icd9
+    FOR WKAB10.t_mda_icd9@wkabprod.WORLD
+/
+
+

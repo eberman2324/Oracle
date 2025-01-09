@@ -1,0 +1,28 @@
+
+## Old Entry in tnsnames.ora
+DPUAT92.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS =
+          (COMMUNITY = tcp.world)
+          (PROTOCOL = TCP)
+          (Host = dppqa)
+          (Port = 1598)
+        )
+    )
+    (CONNECT_DATA = (SID = DPUAT92)
+    )
+  )
+
+
+
+## New Entry in tnsnames.ora
+DPUAT92.world =
+  (DESCRIPTION =
+   (ADDRESS_LIST =
+    (ADDRESS= (PROTOCOL= IPC)(KEY= DPUAT92_ipc))
+   )
+   (CONNECT_DATA =
+    (SID = DPUAT92)
+   )
+  )

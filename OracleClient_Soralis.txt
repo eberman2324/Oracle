@@ -1,0 +1,352 @@
+Software Download Link
+https://updates.oracle.com/Orion/Services/download?type=readme&aru=16733784
+
+Dev Server Name: PLTT-IVRAPP-01 (new name: sivrnm1t)
+
+the new host is locally connected to the current one, so you have to login to it first
+the host is pltt-ivrapp-01
+
+user: peri
+pswd: bozak123
+once you are on that machine, "rlogin newdev"
+that will put you on the new host
+then su - oracle
+pswd: oracle11g
+
+
+The new host is directly connected now, so just login to pltt-ivrapp-01.  User “peri”, pswd “peri;”
+You won’t need to rlogin to newdev because you will be on the correct machine using the above method.
+
+Please let me know if you need any assistance.
+
+
+
+
+
+--run ipconfig from MS-DOS (cmd) window on your local laptop.
+      172.22.157.177
+
+     --Start Exceed
+      Start-> Programs -> Aetna Applications -> Open Text Exceed 14 -> Exceed
+     
+    -- Go back to ssh window  
+       cd /usr/bin/X11
+    or
+       cd /usr/openwin/bin
+       
+      
+       xterm -display 172.22.157.177:0 &
+
+    -- This should bring up new xWindow
+ 
+     -- Go back to xwindow  
+
+     cd /opt/oracle/product/11g/client/
+
+     
+
+setenv DISPLAY 172.22.157.177:0 
+
+     ./runInstaller
+
+
+
+*****Modified Procedures per Mike. Above did not work cause xclock or runInstaller would not start in new XWindow.
+
+
+Dev Server Name: PLTT-IVRAPP-01
+
+Before you log in, set your Host Explorer profile to allow X11 forwarding (it is a check box under Connection->Secure Shell)
+
+
+
+the new host is locally connected to the current one, so you have to login to it first
+the host is pltt-ivrapp-01
+
+user: peri
+pswd: bozak123
+
+
+--Start Exceed
+      Start-> Programs -> Aetna Applications -> Open Text Exceed 14 -> Exceed
+     
+    -- Go back to ssh window  
+       cd /usr/bin/X11
+    or
+       cd /usr/openwin/bin
+        Your DISPLAY should already be set so
+peri@pltt-ivrapp-01 {64} echo $DISPLAY
+pltt-ivrapp-01:10.0
+
+
+ssh oracle@newdev
+
+The default shell here is csh so setting environment variables is a little different
+setenv DISPLAY pltt-ivrapp-01:10.0
+
+Now if you want, you can go into ksh
+exec ksh
+
+--Then try xclock
+xclock &
+
+It should start up a new window.
+cd /opt/oracle/product/11g/client/
+./runInstaller
+
+
+system/Z00mZ00m!@IVDV01
+
+
+IVDV01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(HOST = BORAW1D)
+        (PORT = 1521))
+   )
+   (CONNECT_DATA = (SERVICE_NAME = IVDV01)
+   )
+)
+
+
+
+cp /opt/oracle/product/11g32bit/network/admin/tnsnames.ora /opt/oracle/product/tnsnames.ora
+cp /opt/oracle/product/11g/network/admin/sqlnet.ora /opt/oracle/product/sqlnet.ora
+
+
+cp /opt/oracle/product/tnsnames.ora /opt/oracle/product/11g32bit/network/admin/tnsnames.ora
+cp /opt/oracle/product/sqlnet.ora /opt/oracle/product/11g32bit/network/admin/sqlnet.ora
+
+cp sqlnet.ora /opt/oracle/product/11g32bit/sqlnet.ora
+
+
+
+!! Never worked. Box froze
+deinstall -home /opt/oracle/product/11g
+
+
+
+
+
+inventory_loc=/opt/oracle/oraInventory
+
+
+OraClient11g_home1
+
+
+
+!!!! Deinstall old Oracle 64 CLient
+
+1. Check Oracle Home name 
+/opt/oracle/oraInventory/ContentsXML
+view inventory.xml
+
+cd $ORACLE_HOME/oui/bin
+
+./runInstaller -detachHome -silent ORACLE_HOME="/opt/oracle/product/11g" ORACLE_HOME_NAME="OraClient11g_home1"
+
+or 
+
+$ORACLE_HOME/oui/bin/runInstaller -detachHome -silent ORACLE_HOME="/opt/oracle/product/11g" ORACLE_HOME_NAME="OraClient11g_home1"
+
+!!! Make sure Fred relocated oracle $HOME over from 11g (where its currently)
+
+Log off and relogin to make sure new $HOME under different directory
+
+cd /opt/oracle/product
+
+!!! use /rm in this SOLARIS settings not plain rm...
+
+\rm -rf ./11g
+
+
+
+
+***to check Solaris Server error log****
+
+var/adm/messages (older messages are in messages.0,messages.1, etc)
+
+
+
+
+****** Install CLient on new Server: sivrnm1p *******
+                                     sivrnm1p
+oracle/oracle;
+
+rlogin newap
+
+oracle/oracle11g
+
+oracle@sivrnm1p {11} hostid
+86683acc
+
+
+
+
+Dev Server Name: sivrnm1p
+
+Before you log in, set your Host Explorer profile to allow X11 forwarding (it is a check box under Connection->Secure Shell)
+
+
+
+the new host is locally connected to the current one, so you have to login to it first
+the host is sivrnm1p
+
+user: oracle
+pswd: oracle;
+
+
+--Start Exceed
+      Start-> Programs -> Aetna Applications -> Open Text Exceed 14 -> Exceed
+     
+    -- Go back to ssh window  
+       cd /usr/bin/X11
+    or
+       cd /usr/openwin/bin
+        Your DISPLAY should already be set so
+peri@pltt-ivrapp-01 {64} echo $DISPLAY
+
+sivrnm1p:10.0
+
+ssh oracle@newap
+
+The default shell here is csh so setting environment variables is a little different
+setenv DISPLAY sivrnm1p:10.0
+
+Now if you want, you can go into ksh
+exec ksh
+
+--Then try xclock
+xclock &
+
+
+cd /opt/oracle/product/11g32bit/
+
+unzip .zip files
+
+It should start up a new window.
+cd /opt/oracle/product/11g32bit/client32
+./runInstaller
+
+
+cd /opt/oracle/oraInventory/orainstRoot.sh
+
+ivpr01.WORLD, ivpr01 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aetnaprod)(Port = 1526))
+    )
+    (CONNECT_DATA =
+      (SID = ivpr01)
+    )
+)
+
+
+IVDV01.WORLD, IVDV01 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(HOST = BORAW1D)
+        (PORT = 1521))
+   )
+   (CONNECT_DATA = (SERVICE_NAME = IVDV01)
+   )
+)
+
+
+
+
+******Install Oracle Client 32 bit on 167.69.197.150 (sivrnw1p) ********
+
+
+
+Login first as peri/peri;
+
+
+
+--Start Exceed
+      Start-> Programs -> Aetna Applications -> Open Text Exceed 14 -> Exceed
+ 
+
+
+1) ssh to the host as peri Account or your A id account with X11 forwarding enabled
+
+
+2) echo $DISPLAY
+  sivrnw1p:10.0
+
+
+3) xauth list
+   
+   72.16.3.142:2  MIT-MAGIC-COOKIE-1  a19d8fa3968dbb96939997a88bb5b98a
+   localhost:0  MIT-MAGIC-COOKIE-1  de08fa6e3fd3e6c5a20180b72229fff6
+   192.84.159.200:0  MIT-MAGIC-COOKIE-1  fbe869f7a943749f45fcb8c5f557efe3
+   sivrnw1p:10  MIT-MAGIC-COOKIE-1  221ac24d7f0d9626db2fdb73cc3bf1f6
+   sivrnw1p:11  MIT-MAGIC-COOKIE-1  fa5f24b6125420cb0ab150f8b8e8dc5c
+
+
+
+
+
+4) #copy the whole line for the xauth output line that matches the DISPLAY
+
+sivrnw1p:10  MIT-MAGIC-COOKIE-1  221ac24d7f0d9626db2fdb73cc3bf1f6
+
+5) #su to oracle
+
+su - oracle
+oracle11g
+
+echo $DISPLAY
+-->DISPLAY: Undefined variable
+
+
+
+xauth add sivrnw1p:10  MIT-MAGIC-COOKIE-1  221ac24d7f0d9626db2fdb73cc3bf1f6
+
+echo $SHELL
+
+exec ksh
+
+export DISPLAY=sivrnw1p:10.0
+
+
+cd /usr/openwin/bin
+
+6) run xclock or xterm to see if it works
+
+xclock
+
+
+7) #Install Oracle Client
+cd /opt/oracle/product/11g32bit/
+
+unzip .zip files
+
+
+cd client32
+
+./runInstaller
+
+
+execute as root /opt/oracle/oraInventory/orainstRoot.sh
+
+ivpr01.WORLD, ivpr01 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aetnaprod)(Port = 1526))
+    )
+    (CONNECT_DATA =
+      (SID = ivpr01)
+    )
+)
+
+
+IVDV01.WORLD, IVDV01 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(HOST = BORAW1D)
+        (PORT = 1521))
+   )
+   (CONNECT_DATA = (SERVICE_NAME = IVDV01)
+   )
+)

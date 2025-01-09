@@ -1,0 +1,17 @@
+. oraenv
+
+HEPYQA
+
+cd $HOME/tls/utility
+
+1. Create table list text file (without prefix)
+
+   view tom.txt
+
+2. run as example below will create file called sel_rowcount.sql  
+
+   build_select_rowcount_sql.sh HEPYQA tom.txt    
+
+3. execute via sqlplus
+
+   @sel_rowcount.sql 
