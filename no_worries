@@ -1,0 +1,10 @@
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+_ERROR
+deadlock
+event
+Fatal NI connect error 12170
+Tns error struct:
+WARNING: Heavy swapping observed on system in last 5 mins
+PAGESIZE  AVAILABLE_PAGES  EXPECTED_PAGES  ALLOCATED_PAGES  ERROR(s)
+12599
+TNS-00000: Not An Error
