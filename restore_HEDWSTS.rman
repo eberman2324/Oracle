@@ -1,0 +1,11 @@
+set echo on
+startup force mount;
+run {
+ set until time "to_date('23-FEB-2024 09:01:00','DD-MON-YYYY HH24:MI:SS')";
+ restore database;
+ recover database;
+}
+alter database disable block change tracking;
+alter database enable block change tracking using file '+DATA_01';
+alter database open resetlogs;
+

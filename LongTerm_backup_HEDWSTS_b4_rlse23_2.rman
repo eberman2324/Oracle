@@ -1,0 +1,20 @@
+set echo on
+run
+{
+ BACKUP INCREMENTAL LEVEL = 0 FORMAT 'bkp_%d_%I_t%t_s%s_p%p' TAG B4_RLSE23_2 section size 80G DATABASE PLUS ARCHIVELOG FORMAT 'arc_%d_%I_e%e_t%t_s%s_p%p' TAG B4_RLSE23_2;
+ host '/home/oracle/tls/rman/heartbeat.ksh ${ORACLE_SID} AEDBA';
+ BACKUP
+ FORMAT 'arc_%d_%I_e%e_t%t_s%s_p%p'
+ TAG B4_RLSE23_2
+ ARCHIVELOG ALL;
+ host '/home/oracle/tls/rman/heartbeat.ksh ${ORACLE_SID} AEDBA';
+ create restore point B4_RLSE23_2;
+ BACKUP
+ FORMAT 'arc_%d_%I_e%e_t%t_s%s_p%p'
+ TAG B4_RLSE23_2
+ ARCHIVELOG ALL;
+}
+list backup tag=B4_RLSE23_2;
+list backup of controlfile completed after 'sysdate-13/24';
+exit;
+
