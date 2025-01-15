@@ -1,0 +1,429 @@
+*** boraw1d ***
+
+copy all from existing /ARCHIVE share
+
+*** boraw1q ***
+
+Please TAR following mount points including directory tree and files.
+
+/orahome/u01 
+/boraw1qu01
+/orahome/wkab01
+
+
+Please TAR following mount points only directory tree
+
+/boraw1qu101 
+/boraw1qu201
+/boraw1qu202
+/boraw1qu203
+/boraw1qu204
+/boraw1qu205
+/boraw1qu207
+/boraw1qu208
+/boraw1qu209
+/boraw1qu210
+/boraw1qu211
+/boraw1qu212
+/boraw1qu213
+/boraw1qu214
+/boraw1qu215
+
+
+*** boraw1s ***
+
+Please TAR following mount points including directory tree and files.
+
+/orahome/u01
+/orahome/wkab01
+/boraw1su01/
+
+
+Please TAR following mount points only directory tree
+
+/boraw1su101
+/boraw1su201
+/boraw1su202
+/boraw1su203
+/boraw1su204
+/boraw1su205
+/boraw1su206
+/oradata/pihmsu001
+/oradata/pihmsu002
+/oraarchivelog/pihmsu001
+/oraredologs/pihmsu001
+/oraredologs/pihmsu002
+/orabackup/pihmsu001
+/oraexport/pihmsu001
+
+
+*** wkabuat ***
+
+Please TAR following mount points including directory tree and files.
+
+/orahome/u01
+/workability
+/orahome/wkab01
+
+Please TAR following mount points only directory tree
+
+/oradata/wkbu001
+/oradata/wkbu002
+/oradata/wkbu003
+/oradata/wkbu004
+/oradata/wkbu005
+/oradata/wkbu006
+/workability2
+/workability3
+/workability4
+/oraredologs/wkbu001
+/oraredologs/wkbu002
+/oraarchivelog/wkbu001
+
+
+
+*** floradev ***
+
+Please TAR following mount points including directory tree and files.
+
+/orahome/u01
+/u01
+/workability
+
+
+Please TAR following mount points only directory tree
+
+/u02
+/u03
+/u04
+/u05
+/u06
+/u07
+/u08
+/u09
+/u10
+/u15
+/u19
+/u25
+/u27
+/u28
+/u29
+/utl_file
+
+
+
+*** dppdev ***
+
+Please TAR following mount points including directory tree and files.
+
+/orahome/u01/
+/u01
+
+
+
+Please TAR following mount points only directory tree
+
+/u02
+/u03
+/u04
+/u05
+/u06
+/u07
+/u08
+/u09
+/opt/u11
+/opt/u10
+/oraredologs/dpu21
+/oraredologs/dpu22
+/oraredologs/dpu23
+
+
+
+*** dppqa ***
+
+Please TAR following mount points including directory tree and files.
+
+/orahome/u01
+/u01
+
+
+
+
+Please TAR following mount points only directory tree
+
+
+/u02
+/u03
+/u04
+/u05
+/u06
+/u08
+/u09
+/u10
+/oraredologs/dpu21
+/oraredologs/dpu22
+/oraredologs/dpu23
+
+
+
+*** datamart ***
+
+Please TAR following mount points including directory tree and files.
+
+
+/orahome/u01
+/u37
+/orahome/allu01
+/u01
+
+Please TAR following mount points only directory tree
+
+/data1
+/u03
+/u35
+/u36
+/u39
+/u40
+/u45
+/dr02_export
+/oraarchivelog/pihmsu01
+/orabackup/pihmsu000
+/oraexport/pihmsu000
+/oradata/pihmsu001
+/oratemp/pihmsu001
+/oraredologs/pihmsu001
+/oraredologs/pihmsu002
+
+
+*** datarep ***
+
+Please TAR following mount points included directories and files.
+
+/orahome/u01
+/u21
+/u35
+
+Please TAR following mount points only directory tree
+
+/oracle/u37
+/u22
+/u24
+/u25
+/u26
+/u27
+/u28
+/u29
+/u30
+/u33
+/u35
+/u36
+/u38
+/u39
+/u40
+/oracle/u41
+/oracle/u42
+/oracle/u43
+/oracle/u44
+/dr
+
+
+*** aetnaprod ***
+
+Please TAR following mount points included directories and files.
+
+/orahome/u01
+/aetnaprod/workability
+/aetnaprod/workability-old
+/orahome/wkab01
+
+Please TAR following mount points only directory tree
+
+/aetnaprod/ora_redo01
+/aetnaprod/ora_redo02
+/aetnaprod/backup
+/aetnaprod/oraarchivelog01
+/aetnaprod/ora_data01
+/aetnaprod/ora_data02
+/aetnaprod/ora_data03
+/aetnaprod/ora_data04
+/aetnaprod/ora_data05
+/aetnaprod/ora_data06
+/aetnaprod/ora_data07
+/aetnaprod/ora_data08
+/aetnaprod/ora_data09
+/aetnaprod/ora_data10
+/aetnaprod/ora_data11
+/aetnaprod/ora_data12
+/aetnaprod/ora_data13
+/aetnaprod/ora_data14
+/aetnaprod/ora_data15
+/aetnaprod/ora_data16
+/aetnaprod/ora_data17
+/aetnaprod/ora_data18
+/aetnaprod/ora_data19
+/aetnaprod/ora_data20
+
+
+
+*** aphmw1p ***
+
+Please TAR following mount points included directories and files.
+
+/orahome/u01/ 
+/orahome/allu01 
+
+Please TAR following mount points only directory tree
+
+/oraarchivelog/pihmsu001
+/oraarchivelog/pihmsu002
+/oraarchivelog/pihmsu003
+/oraarchivelog/pihmsu004
+/oradata/pihmsu001
+/oradata/pihmsu002
+/oradata/pihmsu003
+/oradata/pihmsu004
+/oradata/pihmsu005
+/oratemp/pihmsu001
+/oratemp/pihmsu002
+/oratemp/pihmsu003
+/oratemp/pihmsu004
+/oratemp/pihmsu005
+/oratemp/pihmsu006
+/oraredologs/pihmsu001
+/oraredologs/pihmsu002
+/oraredologs/pihmsu003
+/oraredologs/pihmsu004
+/oraredologs/pihmsu005
+/oraredologs/pihmsu006
+
+
+*** aphmm1q ***
+
+Please TAR following mount points included directories and files.
+
+/orahome/allu01 
+/aphmm1q/u01  
+/orahome/u01 
+
+
+Please TAR following mount points only directory tree
+
+/oraarchivelog/phmu001
+/oradata/phmu001
+/oraredologs/phmu001
+/oraredologs/phmu002
+/oratemp/phmu001
+
+
+*** aphmm1d ***
+
+
+Please TAR following mount points included directories and files.
+
+/orahome/u01 
+/orahome/allu01
+/aphmm1d/u01
+
+Please TAR following mount points only directory tree
+
+/oraarchivelog/pihmsu001
+/oradata/pihmsu001
+/oraredologs/pihmsu001
+/oraredologs/pihmsu002
+/oratemp/pihmsu001
+
+
+
+*** spnode45 ***
+
+
+Will require following links
+
+/u01 -> /oracle/u01
+/u02 -> /oracle/u02
+/u04 -> /oracle/u04
+/u05 -> /oracle/u05
+/u08 -> /oracle/u08
+/u09 -> /oracle/u09
+
+Need below mount points and all sub directories
+
+/orahome/u01 (Plus content)
+/oracle/u01  (Plus content)
+/oracle/u02
+/oracle/u03
+/oracle/u04
+/oracle/u05
+/oracle/u08
+/oracle/u09
+/oracle/backup (Plus content)
+/oraredologs/dpu230
+/oraredologs/dpu231
+/oraredologs/dpu232
+/oraredologs/dpu233
+
+
+Filesystem    GB blocks      Used Available Capacity Mounted on
+/dev/u01lv       150.00     62.26     87.74      42% /oracle/u01
+/dev/u02lv        20.00     14.26      5.74      72% /oracle/u02
+/dev/u03lv       166.00      0.05    165.95       1% /oracle/u03
+/dev/u04lv        53.00     37.64     15.36      72% /oracle/u04
+/dev/u05lv       270.00    244.91     25.09      91% /oracle/u05
+/dev/u08lv       180.00    163.71     16.29      91% /oracle/u08
+/dev/u09lv       390.00    342.83     47.17      88% /oracle/u09
+/dev/backuplv    428.00    105.00    323.00      25% /oracle/backup
+/dev/dpu230lv     10.00      2.99      7.01      30% /oraredologs/dpu230
+/dev/dpu231lv     10.00      3.00      7.00      30% /oraredologs/dpu231
+/dev/dpu232lv     10.00      3.00      7.00      30% /oraredologs/dpu232
+/dev/dpu233lv     10.00      2.95      7.05      30% /oraredologs/dpu233
+/dev/orahome1lv     70.00     49.31     20.69      71% /orahome/u01
+
+
+Mount point info for Richard:
+
+  node       mounted        mounted over    vfs       date        options
+-------- ---------------  ---------------  ------ ------------ ---------------
+         /dev/hd4         /                jfs2   Jul 12 07:20 rw,log=/dev/hd8
+         /dev/hd2         /usr             jfs2   Jul 12 07:20 rw,log=/dev/hd8
+         /dev/hd9var      /var             jfs2   Jul 12 07:20 rw,log=/dev/hd8
+         /dev/hd3         /tmp             jfs2   Jul 12 07:20 rw,log=/dev/hd8
+         /dev/hd1         /home            jfs2   Jul 12 07:21 rw,log=/dev/hd8
+         /proc            /proc            procfs Jul 12 07:21 rw
+         /dev/hd10opt     /opt             jfs2   Jul 12 07:21 rw,log=/dev/hd8
+         /dev/hd11admin   /admin           jfs2   Jul 12 07:21 rw,log=/dev/hd8
+         /dev/livedump    /var/adm/ras/livedump jfs2   Jul 12 07:21 rw,log=/dev/lv00
+         /dev/tpcagentlv  /opt/IBM/TPC     jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/Tivolilv    /opt/Tivoli      jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/zteam23lv   /usr/local/zteam2.3 jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/u01lv       /oracle/u01      jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/u02lv       /oracle/u02      jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/u03lv       /oracle/u03      jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/u04lv       /oracle/u04      jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/u05lv       /oracle/u05      jfs2   Jul 12 07:21 rw,log=/dev/loglv04
+         /dev/u08lv       /oracle/u08      jfs2   Jul 12 07:21 rw,log=/dev/loglv04
+         /dev/u09lv       /oracle/u09      jfs2   Jul 12 07:21 rw,log=/dev/loglv04
+         /dev/backuplv    /oracle/backup   jfs2   Jul 12 07:21 rw,log=/dev/loglv03
+         /dev/psoftlv     /opt/psoft       jfs2   Jul 12 07:21 rw,log=/dev/loglv06
+         /dev/psdatalv    /opt/psdata      jfs2   Jul 12 07:21 rw,log=/dev/loglv06
+         /dev/dpu230lv    /oraredologs/dpu230 jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/dpu231lv    /oraredologs/dpu231 jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/dpu232lv    /oraredologs/dpu232 jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/dpu233lv    /oraredologs/dpu233 jfs2   Jul 12 07:21 rw,log=/dev/loglv05
+         /dev/MFCBL516lv  /opt/psoft/MFServerExpress5.1wp6 jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/splnklv     /opt/splunkforwarder jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/orahome1lv  /orahome/u01     jfs2   Jul 12 07:21 rw,log=/dev/loglv00
+         /dev/orastagelv  /orastage/u177   jfs2   Jul 12 07:21 rw,log=/dev/loglv00
+         /dev/puppetlv    /opt/admin       jfs2   Jul 12 07:21 rw,log=INLINE
+         /dev/MFCBL5111lv /opt/psoft/MFServerExpress5.1wp11 jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/BEclntlv    /opt/BESClient   jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/guardlv     /usr/local/guardium jfs2   Jul 12 07:21 rw,log=/dev/lv01
+         /dev/powersclv   /opt/powersc     jfs2   Jul 12 07:21 rw,log=INLINE
+         /etc/automount.cfg /drp             autofs Jul 12 07:21 ignore
+nfshome  /node63/home     /nfs/home        nfs3   Jul 12 07:22 bg,intr,nosuid,rw
+psoftstg /ifs/wcc/psoft/psoftstage /psoftstage      nfs3   Jul 12 07:22 rw,bg,hard,intr,nosuid
+aixcsmsite /ifs/mcc/admin/aixcsmsite /NAS/site        nfs3   Jul 12 07:22 bg,intr,rsize=32768,wsize=32768,timeo=600,nosuid,
+aixhomesmcc.aetna.com /ifs/mcc/aixhomes /NAS/home        nfs3   Jul 12 07:22 bg,hard,intr,sec=sys,rw
+mksysb   /ifs/mcc/admin/mksysb /NAS/images      nfs3   Jul 12 07:22 bg,hard,intr,sec=sys,rw
+         /aha             /aha             ahafs  Jul 12 07:22 rw
+aixcsmsite.aetna.com /ifs/mcc/admin/mcsmlpp /mcsm/lpp        nfs3   Sep 15 12:05 bg,soft,intr,sec=sys,rw
+

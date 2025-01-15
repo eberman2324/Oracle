@@ -1,0 +1,142 @@
+*** wkabstg2 ***
+1. Verify if database already in MAXIMUM PERFORMANCE (should be)
+
+select  protection_mode from v$database;
+
+
+PROTECTION_MODE
+--------------------
+MAXIMUM PERFORMANCE
+
+2. Save parameters values and reset
+
+show parameter FAL_SERVER
+n/a
+show parameter FAL_CLIENT
+n/a
+show parameter LOG_ARCHIVE_CONFIG
+DG_CONFIG=(wkabstg2,wkbstg2l)
+show parameter DB_FILE_NAME_CONVERT
+/workability/wkabstg1, /workability2/wkabstg2
+show parameter LOG_FILE_NAME_CONVERT
+/workability/wkabstg1, /workability2/wkabstg2
+show parameter LOG_ARCHIVE_DEST_2 
+service="wkbstg2l", LGWR ASYNC NOAFFIRM delay=0 OPTIONAL compression=DISABLE max_failure=0 max_connections=1 reopen=30 net_timeout=30 db_unique_name="wkbstg2l" valid_for=(online_logfile,primary_role)
+show parameter LOG_ARCHIVE_DEST_STATE_2
+ENABLE
+show parameter STANDBY_ARCHIVE_DEST
+?/dbs/arch
+show parameter STANDBY_FILE_MANAGEMENT
+MANUAL
+
+
+alter system reset LOG_ARCHIVE_CONFIG scope=spfile;
+alter system reset LOG_ARCHIVE_DEST_STATE_2 scope=spfile;
+alter system reset LOG_ARCHIVE_DEST_2 scope=spfile; --- destination pointing to standby
+alter system reset STANDBY_FILE_MANAGEMENT scope=spfile;
+alter system reset STANDBY_ARCHIVE_DEST scope=spfile;
+alter system reset DB_FILE_NAME_CONVERT scope=spfile;
+alter system reset LOG_FILE_NAME_CONVERT scope=spfile;
+alter system reset FAL_SERVER scope=spfile;
+alter system reset FAL_CLIENT scope=spfile;
+
+
+3. Use following Query to check for Standby Redolog Groups: 
+   Drop if exist
+
+SELECT GROUP# FROM V$STANDBY_LOG;
+
+
+4. Bounce DB
+
+alter system switch logfile;
+
+5
+
+rman
+
+connect target /
+
+connect catalog wkabstg2/wkabstg2namr@RCATDEV
+
+CONFIGURE ARCHIVELOG DELETION POLICY TO BACKED UP 1 TIMES TO 'SBT_TAPE';
+
+**** wkabprod ****
+
+
+1. Verify if database already in MAXIMUM PERFORMANCE (should be)
+
+select  protection_mode from v$database;
+
+
+PROTECTION_MODE
+--------------------
+MAXIMUM PERFORMANCE
+
+2. Save parameters values and reset
+
+show parameter FAL_SERVER
+n/a
+show parameter FAL_CLIENT
+n/a
+show parameter LOG_ARCHIVE_CONFIG
+DG_CONFIG=(wkabprod,wkabprdl,wkabpdal)
+show parameter DB_FILE_NAME_CONVERT
+N/A
+show parameter LOG_FILE_NAME_CONVERT
+N/A
+show parameter LOG_ARCHIVE_DEST_2 
+service="wkabprdl", LGWR ASYNC NOAFFIRM delay=0 OPTIONAL compression=DISABLE max_failure=0 max_connections=1 reopen=30 net_timeout=30 db_unique_name="wkabprdl" valid_for=(online_logfile,primary_role)
+show parameter LOG_ARCHIVE_DEST_STATE_2
+ENABLE
+show parameter LOG_ARCHIVE_DEST_3 
+service="wkabpdal", LGWR ASYNC NOAFFIRM delay=0 OPTIONAL compression=DISABLE max_failure=0 max_connections=1 reopen=30 net_timeout=30 db_unique_name="wkabpdal" valid_for=(online_logfile,primary_role)
+show parameter LOG_ARCHIVE_DEST_STATE_3
+ENABLE
+show parameter STANDBY_ARCHIVE_DEST
+?/dbs/arch
+show parameter STANDBY_FILE_MANAGEMENT
+MANUAL
+
+
+alter system reset LOG_ARCHIVE_CONFIG scope=spfile;
+alter system reset LOG_ARCHIVE_DEST_STATE_2 scope=spfile;
+alter system reset LOG_ARCHIVE_DEST_2 scope=spfile; --- destination pointing to standby
+alter system reset log_archive_dest_state_3 scope=both;
+alter system reset LOG_ARCHIVE_DEST_3 scope=spfile; --- destination pointing to standby
+alter system reset STANDBY_FILE_MANAGEMENT scope=spfile;
+alter system reset STANDBY_ARCHIVE_DEST scope=spfile;
+
+alter system reset DB_FILE_NAME_CONVERT scope=spfile;
+alter system reset LOG_FILE_NAME_CONVERT scope=spfile;
+
+alter system reset FAL_SERVER scope=spfile;
+alter system reset FAL_CLIENT scope=spfile;
+
+
+3. Use following Query to check for Standby Redolog Groups: 
+   Drop if exist
+
+SELECT GROUP# FROM V$STANDBY_LOG;
+
+
+4. Bounce DB
+
+alter system switch logfile;
+
+
+5
+
+rman
+
+connect target /
+
+connect catalog wkabprod/wkabprodnamr@RCATPROD
+
+CONFIGURE ARCHIVELOG DELETION POLICY TO BACKED UP 1 TIMES TO 'SBT_TAPE';
+
+*** Disabled both HIG standby's: wkabpdal  and wkabprodL 
+
+
+
+Workability Common Landing Page  
