@@ -1,0 +1,260 @@
+*****************DPPQA***********************
+
+
+
+. ~/.profile
+
+DPDRYRUN
+
+
+Move scripts from dppdev over to dppqa
+
+login to dppdev
+
+scp -rp /u01/app/oracle/aetna/admin/DPDEV92/encryption dppqa:/u01/app/oracle/aetna/admin/DPDRYRUN/encryption 
+
+
+scp -rp /u01/app/oracle/tls/encrypt dppqa:/u01/app/oracle/tls/encrypt
+
+
+
+
+1) Create the Wallet directory for each database on server
+
+
+
+   mkdir -p $ORACLE_BASE/admin/DPDRYRUN/wallet 
+
+   chmod 700 $ORACLE_BASE/admin/DPDRYRUN/wallet
+
+
+
+
+2) Backup the sqlnet.ora file
+
+   cd $ORACLE_HOME/network/admin
+
+   cp -p sqlnet.ora sqlnet.ora_b4_encryption
+
+
+3) Add TDE setup to the sqlnet.ora file
+ 
+
+
+SQLNET.ENCRYPTION_TYPES_SERVER= (AES128)
+SQLNET.ENCRYPTION_SERVER = requested
+
+
+3) Backup, OEM Blackout 
+
+
+
+cd ${HOME}/aetna/db_mgmt/backup 
+
+dbbackup_rman DPDRYRUN
+  
+
+   cd $BKPSCR
+   savebkp.ksh DPDRYRUN b4encryption
+
+   ###DPUAT92 backup saved as DPUAT92_sbk_20161016_23:55:02_b4encryption.rman
+
+   
+
+   Create OEM Blackout
+
+
+
+4) Create the 12c Wallet
+
+   sqlplus / as sysdba
+
+   ADMINISTER KEY MANAGEMENT CREATE KEYSTORE '/orahome/u01/app/oracle/admin/DPDRYRUN/wallet/' IDENTIFIED BY "F1shF00d";
+   ADMINISTER KEY MANAGEMENT CREATE AUTO_LOGIN KEYSTORE FROM KEYSTORE '/orahome/u01/app/oracle/admin/DPDRYRUN/wallet/' IDENTIFIED BY "F1shF00d";
+
+   -- Open 12c Wallet
+   ADMINISTER KEY MANAGEMENT SET KEYSTORE OPEN IDENTIFIED BY "F1shF00d";
+
+   -- Create 12c master key
+   ADMINISTER KEY MANAGEMENT SET KEY IDENTIFIED BY "F1shF00d" WITH BACKUP;
+   ADMINISTER KEY MANAGEMENT SET KEY USING TAG 'peoplesoft_DPDRYRUN' IDENTIFIED BY "F1shF00d" WITH BACKUP USING 'peoplesoft_backup_DPDRYRUN';
+
+
+5) turn on autoextend for all tablespaces 
+
+
+
+
+cd /u01/app/oracle/aetna/admin/DPDRYRUN/encryption 
+
+
+
+sqlplus / as sysdba
+
+       sql =>   @ext_alter_datafiles_autoextend.sql    (1 minute)
+                    !view alter_datafiles_autoextend.sql  ?  review script to be run
+
+•	Turn on autoextend
+
+       sql => @alter_datafiles_autoextend.sql   (1 minute)
+      sql =>   exit
+     view alter_datafiles_autoextend.out  ?  review script output
+
+
+
+
+
+6)   --encrypt table columns
+
+
+
+cd $HOME/tls/encrypt
+
+sqlplus / as sysdba
+
+@ext_drop_indexes.sql DPDRYRUN
+
+@ext_create_indexes.sql DPDRYRUN
+
+@ext_altix_logging_noparallel.sql DPDRYRUN
+exit
+
+sqlplus / as sysdba
+
+@drop_indexes_DPDRYRUN.sql
+
+exit
+
+sqlplus / as sysdba
+
+
+@encrypt_table_columns.sql
+exit
+
+
+7) ---Move tables
+
+
+cd $HOME/tls/encrypt
+
+
+sqlplus / as sysdba
+
+@move_encrypted_tables.sql
+
+exit
+
+8) --Rebuild Indexes (LOB indexes excluded)
+
+
+cd $HOME/tls/encrypt
+
+
+sqlplus / as sysdba
+
+
+
+@create_indexes_DPDRYRUN.sql
+
+
+@ext_altix_logging_noparallel.sql DPDRYRUN
+
+@altix_logging_noparallel_DPDRYRUN.sql
+
+exit
+
+
+
+
+8) -- Quick test/check. You can use DBArtisan for that.
+
+select KNS_PARTC_ID from SYSADM.PS_KNS_ERNCD_STAGE
+
+## Make sure it shows correct path
+select * from V$ENCRYPTION_WALLET;
+select * from DBA_ENCRYPTED_COLUMNS;
+
+
+extract DDL from SYSADM.PS_YE_W2CP_DATA to make sure encryption there
+
+
+
+9) --autoextend off
+
+cd /u01/app/oracle/aetna/admin/DPDRYRUN/encryption
+
+
+run => sqlplus / as sysdba
+
+      sql => @alter_datafiles_autoextend_off.sql   (1 minute)
+
+      sql => !view alter_datafiles_autoextend_off.out  ?  review script to be run
+
+
+      exit
+
+
+
+
+
+
+10) Run Key backup. one time, just so we have backup for now
+
+
+sqlplus / as sysdba
+ADMINISTER KEY MANAGEMENT EXPORT KEYS WITH SECRET "F1shF00d" TO '/tmp/export_DPDRYRUN.exp' IDENTIFIED BY F1shF00d; 
+
+exit
+
+
+
+
+
+11) -recompile
+
+@?/rdbms/admin/utlrp.sql
+
+select count(*)
+from dba_objects
+where status = 'INVALID';
+
+0
+
+
+12) Add crontab jobs
+
+
+copy scripts if needed. make appropriate changes
+
+scp /u01/app/oracle/tls/encrypt/backup_wallet_dir_to_tsm.ksh dppqa:/u01/app/oracle/tls/encrypt/backup_wallet_dir_to_tsm.ksh 
+scp /u01/app/oracle/tls/encrypt/backup_wallet.ksh dppqa:/u01/app/oracle/tls/encrypt/backup_wallet.ksh
+
+
+# Backup  Wallet
+30 02 * * * /u01/app/oracle/tls/encrypt/backup_wallet_dir_to_tsm.ksh DPUAT92 >/dev/null 2>&1
+
+40 02 * * * /u01/app/oracle/tls/encrypt/backup_wallet.ksh DPUAT92 > /dev/null 2
+
+
+13) -- End OEM Blackout
+
+
+14) --export job .par file additions
+
+cd /u01/app/oracle/aetna/db_mgmt/backup
+
+vi expdp_full.par
+
+ENCRYPTION_PASSWORD="encrypt_test"
+ENCRYPTION=ENCRYPTED_COLUMNS_ONLY
+
+
+
+***************Steps to decrypt********
+
+[?10/?24/?2016 10:58 AM] Swafford, Mike: 
+1) alter table modify (abc decrypt)
+2) move table/ rebuild indexes
+3) disable network encryption in sqlnet.ora (comment encryption parameters) - note this will affect all dbs in home
+4) bounce front-end to get new connections
+Leave the wallet and stuff alone since you're just going to reencrypt later

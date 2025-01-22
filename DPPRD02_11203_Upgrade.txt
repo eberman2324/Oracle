@@ -1,0 +1,70 @@
+Server Name: ASPNM1P (SPNODE45)
+
+Database Name: DPPRD02
+
+dppdev or dppqa 
+oracle/On2aix53
+
+
+xoracldm1p/Bl0ckhe@d
+
+
+
+From remote server:
+cd /u01/app/oracle/admin/RCATPROD
+scp -rp xoragridm1p:/u01/app/oracle/admin/RCATPROD/exports .
+
+
+
+
+scp -rp /u01/app/oracle/admin/RCATPROD/exports xoracldm1p:/u01/app/oracle/admin/RCATPROD/exports
+
+jFX9Ozb?
+
+DPPRD02_aspnm1p.iwhouse.aetna.com
+
+BLKLSNR=`emctl config agent listtargets|grep oracle_listener |grep -i ${UPGDB}_|awk -F, '{print $1}'|awk -F[ '{print $2}'`
+
+nohup $BKPSCR/savebkp.ksh ${ORACLE_SID} b4upgora11203
+
+AQ$_SCHEDULES                            TABLE
+AQ$_SCHEDULES_PRIMARY                    INDEX
+DBMS_REPCAT_AUTH                         PACKAGE
+DBMS_REPCAT_AUTH                         PACKAGE BODY
+
+
+
+SQL> SELECT name FROM v$controlfile;
+
+NAME
+------------------------------------------------
+/oraredologs/dpu232/DPPRD02/control1DPPRD02.ctl
+/oraredologs/dpu233/DPPRD02/control2DPPRD02.ctl
+
+
+nohup $BKPSCR/dbbackup_rman ${ORACLE_SID} 
+
+cp –p $DBS/init${ORACLE_SID}.ora ${NEW_OH}/init${ORACLE_SID}.ora_11107
+
+ori - DPPRD02:/u01/app/oracle/product/11.1.0/db_1:Y
+
+DPPRD02:/u01/app/oracle/product/11.2.0/db_1:N
+
+
+nohup upgrade_db_to_11g.ksh ${ORACLE_SID} > upgrade_db_to_11g_${ORACLE_SID}.out  &
+
+
+@set_spool_name.sql      
+@set_spool_name      
+
+DPPRD02namr
+
+rman
+
+gzip export_schema_DPPRD02_20130519_b411203_upgrade.dmp
+
+nohup $BKPSCR/dbbackup_rman ${ORACLE_SID} 
+
+
+DPPRD02:/orahome/psu01/oracle/product/11.2.0/client_64bit_dp1:N
+

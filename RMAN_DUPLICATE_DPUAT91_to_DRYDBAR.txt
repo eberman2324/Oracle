@@ -1,0 +1,548 @@
+Pimary Database:       TARGET (DPUAT91)
+Duplicate Database :    AUX    (DRYDBAR)
+RMAN Catalog Database: RMAN   (RCATDEV) 
+
+****TARGET (DPUAT91) and AUX (DRYDBAR) reside on same server ********** dppqa
+DRYDBAR is existing database. We are in process of refreshing from DRYDBAR
+If this is repeat refresh some steps will not needed!!!
+
+
+******************************************************************************************************************
+
+
+------>Target DPUAT91 Directory and datafile location<----------------- 
+------DPUAT91 is existing database, so all directories should exist
+------Just double check
+
+. ~/.profile
+
+DPUAT91
+
+
+ORACLE_HOME      /u01/app/oracle/product/11.2.0/db_1
+ORACLE_BASE      /u01/app/oracle
+
+/u01/app/oracle/admin/DPUAT91
+/u03/archlogs/DPUAT91/
+
+
+
+
+select file_id,file_name from dba_data_files order by 2
+
+FILE_NAME
+FILE_ID	FILE_NAME	   
+
+	/u04/oradata/DPUAT91/USERS01.dbf	   
+	/u06/oradata/DPUAT91/aaapp1.dbf	   
+	/u08/oradata/DPUAT91/pylarge04.dbf	   
+		
+select file_id,file_name  from dba_temp_files order by 1
+
+FILE_NAME
+
+/u08/oradata/DPUAT91/temp01.dbf
+/u08/oradata/DPUAT91/tivoliortempts_01.dbf
+
+
+
+select * from v$logfile
+
+/oraredologs/dpu21/DPUAT91/redo0601.log
+/oraredologs/dpu22/DPUAT91/redo0602.log
+
+/oraredologs/dpu21/DPUAT91/redo0501.log
+/oraredologs/dpu22/DPUAT91/redo0502.log
+
+/oraredologs/dpu21/DPUAT91/redo0401.log
+/oraredologs/dpu22/DPUAT91/redo0402.log
+
+/oraredologs/dpu21/DPUAT91/redo0301.log
+/oraredologs/dpu22/DPUAT91/redo0302.log
+
+/oraredologs/dpu21/DPUAT91/redo0201.log
+/oraredologs/dpu22/DPUAT91/redo0202.log
+
+/oraredologs/dpu21/DPUAT91/redo0101.log
+/oraredologs/dpu22/DPUAT91/redo0102.log
+
+
+select * from v$controlfile
+NAME
+/oraredologs/dpu21/DPUAT91/control1DPUAT91.ctl
+/oraredologs/dpu22/DPUAT91/control2DPUAT91.ctl
+
+
+
+------>AUX DRYDBAR Directory and datafile location<----------------- 
+------DRYDBAR is existing database, so all directories should exist
+------Just double check
+
+. ~/.profile
+
+DRYDBAR
+
+sysDRYDBAR
+
+
+   ORACLE_HOME      /u01/app/oracle/product/11.2.0/db_2
+   ORACLE_BASE      /u01/app/oracle
+
+   /u01/app/oracle/admin/DRYDBAR
+   /u03/archlogs/DPDRYRUN/ ----Need to change
+   /oraredologs/dpu21
+   /oraredologs/dpu22
+
+
+select file_id,file_name from dba_data_files order by 1
+
+FILE_NAME
+/u02/oradata/DPDRYRUN/USERS01.dbf
+/u05/oradata/DPDRYRUN/aalarge1.dbf
+/u09/oradata/DPDRYRUN/piwork.dbf
+
+
+
+
+select file_id,file_name  from dba_temp_files order by 1
+
+FILE_NAME
+FILE_NAME
+/u09/oradata/DPDRYRUN/temp01.dbf
+/u09/oradata/DPDRYRUN/tivoliortempts_01.dbf
+
+
+select * from v$logfile
+MEMBER
+MEMBER
+/oraredologs/dpu22/DPDRYRUN/redo0602.log
+/oraredologs/dpu21/DPDRYRUN/redo0601.log
+
+/oraredologs/dpu21/DPDRYRUN/redo0501.log
+/oraredologs/dpu22/DPDRYRUN/redo0502.log
+
+/oraredologs/dpu21/DPDRYRUN/redo0401.log
+/oraredologs/dpu22/DPDRYRUN/redo0402.log
+
+/oraredologs/dpu21/DPDRYRUN/redo0301.log
+/oraredologs/dpu22/DPDRYRUN/redo0302.log
+
+/oraredologs/dpu22/DPDRYRUN/redo0202.log
+/oraredologs/dpu21/DPDRYRUN/redo0201.log
+
+/oraredologs/dpu21/DPDRYRUN/redo0101.log
+/oraredologs/dpu22/DPDRYRUN/redo0102.log
+
+
+select * from v$controlfile
+NAME
+/oraredologs/dpu21/DPDRYRUN/control1DRYDBAR.ctl
+/oraredologs/dpu22/DPDRYRUN/control2DRYDBAR.ctl
+
+
+
+
+
+
+
+rman
+   
+connect target /
+
+connect catalog DRYDBAR/DRYDBARnamr@RCATDEV
+
+RMAN> show all;
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name DRYDBAR are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 5;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u10/oraback/DRYDBAR/rman_backups/%F_%d';
+
+CONFIGURE DEVICE TYPE DISK PARALLELISM 4 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/u10/oraback/DRYDBAR/rman_backups/bkp_df%t_s%s_p%p';
+
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u10/oraback/DRYDBAR/rman_backups/snapcf
+
+
+
+
+${HOME}/aetna/db_mgmt/backup/dbbackup_rman DRYDBAR
+
+
+$BKPSCR/savebkp.ksh ${ORACLE_SID} preDuplicate
+
+DRYDBAR backup saved as DRYDBAR_sbk_20150608_08:44:41_preDuplicate.rman
+
+
+list backup summary;
+
+
+###################### DASD CALCULATOR ##################################################################
+
+
+Target - DPUAT91
+
+/u04/oradata/DPUAT91/	   32 GB
+/u06/oradata/DPUAT91/	   20 GB   
+/u08/oradata/DPUAT91/	   43 GB
+
+Aux  - DRYDBAR
+
+
+/u02/oradata/DPDRYRUN/ - 26 GB
+/u05/oradata/DPDRYRUN/ - 20 GB
+/u09/oradata/DPDRYRUN/   30 GB
+
+
+
+####################################################################################################################
+2. Move init file from TARGET server to AUX server  However I would get latest in case any changes.
+
+   
+   ##Login in DPUAT91
+   ##sqlplus
+   
+   #create pfile from sfile;
+   E#exit
+
+   ##cd $ORACLE_HOME/dbs
+   ##cp...
+   
+
+
+. ~/.profile
+
+DRYDBAR
+
+cd $ORACLE_HOME/dbs
+
+cp initDRYDBAR.ora initDRYDBAR.ora.dupl
+vi initDRYDBAR.ora.dupl
+
+
+
+
+
+db_file_name_convert = ('/u04/oradata/DPUAT91/','/u02/oradata/DRYDBAR/',
+                        '/u06/oradata/DPUAT91/','/u05/oradata/DRYDBAR/',
+                        '/u08/oradata/DPUAT91/','/u09/oradata/DRYDBAR/')
+
+
+
+####################################################################################################################
+
+3. Make sure both TARGET and AUX databases have entry in tnsnames.ora file. As well as CATALOG Db  (completed !!!)
+   
+DRYDBAR.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPQA)(Port = 1596))
+    )
+    (CONNECT_DATA = (SID = DRYDBAR)
+    )
+  )
+
+RCATDEV, RCATDEV.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldw1d)(PORT = 1524))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldm1d)(PORT = 1524))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = RCAT_DEV)
+      (SERVER = DEDICATED)
+    )
+  )
+
+####################################################################################################################
+
+3. Re create password file on AUX server (if alredy exist no need to do it)
+   
+   cd $ORACLE_HOME/dbs
+   #rm -f orapwwkabqa2
+   #orapwd file=$ORACLE_HOME/dbs/orapwwkabqa2 password=no734s entries=20
+cp orapwDPDRYRUN orapwDRYDBAR
+
+####################################################################################################################
+5. Identify recent backupsets on TARGET database (AUX on same server so no need to move them anywhere)
+   Make sure last backup for wkabqa3 is valid
+
+
+. ~/.profile
+
+DPUAT91
+
+
+rman
+   
+connect target /
+
+connect catalog DPUAT91/DPUAT91namr@RCATDEV
+
+ Validate current/latest backup to make sure we have good backup
+
+
+
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name DPUAT91 are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 3;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u10/oraback/DPUAT91/rman_backups/%F';
+
+CONFIGURE DEVICE TYPE DISK PARALLELISM 4 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/u10/oraback/DPUAT91/rman_backups/bkp_df%t_s%s_s%p';
+
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u10/oraback/DPUAT91/rman_backups/snapcf_dpuat90.f';
+
+
+
+
+
+restore validate database;
+
+
+restore archivelog all validate;
+
+####################################################################################################################
+6. Test connection from AUX(DRYDBAR) server to TARGET (DPUAT91)
+
+   ***This is not important since both reside on the same server**
+
+. ~/.profile
+
+DRYDBAR
+
+   rman
+   
+   connect target sys/sysdpuat91@DPUAT91
+   
+
+   connect AUXILIARY /
+   
+   
+
+
+####################################################################################################################
+7. If this clone repeat process or AUX database exist then
+   delete all datafiles,redo logs and control files in AUX (WKABAQ1) database
+
+
+
+. ~/.profile
+
+DRYDBAR
+
+
+
+   AUX database (DRYDBAR)
+
+   sqlplus / as sysdba
+   shutdown immediate; 
+
+
+  lsnrctl stop DRYDBAR
+   
+   #Confirm
+
+
+
+ls /u02/oradata/DPDRYRUN/*
+ls /u05/oradata/DPDRYRUN/*
+ls /u09/oradata/DPDRYRUN/*
+
+
+ls /oraredologs/dpu22/DPDRYRUN/*
+ls /oraredologs/dpu21/DPDRYRUN/*
+ 
+*****************************************
+
+rm /u02/oradata/DPDRYRUN/*
+rm /u05/oradata/DPDRYRUN/*
+rm /u09/oradata/DPDRYRUN/*
+rm /oraredologs/dpu22/DPDRYRUN/*
+rm /oraredologs/dpu21/DPDRYRUN/*
+
+
+ 
+
+
+
+
+
+
+
+####################################################################################################################
+8. AUX (DRYDBAR) database
+
+
+ . ~/.profile
+
+DRYDBAR
+
+
+   
+    cd $ORACLE_HOME/dbs
+mv initDRYDBAR.ora initDRYDBAR.ora.ori
+cp initDRYDBAR.ora.dupl initDRYDBAR.ora
+vi initDRYDBAR.ora.dupl
+
+    sqlplus / as sysdba
+    startup pfile=/u01/app/oracle/product/11.2.0/db_2/dbs/initDRYDBAR.ora force nomount;
+    #startup force nomount;
+
+
+. ~/.profile
+
+DRYDBAR
+
+   rman
+   
+   connect target sys/sysdpuat91@DPUAT91
+   connect catalog DPUAT91/DPUAT91namr@RCATDEV
+   connect AUXILIARY /
+  run{
+  duplicate target database to DRYDBAR;
+  }
+
+ 
+
+####################################################################################################################
+
+
+####################################################################################################################
+12. Change passwords back
+
+ALTER PROFILE DEFAULT LIMIT 
+PASSWORD_VERIFY_FUNCTION NULL
+/
+alter user system identified by sysDRYDBAR;
+alter user sys identified by sysDRYDBAR;
+
+ALTER PROFILE DEFAULT LIMIT 
+PASSWORD_VERIFY_FUNCTION AI_PASSWORD_VALIDATE
+/
+
+####################################################################################################################
+
+13. Move Database to NONEARCHIVELOG
+SQL> shutdown immediate;
+startup mount;
+
+##SQL> alter database noarchivelog;
+alter database archivelog;
+
+Database altered.
+
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> archive log list;
+
+
+
+Create SPFILE
+sqlplus / as sysdba
+create spfile from pfile;
+
+shutdown immediate;
+startup
+
+####################################################################################################################
+
+
+
+############################################################################################################################
+
+
+############################################################################################################################
+
+
+Login remotly from DBArtizan
+
+select * from dba_registry
+select * from dba_registry_history
+
+############################################################################################################################
+
+17. Check if global name needs to be changed
+
+select * from global_name;
+    alter database rename global_name to DRYDBAR.WORLD;
+
+
+############################################################################################################################
+
+18. 
+
+rman
+connect target /
+connect catalog DRYDBAR/DRYDBARnamr@RCATDEV
+
+
+
+register database;
+
+
+
+
+
+RMAN configuration parameters for database with db_unique_name DRYDBAR are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 5;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK;
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u10/oraback/DRYDBAR/rman_backups/%F_%d';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 4 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/u10/oraback/DRYDBAR/rman_backups/bkp_df%t_s%s_p%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u10/oraback/DRYDBAR/rman_backups/snapcf_DRYDBAR.f';
+
+
+
+#00 05 * * * /boraw1qu01/aetna/scripts/backup/rman_general_purpose.ksh wkabqa2 RCATDEV full_level0_backup_v2.rman
+############################################################################################################################
+
+
+
+@?/rdbms/admin/utlrp.sql
+
+select count(*)
+from dba_objects
+where status = 'INVALID';
+
+
+bounce Database
+
+

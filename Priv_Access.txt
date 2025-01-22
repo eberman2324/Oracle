@@ -1,0 +1,17 @@
+AUDSYS - Oracle owned, locked 
+BENENG - App schema 
+DBSNMP - OEM account
+DPADMIN - Dba owned
+GSMADMIN_INTERNAL - Oracle owned, locked 
+GSMCATUSER - Oracle owned, locked 
+OPS$ORACLE - External will be replaced with ext$ORACLE to support external scripts
+ORATIVOLI - Locked could be removed?
+OUTLN - Oracle owned, locked 
+PS - app owned
+S011890 - ?
+S057147 - ?
+S058102 - ?
+SYSADM - App owned schema
+SYSBACKUP - Oracle owned, locked 
+SYSDG - Oracle owned, locked 
+XDB - Oracle owned, locked 

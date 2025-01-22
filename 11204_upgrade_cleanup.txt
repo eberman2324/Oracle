@@ -1,0 +1,3332 @@
+aCan you research the recommended patches and such from both Oracle and PS (realize same company) before Rick gets back in case we are looking at an aggressive schedule?
+Berman, Eugene 11:33 AM
+Ok. I will
+Schloendorn, Thomas 11:33 AM
+thanks
+Also need to check the recommended AIX patches as well
+Berman, Eugene 11:35 AM
+Also we may need add DASD for new Oracle Homes. Can not remember now if we have free space or not out there
+Will tools upgrade requre creating new Oracle Database? 
+Schloendorn, Thomas 11:36 AM
+no
+Berman, Eugene 11:36 AM
+What upgrade requred to have new Oracle DB ?
+Schloendorn, Thomas 11:37 AM
+new version of PS
+Berman, Eugene 11:37 AM
+Got it
+Schloendorn, Thomas 11:37 AM
+/dev/uatu02lv      8.00      0.00      8.00       1% /opt/u02 
+/dev/uatu04lv     20.00      0.00     20.00       1% /opt/u04 
+/dev/uatu05lv    110.00      0.02    109.98       1% /opt/u05 
+/dev/uatu06lv      2.00      0.00      2.00       1% /opt/u06 
+/dev/uatu08lv     20.00      0.00     20.00       1% /opt/u08 
+/dev/uatu09lv     90.00      0.01     89.99       1% /opt/u09
+from dppqa
+Jim J. never took these back
+can have these removed and space added to existing
+Berman, Eugene 11:38 AM
+Ok
+Schloendorn, Thomas 11:38 AM
+but don't think you need it
+/dev/u01lv       160.00     73.21     86.79      46% /u01
+wonder if he can give that space to DPPDEV
+Schloendorn, Thomas 11:48 AM
+Here's a few docs
+
+Things to Consider Before Upgrading to 11.2.0.4 to Avoid Poor Performance or Wrong Results (Doc ID 1645862.1)
+
+Oracle Recommended Patches -- Oracle Database (Doc ID 756671.1)
+
+It was a combination 2 docs that I used to derive the list:
+•	Things to Consider Before Upgrading to 11.2.0.4 to Avoid Poor Performance or Wrong Results (Doc ID 1645862.1)
+•	11.2.0.4 Patch Set - Availability and Known Issues (Doc ID 1562139.1) – Particularly the section entitled “Issues introduced in 11.2.0.4”.  These are new bugs that are introduced by 11.2.0.4.  I evaluated each of these to see how serious they seemed to be and if it affected a functionality that was used by Workability.
+
+
+        Patch  20040179 - MERGE REQUEST ON TOP OF 11.2.0.4.0 FOR BUGS 14033503 14772891 - p20040179_112040_AIX64-5L.zip
+	Patch  19978292 - DUMP UNDER KAUXALO() WHEN RUNNING MERGE USING TABLE/VIEW WITH XMLTYPE COLUMN - p19978292_112040_AIX64-5L.zip
+	Patch  19576559 - _OPTIMIZER_FILTER_PUSHDOWN = FALSE CAUSES WRONG RESULT ON 11.2.0.4 - p19576559_112040_AIX64-5L.zip
+        Patch  19523291 - Subquery unnesting does not happen or ORA-1790 is signaled during subquery unnesting - p19523291_112040_AIX64-5L.zip
+	Patch  18384537 - OPIPLS TAKES TOO MANY RETRIES TO LOAD CURSOR - p18384537_112044_AIX64-5L.zip 
+	Patch  17956707 - ORA-904 EXECUTING SQL WITH DBLINK - p17956707_112042_AIX64-5L.zip
+	Patch  17852660 - ORA-907 USING INDICATOR VARIABLES WITH CURSOR_SHARING=FORCE AND PATCH 14053457 - p17852660_112045_AIX64-5L.zip
+        Patch  19877440 - ORACLE JAVAVM COMPONENT 11.2.0.4.2 DATABASE PSU - p20406239_112040_AIX64-5L.zip
+
+Patch  19769489 - January 2015 PSU
+
+opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+Support Conflict Checker Tool for Patches Installed with OPatch [Video] (Doc ID 1091294.1)	
+
+
+
+
+Berman, Eugene 11:54 AM
+Thanks. I will start looking into this later this week.
+Schloendorn, Thomas 12:07 PM
+ok
+
+
+You can use DPDEVUG.  It is refreshed nightly from DPDEV91.  Please save the latest backup before upgrading.  You'll need to temporarily suspend the cron jobs for DPDEVUG.
+Berman, Eugene 2:38 PM
+ok. I will plan installing software end Dec or begining of Jan and wait until Jan PSU to get started with DPDEVUG
+
+1.	Wait until Mid/End of January and apply JAN 2015 PSU over to that new Oracle Home
+2.	Upgrade DPDEVUG and create Upgrade Procedures
+3.	Create Clone Procedures and test over to second Oracle Home on dppdev
+
+
+****
+
+1. Download and Install db_1 on DPPDEV
+2. Download and Install db_1 Oracle Client on Dev app server
+3. Apply Jan 2015 PSU on db_1 DPPDEV
+4. Apply Jan 2015 PSU on db_1 Oracle Client on Dev app Server
+5. Upgrade DPDEVUG under db_1 on DPPDEV
+6. Rollback Jan 2015 PSU from db_1 Oracle Client on Dev app server
+7. Clone db_1 to db_2 on DPPDEV
+8. Switch ORACLE HOME to db_2 for DPDEVUG on DPPDEV
+9. Clone db_1 to db_2 Oracle Client on Dev app Server
+10.Switch ORACLE HOME to db_2 for DPDEVUG on  Dev App Server
+11.Create DPPQA Software Clone Procedures document for both new Oracle Homes
+12.Eugene will Clone db_2 on DPPQA
+13. Create QA App server Software Clone Procedures document for both  new Oracle Homes
+14. Eugene will Clone db_1 Client on both QA App servers
+15.Tom will Clone db_1 on DPPQA
+16.Tom will Clone db_2 Client on both QA App servers
+17.Update and Cleanup Upgrade DB Procedures Document
+
+14. Upgrade DPDEMO91 under db_1 on DPPDEV
+15. Upgrade DPDEV91 under db_1 on DPPDEV
+16. Upgrade DPUAT91 under db_1 on DPPQA
+17. Upgrade DPDRYRUN under db ?? on DPPQA (maybe Tom will do it this)
+
+
+
+
+
+
+
+
+
+Things to Consider Before Upgrading to 11.2.0.4 to Avoid Poor Performance or Wrong Results (Doc ID 1645862.1)
+
+Oracle Recommended Patches -- Oracle Database (Doc ID 756671.1)
+
+
+
+Download 11.2.0.4 Software: https://updates.oracle.com/download/13390677.html
+Download: Patch 19121551: DATABASE PATCH SET UPDATE 11.2.0.4.4 (INCLUDES CPUOCT2014) - 1 for DB Server and 1 for App Server
+          
+          
+PeopleSoft PeopleTools 8.53 Documentation Home Page (Doc ID 1494462.1)
+
+Minimum Software Versions and Patches Required to Support Oracle Products on IBM Power Systems (Doc ID 282036.1)	
+
+
+This document uses Metalink doc 837570.1  Complete Checklist for Manual Upgrades to 11gR2   as its basis.  Complete Checklist for out-of-Place Manual Upgrade from Previous 11.2.0.N Version to the Latest 11.2.0.N Patchset (Doc ID 1276368.1)
+
+
+Patch Set Update and Critical Patch Update January 2015 Availability Document (Doc ID 1942215.1)
+Database Patch Conflict Resolution (Doc ID 1321267.1)
+Patch Set Updates for 11.2.0.4 - One-off Patch Conflict Resolution (Doc ID 1615557.1)
+Database Patch Conflict Resolution (Doc ID 1321267.1)
+
+
+On2aix53
+
+. /orahome/psu01/oracle/scripts/oraprof
+
+
+
+
+move2s10
+
+
+scp -p /orahome/psu01/oracle/relink/save_OH_b4patch.ksh xpsapw1q:/orahome/psu01/oracle/relink/save_OH_b4patch.ksh
+
+system/sysDRYDBAR@DRYDBAR
+
+************************dppdev space **************************
+
+/dev/u01lv       168.00     63.53   63%   404611     3% /u01
+
+
+1. Need to remove 11.1.0 under /u01/app/oracle/product to free up space
+
+
+rm -rf ./11.1.0
+
+Done
+
+
+
+
+
+
+$ORACLE_HOME/oui/bin/runInstaller -detachHome -silent ORACLE_HOME= /boraw1qu01/app/oracle/product/11.1.0/db_1 ORACLE_HOME_NAME="11gHOME1"
+
+./runInstaller -detachHome -silent -invPtrLoc /etc/oraInst.loc ORACLE_HOME="/u01/app/oracle/product/9.2.0" ORACLE_HOME_NAME="ORACLE_HOME"
+
+
+
+--Backup first
+cd $ORACLE_BASE
+
+cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_oldhomescleanup
+
+
+
+
+
+--To get Oracle Names for detach
+
+cd /u01/app/oracle/oraInventory/ContentsXML
+view inventory.xml
+
+
+
+
+--it says REMOVED already 
+OUIHome1 - /u01/app/oracle/product/10.2.0
+ORACLE_HOME - /u01/app/oracle/product/9.2.0
+OUIHome2 - /u01/app/oracle/product/10.2.0b
+OraDb11g_home - /u01/app/oracle/product/11.1.0
+11gHOME1 - /u01/app/oracle/product/11.1.0/db_1
+OraDb11g_home_db_2 - /u01/app/oracle/product/11.1.0/db_2
+
+agent11g1 - /u01/app/oracle/product/11.1.0/agent11g
+
+cd $ORACLE_HOME/oui/bin
+
+
+
+. ~/.profile
+DPDEV91
+./runInstaller -detachHome -silent ORACLE_HOME="/u01/app/oracle/product/11.1.0/db_2" ORACLE_HOME_NAME="OraDb11g_home_db_2"
+
+
+--Just for agent use agent Oracle Home installer
+. ~/.profile
+
+GCAGENT
+
+./runInstaller -detachHome -silent ORACLE_HOME="/u01/app/oracle/product/11.1.0/agent11g" ORACLE_HOME_NAME="agent11g1"
+
+2. Stage Software: Ftp zip files over
+   Unzip all files
+
+3. Install 11.2.0.4
+   Apply latest PSU
+   Apply any recommended Patches if any
+
+   Unix Admin to run script
+
+4. Clone db_3 to db_4
+
+    Unix Admin to run script
+
+5. Upgrade DPDUVG
+
+6. Upgrade DPDEV91
+
+***************dppqa space **************************************
+
+
+/dev/u01lv       160.00     86.79   46%   462473     3% /u01
+
+1. Need to remove 11.1.0 under /u01/app/oracle/product to free up space
+
+rm -rf ./11.1.0
+
+Done
+
+2. Cleanup Oracle Inventory
+
+
+--Backup first
+cd $ORACLE_BASE
+
+cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_oldhomescleanup
+
+
+
+
+
+--To get Oracle Names for detach
+
+cd /u01/app/oracle/oraInventory/ContentsXML
+view inventory.xml
+
+
+11gHOME2 - /u01/app/oracle/product/11.1.0/db_2
+11gHOME1 - /u01/app/oracle/product/11.1.0/db_1
+
+agent11g1 - /u01/app/oracle/product/11.1.0/agent11g
+
+
+cd $ORACLE_HOME/oui/bin
+
+. ~/.profile
+DRYDBAR
+
+./runInstaller -detachHome -silent ORACLE_HOME="/u01/app/oracle/product/11.1.0/db_1" ORACLE_HOME_NAME="11gHOME1"
+
+--Just for agent use agent Oracle Home installer
+. ~/.profile
+
+GCAGENT
+
+
+
+cd /u01/app/oracle/product/11.2.0.4
+rm -rf ./db_1
+
+
+
+cd /u01/app/oracle/product/11.2.0.4
+rm -rf ./db_1
+rm -rf ./db_2
+
+
+<HOME NAME="OraDb_11204_Home2" LOC="/u01/app/oracle/product/11.2.0.4/db_2" TYPE=
+"O" IDX="26"/>
+<HOME NAME="OraDb_11204_Home1" LOC="/u01/app/oracle/product/11.2.0.4/db_1" TYPE=
+"O" IDX="27"/>
+
+cd /opt/u10/oraback/tar/
+ tar_11204_db2_any_20150505_4clone.tar.gz
+
+--scp from DPPDEV cloned Oracle Home gz file. 
+scp -p /opt/u10/oraback/tar/tar_11204_db2_any_20150505_4clone.tar.gz  dppqa:/u10/oraback/tar/tar_11204_db2_any_20150505_4clone.tar.gz
+
+--Switch back to DPPQA ssh window and do following
+
+cd /u10/oraback/tar
+
+gunzip tar_11204_db2_any_20150505_4clone.tar.gz
+
+cd /u01/app/oracle/product/11.2.0.4/db_1/oui/bin
+
+./runInstaller -detachHome -silent ORACLE_HOME="/u01/app/oracle/product/11.2.0.4/db_2" ORACLE_HOME_NAME="OraDb_11204_Home2"
+./runInstaller -detachHome -silent ORACLE_HOME="/u01/app/oracle/product/11.2.0.4/db_1" ORACLE_HOME_NAME="OraDb_11204_Home1"
+
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/u01/app/oracle/product/11.2.0.4/db_1 ORACLE_HOME_NAME=OraDb_11204_Home1 ORACLE_BASE=/u01/app/oracle
+
+
+The following configuration scripts need to be executed as the "root" user.
+/u01/app/oracle/product/11.2.0.4/db_1/root.sh
+To execute the configuration scripts:
+    1. Open a terminal window
+    2. Log in as "root"
+    3. Run the scripts
+
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/u01/app/oracle/product/11.2.0.4/db_2 ORACLE_HOME_NAME=OraDb_11204_Home2 ORACLE_BASE=/u01/app/oracle
+
+
+The following configuration scripts need to be executed as the "root" user.
+/u01/app/oracle/product/11.2.0.4/db_2/root.sh
+To execute the configuration scripts:
+    1. Open a terminal window
+    2. Log in as "root"
+    3. Run the scripts
+
+
+*********************** XPSAPM2D *****************
+
+/dev/mapper/uservg2-orahome
+                         78619     55158     19469  74% /orahome/psu01
+
+ Need to remove 11.1.0 under /orahome/psu01/oracle/product to free up space
+
+
+rm -rf ./11.1.0
+
+cd /orahome/psu01/oracle/oraInventory/ContentsXML
+
+view inventory.xml
+
+OraClient11g_hr1 - /orahome/psu01/oracle/product/11.1.0/client_hr1
+OraClient11g_hr2 - /orahome/psu01/oracle/product/11.1.0/client_hr2
+
+OraClient11g_dp2 - /orahome/psu01/oracle/product/11.1.0/client_dp2
+OraClient11g_dp1 - /orahome/psu01/oracle/product/11.1.0/client_dp1
+
+cd $ORACLE_HOME/oui/bin
+
+./runInstaller -detachHome -silent ORACLE_HOME="/orahome/psu01/oracle/product/11.1.0/client_hr2" ORACLE_HOME_NAME="OraClient11g_hr2"
+
+
+*********************** XPSAPM1Q
+
+/dev/mapper/uservg-orahome
+                         40314     32183      8132  80% /orahome/psu01
+
+Need to remove 11.1.0 under /orahome/psu01/oracle/product to free up space
+
+
+rm -rf ./11.1.0
+
+cd /orahome/psu01/oracle/oraInventory/ContentsXML
+
+view inventory.xml
+
+OraClient11g_hr1 - /orahome/psu01/oracle/product/11.1.0/client_hr1
+
+OraClient11g_hr2 - /orahome/psu01/oracle/product/11.1.0/client_hr2
+
+OraClient11g_dp1 - /orahome/psu01/oracle/product/11.1.0/client_dp1
+
+cd $ORACLE_HOME/oui/bin
+
+./runInstaller -detachHome -silent ORACLE_HOME="/orahome/psu01/oracle/product/11.1.0/client_hr1" ORACLE_HOME_NAME="OraClient11g_hr1"
+
+*********************** XPSAPW1Q
+
+/dev/mapper/uservg-orahome
+                         40314     35265      5049  88% /orahome/psu01
+
+Need to remove 11.1.0 under /orahome/psu01/oracle/product to free up space
+
+rm -rf ./11.1.0
+
+cd /orahome/psu01/oracle/oraInventory/ContentsXML
+
+view inventory.xml
+
+OraClient11g_hr1 - /orahome/psu01/oracle/product/11.1.0/client_hr1
+
+OraClient11g_hr2 - /orahome/psu01/oracle/product/11.1.0/client_hr2
+
+OraClient11g_dp1 - /orahome/psu01/oracle/product/11.1.0/client_dp1
+
+cd $ORACLE_HOME/oui/bin
+
+./runInstaller -detachHome -silent ORACLE_HOME="/orahome/psu01/oracle/product/11.1.0/client_hr1" ORACLE_HOME_NAME="OraClient11g_hr1"
+
+**************************************************
+
+Document for references
+
+https://aetsps.aetna.com/sites/TDMDBAWeb/Oracle/Shared%20Documents/Forms/AllItems.aspx?RootFolder=/sites/TDMDBAWeb/Oracle/Shared%20Documents/DBA%20Support%20Documentation/PeopleSoft/Oracle%2011.2.0
+
+
+
+
+**************
+
+--Include Sofware Install + Recomended patches + latest PSU
+DPP_Oracle_RDBMS_11204_Install_Patches_PSU
+DPP_Oracle_Client_11204_Install_PSU
+
+DPP_ORACLE_RDBMS_11204_Clone
+DPP_ORACLE_Client_11204_Clone
+
+
+DPPDEV_ORACLE_upgrade_to_11204
+DPPDEV_Client_upgrade_to_11204
+
+
+DPPQA_ORACLE_upgrade_to_11204
+DPPQA_Client_upgrade_to_11204
+
+
+Server: dppdev
+/u01/app/oracle/product/11.2.0.4/db_1/root.sh
+
+
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/network/admin/tnsnames.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/tnsnames.ora
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/network/admin/sqlnet.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+TNS Ping Utility for Linux: Version 11.2.0.4.0 - Production on 18-DEC-2014 10:56
+
+Copyright (c) 1997, 2013, Oracle.  All rights reserved.
+
+Used parameter files:
+/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tc)
+OK (10 msec)
+
+
+sqlplus
+system/sysDPDEV91@DPDEV91
+
+--Backup Oracle Inventory before Recommended Patches Installation
+cd $ORACLE_BASE
+cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_b4patches_11204_db1
+
+
+Confirm inventory
+
+   Put opatch into path:
+   Ensure $ORACLE_HOME set to home being patched
+
+  export PATH=$PATH:$ORACLE_HOME/OPatch
+
+
+opatch version
+
+OPatch Version: 11.2.0.3.4
+
+OPatch succeeded.
+
+
+
+
+   Ensure orainst.loc points to desired inventory
+  cat /etc/oraInst.loc
+
+   If not, modify to oracle database location 
+
+
+   Verify opatch version works with current inventory and that it is 
+   not corrupt: 
+
+   opatch lsinventory
+
+
+
+Oracle Interim Patch Installer version 11.2.0.3.4
+Copyright (c) 2012, Oracle Corporation.  All rights reserved.
+
+
+Oracle Home       : /u01/app/oracle/product/11.2.0.4/db_1
+Central Inventory : /u01/app/oracle/oraInventory
+   from           : /u01/app/oracle/product/11.2.0.4/db_1/oraInst.loc
+OPatch version    : 11.2.0.3.4
+OUI version       : 11.2.0.4.0
+Log file location : /u01/app/oracle/product/11.2.0.4/db_1/cfgtoollogs/opatch/opa
+tch2014-12-18_11-10-31AM_1.log
+
+Lsinventory Output file location : /u01/app/oracle/product/11.2.0.4/db_1/cfgtool
+logs/opatch/lsinv/lsinventory2014-12-18_11-10-31AM.txt
+
+--------------------------------------------------------------------------------
+Installed Top-level Products (1):
+
+Oracle Database 11g                                                  11.2.0.4.0
+There are 1 products installed in this Oracle Home.
+
+
+There are no Interim patches installed in this Oracle Home.
+
+
+--------------------------------------------------------------------------------
+
+OPatch succeeded.
+
+
+      p16188701_112040_AIX64-5L.zip
+      p17551261_112040_AIX64-5L.zip
+      p18255105_112040_Generic.zip
+
+
+
+cd /u11/Ora11204_stage/16188701
+    
+  opatch apply
+
+cd /u11/Ora11204_stage/17551261
+    
+  opatch apply
+
+
+cd /u11/Ora11204_stage/18255105
+
+  opatch apply
+
+
+-Verify to make sure Patches applied
+
+$ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+Patch  16188701     : applied on Thu Dec 18 11:17:43 EST 2014
+Patch  17551261     : applied on Thu Dec 18 11:20:31 EST 2014
+Patch  18255105     : applied on Thu Dec 18 11:22:57 EST 2014
+
+catbundle.sql
+
+
+@?/rdbms/admin/catupgrd.sql 
+catuppst.sql
+
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+Invoking prereq "checkconflictagainstohwithdetail"
+
+ZOP-40: The patch(es) has conflicts with other patches installed in the Oracle H
+ome (or) among themselves.
+
+Prereq "checkConflictAgainstOHWithDetail" failed.
+
+Summary of Conflict Analysis:
+
+There are no patches that can be applied now.
+
+Following patches have conflicts. Please contact Oracle Support and get the merg
+ed patch of the patches :
+18255105, 19769489
+
+Following patches will be rolled back from Oracle Home on application of the pat
+ches in the given list :
+18255105
+
+Conflicts/Supersets for each patch are:
+
+Patch : 19769489
+
+        Conflict with 18255105
+        Conflict details:
+        /u01/app/oracle/product/11.2.0.4/db_1/rdbms/admin/c1102000.sql
+
+OPatch succeeded.
+oracle:ORA11204_1:>
+
+
+
+
+*******Action Plan *********
+
+Hi Eugene, 
+
+ISSUE : 
+======= 
+While applying Oracle 11.2.0.4.5 PSU Patch 19769489 it's Conflicting with existing Installed Patch 18255105 under Oracle Home and a Merge (Overlay) Patch will be required so that both the Conflicting Patches can co-exist together. 
+
+REVIEW : 
+======== 
+1. From the MOS Conflict Checker Tool we see that the 11.2.0.4.4 version of Merge (Overlay) Patch 18255105 is already available for download on My Oracle Support Portal. 
+
+https://updates.oracle.com/download/18255105.html 
+(Filename : p18255105_112044_Generic.zip) 
+
+Description WRONG CARDINALITY FOR A CHARACTER COLUMN 
+Product Optimizer 
+Select a Release Oracle 11.2.0.4.4 
+Platform or Language Generic Platform 
+Last Updated 09-OCT-2014 
+Size 31K (32124 bytes) 
+Entitlement Class Software 
+Classification General 
+
+2. We see that you are currently using 11.2.0.3.4 version of Opatch utility. 
+
+From the README for PSU Patch 19769489, we see 
+You must use the OPatch utility version 11.2.0.3.6 or later to apply this patch. Oracle recommends that you use the latest released OPatch version for 11.2, which is available for download from My Oracle Support patch 6880880 by selecting the 11.2.0.0.0 release.\ 
+
+You may download the latest Opatch utility version 11.2.0.3.6 Patch 6880880 from My Oracle Support Portal. 
+
+https://updates.oracle.com/download/6880880.html 
+(Filename : p6880880_112000_AIX64-5L.zip) 
+
+Description OPatch patch of version 11.2.0.3.6 for Oracle software releases 11.2.0.x (DEC 2013) 
+Product Universal Installer 
+Select a Release Oracle 11.2.0.0.0 
+Platform or Language IBM AIX on POWER Systems (64-bit) 
+Last Updated 17-DEC-2013 
+Size 33M (34964928 bytes) 
+Entitlement Class Software 
+Classification General 
+
+ACTION PLAN : 
+============= 
+1. Install the latest Opatch utility version 11.2.0.3.6 Patch 6880880 
+
+--- Take backup of your existing Opatch version 
+
+mv /u01/app/oracle/product/11.2.0.4/db_1/OPatch /u01/app/oracle/product/11.2.0.4/db_1/OPatch-BAK 
+
+--- Unzip the downloaded Opatch zip file "p6880880_112000_AIX64-5L.zip" 
+
+unzip p6880880_112000_AIX64-5L.zip 
+
+--- Move the extracted Opatch directory to Oracle Home. 
+
+mv OPatch /u01/app/oracle/product/11.2.0.4/db_1/ 
+cp -r OPatch /u01/app/oracle/product/11.2.0.4/db_1/ 
+--- Now thee latest Opatch utility version 11.2.0.3.6 will be functional. 
+
+2. Manually Rollback the Conflicting Patch 18255105 
+
+opatch rollback -id 18255105 
+
+3. Apply Oracle 11.2.0.4.5 PSU Patch 19769489 
+
+4. Apply the 11.2.0.4.4 version of Merge (Overlay) Patch 18255105 (p18255105_112044_Generic.zip) 
+
+5. As mentioned in README for 19769489, please proceed with the PSU Post Install Steps for "3.3 Patch Post-Installation Instructions" 
+
+Request you to please apply the above Patches on test first and let us know the results. 
+
+Thank You, 
+
+
+
+cd $ORACLE_HOME
+  
+
+###for /u01/app/oracle/product/11.2.0.4/db_1 Oracle Home:
+nohup tar cvf /opt/u10/oraback/tar/tar_11204_db1_any_`date '+%Y%m%d'`_b4patch_Jan2015PSU.tar . |tee /opt/u10/oraback/tar/tar_11204_db1_any_`date '+%Y%m%d'`_b4patch_Jan2015PSU_tar.out
+
+   cd /opt/u10/oraback/tar
+
+nohup gzip tar_11204_db1_any_20150122_b4patch_Jan2015PSU.tar
+
+
+    Confirm inventory
+
+   Put opatch into path:
+   Ensure $ORACLE_HOME set to home being patched
+
+  export PATH=$PATH:$ORACLE_HOME/OPatch
+
+
+opatch version
+
+OPatch Version: 11.2.0.3.6
+
+OPatch succeeded.
+
+Note: Version 11.2.0.3.0 or greater is required for this patch 
+      installation.  
+
+
+   Ensure orainst.loc points to desired inventory
+  cat /etc/oraInst.loc
+
+   If not, modify to oracle database location 
+
+
+   Verify opatch version works with current inventory and that it is 
+   not corrupt: 
+
+   opatch lsinventory
+
+   Looking for last line:
+   OPatch succeeded.
+
+
+   Check opatch log file to confirm no issues
+
+   cd ${ORACLE_HOME}/cfgtoollogs/opatch
+
+   view `ls -rt ${ORACLE_HOME}/cfgtoollogs/opatch/opatch*|tail -1`
+
+$ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+
+   . ~/.profile
+   ORA11204_1
+
+
+sudo genkld | wc -l
+sudo slibclean
+sudo genkld | wc -l
+
+
+
+
+   /
+
+
+ Manually Rollback the Conflicting Patch 18255105
+
+
+ cd /u11/Ora11204_stage/18255105_112040
+
+
+ $ORACLE_HOME/OPatch/opatch rollback -id 18255105
+
+
+
+
+ # Apply PSU
+
+  cd /u11/Ora11204_stage/19769489
+    
+  opatch apply
+
+Verifying environment and performing prerequisite checks...
+OPatch continues with these patches:   16902043  17540582
+
+    opatch will reply with:   Looking for last line:
+
+
+Log file location: /u01/app/oracle/product/11.2.0/db_2/cfgtoollogs/opatch/
+opatch2014-02-10_10-37-07AM_1.log
+
+  #Apply merge patch to software in $ORACLE_HOME
+
+cd /u11/Ora11204_stage/18255105
+opatch apply
+
+      Looking for:
+
+Run opatch lsinventory 
+
+      opatch lsinventory
+
+
+
+$ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+Patch  16188701     : applied on Thu Dec 18 11:17:43 EST 2014
+Patch  17551261     : applied on Thu Dec 18 11:20:31 EST 2014
+Patch  18255105     : applied on Thu Jan 22 10:25:59 EST 2015
+Patch  19769489     : applied on Thu Jan 22 10:23:19 EST 2015
+
+
+Ensure $ORACLE_HOME set to home being patched
+  
+      Put opatch into path:
+      export PATH=$PATH:$ORACLE_HOME/OPatch
+
+
+
+opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+
+Oracle Home       : /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1
+Central Inventory : /orahome/psu01/oracle/oraInventory
+   from           : /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/orac
+OPatch version    : 11.2.0.3.4
+OUI version       : 11.2.0.4.0
+Log file location : /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/cfgg
+
+Invoking prereq "checkconflictagainstohwithdetail"
+
+Prereq "checkConflictAgainstOHWithDetail" passed.
+
+OPatch succeeded.
+
+
+cp -r OPatch /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1
+
+cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_b4Jan2015PSU_client_11204_64bit_dp1
+
+
+
+Verifying the update...
+Make failed to invoke "/usr/bin/make -f ins_rdbms.mk liborasdkbase ORACLE_HOME=y
+/usr/bin/ld: cannot open linker script file /orahome/psu01/oracle/product/11.2.y
+collect2: ld returned 1 exit status
+/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/bin/genorasdksh: Failed1
+make: *** [liborasdkbase] Error 1
+'
+
+The following make actions have failed :
+
+Re-link fails on target "liborasdkbase".
+
+
+**************************
+ The following warnings have occurred during OPatch execution:
+ 
+1) OUI-67200:Make failed to invoke "/usr/bin/make -f ins_rdbms.mk liborasdkbase ORACLE_HOME=/orahome/psu01/oracle/product/11.2.0.4/
+client_64bit_dp1"....'grep: /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/rdbms/admin/orasdkbase_shrept.lst: No such file or directory /usr/bin/ld: cannot open linker script file /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/rdbms/admin/liborasdkbase.def:
+No such file or directory
+collect2: ld returned 1 exit status
+/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/bin/genorasdksh: Failed to link liborasdkbase.so.11.1
+ make: *** [liborasdkbase] Error 1 '
+                            
+
+SR 3-10167149211
+
+JAN 2015 PSU should not be applied to client Home. 11.2.0.4 PSUs are required to update only on server homes. This is clearly mention in the "Readme" of PSU's. 
+
+Action Plan 
+
+Request you to rollback the PSU applied on 11.2.0.4 patchset. 
+
+Perform relink after rollback. 
+
+
+Please let us know if there are any relink errors. 
+
+
+
+                             
+2) OUI-67124:Re-link fails on target "liborasdkbase".
+
+upgchkdb_ps.sql
+
+set trimspool on
+column timecol new_value timestamp
+column spool_extension new_value suffix
+SELECT to_char(sysdate,'dd-Mon-yyyy_hhmi') timecol,'.log' spool_extension FROM
+sys.dual;
+column output new_value dbname
+SELECT value || '_' output FROM v$parameter WHERE name = 'db_name';
+spool utlu112i_&&dbname&&timestamp&&suffix
+
+mv utlu112i_ps.sql utlu112i_ps.sql.ori
+cp utlu112i.sql utlu112i_ps.sql
+
+vi utlu112i_ps.sql
+
+
+upgchkdb_ps.sql
+
+UPGCHKLIST.SQL
+
+
+
+#30 17 * * * ${HOME}/aetna/db_mgmt/backup/expdp_full_new.ksh DPDEVUG
+#00 03 * * * ${HOME}/admin/DPDEVUG/autoimp/auto_import_new.ksh 1
+
+#0,15,30,45 0-23 * * * ${HOME}/aetna/db_mgmt/monitor/scan_oracle.ksh DPDEVUG
+#00,15,30,45 0-23 * * * ${HOME}/tls/sysaud/connect.ksh DPDEVUG > /dev/null 2>&1
+
+
+mv dfinfo.out dfinfo_b4ora1124upgrade.out
+
+mv tsinfo.out tsinfo_b4ora1124upgrade.out
+
+
+EXEC DBMS_STATS.GATHER_DICTIONARY_STATS('SYS',OPTIONS=>'GATHER STALE', ESTIMATEPERCENT  => DBMS_STATS.AUTO_SAMPLE_SIZE, METHOD_OPT => 'FOR ALL COLUMNS SIZE AU
+
+
+EXEC DBMS_STATS.GATHER_DICTIONARY_STATS('SYS',OPTIONS=>'GATHER STALE', ESTIMATE_PERCENT  => DBMS_STATS.AUTO_SAMPLE_SIZE, METHOD_OPT => 'FOR ALL COLUMNS SIZE AUTO', CASCADE => TRUE);
+
+EXEC DBMS_STATS.GATHER_DICTIONARY_STATS('SYS',OPTIONS=>'GATHER', ESTIMATE_PERCENT  => DBMS_STATS.AUTO_SAMPLE_SIZE, METHOD_OPT => 'FOR ALL COLUMNS SIZE AUTO', CASCADE => TRUE);
+
+
+spool files_loc.out
+
+
+nohup $BKPSCR/dbbackup_rman ${ORACLE_SID}
+
+nohup $BKPSCR/savebkp.ksh ${ORACLE_SID} midupgora11204
+
+DPDEVUG backup saved as DPDEVUG_sbk_20150130_09:57:34_midupgora11204.rman
+
+
+
+
+NEW_OH=/u01/app/oracle/product/11.2.0.4/db_1/dbs  
+
+cp –p $DBS/init${ORACLE_SID}.ora ${NEW_OH}
+
+cp -p $DBS/init${ORACLE_SID}.ora ${NEW_OH}/init${ORACLE_SID}.ora_11204
+
+
+/u01/app/oracle/admin/DPDEVUG/diag/rdbms/dpdevug/DPDEVUG/trace/new_filtered
+
+cp –p $DBS/init${ORACLE_SID}.ora ${NEW_OH}/init${ORACLE_SID}.ora_11204
+
+
+mv ${BDUMP}/alert_${ORACLE_SID}.log  ${BDUMP}/alert_${ORACLE_SID}.log_`date +'%Y%m%d_%T`
+
+
+DPDEVUG:/u01/app/oracle/product/11.2.0/db_2:N
+
+DPDEVUG:/u01/app/oracle/product/11.2.0.4/db_1:N
+
+nohup upgrade_db_to_11g.ksh ${ORACLE_SID} > upgrade_db_to_11204_${ORACLE_SID}.out  &
+
+@set_spool_name.sql      
+
+@$ORACLE_HOME/rdbms/admin/utlu112s.sql
+
+@set_spool_name      
+
+@$ORACLE_HOME/rdbms/admin/catuppst.sql
+
+@dbupgdiag_ps.sql   
+
+cp –p /u01/app/oracle/product/11.2.0/db_2/network/admin/ *ora .
+
+
+rman catalog ${ORACLE_SID}/${ORACLE_SID}namr@RCATDEV 2>&1 |tee rmanupg.out
+
+cp -p init${ORACLE_SID}.ora init${ORACLE_SID}_` date '+%Y%m%d'`.ora
+vi init${ORACLE_SID}.ora
+
+
+
+cp -p /u01/app/oracle/product/11.2.0/db_2/dbs/orapw${ORACLE_SID} $ORACLE_HOME/dbs
+
+
+
+nohup $BKPSCR/dbbackup_rman ${ORACLE_SID} &
+nohup $BKPSCR/savebkp.ksh ${ORACLE_SID} postupgora11204
+nohup $BKPSCR/dbbackup_rman ${ORACLE_SID} &
+
+nohup $BKPSCR/dbbackup_rman ${ORACLE_SID} 
+
+
+ connect catalog DPDEVUG/DPDEVUGnamr@RCATDEV 
+
+
+recovery catalog upgraded to version 11.02.00.04
+DBMS_RCVMAN package upgraded to version 11.02.00.04
+DBMS_RCVCAT package upgraded to version 11.02.00.04
+
+
+select log_mode from v\$database;
+
+nohup $BKPSCR/dbbackup_rman ${ORACLE_SID} 
+
+DPDEVUG
+Change : DPDEVUG:/orahome/psu01/oracle/product/11.2.0/client_64bit_dp2:N
+to:      DPDEVUG:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1:N
+
+ORA11204_1:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1:N
+
+
+system/sysDPDEVUG@DPDEVUG
+
+
+
+cd /orahome/psu01/oracle/product/oracle_11204_cd_images
+export PATH=$PATH:$ORACLE_HOME/OPatch
+cd 19769489
+
+opatch rollback -id 19769489
+
+
+The following make actions have failed :
+
+Re-link fails on target "liborasdksh".
+Re-link fails on target "liborasdkbase".
+
+$ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+
+
+opatch lsinventory
+
+
+cd $ORACLE_HOME/install   (Directory we created) 
+
+cp make.log make.log.20150202
+
+sudo genkld | wc -l
+sudo slibclean
+sudo genkld | wc –l
+relink all 2>&1 | tee -a 11204_client_64bit_dp1_20150212_postUpgrRollBackJan2015PSU.log
+
+
+
+nohup tar cvf /opt/u10/oraback/tar/tar_11204_db1_any_`date '+%Y%m%d'`_4clone.tar . |tee /opt/u10/oraback/tar/tar_11204_db1_any_`date '+%Y%m%d'`_4clone_tar.out
+
+
+
+nohup tar cvf /opt/u10/oraback/tar/tar_11204_db1_any_`date '+%Y%m%d'`_4clone.tar . |tee /opt/u10/oraback/tar/tar_11204_db1_any_`date '+%Y%m%d'`_4clone_tar.out
+
+
+
+tar_11204_db1_any_20150202_4clone_tar.out
+
+egrep –i “permission” /opt/u10/oraback/tar/tar_11204_db1_any_20150202_4clone_tar.out
+
+a ./bin/hsots tar: ./bin/nmb: The file access permissions do not allow the speci
+fied action.
+tar: ./bin/nmhs: The file access permissions do not allow the specified action.
+tar: ./bin/nmo: The file access permissions do not allow the specified action.
+55 blocks.
+
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmb
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmhs
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmo
+
+
+## EB 02/01/2015
+#
+# To address issue backing up Oracle Home in doc ID 1050290.1
+#
+#
+
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmb
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmhs
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmo
+
+
+tar -xvf /opt/u10/oraback/tar/tar_11204_db1_any_20150202_4clone.tar
+
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/u01/app/oracle/product/11.2.0.4/db_2 ORACLE_HOME_NAME=OraDb_11204_Home2 ORACLE_BASE=/u01/app/oracle
+
+
+cd $ORACLE_HOME/network/admin
+
+cp –p /u01/app/oracle/product/11.2.0/db_2/network/admin/*ora .
+
+Patch  16188701     : applied on Thu Dec 18 11:17:43 EST 2014
+Patch  17551261     : applied on Thu Dec 18 11:20:31 EST 2014
+Patch  18255105     : applied on Thu Jan 22 10:25:59 EST 2015
+Patch  19769489     : applied on Thu Jan 22 10:23:19 EST 2015
+
+
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch lsinventory
+
+Patch  19769489     : applied on Thu Jan 22 10:23:19 EST 2015
+Unique Patch ID:  18280822
+Patch description:  "Database Patch Set Update : 11.2.0.4.5 (19769489)"
+   Created on 30 Dec 2014, 03:35:13 hrs PST8PDT
+Sub-patch  19121551; "Database Patch Set Update : 11.2.0.4.4 (19121551)"
+Sub-patch  18522509; "Database Patch Set Update : 11.2.0.4.3 (18522509)"
+Sub-patch  18031668; "Database Patch Set Update : 11.2.0.4.2 (18031668)"
+Sub-patch  17478514; "Database Patch Set Update : 11.2.0.4.1 (17478514)"
+
+
+
+tar cvf /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_`date '+%Y%m%d'`_4clone.tar . 2>&1 |tee /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_`date '+%Y%m%d'`_4clone_tar.out  
+
+
+tar_11204_client_64bit_dp1_any_20150203_4clone_tar.out
+
+tar_11204_client_64bit_dp1_any_20150203_4clone.tar
+
+tar -xvf /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_20150203_4clone.tar
+
+
+perl clone.pl ORACLE_HOME="/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2" ORACLE_HOME_NAME="OraClient11g_home11" ORACLE_BASE="/orahome/psu01/oracle" OSDBA_GROUP=dba OSOPER_GROUP=dba
+
+
+You can find the log of this install session at:
+ /orahome/psu01/oracle/oraInventory/logs/cloneActions2015-02-03_03-17-09PM.log
+
+
+
+egrep -i "denied|permission" /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_`date '+%Y%m%d'`_4clone_tar.out
+
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp2/network/admin/tnsnames.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2/network/admin/tnsnames.ora
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp2/network/admin/sqlnet.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2/network/admin/sqlnet.ora
+
+
+
+
+
+--Login to DPPDEV to scp Oracle Home for cloning
+
+scp -p /opt/u10/oraback/tar/tar_11204_db1_any_20150202_4clone.tar.gz  dppqa:/u10/oraback/tar/tar_11204_db1_any_20150202_4clone.tar.gz
+
+--Switch back to DPPQA ssh window and do folloing
+
+cd /u10/oraback/tar
+
+gunzip tar_11204_db1_any_20150202_4clone.tar.gz
+
+
+
+--Extract tar file for cloning process
+
+
+     cd /u01/app/oracle/product/11.2.0.4/db_2
+
+     
+
+     tar -xvf /u10/oraback/tar/tar_11204_db1_any_20150202_4clone.tar
+
+
+
+
+ORA11204_1:/u01/app/oracle/product/11.2.0.4/db_1:N
+ORA11204_2:/u01/app/oracle/product/11.2.0.4/db_2:N
+
+
+cd $HOME/aetna/scripts
+
+
+"ORA11204_1")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+"ORA11204_2")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+
+--Login to DPPDEV
+scp –p
+ apsdbw1d:/orabackup/psu600/tar/tar_1120_db1_any_20120507_postinstallApr2012PSU.tar.gz .
+
+   gunzip tar_1120_db1_any_20120507_postinstallApr2012PSU.tar.gz 
+
+
+
+cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_bclone_db2
+
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/u01/app/oracle/product/11.2.0.4/db_2 ORACLE_HOME_NAME=OraDb_11204_Home2 ORACLE_BASE=/u01/app/oracle
+
+
+
+Add following to db_2 root.sh
+
+cd $ORACLE_HOME
+vi root.sh
+
+## EB 02/11/2015
+#
+# To address issue backing up Oracle Home in doc ID 1050290.1
+#
+#
+
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmb
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmhs
+chmod 4750 /u01/app/oracle/product/11.2.0.4/db_1/bin/nmo
+
+
+cd /u01/app/oracle/product/11.2.0.4/db_2
+./root.sh
+Answer y when prompted to overwrites
+
+
+
+cp –p /u01/app/oracle/product/11.2.0/db_2/network/admin/*ora .
+
+
+Patch  16188701     : applied on Thu Dec 18 11:17:43 EST 2014
+Patch  17551261     : applied on Thu Dec 18 11:20:31 EST 2014
+Patch  18255105     : applied on Thu Jan 22 10:25:59 EST 2015
+Patch  19769489     : applied on Thu Jan 22 10:23:19 EST 2015
+
+
+
+Patch  19769489     : applied on Thu Jan 22 10:23:19 EST 2015
+Unique Patch ID:  18280822
+Patch description:  "Database Patch Set Update : 11.2.0.4.5 (19769489)"
+   Created on 30 Dec 2014, 03:35:13 hrs PST8PDT
+Sub-patch  19121551; "Database Patch Set Update : 11.2.0.4.4 (19121551)"
+Sub-patch  18522509; "Database Patch Set Update : 11.2.0.4.3 (18522509)"
+Sub-patch  18031668; "Database Patch Set Update : 11.2.0.4.2 (18031668)"
+
+db_2 dppdev
+-rws--x---    1 root     dba           12690 Feb 02 11:16 nmb
+db_1 dppdev
+-rwsr-x---    1 root     dba           12690 Dec 18 10:17 nmb
+
+db_2 dppqa
+
+-rws--x---    1 root     dba           12690 Feb 11 11:05 nmb
+
+
+
+scp -rp /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/patches/p18522512_112030_Linux-x86-64 XPSAPW1Q:/orahome/psu01/oracle/product/11.2.0/client_64bit_dp2/patches/p18522512_112030_Linux-x86-64
+
+
+scp -rp /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/patches/p18522512_112030_Linux-x86-64 XPSAPW1Q:/orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/patches/p18522512_112030_Linux-x86-64
+
+
+
+scp -rp /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/patches/p18522512_112030_Linux-x86-64 XPSAPM1Q:/orahome/psu01/oracle/product/11.2.0/client_64bit_dp2/patches/p18522512_112030_Linux-x86-64
+
+
+scp -rp /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/patches/p18522512_112030_Linux-x86-64 XPSAPM1Q:/orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/patches/p18522512_112030_Linux-x86-64
+Determine if patch conflict exists with existing patches
+
+
+
+
+
+
+
+--scp from (DEV) xpsapm2d stage directory to both QA Application Servers 
+scp -rp /orahome/psu01/oracle/product/oracle_11204_cd_images XPSAPW1Q:/orahome/psu01/oracle/product/oracle_11204_cd_images
+scp -rp /orahome/psu01/oracle/product/oracle_11204_cd_images XPSAPM1Q:/orahome/psu01/oracle/product/oracle_11204_cd_images
+
+
+--Login to xpsapm2d
+cd /orahome/psu01/oracle/product/tar/
+
+scp -p /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_20150203_4clone.tar.gz XPSAPW1Q:/orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_20150203_4clone.tar.gz 
+
+scp -p /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_20150203_4clone.tar.gz XPSAPM1Q:/orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_20150203_4clone.tar.gz 
+
+--Switch XPSAPW1Q ssh window and do following
+
+cd /orahome/psu01/oracle/product/tar
+
+gunzip tar_11204_client_64bit_dp1_any_20150203_4clone.tar.gz 
+
+--Switch XPSAPM1Q ssh window and do following
+
+cd /orahome/psu01/oracle/product/tar
+
+gunzip tar_11204_client_64bit_dp1_any_20150203_4clone.tar.gz 
+
+
+
+xpsapm1q
+
+
+ORA11204_1:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1:N
+ORA11204_2:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2:N
+
+
+
+"ORA11204_1")
+         NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+
+"ORA11204_2")
+         NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+
+xpsapw1q
+
+
+
+tar -xvf /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_20150203_4clone.tar
+
+
+
+perl clone.pl ORACLE_HOME="/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1" ORACLE_HOME_NAME="OraClient11g_home7" ORACLE_BASE="/orahome/psu01/oracle" OSDBA_GROUP=dba OSOPER_GROUP=dba
+
+
+Installed Top-level Products (1):
+
+Oracle Client 11g                                                    11.2.0.4.0
+There are 1 product(s) installed in this Oracle Home.
+
+
+There are no Interim patches installed in this Oracle Home.
+
+
+--------------------------------------------------------------------------------
+
+OPatch succeeded.
+
+
+
+Copy sqlnet.ora and tnsnames.ora to new Oracle Home
+
+cd /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin
+mv tnsnames.ora tnsnames.ora.20150212
+
+mv sqlnet.ora sqlnet.ora.20150212
+
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/network/admin/tnsnames.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/tnsnames.ora
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/network/admin/sqlnet.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+
+tar -xvf /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_20150203_4clone.tar
+
+
+perl clone.pl ORACLE_HOME="/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1" ORACLE_HOME_NAME="OraClient11g_home7" ORACLE_BASE="/orahome/psu01/oracle" 
+
+
+******GROUP=dba OSOPER_GROUP=dba
+
+
+
+Are these the defaults for clone via runInstaller ?
+
+OSDBA_GROUP=dba OSOPER_GROUP=dba
+I ask because I did not see you specifying them
+
+Most Oracle Documentations examples do not specify them. We did this with Mike for Wkab proper
+Berman, Eugene 1:38 PM
+Let me check
+Schloendorn, Thomas 1:46 PM
+Easy to add in the event you forward your doc along and other groups utilized.
+Your call
+FYI,
+
+
+
+cd $ORACLE_HOME/dbs
+
+ls -altr *DPDEVUG*
+
+rm -f *DPDEVUG*
+
+ls -altr *DPDEVUG*
+
+
+
+
+After you clone an $ORACLE_HOME and prior to Unix admin running root.sh, you need to change the following to false in order for the Unix admin to see the prompts
+
+cd $ORACLE_HOME/install/utl/
+
+vi rootmacro.sh 
+
+# Variable based on installation 
+OUI_SILENT=false 
+
+
+/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2/cfgtoollogs/oui
+
+cloneActions
+
+
+
+GM
+
+After you upgrade DPUAT91 you'll want to determine when a good time is to gather fixed object stats in support of the 11.2.0.4 upgrade.
+You don't want to gather while no activity is occurring or when a lot of abnormal (one time type) activity is occurring.  
+Berman, Eugene 10:23 AM
+Do we have this step in upgrade doc ?
+Schloendorn, Thomas 10:26 AM
+Gather Fixed Object Statistics 
+
+Please create stats on fixed objects two weeks after the upgrade using the below command
+SQL>EXECUTE DBMS_STATS.GATHER_FIXED_OBJECTS_STATS;
+
+It would to good to gather the statistic during non-peak hours
+
+Useful Upgrade documents   
+Berman, Eugene 10:27 AM
+ok. I will keep this in mind.
+
+
+***************************DPPRD02 - upgrade notes*******************
+
+
+Old Oracle HOme - /u01/app/oracle/product/11.2.0/db_1
+
+New Oracle Home - /u01/app/oracle/product/11.2.0.4/db_1
+
+
+DPPRD02:/u01/app/oracle/product/11.2.0.4/db_1:Y
+
+cd /u01/app/oracle/aetna/db_mgmt/upgrade
+
+
+scp -rp /u01/app/oracle/aetna/db_mgmt/upgrade/upgora11204 spnode45:/u01/app/oracle/aetna/admin/DPPRD02/upgora11204
+
+
+
+xpsdppw2d
+/u01/app/oracle/admin
+
+
+xoracldw2p 
+
+xpsapm2d
+
+/u01/app/oracle/admin/RCATPROD/exports
+
+xoracldm2p
+ 
+
+nohup upgrade_db_to_11g.ksh ${ORACLE_SID} > upgrade_db_to_11204_${ORACLE_SID}.out  & 
+
+
+/orahome/u01/app/oracle/admin/RCATPROD/exports  
+
+vi exp_schema_${DBNAME}.par   
+
+
+DPPRD02
+
+
+ls –l export_schema_${DBNAME}_`date +'%Y%m%d’`_b4upgora11204.dmp
+
+
+/u01/app/oracle/product/11.2.0.4/db_1/root.sh
+
+/u01/app/oracle/product/11.2.0.4/db_2/root.sh
+
+
+
+******************
+
+
+/orahome/psu01/oracle/aetna
+
+     cd /orahome/psu01/oracle/product
+     mkdir 11.2.0.4
+     cd /11.2.0.4
+
+
+     . ~/.profile
+
+     ORA11204_1
+
+p13390677_112040_Linux-x86-64_4of7.zip
+
+
+
+11.2.0.4 Oracle DB Software
+
+mkdir client_64bit_dp1
+mkdir client_64bit_dp2
+
+ORA11204_1:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1:N
+ORA11204_2:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2:N
+
+
+Request, Unix software
+
+
+DPDEVUG:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2:N
+DPDEMO91:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1:N
+DPDEV91:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1:N
+ORA11204_1:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1:N
+ORA11204_2:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2:N
+
+
+
+inventory_loc=/orahome/psu01/oracle/oraInventory
+inst_group=dba
+
+
+        ----Confirm Settings - Otherwise Set
+
+        export ORACLE_BASE=/orahome/psu01/oracle
+        export ORACLE_HOME=/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1
+        export ORACLE_SID=ORA11204_1
+
+
+
+
+
+     --Get Your local IP address. :
+ 
+      --run ipconfig from MS-DOS (cmd) window on your local laptop.
+      172.21.118.110
+
+     --Start Exceed
+      Start-> Programs -> Aetna Applications -> Open Text Exceed 14 -> Exceed
+     
+    -- Go back to ssh window  
+       cd /usr/bin/X11
+       
+      
+       xterm -display 172.21.118.110:0 &
+
+    -- This should bring up new xWindow
+ 
+     -- Go back to xwindow  
+
+     cd /orahome/psu01/oracle/product/oracle_11204_cd_images/client
+
+     export DISPLAY=172.21.118.110:0
+
+     ./runInstaller
+
+/usr/local/bin/oraenv
+
+Copy sqlnet.ora and tnsnames.ora to new Oracle Home
+
+xpsapm2d
+
+scp -p /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/tnsnames.ora xpsdppw2d:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/tnsnames.ora
+
+scp -p /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora xpsdppw2d:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+export ORACLE_BASE=/orahome/psu01/oracle
+        export ORACLE_HOME=/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1
+        export ORACLE_SID=DPDEV91
+
+system/sysDPDEV91@DPDEV91
+
+
+Test Connection
+
+tnsping DPDVE91
+
+TNS Ping Utility for Linux: Version 11.2.0.4.0 - Production on 18-DEC-2014 10:56
+
+Copyright (c) 1997, 2013, Oracle.  All rights reserved.
+
+Used parameter files:
+/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tc)
+OK (10 msec)
+
+
+
+sqlplus
+system/sysDPDEV91@DPDEV91
+
+
+system/sysDPDEVUG@DPDEVUG
+
+export ORACLE_BASE=/orahome/psu01/oracle
+        export ORACLE_HOME=/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2
+        export ORACLE_SID=DPDEVUG
+
+0 5 * * * /usr/local/bin/cleanup.ksh
+
+
+# Create Backup Copy of Cron Table
+00 05 * * * crontab -l > ${HOME}/crontab.lst
+#############################################################################
+# Verify TSM Backup Was Run Recently
+00 08 * * * ${HOME}/tls/get_tsm_backup_info.ksh
+#############################################################################
+
+#Oracle Homes backups once a month
+05 00 1 * * /orahome/psu01/oracle/relink/save_OH_b4patch.ksh
+
+
+
+***************************12c**********
+
+I had to submit a DASD request to support the normal prod growth 
+I included the following for prod server spnode45
+
+/orahome/u01
+/orastage/u177
+These are the dirs Rich requires
+for 12c
+
+
+Looks like they are upgrading the PS Workability app over Labor Day weekend 2016. 
+I think we should shoot for the following for 12c.
+Upgrade DPDEVUG to 12c December 2015 timeframe. 
+Wait on the Jan PSU and apply to DPDEVUG as soon as it is released.
+Clone $ORACLE_HOME and upgrade DPDEMO91 to 12c and release to ADA for preliminary testing.
+
+Then DPDEV91
+
+Need DASD for March 2016
+
+Shoot for February date for DPUAT91 
+and target late March or early April for prod. 
+
+12.1.0.2.0
+
+
+Required Interim Patches for the Oracle Database with PeopleSoft (Doc ID 1100831.1)
+
+##MATERIALIZED VIEW DEFERRED MODE ORA-00918: COLUMN AMBIGUOUSLY DEFINED
+p20228093_121020_AIX64-5L.zip
+
+##ORA-7445 [QERTBSTART()+3105] CRASHES QUERY WITH DISTINCT AND PJE TRANSFORMATION
+p18201352_121020_AIX64-5L.zip
+
+Oracle Recommended Patches -- Oracle Database (Doc ID 756671.1)
+
+#Patch 21359755: DATABASE PATCH SET UPDATE 12.1.0.2.5
+p21359755_121020_AIX64-5L.zip
+
+Things to Consider Before Upgrading to 12.1.0.2 to Avoid Poor Performance or Wrong Results (Doc ID 2034610.1)
+
+
+###Document 20807398.8 ORA-600 [kgl-hash-collision] with fix to bug 20465582 installed
+p21800251_121020_AIX64-5L.zip
+
+21091518
+
+#Document 21091518.8 Extend fix of bug 18304693 to Partition Views
+p21091518_121020_AIX64-5L.zip
+
+
+#Document 13542050.8 A mutex related hang with holder around 65534 (0xfffe)
+p13542050_121020_AIX64-5L.zip
+
+
+20228093	Addresses "ORA-00918: column ambiguously defined" error received when creating a materialized View with the option BUILD DEFERRED REFRESH COMPLETE ON DEMAND
+18201352	Addresses errors when a query using the DISTINCT keyword is executed against a complicated and poor performing view.
+
+
+
+PeopleTools 8.53:  Oracle 12cR1:  certified on 12.1.0.1.0, supported on that an all later patchsets
+2034610.1 
+
+##Document 20879889.8 Open cursor leak from DML on table with a materialized view log
+p20879889_121020_AIX64-5L.zip
+##Document 19855835.8 Upgrade slow when reorganizing large stats history tables
+NB: Only applicable for upgrades from 11.2.0.3 or below. Apply before running the 12.1.0.2 upgrade script. There is no benefit to applying it later on.
+p19855835_121020_Generic.zip
+
+***********************************************************************
+
+1. Install software from scratch for one of the homes.
+
+2. Clone Rich Ryan base + install all other patches.
+
+3. Upgrade DB under Rich Home.
+
+4. Remove First Home and replace with 2 home (via clone)
+
+5. Apply Jan 2016 PSU on both homes. Make Gold clone Copy.
+
+
+
+
+*******scp -p xoracldw2d:/orasftwlib/u190/aix/dbms_home_121025_aix.tar . 
+
+
+Login to xoracldw2d
+
+cd /orasftwlib/u190/aix  
+
+ 
+scp -p dbms_home_121025_aix.tar aorinfw1d:/orastage/u177/dbms_home_121025_aix.tar
+Bl0ckhe@d
+
+#Remove directory if already exist. It will create during -xvf
+cd /orahome/u01/app/oracle/product
+rm -rf ./12.1.0.2.5
+
+
+ tar -xvf /orastage/u177/dbms_home_121025_aix.tar
+
+
+
+**********************************************************************************
+
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/orahome/u01/app/oracle/product/12.1.0.2.5/db_1 ORACLE_HOME_NAME=OraDB12Home1 ORACLE_BASE=/orahome/u01/app/oracle
+
+
+
+
+mkdir Ora12102_stage
+
+
+/orastage/u177/Ora12102_stage
+
+
+
+cd /orahome/u01
+
+mkdir app
+cd app
+mkdir oracle
+cd oracle
+mkdir product
+cd product
+mkdir 12.1.0.2
+cd 12.1.0.2
+mkdir db_1
+
+ORA12102_1:/orahome/u01/app/oracle/product/12.1.0.2/db_1:N
+
+/orahome/u01/app/oracle/product/12.1.0.2/db_1
+
+
+"ORA12102_1")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+
+"ORA12102_2")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+export ORACLE_BASE=/orahome/u01/app/oracle
+
+172.21.167.
+
+
+alter system set "_optimizer_aggr_groupby_elim"=false scope=both;
+alter system set "_optimizer_reduce_groupby_key"=false scope=both;
+
+
+DPDEV91 and DPDEMO91
+
+
+cd $HOME/local 
+
+
+/orastage/u177/Ora12102_stage/database/rootpre.sh
+
+Your platform requires the root user to perform certain pre-installation
+OS preparation.  The root user should run the shell script 'rootpre.sh' before
+you proceed with Oracle installation.  rootpre.sh can be found at the top level 
+of the CD or the stage area.
+
+Answer 'y' if root has run 'rootpre.sh' so you can proceed with Oracle 
+installation.
+Answer 'n' to abort installation and then ask root to run 'rootpre.sh'.
+
+********************************************************************************
+
+Has 'rootpre.sh' been run by root? [y/n] (n)
+
+
+Seems like Oracle check script is still not up to date and always showing items missing when they are not.
+See list as they are all included.
+dppdev:/:# oslevel -s
+7100-03-04-1441
+IV42024 applies only to 7100-00
+IV42025 applies only to 7100-00
+included in 7100-03-01-1341:
+IV16737
+IV21116
+IV21235
+IV28925
+IV34869
+IV35057
+IV37790
+IV39136
+IV41380
+IV41415
+IV40001 applies only to 7100-02
+IV40002 applies only to 7100-02
+
+
+/orahome/u01/app/oracle/product/12.1.0.2/db_1/root.sh
+
+
+OPatch Version: 12.1.0.1.3
+
+OPatch succeeded.
+
+
+OPatch succeeded.
+oracle:ORA12102_1:>opatch lsinventory
+Oracle Interim Patch Installer version 12.1.0.1.3
+Copyright (c) 2015, Oracle Corporation.  All rights reserved.
+
+
+Oracle Home       : /orahome/u01/app/oracle/product/12.1.0.2/db_1
+Central Inventory : /u01/app/oracle/oraInventory
+   from           : /orahome/u01/app/oracle/product/12.1.0.2/db_1/oraInst.loc
+OPatch version    : 12.1.0.1.3
+OUI version       : 12.1.0.2.0
+Log file location : /orahome/u01/app/oracle/product/12.1.0.2/db_1/cfgtoollogs/op
+atch/opatch2015-12-03_14-01-06PM_1.log
+
+Lsinventory Output file location : /orahome/u01/app/oracle/product/12.1.0.2/db_1
+/cfgtoollogs/opatch/lsinv/lsinventory2015-12-03_14-01-06PM.txt
+
+--------------------------------------------------------------------------------
+Installed Top-level Products (1):
+
+Oracle Database 12c                                                  12.1.0.2.0
+There are 1 products installed in this Oracle Home.
+
+
+There are no Interim patches installed in this Oracle Home.
+
+
+--------------------------------------------------------------------------------
+
+OPatch succeeded.
+
+
+
+<HOME NAME="OraDB12Home1" LOC="/orahome/u01/app/oracle/product/12.1.0.2/db_1" TY
+PE="O" IDX="27"/>
+
+
+/orastage/u177/Ora12102_stage
+
+
+
+PREREQ session
+
+Oracle Home       : /orahome/u01/app/oracle/product/12.1.0.2/db_1
+Central Inventory : /u01/app/oracle/oraInventory
+   from           : /orahome/u01/app/oracle/product/12.1.0.2/db_1/oraInst.loc
+OPatch version    : 12.1.0.1.3
+OUI version       : 12.1.0.2.0
+Log file location : /orahome/u01/app/oracle/product/12.1.0.2/db_1/cfgtoollogs/op
+atch/opatch2015-12-04_08-21-25AM_1.log
+
+Invoking prereq "checkconflictagainstohwithdetail"
+
+Prereq "checkConflictAgainstOHWithDetail" passed.
+
+OPatch succeeded.
+
+
+p6880880_121010_AIX64-5L.zip
+
+PREREQ session
+
+Oracle Home       : /orahome/u01/app/oracle/product/12.1.0.2/db_1
+Central Inventory : /u01/app/oracle/oraInventory
+   from           : /orahome/u01/app/oracle/product/12.1.0.2/db_1/oraInst.loc
+OPatch version    : 12.1.0.1.10
+OUI version       : 12.1.0.2.0
+Log file location : /orahome/u01/app/oracle/product/12.1.0.2/db_1/cfgtoollogs/op
+atch/opatch2015-12-04_08-45-28AM_1.log
+
+Invoking prereq "checkconflictagainstohwithdetail"
+
+Prereq "checkConflictAgainstOHWithDetail" passed.
+
+OPatch succeeded.
+
+
+Patch  21359755     : applied on Fri Dec 04 08:49:59 EST 2015
+
+
+##Document 20807398.8 ORA-600 [kgl-hash-collision] with fix to bug 20465582 installed
+p21800251_121020_AIX64-5L.zip
+
+
+
+
+##Document 21091518.8 Extend fix of bug 18304693 to Partition Views
+p21091518_121020_AIX64-5L.zip
+
+
+Patch  21091518     : applied on Fri Dec 04 09:19:59 EST 2015
+Patch  21359755     : applied on Fri Dec 04 08:49:59 EST 2015
+
+
+
+##Document 13542050.8 A mutex related hang with holder around 65534 (0xfffe)
+p13542050_121020_AIX64-5L.zip
+
+
+
+##Document 20879889.8 Open cursor leak from DML on table with a materialized view log
+p20879889_121020_AIX64-5L.zip
+
+
+Patch  20879889     : applied on Fri Dec 04 09:25:53 EST 2015
+Patch  21091518     : applied on Fri Dec 04 09:19:59 EST 2015
+Patch  21359755     : applied on Fri Dec 04 08:49:59 EST 2015
+
+
+##Document 19855835.8 Upgrade slow when reorganizing large stats history tables
+NB: Only applicable for upgrades from 11.2.0.3 or below. Apply before running the 12.1.0.2 upgrade script. There is no benefit to applying it later on.
+p19855835_121020_Generic.zip
+
+
+Patch  19855835     : applied on Fri Dec 04 09:28:40 EST 2015
+Patch  20879889     : applied on Fri Dec 04 09:25:53 EST 2015
+Patch  21091518     : applied on Fri Dec 04 09:19:59 EST 2015
+Patch  21359755     : applied on Fri Dec 04 08:49:59 EST 2015
+
+
+
+##MATERIALIZED VIEW DEFERRED MODE ORA-00918: COLUMN AMBIGUOUSLY DEFINED
+p20228093_121020_AIX64-5L.zip
+
+Patch  18201352     : applied on Fri Dec 04 09:34:34 EST 2015
+Patch  19855835     : applied on Fri Dec 04 09:28:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 09:31:16 EST 2015
+Patch  20879889     : applied on Fri Dec 04 09:25:53 EST 2015
+Patch  21091518     : applied on Fri Dec 04 09:19:59 EST 2015
+Patch  21359755     : applied on Fri Dec 04 08:49:59 EST 2015
+
+
+Prereq "checkConflictAgainstOHWithDetail" failed.
+
+Summary of Conflict Analysis:
+
+There are no patches that can be applied now.
+
+Following patches have conflicts. Please contact Oracle Support and get the merg
+ed patch of the patches :
+21359755, 21800251
+
+Whole composite patch Conflicts/Supersets are:
+
+Patch : 21800251
+
+        Bug Conflict with Composite Patch 21359755
+
+Detail Conflicts/Supersets for each patch are:
+
+Patch : 21800251
+
+        Bug Conflict with Sub-Patch 21359755
+        Conflicting bugs are:
+        20476175
+
+OPatch succeeded.
+
+
+
+
+Summary of Conflict Analysis:
+
+There are no patches that can be applied now.
+
+Following patches have conflicts. Please contact Oracle Support and get the merg
+ed patch of the patches :
+21359755, 21800251
+
+Whole composite patch Conflicts/Supersets are:
+
+Patch : 21800251
+
+        Bug Conflict with Composite Patch 21359755
+
+Detail Conflicts/Supersets for each patch are:
+
+Patch : 21800251
+
+        Bug Conflict with Sub-Patch 21359755
+        Conflicting bugs are:
+        20476175
+
+OPatch succeeded.
+
+
+
+csum p21800251_121020_AIX64-5L.zip
+
+md5sum or digest or csum or cksum based on OS platform
+
+
+
+ORA12102_1
+
+
+lrwxrwxrwx    1 oracle   dba              46 Dec 04 10:47 libobk.a -> /usr/tivol
+i/tsm/client/oracle/bin64/libobk64.a
+
+
+The sbt function pointers are loaded from libobk.a(shr.o) library.
+-- sbtinit succeeded
+Return code -1 from sbtinit, bsercoer = 0, bsercerrno = 0
+Message 0 not found;  product=RDBMS; facility=SBT
+
+
+
+Login to xoracldw2d
+
+cd /orasftwlib/u190/aix  
+
+scp -p dbms_home_121025_aix.tar dppdev:/backup/oraback/dbms_home_121025_aix.tar
+Bl0ckhe@d
+
+
+
+cd /orahome/u01/app/oracle/product/12.1.0.2
+mkdir clone
+
+
+cd /orahome/u01/app/oracle/product/12.1.0.2/clone
+ tar -xvf /backup/oraback/dbms_home_121025_aix.tar
+
+## It created 12.1.0.2.5/db_1 subdirectory so copy back to desire location and delete 12.1.0.2.5/db_1 
+
+
+rm -rf ./clone
+
+cd /orahome/u01/app/oracle/product/12.1.0.2/clone/12.1.0.2.5
+
+cp -rp db_1 /orahome/u01/app/oracle/product/12.1.0.2/db_2
+
+
+            cd $HOME
+            cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_bclone_db_2
+
+
+Note: the following command is wrapped.  It should be entered as one line.
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/orahome/u01/app/oracle/product/12.1.0.2/db_2 ORACLE_HOME_NAME=OraDB12Home2 ORACLE_BASE=/orahome/u01/app/oracle
+
+This will take about 5 minutes.  Check the output and review log (log name in shown in the output) to make sure there are no problematic errors
+You should see:
+ End of install phases.(Friday, December 4, 2015 12:43:53 PM EST)
+WARNING:
+The following configuration scripts need to be executed as the "root" user.
+/orahome/u01/app/oracle/product/12.1.0.2/db_2/root.sh
+To execute the configuration scripts:
+    1. Open a terminal window
+    2. Log in as "root"
+    3. Run the scripts
+
+The cloning of OraDB12Home2 was successful.
+Please check '/u01/app/oracle/oraInventory/logs/cloneActions2015-12-04_12-40-44P
+M.log' for more details.
+
+# Now run the clone.  Note, the command below is all one line
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion -ignorePreReq ORACLE_HOME="$ORACLE_HOME " ORACLE_HOME_NAME="DBHOME_AR121024" ORACLE_BASE="/orahome/u01/app/oracle" oracle_install_OSDBA=dba oracle_install_OSOPER=dba
+
+End of install phases.(Friday, December 4, 2015 12:43:53 PM EST)
+WARNING:
+The following configuration scripts need to be executed as the "root" user.
+/orahome/u01/app/oracle/product/12.1.0.2/db_2/root.sh
+To execute the configuration scripts:
+    1. Open a terminal window
+    2. Log in as "root"
+    3. Run the scripts
+
+The cloning of OraDB12Home2 was successful.
+Please check '/u01/app/oracle/oraInventory/logs/cloneActions2015-12-04_12-40-44P
+M.log' for more details.
+
+
+Patch  21359755     : applied on Fri Oct 30 14:01:43 EDT 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+
+$ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+Patch  21359755     : applied on Fri Oct 30 14:01:43 EDT 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+
+./datapatch -verbose
+
+20807398
+
+
+Patch  13542050     : applied on Fri Dec 04 14:54:47 EST 2015
+Patch  18201352     : applied on Fri Dec 04 09:34:34 EST 2015
+Patch  19855835     : applied on Fri Dec 04 09:28:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 09:31:16 EST 2015
+Patch  20807398     : applied on Fri Dec 04 14:52:46 EST 2015
+Patch  20879889     : applied on Fri Dec 04 09:25:53 EST 2015
+Patch  21091518     : applied on Fri Dec 04 09:19:59 EST 2015
+Patch  21359755     : applied on Fri Dec 04 08:49:59 EST 2015
+
+
+
+[?12/?04/?2015 2:54 PM] Schloendorn, Thomas: 
+You'll want to coordinate this with Adeeb.
+
+Gather Fixed Objects Statistics with DBMS_STATS
+   
+   A few days after upgrading Oracle Database, a best practice is to
+   Gather fixed objects statistics with the 
+   DBMS_STATS.GATHER_FIXED_OBJECTS_STATS
+   PL/SQL procedure. This can have a positive impact on overall database 
+   performance. DBMS_STATS.GATHER_FIXED_OBJECTS_STATS also displays a 
+   recommendation to remove all hidden or underscore parameters and events 
+   from init.ora/spfile. Because of the transient nature of the x$ tables, 
+   it is important that you gather fixed objects statistics when there is a 
+   representative workload on the system. This may not always be feasible on 
+   large systems due to additional resources needed to gather the statistics. 
+   If you cannot do this during peak load, then you should do it after 
+   the system has warmed up and the key types of fixed object tables have 
+   been populated. To gather statistics for fixed objects, run the following 
+   PL/SQL procedure:
+ 
+   SQL> execute dbms_stats.gather_fixed_objects_stats;
+
+best would be to coordinate a payroll with Adeeb
+after the fact
+
+oracle:ORA12102_2:>inventory -patch | grep "applied on" | sor
+Patch  13542050     : applied on Fri Dec 04 15:16:29 EST 2015
+Patch  18201352     : applied on Fri Dec 04 15:23:20 EST 2015
+Patch  19855835     : applied on Fri Dec 04 15:20:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 15:21:55 EST 2015
+Patch  20807398     : applied on Fri Dec 04 15:13:20 EST 2015
+Patch  20879889     : applied on Fri Dec 04 15:19:14 EST 2015
+Patch  21091518     : applied on Fri Dec 04 15:15:03 EST 2015
+Patch  21359755     : applied on Fri Oct 30 14:01:43 EDT 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+
+
+Return code -1 from sbtinit, bsercoer = 0, bsercerrno = 0
+Message 0 not found;  product=RDBMS; facility=SBT
+
+
+
+Things to do for Monday
+
+1. Double check make sure done for Software Install/Patches
+2. Create Gold Copy
+3. Remove db_1
+4. Copy Gold copy
+5. Clone db_1
+6 Post clone things
+
+7. Work on Upgrade procedures
+8. Install Oracle Client 12c - on Dev App server
+9. Upgrade DPDEVUG under db_2
+10. Once Jan 2016 PSU comes up 
+   - apply on db_1
+   - apply on db_2 and DPDEVUG
+
+11. Create new GOLD copy for clone
+12. Install Oracle Client on 2 QA App Servers
+13. Clone 12c db_1 and db_2 over to dppqa
+
+14. Reserve Dates for DEMO and DPDEV91 ugpgrades
+15. Reserve Dates for DPDU91 upgrades.   
+
+
+
+
+
+
+
+
+
+
+
+
+cd $ORACLE_HOME/oui/bin/
+./runInstaller -detachHome -silent ORACLE_HOME="/orahome/u01/app/oracle/product/12.1.0.2/db_1" ORACLE_HOME_NAME="OraDB12Home1"
+
+cd /orahome/u01/app/oracle/product/12.1.0.2
+
+rm -rf ./db_1
+
+
+cd $HOME/oraInventory/ContentsXML
+
+view inventory.xml
+
+
+
+. ~/.profile
+
+     ORA12102_2
+
+cd $ORACLE_HOME
+nohup tar cvf /opt/u10/oraback/tar/12102_GOLD_`date '+%Y%m%d'`_4clone.tar . |tee /opt/u10/oraback/tar/12102_GOLD_`date '+%Y%m%d'`_4clone_tar.out
+
+egrep –i “permission|denied” /backup/oraback/tar/12102_GOLD_`date '+%Y%m%d'`_4clone_tar.out
+
+
+cd /orahome/u01/app/oracle/product/12.1.0.2
+mkdir db_1
+
+cd /orahome/u01/app/oracle/product/12.1.0.2/db_1
+ tar -xvf /opt/u10/oraback/tar/12102_GOLD_20151207_4clone.tar
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/orahome/u01/app/oracle/product/12.1.0.2/db_1 ORACLE_HOME_NAME=OraDB12Home1 ORACLE_BASE=/orahome/u01/app/oracle
+
+
+The following configuration scripts need to be executed as the "root" user.
+/orahome/u01/app/oracle/product/12.1.0.2/db_1/root.sh
+To execute the configuration scripts:
+    1. Open a terminal window
+    2. Log in as "root"
+    3. Run the scripts
+
+Patch  13542050     : applied on Fri Dec 04 15:16:29 EST 2015
+Patch  18201352     : applied on Fri Dec 04 15:23:20 EST 2015
+Patch  19855835     : applied on Fri Dec 04 15:20:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 15:21:55 EST 2015
+Patch  20807398     : applied on Fri Dec 04 15:13:20 EST 2015
+Patch  20879889     : applied on Fri Dec 04 15:19:14 EST 2015
+Patch  21091518     : applied on Fri Dec 04 15:15:03 EST 2015
+Patch  21359755     : applied on Fri Oct 30 14:01:43 EDT 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+
+
+
+•	Complete Checklist for Manual Upgrades to Oracle Database 12c Release 1 (12.1) (Doc ID 1503653.1)
+
+
+Scripts can be found on XPVDBW1D
+                         xpvdbw1d
+
+$HOME/aetna/db_mgmt/upgrade/upgora12102
+
+
+/orahome/pvu01/app/oracle/aetna/db_mgmt/upgrade
+
+
+scp -rp xpvdbw1d:/orahome/pvu01/app/oracle/aetna/db_mgmt/upgrade/upgora12102 .
+
+scp -p showall.rman dppdev:/u01/app/oracle/aetna/db_mgmt/utility/showall.rman
+
+!WEluv10g
+
+
+ALTER USER BENENG ACCOUNT LOCK
+   /
+
+
+
+Scripts to change/modfiy:
+ set_upgrade_env_variables.ksh 
+ rman_catlgparms.ksh 
+
+
+oracle:DPDEVUG:>ls -al *.ksh
+archsize.ksh
+rman_catlgparms.ksh - done
+set_upgrade_env_variables.ksh
+upgrade_db_to_12c.ksh         - done
+verify_psu_applied.ksh        - no need
+
+
+
+# Set Oracle Environment
+   . /orahome/pvu01/aetna/scripts/setupenv.ksh ${DBNAME} > /dev/null
+
+. ${HOME}/aetna/scripts/oraprof ${DBName} > oraprof.out
+
+. /u01/app/oracle/aetna/scripts/oraprof ${DBName} > /dev/null
+
+
+/u01/app/oracle/aetna/admin/DPDEVUG/upgora12102
+
+
+
+cp -r /u01/app/oracle/aetna/admin/DPDEVUG/upgora12102 /u01/app/oracle/aetna/db_mgmt/upgrade/upgora12102
+
+
+
+Copy sqlnet.ora and tnsnames.ora to new Oracle Home
+
+cd /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin
+
+mv tnsnames.ora tnsnames.ora.20150212
+mv sqlnet.ora sqlnet.ora.20150212
+
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/network/admin/tnsnames.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/tnsnames.ora
+
+cp -p /orahome/psu01/oracle/product/11.2.0/client_64bit_dp1/network/admin/sqlnet.ora /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+
+
+cp -p /u01/app/oracle/product/11.2.0.4/db_1/network/admin/sqlnet.ora /orahome/u01/app/oracle/product/12.1.0.2/db_1/network/admin/sqlnet.ora
+cp -p /u01/app/oracle/product/11.2.0.4/db_1/network/admin/tnsnames.ora /orahome/u01/app/oracle/product/12.1.0.2/db_1/network/admin/tnsnames.ora
+
+cp -p /u01/app/oracle/product/11.2.0.4/db_2/network/admin/sqlnet.ora /orahome/u01/app/oracle/product/12.1.0.2/db_2/network/admin/sqlnet.ora
+cp -p /u01/app/oracle/product/11.2.0.4/db_2/network/admin/tnsnames.ora /orahome/u01/app/oracle/product/12.1.0.2/db_2/network/admin/tnsnames.ora
+
+set_upgrade_env_variables.ksh 
+case $UPGDB in
+
+
+
+                                             
+"ORA12102_1")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                             ;;
+
+"ORA12102_2")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                             ;;
+
+ORA12102_1:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1:N
+ORA12102_2:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2:N
+
+
+p21419221_121020_Linux-x86-64_7of10.zip
+
+oracle_12102_stage
+
+cp /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2/network/admin/tnsnames.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2/network/admin/tnsnames.ora
+
+
+cp /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2/network/admin/sqlnet.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2/network/admin/sqlnet.ora
+
+
+
+
+echo Creating tar file for 12.1.0.2/client_64bit_dp1 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/client_64bit_dp1
+cd /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_12102_client_64bit_dp1_any_`
+date '+%Y%m%d'`_b4AIXpatch.tar . 2>&1 |tee ${LOGDIR}/tar_12102_client_64bit_dp1_
+any_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/client_64bit_dp1 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo
+
+
+echo Creating tar file for 12.1.0.2/client_64bit_dp2 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/client_64bit_dp2
+cd /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_12102_client_64bit_dp2_any_`
+date '+%Y%m%d'`_b4AIXpatch.tar . 2>&1 |tee ${LOGDIR}/tar_12102_client_64bit_dp2_
+any_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/client_64bit_dp2 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo
+
+
+
+
+echo Creating tar file for 12.1.0.2/db_1 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/db_1
+cd /u01/app/oracle/product/12.1.0.2/db_1
+
+nohup tar cvf /opt/u10/oraback/tar/tar_12102_db1_home_`date '+%Y%m%d'`_b4AIXpatc
+h.tar . 2>&1 |tee ${LOGDIR}/tar_12102_db1_home_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/db_1 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo "************************************************************************"
+echo
+
+echo Compress 12.1.0.2/db_1 tar file at - `date`
+echo
+
+nohup gzip /opt/u10/oraback/tar/tar_12102_db1_home_`date '+%Y%m%d'`_b4AIXpatch.tar
+
+
+echo
+echo End compress 12.1.0.2/db_1 tar file at - `date`
+echo
+
+echo Creating tar file for 12.1.0.2/db_2 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/db_2
+cd /u01/app/oracle/product/12.1.0.2/db_2
+
+nohup tar cvf /opt/u10/oraback/tar/tar_12102_db2_home_`date '+%Y%m%d'`_b4AIXpatc
+h.tar . 2>&1 |tee ${LOGDIR}/tar_12102_db2_home_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/db_2 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo "************************************************************************"
+echo/u01/app/oracle/relink
+
+echo Compress 12.1.0.2/db_2 tar file at - `date`
+echo
+
+nohup gzip /opt/u10/oraback/tar/tar_12102_db2_home_`date '+%Y%m%d'`_b4AIXpatch.tar
+
+
+echo
+echo End compress 12.1.0.2/db_2 tar file at - `date`
+echo
+
+
+cd /u01/app/oracle/relink
+
+cp save_OH_b4patch.ksh save_OH_b4patch.ksh.20151208
+
+vi save_OH_b4patch.ksh
+
+
+$BKPSCR/dbbackup_rman ${ORACLE_SID}  
+
+
+DPDEVUG:/u01/app/oracle/product/11.2.0.4/db_2:Y
+DPDEVUG:/orahome/u01/app/oracle/product/12.1.0.2/db_2:Y
+
+
+Open new SSH window
+cd $HOME/aetna/admin/$ORACLE_SID/upgora12102/logs
+
+tail –f upgrade_db_to_11204_${ORACLE_SID}.out
+
+
+
+$ORACLE_HOME/perl/bin/perl catctl.pl -n 2 -l $HOME/aetna/admin/$ORACLE_SID/upgora12102/logs catupgrd.sql
+
+xpvdbw1d
+
+nohup upgrade_db_to_12c.ksh ${ORACLE_SID} &
+
+/orahome/pvu01/app/oracle/aetna/admin/PLNVD001/upgora12102/logs
+
+catupgrd0.log
+
+
+DPDEVUG
+
+
+DPDEVUG backup saved as DPDEVUG_sbk_20151209_05:40:48_b4upgora12102.rman
+
+
+cd ${HOME}/aetna/scripts
+cp –p backup_archlogs.ksh  backup_archlogs_4upg.ksh  
+
+
+       cd $HOME/aetna/scripts
+
+       nohup backup_archlogs.ksh ${ORACLE_SID} &
+
+
+db_upg_diag_DPDEVUG_09_Dec_2015_0859.log
+
+
+
+${HOME}/aetna/db_mgmt/utility/run_utlrp.ksh ${ORACLE_SID} $ORACLE_BASE/aetna/admin/$ORACLE_SID/upgora12102
+
+
+_unnest_subquery
+
+
+run_stats.ksh ${ORACLE_SID} b4ora12upgrade 
+run_stats.ksh ${ORACLE_SID} b4ora12upgrade `pwd` & 
+
+ 
+. /u01/app/oracle/aetna/scripts/oraprof ${DBName} > /dev/null
+
+/u01/app/oracle/cfgtoollogs/DPDEVUG/preupgrade
+
+
+
+                    [Obsolete/Deprecated Parameters]
+--> sec_case_sensitive_logon     12.1       DESUPPORTED
+
+        [Changes required in Oracle Database init.ora or spfile]
+
+INFORMATION: --> Older Timezone in use
+
+     Database is using a time zone file older than version 18.
+     After the upgrade, it is recommended that DBMS_DST package
+     be used to upgrade the 11.2.0.4.0 database time zone version
+     to the latest version which comes with the new release.
+     Please refer to My Oracle Support note number 1509653.1 for details.
+
+WARNING: --> job_queue_processes set too low
+
+     This parameter must be removed or updated to a value greater
+     than 16 (default value if not defined is 1000) prior to upgrade.
+     Not doing so will affect the running of utlrp.sql after the upgrade
+
+     Update your init.ora or spfile to make this change.
+
+
+Please review and remove any unnecessary hidden/underscore parameters prior
+to upgrading.  It is strongly recommended that these be removed before upgrade
+unless your application vendors and/or Oracle Support state differently.
+Changes will need to be made in the init.ora or spfile.
+
+_unnest_subquery = FALSE
+
+
+cp -p $ORACLE_HOME/dbs/init${ORACLE_SID}.ora /orahome/u01/app/oracle/product/12.1.0.2/${NEWOHDIR}/dbs/init${ORACLE_SID}.ora
+cp -p $ORACLE_HOME/dbs/init${ORACLE_SID}.ora /orahome/u01/app/oracle/product/12.1.0.2/${NEWOHDIR}/dbs/init${ORACLE_SID}.ora_11204
+      
+_11204
+
+cd /orahome/u01/app/oracle/product/12.1.0.2/${NEWOHDIR}/dbs
+
+vi initDPDEVUG.ora
+
+job_queue_processes 
+sec_case_sensitive_logon     
+cd 
+
+
+DPDEVUG:/orahome/u01/app/oracle/product/12.1.0.2/db_2:Y
+
+DPDEVUG:/u01/app/oracle/product/11.2.0.4/db_2:Y
+
+
+diagnostic_dest = /u01/app/oracle/admin/DPDEVUG
+diagnostic_dest = /orahome/u01/app/admin/DPDEVUG
+                  /orahome/u01/app/admin/DPDEVUG
+
+
+
+preupgrade
+
+nohup upgrade_db_to_12c.ksh ${ORACLE_SID} &
+
+
+. /u01/app/oracle/aetna/scripts/oraprof ${DBName} > /dev/null
+tail –f catupgrd0.log
+
+tail -f catupgrd0.log 
+
+tail –f catupgrd0.log
+
+db_upg_diag_DPDEVUG_09_Dec_2015_1252.log
+
+
+orapwd file=$ORACLE_HOME/dbs/orapw$ORACLE_SID password=sysdpdevug entries=20 
+
+_unnest_subquery = false
+
+
+/aetna/admin/$ORACLE_SID/upgora12102
+
+    $HOME/aetna/db_mgmt/utility/run_utlrp.ksh ${ORACLE_SID} $HOME/aetna/admin/$ORACLE_SID/upgora12102
+
+
+ORACLE_BASE/aetna/admin/$ORACLE_SID/upgora12102
+
+
+    ${HOME}/aetna/db_mgmt/utility/run_utlrp.ksh ${ORACLE_SID} $HOME/aetna/admin/$ORACLE_SID/upgora12102
+
+rman catalog ${ORACLE_SID}/${ORACLE_SID}namr@${RCATDB} 2>&1 |tee rmanupg.out
+             
+
+connect catalog DPDEVUG/DPDEVUGnamr@RCATDEV
+
+$BKPSCR
+
+echo $BKPSCR
+/orahome/u01/app/oracle/aetna/db_mgmt/backup
+
+
+
+SQL> show parameter diag
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+diagnostic_dest                      string      /orahome/u01/app/admin/DPDEVUG
+
+
+initDPDEVUG.ora
+
+
+/orahome/u01/app/oracle/admin/DPDEVUG
+
+
+cd $HOME/cfgtoollogs/$ORACLE_SID/preupgrade
+
+
+connstrng=`cat $HOME/.${DBNAME}.pw`
+
+
+_optimizer_aggr_groupby_elim=false
+_optimizer_reduce_groupby_key=false
+
+
+# Turn off case senstive for password
+sec_case_sensitive_logon = false
+
+PeopleSoft (Doc ID 1100831.1)
+
+
+#30 17 * * * ${HOME}/aetna/db_mgmt/backup/expdp_full_new.ksh DPDEVUG
+
+00 07 * * 1-5 ${HOME}/aetna/scripts/ora_aud_maint.ksh +7
+
+
+so in Jan, you apply the PSU to db_2.  tar up db_2.  create 12.1.0.2.6/db_1 from db_2 tar
+
+YES
+
+then for DPDEV91, shutdown, change $ORACLE_HOME in oratab and datapatch
+
+Kind - DPDEV91, shutdown, change $ORACLE_HOME in oratab and Upgrade to 12c....
+
+system/sysdpdevug@DPDEVUG
+
+
+
+
+Log on to appropriate application server 
+old servers: XPSAPM2D, XPSAPM1Q, XPSAPW1Q, XPSAPM1P, XPSAPW1P
+new servers: xpsdppw2d, xpsdppm1q, xpsdppw1q
+
+
+vi /etc/oratab
+
+change oracle home to new 12c
+
+old - > DPDEVUG:/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2:N
+new - > DPDEVUG:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2:N
+
+
+#Confirm oracle environment.
+. ~/.profile
+DPDEVUG
+
+
+Check sqlplus connectons from App server
+sqlplus
+system/sysdpdevug@DPDEVUG
+
+
+Send an email to App admin that the database is now at 11.2.0.4 and let them know the OH to use on the db server and the app server
+
+Recompile Cobols
+Reconfigure Process schedulero
+Start App Servers and Process Schedulers
+
+
+
+1. Upon receciving JAN 2016 PSU from Oracle apply it over to /orahome/u01/app/oracle/product/12.1.0.2/db_2
+   Check following 
+PeopleSoft (Doc ID 1100831.1)
+
+2. Apply postinstallation part to DPDEVUG
+3. tar up 12.1.0.2/db_2
+4. Copy and Clone over to 12.1.0.2.6/db_1
+5. Repoint DPDEVUG over to new 12.1.0.2.6/db_1
+6. Detach and remove both 12.1.0.2/db_1 and 12.1.0.2/db_2 
+7. Stage Software on dppqa and app servers
+8. Stage Software on spnode45 and app servers
+9. dppqa - During next AIX OS upgrade run rootpre.sh
+10. spnode45 -During next AIX OS upgrade run rootpre.sh 
+11. dppqa  - Copy/Clone 12.1.0.2.6/db_1 from db_2 tar + app servers
+12. spnode45  - Copy/Clone 12.1.0.2.6/db_1 from db_2 tar + app servers
+13. Secure dates for  upgrade DPDEV91 and DPDEMO91
+14. Secure dates for DPUAT91 upgrade
+15. Secure dates for PROD upgrade - Target April 2016
+
+    
+
+
+
+# Turn off case senstive for password
+sec_case_sensitive_logon = false
+
+
+ORA-32004: obsolete or deprecated parameter(s) specified for RDBMS instance
+
+
+${HOME}/tls/sysaud/archive_purge_sysaud_recs.ksh
+
+
+MAILIDS=`paste -s /u01/app/oracle/aetna/mail/dba_mail_list`
+
+
+ORA12102_1:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1:N
+ORA12102_2:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2:N
+
+For step 1 I would add check recommended patches (2034610.1) and Peoplesoft site to see if anything new was added.
+
+For steps 4 and 5 we typically have DPDEVUG running out of db_2.  We still want a DBA $ORACLE_HOME on the dev server
+for problem solving and testing.  So you need to create a 12.1.0.2.6/db_1 directory as well.
+
+What are you planning for the app servers in regards to the $ORACLE_HOME name?  
+
+
+1. Upon receiving JAN 2016 PSU from Oracle apply it over to dppdev /orahome/u01/app/oracle/product/12.1.0.2/db_2
+   Check following Recommended patches (2034610.1) and PeopleSoft (Doc ID 1100831.1)
+  
+2. Apply post installation part to DPDEVUG
+3. tar up 12.1.0.2/db_2
+4. On dppdev Copy and Clone over to new 12.1.0.2.6/db_1 and 12.1.0.2.6/db_2
+5. On dppdev repoint DPDEVUG over to new 12.1.0.2.6/db_2
+6. On dppdev detach and remove both 12.1.0.2/db_1 and 12.1.0.2/db_2 
+7. Submit new DASD request to add more space to /orahome/u01
+8. Stage Software on dppqa and app servers
+9. Stage Software on spnode45 and app servers
+10. dppqa - During next AIX OS upgrade run rootpre.sh
+11. spnode45 -During next AIX OS upgrade run rootpre.sh 
+12. dppqa  - Copy/Clone 12.1.0.2.6/db_1 from db_2 tar + app servers
+13. spnode45  - Copy/Clone 12.1.0.2.6/db_1 from db_2 tar + app servers
+14. Secure dates for  upgrade DPDEV91 and DPDEMO91
+15. Secure dates for DPUAT91 upgrade
+16. Secure dates for PROD upgrade - Target April 2016
+
+
+
+?	Download/Stage Latest PSU (Jan 2016)
+p21948354_121020_AIX64-5L.zip
+
+12.1.0.2.160119
+
+
+
+--Unzip files
+cd   /orastage/u177/Ora12102_stage
+    
+unzip p21948354_121020_AIX64-5L.zip
+
+
+
+
+cd /orastage/u177/Ora12102_stage/21948354
+
+opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+
+sqlplus / as sysdba
+
+startup
+
+exit
+
+cd $ORACLE_HOME/OPatch
+
+./datapatch -verbose
+
+
+
+oracle:DPDEVUG:>ventory -patch | grep "applied on" | sort
+Patch  13542050     : applied on Fri Dec 04 15:16:29 EST 2015
+Patch  18201352     : applied on Fri Dec 04 15:23:20 EST 2015
+Patch  19855835     : applied on Fri Dec 04 15:20:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 15:21:55 EST 2015
+Patch  20807398     : applied on Fri Dec 04 15:13:20 EST 2015
+Patch  20879889     : applied on Fri Dec 04 15:19:14 EST 2015
+Patch  21091518     : applied on Fri Dec 04 15:15:03 EST 2015
+Patch  21554480     : applied on Tue Dec 29 11:08:13 EST 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+Patch  21948354     : applied on Wed Jan 20 12:37:49 EST 2016
+
+
+
+**********************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OraDB12Home1
+
+
+./runInstaller -detachHome -silent ORACLE_HOME="/orahome/u01/app/oracle/product/12.1.0.2/db_1" ORACLE_HOME_NAME="OraDB12Home1"
+
+
+nohup tar cvf /opt/u10/oraback/tar/12102_GOLD_`date '+%Y%m%d'`_4clone.tar . |tee /opt/u10/oraback/tar/12102_GOLD_`date '+%Y%m%d'`_4clone_tar.out
+
+
+
+tar -xvf /opt/u10/oraback/tar/12102_GOLD_20160121_4clone.tar
+
+/orahome/u01/app/oracle/product/12.1.0.2/db_1
+
+
+/orahome/u01/app/oracle/product/12.1.0.2.5/db_1
+
+/orahome/u01/app/oracle/product/12.1.0.2.160119/db_1
+
+
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/orahome/u01/app/oracle/product/12.1.0.2/db_1 ORACLE_HOME_NAME=OraDB12Home1 ORACLE_BASE=/orahome/u01/app/oracle
+
+
+The following configuration scripts need to be executed
+/orahome/u01/app/oracle/product/12.1.0.2/db_1/root.sh
+
+
+
+
+cp -p /u01/app/oracle/product/11.2.0.4/db_1/network/admin/sqlnet.ora /orahome/u01/app/oracle/product/12.1.0.2/db_1/network/admin/sqlnet.ora
+cp -p /u01/app/oracle/product/11.2.0.4/db_1/network/admin/tnsnames.ora /orahome/u01/app/oracle/product/12.1.0.2/db_1/network/admin/tnsnames.ora
+cp -p /u01/app/oracle/product/11.2.0.4/db_1/network/admin/listener.ora /orahome/u01/app/oracle/product/12.1.0.2/db_1/network/admin/listener.ora
+
+
+scp -p /opt/u10/oraback/tar/12102_GOLD_20160121_4clone.tar.gz  dppqa:/u10/oraback/tar/12102_GOLD_20160121_4clone.tar.gz
+
+
+
+
+cd /orahome/u01
+mkdir app
+cd app
+mkdir oracle
+cd oracle
+mkdir product
+cd product
+mkdir 12.1.0.2
+cd 12.1.0.2
+mkdir db_1
+
+       cd /etc
+     vi oratab
+
+ORA12102_1:/orahome/u01/app/oracle/product/12.1.0.2/db_1:N
+ORA12102_2:/orahome/u01/app/oracle/product/12.1.0.2/db_2:N
+
+     cd $HOME/aetna/scripts
+
+     cp -p oraprof oraprof_20160122
+
+   ---Add following entries to oraprof
+
+  vi oraprof
+ 
+ "ORA12102_1")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+ "ORA12102_2")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                              ;;
+
+
+
+
+
+# Oracle Homes backup
+
+05 00 1 * * /orahome/allu01/app/oracle/relink/save_OH_b4patch.ksh
+
+there all there
+dppqa:/:# oslevel -s
+7100-03-05-1524
+included in 7100-03-01-1341:
+IV16737
+IV21116
+IV21235
+IV28925
+IV34869
+IV35057
+IV37790
+IV39136
+IV41380
+IV41415
+included in 7100-03-03-1415:
+IV45072
+IV45073
+IV40001 applies only to 7100-02
+IV40002 applies only to 7100-02
+IV42024 applies only to 7100-00
+IV42025 applies only to 7100-00
+
+
+
+cd /u10/oraback/tar/
+
+
+ tar -xvf /u10/oraback/tar/12102_GOLD_20160121_4clone.tar
+
+
+./runInstaller -detachHome -silent ORACLE_HOME="/orahome/u01/app/oracle/product/12.1.0.2/db_1" ORACLE_HOME_NAME="OraDB12Home1"
+
+
+
+inventory_loc=/u01/app/oracle/oraInventory
+inst_group=dba
+
+
+cp –p /u01/app/oracle/product/11.2.0.4/db_1/network/admin/*ora .
+
+cp -p /u01/app/oracle/product/11.2.0.4/db_1/network/admin/*ora .
+
+
+
+$ORACLE_HOME/oui/bin/runInstaller -clone -silent -waitForCompletion ORACLE_HOME=/orahome/u01/app/oracle/product/12.1.0.2/db_2 ORACLE_HOME_NAME=OraDB12Home2 ORACLE_BASE=/orahome/u01/app/oracle
+
+
+xpsdppm1q
+
+
+"ORA12102_1")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                             ;;
+
+"ORA12102_2")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                             ;;
+
+ORA12102_1:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1:N
+ORA12102_2:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2:N
+
+login to xpsdppw1q
+
+cd /orahome/psu01/oracle/product/oracle_12102_stage
+
+
+/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1
+
+
+
+
+cp -p /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/tnsnames.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1/network/admin/tnsnames.ora
+cp -p /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+
+cp /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2/network/admin/tnsnames.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2/network/admin/tnsnames.ora
+cp /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2/network/admin/sqlnet.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2/network/admin/sqlnet.ora
+
+scp -p /orahome/psu01/oracle/product/oracle_12102_stage/p21419221_121020_Linux-x86-64_7of10.zip  xpsdppw1q:/orahome/psu01/oracle/product/oracle_12102_stage/p21419221_121020_Linux-x86-64_7of10.zip
+
+
+
+*********************
+
+echo Creating tar file for 12.1.0.2/client_64bit_dp1 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/client_64bit_dp1
+cd /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_12102_client_64bit_dp1_any_`
+date '+%Y%m%d'`_b4AIXpatch.tar . 2>&1 |tee ${LOGDIR}/tar_12102_client_64bit_dp1_
+any_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/client_64bit_dp1 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo
+
+
+echo Creating tar file for 12.1.0.2/client_64bit_dp2 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/client_64bit_dp2
+cd /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_12102_client_64bit_dp2_any_`
+date '+%Y%m%d'`_b4AIXpatch.tar . 2>&1 |tee ${LOGDIR}/tar_12102_client_64bit_dp2_
+any_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/client_64bit_dp2 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo
+
+
+
+"ORA12102_1")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                             ;;
+
+"ORA12102_2")
+        NLS_LANG=AMERICAN_AMERICA.WE8ISO8859P15; export NLS_LANG
+                                             ;;
+
+
+ORA12102_1:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1:N
+ORA12102_2:/orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp2:N
+
+
+
+cp -p /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/tnsnames.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1/network/admin/tnsnames.ora
+cp -p /orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1/network/admin/sqlnet.ora /orahome/psu01/oracle/product/12.1.0.2/client_64bit_dp1/network/admin/sqlnet.ora
+
+
+
+[?02/?01/?2016 3:19 PM] Schloendorn, Thomas: 
+ALERT: Bug 21915719 Database hang or may fail to OPEN in 12c IBM AIX or HPUX Itanium - ORA-742, DEADLOCK or ORA-600 [kcrfrgv_nextlwn_scn] ORA-600 [krr_process_read_error_2](Doc ID 1957710.1)  
+Swafford experienced this in his 12c env
+Wes hould plan for this
+
+
+
+
+
+
+
+
+echo Creating tar file for 12.1.0.2/db_1 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/db_1
+cd /orahome/u01/app/oracle/product/12.1.0.2/db_1
+
+nohup tar cvf /u10/oraback/tar/tar_12102_db1_home_`date '+%Y%m%d'`_b4AIXpatch.tar . 2>&1 |tee ${LOGDIR}/tar_12102_db1_home_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/db_1 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo "************************************************************************"
+echo
+
+echo Compress 12.1.0.2/db_1 tar file at - `date`
+echo
+
+nohup gzip /u10/oraback/tar/tar_12102_db1_home_`date '+%Y%m%d'`_b4AIXpatch.tar
+
+echo
+echo End compress 12.1.0.2/db_1 tar file at - `date`
+echo
+
+
+echo Creating tar file for 12.1.0.2/db_2 Oracle Home at - `date`
+echo
+
+# Make tar backup of 12.1.0.2/db_2
+cd /orahome/u01/app/oracle/product/12.1.0.2/db_2
+
+nohup tar cvf /u10/oraback/tar/tar_12102_db2_home_`date '+%Y%m%d'`_b4AIXpatch.tar . 2>&1 |tee ${LOGDIR}/tar_12102_db2_home_`date '+%Y%m%d'`_b4AIXpatch_tar.out
+
+
+echo
+echo End tar file for 12.1.0.2/db_2 Oracle Home at - `date`
+echo
+
+echo "************************************************************************"
+echo "************************************************************************"
+echo
+
+echo Compress 12.1.0.2/db_2 tar file at - `date`
+echo
+
+nohup gzip /u10/oraback/tar/tar_12102_db2_home_`date '+%Y%m%d'`_b4AIXpatch.tar
+
+echo
+echo End compress 12.1.0.2/db_2 tar file at - `date`
+echo
+
+
+
+
+
+*****************8
+
+
+Misc: Apply  bug fix patch 21915719
+
+. ~/.profile
+
+DPDEVUG
+
+cd /orastage/u177/Ora12102_stage/
+
+unzip p21915719_121025_AIX64-5L.zip
+
+cd 21915719
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+...
+Invoking prereq "checkconflictagainstohwithdetail"
+
+Prereq "checkConflictAgainstOHWithDetail" passed.
+
+
+
+cd $HOME
+cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_b421915719_12102_db2
+
+
+
+
+
+. ~/.profile
+
+DPDEVUG
+
+sqlplus / as sysdba
+
+shutdown immeidate
+
+exit
+
+
+cd /orastage/u177/Ora12102_stage/
+
+cd 21915719
+
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch apply
+
+
+
+      $ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+Patch  13542050     : applied on Fri Dec 04 15:16:29 EST 2015
+Patch  18201352     : applied on Fri Dec 04 15:23:20 EST 2015
+Patch  19855835     : applied on Fri Dec 04 15:20:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 15:21:55 EST 2015
+Patch  20807398     : applied on Fri Dec 04 15:13:20 EST 2015
+Patch  20879889     : applied on Fri Dec 04 15:19:14 EST 2015
+Patch  21091518     : applied on Fri Dec 04 15:15:03 EST 2015
+Patch  21554480     : applied on Tue Dec 29 11:08:13 EST 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+Patch  21915719     : applied on Tue Feb 02 10:49:06 EST 2016
+Patch  21948354     : applied on Wed Jan 20 12:37:49 EST 2016
+
+
+sqlplus / as sysdba
+
+startup
+
+exit
+
+
+Apply over other Oracle Home to ORA12102_1
+
+. ~/.profile
+
+
+ORA12102_1
+
+
+Misc: Apply  bug fix patch 21915719
+
+
+
+cd /orastage/u177/Ora12102_stage/
+
+
+
+cd 21915719
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+...
+Invoking prereq "checkconflictagainstohwithdetail"
+
+Prereq "checkConflictAgainstOHWithDetail" passed.
+
+
+
+
+
+
+cd /orastage/u177/Ora12102_stage/
+
+cd 21915719
+
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch apply
+
+
+
+      $ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+Patch  13542050     : applied on Fri Dec 04 15:16:29 EST 2015
+Patch  18201352     : applied on Fri Dec 04 15:23:20 EST 2015
+Patch  19855835     : applied on Fri Dec 04 15:20:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 15:21:55 EST 2015
+Patch  20807398     : applied on Fri Dec 04 15:13:20 EST 2015
+Patch  20879889     : applied on Fri Dec 04 15:19:14 EST 2015
+Patch  21091518     : applied on Fri Dec 04 15:15:03 EST 2015
+Patch  21554480     : applied on Tue Dec 29 11:08:13 EST 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+Patch  21915719     : applied on Tue Feb 02 10:49:06 EST 2016
+Patch  21948354     : applied on Wed Jan 20 12:37:49 EST 2016
+
+
+
+
+****DPPQA Server ******
+
+
+Misc: Apply  bug fix patch 21915719
+
+. ~/.profile
+
+ORA12102_2
+
+cd /orastage/u177/Ora12102_stage/
+
+unzip p21915719_121025_AIX64-5L.zip
+
+cd 21915719
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+...
+Invoking prereq "checkconflictagainstohwithdetail"
+
+Prereq "checkConflictAgainstOHWithDetail" passed.
+
+
+
+cd $HOME
+cp -rp oraInventory oraInventory_` date '+%Y%m%d'`_b421915719_12102_db2
+
+
+
+
+
+
+
+
+cd /orastage/u177/Ora12102_stage/
+
+cd 21915719
+
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch apply
+
+
+
+      $ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+Patch  13542050     : applied on Fri Dec 04 15:16:29 EST 2015
+Patch  18201352     : applied on Fri Dec 04 15:23:20 EST 2015
+Patch  19855835     : applied on Fri Dec 04 15:20:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 15:21:55 EST 2015
+Patch  20807398     : applied on Fri Dec 04 15:13:20 EST 2015
+Patch  20879889     : applied on Fri Dec 04 15:19:14 EST 2015
+Patch  21091518     : applied on Fri Dec 04 15:15:03 EST 2015
+Patch  21554480     : applied on Tue Dec 29 11:08:13 EST 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+Patch  21915719     : applied on Tue Feb 02 12:13:00 EST 2016
+Patch  21948354     : applied on Wed Jan 20 12:37:49 EST 2016
+
+
+
+Apply over other Oracle Home to ORA12102_1
+
+. ~/.profile
+
+
+ORA12102_1
+
+
+Misc: Apply  bug fix patch 21915719
+
+
+
+cd /orastage/u177/Ora12102_stage/
+
+
+
+cd 21915719
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch prereq CheckConflictAgainstOHWithDetail -ph ./
+
+...
+Invoking prereq "checkconflictagainstohwithdetail"
+
+Prereq "checkConflictAgainstOHWithDetail" passed.
+
+
+
+
+
+
+cd /orastage/u177/Ora12102_stage/
+
+cd 21915719
+
+export PATH=$PATH:$ORACLE_HOME/OPatch
+
+opatch apply
+
+
+
+      $ORACLE_HOME/OPatch/opatch lsinventory -patch | grep "applied on" | sort
+
+Patch  13542050     : applied on Fri Dec 04 15:16:29 EST 2015
+Patch  18201352     : applied on Fri Dec 04 15:23:20 EST 2015
+Patch  19855835     : applied on Fri Dec 04 15:20:40 EST 2015
+Patch  20228093     : applied on Fri Dec 04 15:21:55 EST 2015
+Patch  20807398     : applied on Fri Dec 04 15:13:20 EST 2015
+Patch  20879889     : applied on Fri Dec 04 15:19:14 EST 2015
+Patch  21091518     : applied on Fri Dec 04 15:15:03 EST 2015
+Patch  21554480     : applied on Tue Dec 29 11:08:13 EST 2015
+Patch  21555660     : applied on Fri Oct 30 14:03:54 EDT 2015
+Patch  21915719     : applied on Tue Feb 02 12:15:00 EST 2016
+Patch  21948354     : applied on Wed Jan 20 12:37:49 EST 2016
+
+

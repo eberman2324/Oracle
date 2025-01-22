@@ -1,0 +1,208 @@
+
+
+GRANT DROP ANY TABLE TO DPMASKADMIN
+/
+
+***************************
+
+
+CREATE USER PSDBA IDENTIFIED BY "#DataMask16"
+    DEFAULT TABLESPACE USERS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE STANDARD
+    ACCOUNT UNLOCK
+/
+GRANT DBA TO PSDBA
+/
+ALTER USER PSDBA DEFAULT ROLE DBA
+/
+GRANT SELECT ON SYS.DBA_FREE_SPACE TO PSDBA
+/
+GRANT SELECT ON SYS.DBA_TABLESPACES TO PSDBA
+/
+GRANT SELECT ON SYS.DBA_SEGMENTS TO PSDBA
+/
+GRANT ALTER USER TO PSDBA
+/
+GRANT ANALYZE ANY TO PSDBA
+/
+GRANT CREATE USER TO PSDBA
+/
+GRANT DROP ANY TABLE TO PSDBA
+/
+GRANT DROP USER TO PSDBA
+/
+GRANT GRANT ANY ROLE TO PSDBA
+/
+GRANT UNLIMITED TABLESPACE TO PSDBA
+/
+
+
+CREATE TABLE PSDBA.MASK_TABLES_FOR_TRUNCATION
+(
+    TABLE_NAME_TX VARCHAR2(32) NOT NULL,
+    OWNER         VARCHAR2(32) NOT NULL
+)
+ORGANIZATION HEAP
+TABLESPACE USERS
+LOGGING
+PCTFREE 10
+PCTUSED 0
+INITRANS 1
+MAXTRANS 255
+STORAGE(BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCACHE
+NOROWDEPENDENCIES
+/
+CREATE UNIQUE INDEX PSDBA.MASK_TRUNCATED_TB_IX
+    ON PSDBA.MASK_TABLES_FOR_TRUNCATION(TABLE_NAME_TX,OWNER)
+TABLESPACE USERS
+LOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 16K
+        BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCOMPRESS
+/
+GRANT SELECT ON PSDBA.MASK_TABLES_FOR_TRUNCATION TO "PUBLIC"
+/
+
+
+CREATE TABLE PSDBA.TABLES_THAT_CAN_BE_TRUNCATED
+(
+    TABLE_NAME_TX VARCHAR2(32) NOT NULL,
+    OWNER         VARCHAR2(32) NOT NULL
+)
+ORGANIZATION HEAP
+TABLESPACE USERS
+LOGGING
+PCTFREE 10
+PCTUSED 0
+INITRANS 1
+MAXTRANS 255
+STORAGE(BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCACHE
+NOROWDEPENDENCIES
+/
+CREATE UNIQUE INDEX PSDBA.TRUNCATED_TB_IX
+    ON PSDBA.TABLES_THAT_CAN_BE_TRUNCATED(TABLE_NAME_TX,OWNER)
+TABLESPACE USERS
+LOGGING
+PCTFREE 10
+INITRANS 2
+MAXTRANS 255
+STORAGE(INITIAL 64K
+        BUFFER_POOL DEFAULT)
+NOPARALLEL
+NOCOMPRESS
+/
+GRANT SELECT ON PSDBA.TABLES_THAT_CAN_BE_TRUNCATED TO "PUBLIC"
+/
+
+
+
+
+CREATE OR REPLACE PROCEDURE PSDBA.USP_PS_TRUNCATE_MASK_TABLE
+(table_name_in      in   varchar2,
+ error_code        out   number,
+ error_message     out   varchar2)
+as
+v_temp_var         char(200) := ' ';
+checkit            number := 0;
+owner              char(32) := ' ';
+/*
+| declare and create a cursor to use for the dynamic sql
+*/
+cursor_handle integer := dbms_sql.open_cursor;
+/*
+| Procedure to truncate the tables
+*/
+begin
+error_code := 0;
+error_message := ' ';
+select count(*) into checkit
+  from mask_tables_for_truncation
+  where upper(table_name_tx) = upper(table_name_in);
+if checkit = 0 then
+   error_code := -20000;
+   error_message := 'Unsupported table';
+   goto end_it;
+end if;
+select  owner into owner
+  from mask_tables_for_truncation
+  where upper(table_name_tx) = upper(table_name_in);
+/*
+| Construct the sql stmt and parse it in version 7 mode
+*/
+dbms_sql.parse
+   (cursor_handle,
+    'truncate table ' || owner || '.' || table_name_in,
+    DBMS_SQL.V7);
+dbms_sql.close_cursor (cursor_handle);
+<<end_it>>
+return;
+exception
+when others then
+     error_code := sqlcode;
+     v_temp_var := substr(sqlerrm,1,150);
+     error_message := v_temp_var;
+end;
+/
+GRANT EXECUTE ON PSDBA.USP_PS_TRUNCATE_MASK_TABLE TO DPMASKADMIN
+/
+GRANT EXECUTE ON PSDBA.USP_PS_TRUNCATE_MASK_TABLE TO PSOPSBATCHMGR
+/
+
+
+CREATE OR REPLACE PROCEDURE PSDBA.USP_PS_TRUNCATE_TABLE
+(table_name_in      in   varchar2,
+ error_code        out   number,
+ error_message     out   varchar2)
+as
+v_temp_var         char(200) := ' ';
+checkit            number := 0;
+owner              char(32) := ' ';
+/*
+| declare and create a cursor to use for the dynamic sql
+*/
+cursor_handle integer := dbms_sql.open_cursor;
+/*
+| Procedure to truncate the tables
+*/
+begin
+error_code := 0;
+error_message := ' ';
+select count(*) into checkit
+  from tables_that_can_be_truncated
+  where upper(table_name_tx) = upper(table_name_in);
+if checkit = 0 then
+   error_code := -20000;
+   error_message := 'Unsupported table';
+   goto end_it;
+end if;
+select  owner into owner
+  from tables_that_can_be_truncated
+  where upper(table_name_tx) = upper(table_name_in);
+/*
+| Construct the sql stmt and parse it in version 7 mode
+*/
+dbms_sql.parse
+   (cursor_handle,
+    'truncate table ' || owner || '.' || table_name_in,
+    DBMS_SQL.V7);
+dbms_sql.close_cursor (cursor_handle);
+<<end_it>>
+return;
+exception
+when others then
+     error_code := sqlcode;
+     v_temp_var := substr(sqlerrm,1,150);
+     error_message := v_temp_var;
+end;
+/
+GRANT EXECUTE ON PSDBA.USP_PS_TRUNCATE_TABLE TO PSOPSBATCHMGR
+/

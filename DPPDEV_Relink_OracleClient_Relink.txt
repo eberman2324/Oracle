@@ -1,0 +1,484 @@
+***********AIX Patch/Upgrade******************
+DPPDEV
+On2aix53
+
+********************************************************************************** 
+
+1.  login to DPPDEV Server
+
+ps -ef |grep pmon
+
+if running shutdown DB
+
+2.  Stop  Listener: ps -ef | grep tns
+
+if running shutdown listeners
+    ***********************************************************
+  oracle 14155920        1   0   Apr 21      -  2:37 /u01/app/oracle/product/11.2.0/db_2/bin/tnslsnr DPDEVUG -inherit
+  oracle 15728668        1   0   Apr 21      -  2:28 /u01/app/oracle/product/11.2.0/db_1/bin/tnslsnr DPDEV91 -inherit
+  oracle 16056554        1   0   Apr 21      -  2:57 /u01/app/oracle/product/11.2.0/db_1/bin/tnslsnr DPDEMO91 -inherit
+
+. ~/.profile
+DPDEVUG
+lsnrctl stop DPDEVUG
+
+sqlplus / as sysdba
+shutdown immediate;
+exit
+
+. ~/.profile
+DPDEV91
+lsnrctl stop DPDEV91
+
+
+sqlplus / as sysdba
+shutdown immediate;
+exit
+
+
+. ~/.profile
+DPDEMO91
+lsnrctl stop DPDEMO91
+
+
+sqlplus / as sysdba
+shutdown immediate;
+exit
+
+
+
+or
+
+cd $HOME/local 
+
+shutdown_oracle_processes.ksh 
+
+
+ps -ef | grep tns
+
+ps -ef |grep pmon
+
+4. #This would tar ORACLE_HOME directory to file on different mount point
+   # See if Unix Amdin could do it first.
+   
+
+   cd /u01/app/oracle/product/11.2.0/db_1
+
+   tar -cvf /u10/oraback/tar/tar_1120_db1_any_20130723_b4aixpatch_IV09981.tar /u01/app/oracle/product/11.2.0/db_1
+
+   cd /u10/oraback/tar
+   gzip tar_1120_db1_any_20130723_b4aixpatch_IV09981.tar
+
+   . ~/.profile
+   DPDEVUG
+   
+   cd /u01/app/oracle/product/11.2.0/db_2
+
+   tar -cvf /u10/oraback/tar/tar_1120_db2_any_20130723_b4aixpatch_IV09981.tar /u01/app/oracle/product/11.2.0/db_2
+   
+   cd /u10/oraback/tar
+   gzip tar_1120_db2_any_20130723_b4aixpatch_IV09981.tar
+
+
+5. Disable Oracle Auto Startup in crontab
+   cd /etc
+
+   vi oratab
+
+   
+DPDEVUG:/u01/app/oracle/product/11.2.0/db_2:N
+DPDEMO91:/u01/app/oracle/product/11.2.0/db_1:N
+DPDEV91:/u01/app/oracle/product/11.2.0/db_1:N
+
+STRTLSNR:/u01/app/oracle/product/11.2.0/db_1:N
+TNSADMIN:/u01/app/oracle/product/11.2.0/db_1:N
+GCAGENT:/u01/app/oracle/product/agent12c/core/12.1.0.1.0:N
+ 
+
+
+crontab -r 
+
+
+6.  Inform Unix Admin that oracle DB's down
+7.  Unix Admin performes AIX Patch
+
+
+Make sure no Oracle process running
+
+ps -ef | grep tns
+
+ps -ef |grep pmon
+
+8.  Relink Oracle executables:cd $ORACLE_HOME/bin
+
+
+
+
+
+
+#cd $ORACLE_HOME/install
+
+#mv make.log make.log.20130711
+
+###                             relink all
+####Relink Oracle executables:  $ORACLE_HOME/bin/relink all 2>&1 | tee $ORACLE_HOME/install/make.log
+
+
+. ~/.profile
+DPDEV91
+
+cd $ORACLE_HOME/relink   (Directory we created) 
+
+sudo genkld | wc -l
+sudo slibclean
+sudo genkld | wc –l
+
+relink all 2>&1 | tee -a relink_all_db1_20130723_postaixpatch_IV09981
+
+
+egrep -i "fatal|error|cannot|warning|severe" relink_all_db1_20130723_postaixpatch_IV09981 |egrep -v "Duplicate symbol|TOC overflow|0711-773|0711-415|0711-319|0711-301|0711-224|libpfo.a|Cannot find a rule to create target install from dependencies."
+
+
+
+. ~/.profile
+DPDEVUG
+
+
+cd $ORACLE_HOME/relink   (Directory we created) 
+
+sudo genkld | wc -l
+sudo slibclean
+sudo genkld | wc –l
+
+relink all 2>&1 | tee -a relink_all_db2_20130723_postaixpatch_IV09981
+
+egrep -i "fatal|error|cannot|warning|severe" relink_all_db2_20130723_postaixpatch_IV09981 |egrep -v "Duplicate symbol|TOC overflow|0711-773|0711-415|0711-319|0711-301|0711-224|libpfo.a|Cannot find a rule to create target install from dependencies."
+
+
+After the relink, you'll need to send an email to AIX admin to run root.sh.
+
+/u01/app/oracle/product/11.2.0/db_1/root.sh
+/u01/app/oracle/product/11.2.0/db_2/root.sh
+
+*****Make sure all databases can start up fine **************************
+
+
+cd $HOME/local 
+
+start_oracle_processes.ksh 
+
+
+or
+
+. ~/.profile
+DPDEVUG
+
+
+sqlplus / as sysdba
+startup;
+exit
+
+lsnrctl start DPDEVUG
+
+. ~/.profile
+DPDEV91
+
+
+
+sqlplus / as sysdba
+startup;
+exit
+
+lsnrctl start DPDEV91
+
+
+. ~/.profile
+DPDEMO91
+
+
+
+sqlplus / as sysdba
+startup;
+exit
+
+lsnrctl start DPDEMO91
+
+
+
+13. Enable Auto Startup 
+ 
+    cd /etc
+    vi oratab
+
+   
+DPDEVUG:/u01/app/oracle/product/11.2.0/db_2:Y
+DPDEMO91:/u01/app/oracle/product/11.2.0/db_1:Y
+DPDEV91:/u01/app/oracle/product/11.2.0/db_1:Y
+
+
+cd $HOME
+
+crontab crontab.lst
+
+
+
+******** Oracle Client Relink *******
+
+
+04/08/2015	6pm	xpsapm2d
+
+
+04/13/2015	7pm	xpsapm1q
+04/13/2015	7pm	xpsapw1q
+04/26/2015	7am	xpsapm1p
+04/26/2015	7am	xpsapw1p
+
+
+move2s10
+
+
+
+/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp1
+/orahome/psu01/oracle/product/11.2.0.4/client_64bit_dp2  
+
+/orahome/psu01/oracle/product/11.2.0/client_64bit_dp1
+/orahome/psu01/oracle/product/11.2.0/client_64bit_dp2
+
+
+/orahome/psu01/oracle/product/11.2.0/client_64bit_hr1
+/orahome/psu01/oracle/product/11.2.0/client_64bit_hr2
+
+
+/orahome/psu01/oracle/product/11.2.0/client_32bit_hr1
+/orahome/psu01/oracle/product/11.2.0/client_32bit_hr2
+
+
+
+. ~/.profile
+     ORA11204_1
+
+cd $ORACLE_HOME
+
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp1_any_`date '+%Y%m%d'`_b4OSPatch.tar . |tee /orahome/psu01/oracle/product/tar /tar_11204_client_64bit_dp1_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+    cd /orahome/psu01/oracle/product/tar
+
+   egrep –i “permission|denied” tar_11204_client_64bit_dp1_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+
+##gzip the OH tar file
+
+   cd /orahome/psu01/oracle/product/tar
+
+nohup gzip tar_11204_client_64bit_dp1_any_20150408_b4OSPatch.tar
+
+
+
+. ~/.profile
+     ORA11204_2
+
+cd $ORACLE_HOME
+
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_11204_client_64bit_dp2_any_`date '+%Y%m%d'`_b4OSPatch.tar . |tee /orahome/psu01/oracle/product/tar /tar_11204_client_64bit_dp2_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+    cd /orahome/psu01/oracle/product/tar
+
+   egrep –i “permission|denied” tar_11204_client_64bit_dp2_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+
+##gzip the OH tar file
+
+   cd /orahome/psu01/oracle/product/tar
+
+nohup gzip tar_11204_client_64bit_dp2_any_20150408_b4OSPatch.tar
+
+
+
+
+. ~/.profile
+     DPDEV91
+
+cd $ORACLE_HOME
+
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_1120_client_64bit_dp1_any_`date '+%Y%m%d'`_b4OSPatch.tar . |tee /orahome/psu01/oracle/product/tar /tar_1120_client_64bit_dp1_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+    cd /orahome/psu01/oracle/product/tar
+
+   egrep –i “permission|denied” tar_1120_client_64bit_dp1_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+
+##gzip the OH tar file
+
+   cd /orahome/psu01/oracle/product/tar
+
+nohup gzip tar_1120_client_64bit_dp1_any_20150408_b4OSPatch.tar
+
+
+
+. ~/.profile
+     ORA11203_2
+
+cd $ORACLE_HOME
+
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_1120_client_64bit_dp2_any_`date '+%Y%m%d'`_b4OSPatch.tar . |tee /orahome/psu01/oracle/product/tar /tar_1120_client_64bit_dp2_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+    cd /orahome/psu01/oracle/product/tar
+
+   egrep –i “permission|denied” tar_1120_client_64bit_dp2_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+
+##gzip the OH tar file
+
+   cd /orahome/psu01/oracle/product/tar
+
+nohup gzip tar_1120_client_64bit_dp2_any_20150408_b4OSPatch.tar
+
+
+
+
+
+
+
+
+. ~/.profile
+     PSFIX
+
+cd $ORACLE_HOME
+
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_1120_client_64bit_hr1_any_`date '+%Y%m%d'`_b4OSPatch.tar . |tee /orahome/psu01/oracle/product/tar /tar_1120_client_64bit_hr1_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+    cd /orahome/psu01/oracle/product/tar
+
+   egrep –i “permission|denied” tar_1120_client_64bit_hr1_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+
+##gzip the OH tar file
+
+   cd /orahome/psu01/oracle/product/tar
+
+nohup gzip tar_1120_client_64bit_hr1_any_20150408_b4OSPatch.tar
+
+
+
+. ~/.profile
+     PSTEST
+
+cd $ORACLE_HOME
+
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_1120_client_64bit_hr2_any_`date '+%Y%m%d'`_b4OSPatch.tar . |tee /orahome/psu01/oracle/product/tar /tar_1120_client_64bit_hr2_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+    cd /orahome/psu01/oracle/product/tar
+
+   egrep –i “permission|denied” tar_1120_client_64bit_hr2_any_`date '+%Y%m%d'`_b4OSPatch.out
+
+
+##gzip the OH tar file
+
+   cd /orahome/psu01/oracle/product/tar
+
+nohup gzip tar_1120_client_64bit_hr2_any_20150408_b4OSPatch.tar
+
+
+
+
+
+The script is /orahome/psu01/oracle/tls/relink_oh.ksh
+
+
+scp -rp /orahome/psu01/oracle/relink/relink_oh.ksh dppdev:/u01/app/oracle/relink/relink_oh.ksh
+
+DPDEVUG:/u01/app/oracle/product/11.2.0/db_2:Y
+DPDEMO91:/u01/app/oracle/product/11.2.0/db_1:Y
+DPDEV91:/u01/app/oracle/product/11.2.0/db_1:Y
+STRTLSNR:/u01/app/oracle/product/11.2.0/db_1:N
+TNSADMIN:/u01/app/oracle/product/11.2.0/db_1:N
+GCAGENT:/u01/app/oracle/product/agent12c/core/12.1.0.3.0:N
+
+cat oratab|egrep -v "^#|agent|11.1" | grep psu01/oracle | awk -F: '{print $2}'|sort -u|
+
+cat ${oratab}|egrep -v "^#|agent|11.1" | grep psu01/oracle | awk -F: '{print $2}'|sort -u|while read OH
+
+
+cat oratab|egrep -v "^#|agent|11.1" | grep psu01/oracle | awk -F: '{print $2}'|sort -u|
+
+/u01/app/oracle/aetna/scripts
+
+cd $HOME/aetna/scripts
+
+. ${HOME}/aetna/scripts/oraprof ${DBName} > oraprof.out
+
+The way the script is currently configured it will relink all the 11.2 directories.
+
+/orahome/psu01/oracle/product/11.2.0/client_32bit_hr1
+/orahome/psu01/oracle/product/11.2.0/client_32bit_hr2
+/orahome/psu01/oracle/product/11.2.0/client_64bit_dp1
+/orahome/psu01/oracle/product/11.2.0/client_64bit_dp2
+/orahome/psu01/oracle/product/11.2.0/client_64bit_hr1
+/orahome/psu01/oracle/product/11.2.0/client_64bit_hr2
+
+***********************************************************
+
+
+******* Manual Steps ******************
+1 Login to XPSAPM2D/move2s10 server
+
+. ~/.profile
+
+DPDEVUG
+
+2. Backup Oracle Home
+
+
+cd $ORACLE_HOME
+
+
+
+for 11.2.0/client_64bit_dp2 Oracle Home:
+
+nohup tar cvf /orahome/psu01/oracle/product/tar/tar_1120_client_64bit_dp2_any_`date '+%Y%m%d'`_bRelink_upgrRhel510.tar . |tee /orahome/psu01/oracle/product/tar/tar_1120_client_64bit_dp2_any_`date '+%Y%m%d'`_bRelink_upgrRhel510_tar.out
+
+    cd /orahome/psu01/oracle/product/tar
+
+   egrep –i “permission|denied” tar_1120_client_64bit_dp2_any_`date '+%Y%m%d'`_bRelink_upgrRhel510_tar.out
+
+
+gzip the OH tar file
+
+   cd /orahome/psu01/oracle/product/tar
+
+nohup gzip tar_1120_client_64bit_dp2_any_20140310_bRelink_upgrRhel510.tar
+
+
+3. Verify DB connection prior
+
+sqlplus
+system/sysDPDEVUG@DPDEVUG
+
+
+
+/orahome/wkab01/app/oracle/product/11.2.0/db_1/root.sh
+/orahome/wkab01/app/oracle/product/11.2.0/db_3/root.sh
+
+3. Actuall Relink
+
+cd $ORACLE_HOME/install   (Directory we created) 
+
+cp make.log make.log.20130113
+
+sudo genkld | wc -l
+sudo slibclean
+sudo genkld | wc –l
+
+relink all 2>&1 | tee -a 1120_client_64bit_dp2_20140310_postUpgrRhel510.log
+
+
+4. Verify DB connection prior
+
+sqlplus
+system/sysDPDEVUG@DPDEVUG
