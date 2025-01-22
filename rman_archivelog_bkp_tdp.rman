@@ -1,8 +1,0 @@
-run
- {
-   BACKUP
-   filesperset 20
-   ARCHIVELOG ALL
-   DELETE INPUT;
-}
-exit;
