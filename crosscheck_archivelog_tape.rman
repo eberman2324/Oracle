@@ -1,8 +1,0 @@
-####################################################################
-##### Run CROSSCHECK command, then delete expired backups.             
-####################################################################
-exit;
-crosscheck backup of archivelog all;
-   delete expired backup of archivelog all;
-   release channel;
-
