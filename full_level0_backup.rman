@@ -1,0 +1,9 @@
+##################################################################
+##### Back up FULL plus ARCHIVELOGS 
+##################################################################
+run 
+{
+   BACKUP INCREMENTAL LEVEL 0 DATABASE PLUS ARCHIVELOG DELETE INPUT;
+   DELETE NOPROMPT OBSOLETE;
+}
+exit;

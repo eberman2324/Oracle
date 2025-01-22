@@ -1,0 +1,11 @@
+shutdown immediate;
+startup nomount;
+run
+{
+   BACKUP DATABASE 
+      KEEP UNTIL 'SYSDATE+30'
+      NOLOGS
+      tag full_30day_cold_backup;
+}
+alter database open;
+exit;

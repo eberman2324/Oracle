@@ -1,0 +1,20 @@
+##### Online backup.
+#####    This is an INCREMENTAL LEVEL 1 (differential) backup.  
+#####    It will back up all changes since the last BASE LEVEL (0) backup.
+#####    We will SKIP READONLY tablespaces.
+##################################################################
+run {
+    # backup database
+    backup 
+        incremental level = 1 
+        format 'DR02_%U';
+        database;
+    # backup archive logs
+    sql 'ALTER SYSTEM ARCHIVE LOG CURRENT';
+    backup 
+        filesperset 20 
+        format 'DR02_arc_t%t_s%s_p%p'
+        archivelog all 
+        delete input;
+}
+exit;

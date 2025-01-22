@@ -1,6 +1,4 @@
 >>> To disable the running of process sql add the sql file name EX: truncate_a_table <<<
-temp_tablespaces_cleanup
-kill_crystal_sessions
 
 
 

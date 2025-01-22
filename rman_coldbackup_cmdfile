@@ -1,0 +1,9 @@
+shutdown immediate;
+startup nomount;
+run
+{
+   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT tag full_cold_backup;
+   DELETE NOPROMPT OBSOLETE;
+}
+alter database open;
+exit;

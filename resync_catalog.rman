@@ -1,0 +1,6 @@
+####################################################################
+##### Re-sync recovery catalog with target database control file.
+####################################################################
+   resync catalog;
+   release channel;
+

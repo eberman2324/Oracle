@@ -1,0 +1,21 @@
+##### Online backup.
+#####    This is an INCREMENTAL LEVEL 2 (differential) backup.  
+#####    We will SKIP READONLY tablespaces.
+##################################################################
+run {
+    # backup database
+    backup 
+        incremental level = 2 
+        tag DR02_lvl2  
+        format 'DR02_%U' 
+        database;
+    # backup archive logs
+    sql 'ALTER SYSTEM ARCHIVE LOG CURRENT';
+    backup 
+        filesperset 20 
+        format 'DR02_arc_t%t_s%s_p%p'
+        skip inaccessible
+        archivelog all 
+        delete input;
+}
+exit;

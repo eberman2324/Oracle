@@ -1,0 +1,9 @@
+##################################################################
+##### Back up L1 plus ARCHIVELOGS 
+##################################################################
+run
+{
+   BACKUP INCREMENTAL LEVEL 1 CUMULATIVE DATABASE PLUS ARCHIVELOG DELETE INPUT tag L1_hot_backup;
+   DELETE NOPROMPT OBSOLETE;
+}
+exit;
