@@ -1,4 +1,0 @@
-cd $SCRIPTS/reorg/table_moves
-nohup move_AUDIT_LOG_ENTRY.sh HEPYPRD_1 > move_AUDIT_LOG_ENTRY.stdout 2>&1 &
-
-nohup table_move_DATA5.sh HEPYPRD_1 > table_move_DATA5.stdout 2>&1 &
