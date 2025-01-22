@@ -1,6 +1,0 @@
-run {
-allocate channel dd01 type  'sbt_tape' parms 'SBT_LIBRARY=/orahome/u01/app/oracle/product/19.12.1/db_1/lib/libddobk.so, ENV=(BACKUP_HOST=winpdd0821_lf2,RMAN_AGENT_HOME=/orahome/u01/app/ddboost)';
-send 'set username ddboost_ora password ddb00st servername winpdd0821_lf2 storageunit /ora_dev_boost3540_restore/xhepydbm21q';
-release channel dd01;
-}
-
