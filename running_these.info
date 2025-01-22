@@ -1,0 +1,12 @@
+
+nohup add_indexes_POSTAL_ADDRESS.sh HEPYMASK > add_indexes_POSTAL_ADDRESS.stdout_jun26 2>&1 & 
+nohup add_indexes_CAPITATED_PAYMENT_LINE.sh HEPYMASK > add_indexes_CAPITATED_PAYMENT_LINE.stdout_jun26 2>&1 & 
+nohup add_indexes_CONSOLIDATED_CLAIM.sh HEPYMASK > add_indexes_CONSOLIDATED_CLAIM.stdout_jun26 2>&1 & 
+nohup add_indexes_UB92.sh HEPYMASK > add_indexes_UB92.stdout_jun26 2>&1 &
+nohup add_indexes_HCFA1500.sh HEPYMASK > add_indexes_HCFA1500.stdout_jun26 2>&1 &
+nohup add_indexes_MEMBERSHIP.sh HEPYMASK > add_indexes_MEMBERSHIP.stdout_jun26 2>&1 &
+nohup add_indexes_PERSON_NAME.sh HEPYMASK > add_indexes_PERSON_NAME.stdout_jun26 2>&1 &
+nohup add_indexes_INSURANCE_INFORMATION.sh HEPYMASK > add_indexes_INSURANCE_INFORMATION.stdout_jun26 2>&1 &
+nohup add_indexes_LICENSE_NUMBER.sh HEPYMASK > add_indexes_LICENSE_NUMBER.stdout_jun26 2>&1 &
+
+
