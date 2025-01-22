@@ -1,0 +1,23 @@
+spool log to backup_hepymask_2022_04_05.out;
+
+select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') "Start Time" from dual;
+
+show all;
+
+run
+{
+ BACKUP CHECK LOGICAL DATABASE PLUS ARCHIVELOG;
+ BACKUP ARCHIVELOG ALL;
+}
+
+# Below added in support of Metalink Note 1348071.1
+run
+{
+ ALTER SYSTEM ARCHIVE LOG CURRENT;
+ BACKUP ARCHIVELOG ALL;
+}
+
+select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') "End Time" from dual;
+
+spool log off;
+

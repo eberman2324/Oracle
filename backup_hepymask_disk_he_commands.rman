@@ -1,0 +1,29 @@
+
+spool log to backup_hepymask_2024_05_26.out;
+
+select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') "Start Time" from dual;
+
+show all;
+
+run
+{
+BACKUP DATABASE SECTION SIZE 400G PLUS ARCHIVELOG;
+}
+ 
+# Below added in support of Metalink Note 1348071.1
+run
+{
+ALTER SYSTEM ARCHIVE LOG CURRENT;
+BACKUP ARCHIVELOG ALL;
+}
+
+run
+{
+BACKUP CURRENT CONTROLFILE;
+}
+
+
+select to_char(sysdate, 'YYYY-MM-DD HH24:MI:SS') "End Time" from dual;
+
+spool log off;
+
