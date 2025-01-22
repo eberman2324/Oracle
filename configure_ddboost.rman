@@ -1,2 +1,0 @@
-CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'BLKSIZE=1048576,SBT_LIBRARY=/orahome/u01/app/ddboost/lib/libddobk.so,ENV=(STORAGE_UNIT=/ora_dev_boost3540/xhepydbm21q,BACKUP_HOST=midpdd3540_lf2,ORACLE_HOME=/orahome/u01/app/oracle/admin/HEPYMASK/oracle_home)' format './%d/bk_%d_%I_%T/%U';
-quit
