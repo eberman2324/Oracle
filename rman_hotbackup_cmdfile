@@ -1,6 +1,0 @@
-run 
-{
-   DELETE NOPROMPT OBSOLETE;
-   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT tag full_hot_backup;
-}
-exit;
