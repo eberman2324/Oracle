@@ -1,5 +1,0 @@
-run 
-{
-   BACKUP KEEP UNTIL TIME 'SYSDATE+7' AS BACKUPSET (TABLESPACE extdata,extindx) tag ext_tablespace_backup;
-}
-exit;
