@@ -1,9 +1,0 @@
-##################################################################
-##### Back up FULL (Level 0) plus ARCHIVELOGS
-##################################################################
-run
-{
-BACKUP CHECK LOGICAL INCREMENTAL LEVEL 0 DATABASE PLUS ARCHIVELOG DELETE INPUT;
-  DELETE NOPROMPT OBSOLETE;
-}
-exit;
