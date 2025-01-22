@@ -1,7 +1,0 @@
-####################################################################
-##### Run CROSSCHECK command, then delete expired backups.             
-####################################################################
-exit;
-crosscheck backup;
-   delete expired backup of database;
-
