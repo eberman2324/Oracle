@@ -1,0 +1,660 @@
+Pimary Database:       TARGET (wkabdev2)
+Duplicate Database :    AUX    (wkabdev1)
+RMAN Catalog Database: RMAN   (RCATDEV) 
+
+****TARGET (WKABDEV2) and AUX (WKABDEV1) reside on same server ********** boraw1d.aetna.com
+
+If this is repeat refresh some steps will not needed!!!
+
+Comment out following jobs in cron:
+
+10 7-16 * * 0-6 /boraw1du01/aetna/scripts/monitor/scan_alertlog.ksh wkabdev1 /boraw1du01/app/oracle/admin/wkabdev1 > /dev/null/ 2> /dev/null/
+
+0 0 * * * /boraw1du01/aetna/scripts/batch/truncate_session.ksh wkabdev1 > /tmp/kabdev1.truncate_session.stdout 2>&1
+
+zeke job for wkabdev1 archive starts at 12:15 PM  - X108WK06
+
+Blackout Grid for wkabdev1
+
+
+******************************************************************************************************************
+
+Identify datafile and other files location for WKABDEV1. (Some directories could be exist from last time)
+
+------>AUX WKABDEV1 Directory and datafile location<----------------- 
+
+   ORACLE_HOME: /orahome/wkab01/app/oracle/product/11.2.0/db_3
+   ORACLE_BASE: /orahome/wkab01/app/oracle
+   
+   /orahome/wkab01/app/oracle/admin/wkabdev1/diag
+
+   /boraw1du101/wkabdev1/rman_backups
+
+   /boraw1du101/wkabdev1/arch
+
+   /boraw1du01/aetna/scripts
+
+
+   
+
+--Existing data file system location
+
+select file_id,file_name from dba_data_files order by 1
+
+FILE_NAME
+/boraw1du203/oradata/wkabdev1/wkab_index_01.dbf
+/boraw1du203/oradata/wkabdev1/wkab_index_02.dbf
+/boraw1du204/oradata/wkabdev1/TAEDBA2.dbf
+/boraw1du204/oradata/wkabdev1/beneng_data_01.dbf
+/boraw1du204/oradata/wkabdev1/beneng_data_02.dbf
+/boraw1du204/oradata/wkabdev1/beneng_index_01.dbf
+/boraw1du204/oradata/wkabdev1/beneng_index_02.dbf
+/boraw1du204/oradata/wkabdev1/ejsadmin_01.dbf
+/boraw1du204/oradata/wkabdev1/sysaux01.dbf
+/boraw1du204/oradata/wkabdev1/system_01.dbf
+/boraw1du204/oradata/wkabdev1/tivoliorts01.dbf
+/boraw1du204/oradata/wkabdev1/undotbs_01.dbf
+/boraw1du204/oradata/wkabdev1/users_01.dbf
+/boraw1du204/oradata/wkabdev1/wkab_data_01.dbf
+/boraw1du204/oradata/wkabdev1/wkab_data_02.dbf
+/boraw1du204/oradata/wkabdev1/wkab_lob_01.dbf
+/boraw1du204/oradata/wkabdev1/wkab_lob_02.dbf
+/boraw1du204/oradata/wkabdev1/xdb_01.dbf
+
+	
+
+
+
+	
+select file_id,file_name  from dba_temp_files order by 1
+FILE_NAME
+/boraw1du204/oradata/wkabdev1/temp01.dbf
+/boraw1du204/oradata/wkabdev1/tivoliortempts.dbf
+
+	
+
+select * from v$logfile
+
+MEMBER
+/boraw1du204/oradata/wkabdev1/redo03.log
+/boraw1du204/oradata/wkabdev1/redo02.log
+/boraw1du204/oradata/wkabdev1/redo01.log
+
+			
+select * from v$controlfile
+			
+NAME
+/boraw1du203/oradata/wkabdev1/control01.ctl
+/boraw1du203/oradata/wkabdev1/control02.ctl
+/boraw1du203/oradata/wkabdev1/control03.ctl
+	  
+	
+
+
+
+------> TARGET wkabdev2
+
+. $SETUPENV wkabdev2
+
+ORACLE_HOME      /orahome/wkab01/app/oracle/product/11.2.0/db_3
+ORACLE_BASE      /orahome/wkab01/app/oracle
+
+/boraw1du01/app/oracle/admin/wkabdev2/diag
+
+/boraw1du101/wkabdev2/rman_backups
+
+ /boraw1du101/wkabdev2/arch
+
+select file_id,file_name from dba_data_files order by 1
+
+FILE_NAME
+/boraw1du201/oradata/wkabdev2/sysaux01.dbf
+/boraw1du201/oradata/wkabdev2/system_01.dbf
+/boraw1du201/oradata/wkabdev2/undotbs_01.dbf
+/boraw1du201/oradata/wkabdev2/wkab_data_03.dbf
+/boraw1du201/oradata/wkabdev2/wkab_index_03.dbf
+/boraw1du201/oradata/wkabdev2/xdb_01.dbf
+/boraw1du202/oradata/wkabdev2/TAEDBA2.dbf
+/boraw1du202/oradata/wkabdev2/beneng_data_01.dbf
+/boraw1du202/oradata/wkabdev2/beneng_data_02.dbf
+/boraw1du202/oradata/wkabdev2/beneng_index_01.dbf
+/boraw1du202/oradata/wkabdev2/beneng_index_02.dbf
+/boraw1du202/oradata/wkabdev2/tivoliorts01.dbf
+/boraw1du202/oradata/wkabdev2/users_01.dbf
+/boraw1du202/oradata/wkabdev2/wkab_data_01.dbf
+/boraw1du202/oradata/wkabdev2/wkab_data_02.dbf
+/boraw1du202/oradata/wkabdev2/wkab_index_01.dbf
+/boraw1du202/oradata/wkabdev2/wkab_index_02.dbf
+/boraw1du202/oradata/wkabdev2/wkab_lob_01.dbf
+/boraw1du202/oradata/wkabdev2/wkab_lob_02.dbf
+/boraw1du203/oradata/wkabdev2/wkab_data_04.dbf
+/boraw1du203/oradata/wkabdev2/wkab_index_04.dbf
+
+
+	
+
+
+
+	
+select file_id,file_name  from dba_temp_files order by 1
+FILE_NAME
+/boraw1du201/oradata/wkabdev2/temp_01.dbf
+/boraw1du201/oradata/wkabdev2/tivoliortempts.dbf
+
+
+	
+
+select * from v$logfile
+
+
+MEMBER
+/boraw1du201/oradata/wkabdev2/redo03.log
+/boraw1du201/oradata/wkabdev2/redo02.log
+/boraw1du201/oradata/wkabdev2/redo01.log
+
+
+			
+select * from v$controlfile
+			
+NAME
+NAME
+/boraw1du203/oradata/wkabdev2/control01.ctl
+/boraw1du203/oradata/wkabdev2/control02.ctl
+/boraw1du203/oradata/wkabdev2/control03.ctl
+
+	
+
+
+####################################################################################################################
+2. Prepare init.ora file for dupl.
+  
+ . $SETUPENV wkabdev1  
+   sqlplus / as sysdba
+   create pfile from spfile;
+
+ vi initwkabdev3.ora
+
+!! cp 
+*.control_files='/boraw1du203/oradata/wkabdev1/control01.ctl','/boraw1du203/oradata/wkabdev1/control02.ctl','/boraw1du203/oradata/wkabdev1/control03.ctl'
+
+/boraw1du201/oradata/wkabdev2 - 60 GB
+/boraw1du202/oradata/wkabdev2 - 92 GB
+/boraw1du203/oradata/wkabdev2 - 14 GB
+
+/boraw1du203/oradata/wkabdev1 - 28 GB - aval 50
+/boraw1du204/oradata/wkabdev1 - 33 GB after removing will be 60 GB free
+
+
+14 GB: /boraw1du203/oradata/wkabdev2 - > /boraw1du204/oradata/wkabdev1
+60 GB: /boraw1du201/oradata/wkabdev2 - > /boraw1du205/oradata/wkabdev1
+92 GB: /boraw1du202/oradata/wkabdev2 - > /boraw1du205/oradata/wkabdev1
+
+
+
+Not much space since Dev2 is 167 GB and current Dev1 only 67 G. Free up up some space and order DASD for future.
+
+
+
+drwxr-xr-x    2 oracle   fnadmin         256 Apr 23 2008  wkabdev1_backup
+drwxr-xr-x    3 oracle   dba             256 May  6 2009  oracle9i_tz_patch
+drwxr-xr-x    3 oracle   dba            4096 Mar 29 2010  oraclehome_tar
+drwxr-xr-x   20 oracle   dba            4096 Feb  8 2011  oracle11g_software
+
+cd /boraw1du204
+
+rm -rf ./oracle9i_tz_patch
+rm -rf ./oraclehome_tar
+rm -rf ./oracle11g_software
+
+
+/boraw1du205
+
+
+Take down wkabdev3 and remove datafiles
+/boraw1du205/oradata/wkabdev3
+
+
+
+cp initwkabdev1.ora initwkabdev1.ora.20120504
+
+14 GB: /boraw1du203/oradata/wkabdev2 - > /boraw1du204/oradata/wkabdev1
+60 GB: /boraw1du201/oradata/wkabdev2 - > /boraw1du205/oradata/wkabdev1
+92 GB: /boraw1du202/oradata/wkabdev2 - > /boraw1du205/oradata/wkabdev1
+
+vi initwkabdev1.ora.20120504
+
+*.db_file_name_convert='/boraw1du203/oradata/wkabdev2/','/boraw1du204/oradata/wkabdev1/','/boraw1du201/oradata/wkabdev2/','/boraw1du205/oradata/wkabdev1/','/boraw1du202/oradata/wkabdev2/','/boraw1du205/oradata/wkabdev1/'
+*.log_file_name_convert='/boraw1du201/oradata/wkabdev2/','/boraw1du204/oradata/wkabdev1/'
+
+
+
+
+####################################################################################################################
+
+3. Make sure both TARGET and AUX databases have entry in tnsnames.ora file  (completed !!!)
+   
+
+
+####################################################################################################################
+
+3. Create password file on AUX server (completed !!!)
+  
+   cd $ORACLE_HOME/dbs
+   orapwd file=$ORACLE_HOME/dbs/orapwwkabdev1 password=no734s entries=20
+####################################################################################################################
+4. Identify recent backupsets on TARGET database (AUX on same server so no need to move them anywhere)
+    
+    
+   !!! Target wkabdev2 backup going to TSM. Identify location of TDP.opt file.
+
+rman
+   
+connect target /
+
+
+connect catalog wkabdev2/wkabdev2namr@rcatdev
+
+
+show all
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name WKABDEV2 are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 3;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wkabdev2/rman_backups/%F';
+
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 1 BACKUP TYPE TO BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1du101/wkabdev2/rman_backups/bkp_df%t_s%s_s%p';
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/boraw1du01/app/oracle/tdpoopt/tdpo.wkabdev2.opt)' RATE 62 M;
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev2/rman_backups/snapcf_wkabdev2.f';
+
+
+!!!!TDPO_OPTFILE=/boraw1du01/app/oracle/tdpoopt/tdpo.wkabdev2.opt
+
+
+# Just to check backupsets from last Full Backup 
+
+rman
+   
+connect target /
+
+
+
+connect catalog wkabdev2/wkabdev2namr@rcatdev
+list backup summary;
+
+
+RMAN> list backup summary;
+
+
+List of Backups
+
+
+132894  B  A  A SBT_TAPE    30-APR-12       1       1       NO         FULL_HOT_BACKUP
+132908  B  0  A SBT_TAPE    30-APR-12       1       1       NO         TAG20120430T203026
+132947  B  A  A SBT_TAPE    30-APR-12       1       1       NO         FULL_HOT_BACKUP
+132977  B  F  A SBT_TAPE    30-APR-12       1       1       NO         TAG20120430T220342
+
+
+
+
+5. Validate current/latest backup to make sure we have good backup
+
+
+. $SETUPENV wkabdev2
+
+rman
+   
+connect target /
+
+
+connect catalog wkabdev2/wkabdev2namr@rcatdev
+
+restore validate database;
+
+
+restore archivelog all validate;
+
+####################################################################################################################
+6. Test connection from AUX(WKABDEV1) server to TARGET (WKABDEV2)
+
+   ***This is not important since both reside on the same server**
+
+   rman
+   
+   connect target sys/no734s@wkabdev2
+   connect catalog wkabdev2/wkabdev2namr@rcatdev
+   connect AUXILIARY /
+   run{
+     allocate auxiliary channel t1 TYPE 'SBT_TAPE' PARMS 'ENV=(TDPO_OPTFILE=/boraw1du01/app/oracle/tdpoopt/tdpo.wkabdev2.opt)';
+     release channel t1;
+   } 
+
+  
+
+
+####################################################################################################################
+
+####################################################################################################################
+8. If this clone repeat process or AUX database exist then
+   delete all datafiles,redo logs and control files in AUX (WKABAQ1) database
+
+   Make sure . $SETUPENV wkabdev1
+
+   AUX database (WKABDEV1)
+
+   sqlplus / as sysdba
+   shutdown immediate; 
+
+
+   
+   #Confirm
+   ls /boraw1du*/oradata/wkabdev1/*
+
+   --------------------------------
+
+/boraw1du203/oradata/wkabdev1/control01.ctl
+/boraw1du203/oradata/wkabdev1/control02.ctl
+/boraw1du203/oradata/wkabdev1/control03.ctl
+/boraw1du203/oradata/wkabdev1/wkab_index_01.dbf
+/boraw1du203/oradata/wkabdev1/wkab_index_02.dbf
+
+/boraw1du204/oradata/wkabdev1/TAEDBA2.dbf
+/boraw1du204/oradata/wkabdev1/beneng_data_01.dbf
+/boraw1du204/oradata/wkabdev1/beneng_data_02.dbf
+/boraw1du204/oradata/wkabdev1/beneng_index_01.dbf
+/boraw1du204/oradata/wkabdev1/beneng_index_02.dbf
+/boraw1du204/oradata/wkabdev1/ejsadmin_01.dbf
+/boraw1du204/oradata/wkabdev1/redo01.log
+/boraw1du204/oradata/wkabdev1/redo02.log
+/boraw1du204/oradata/wkabdev1/redo03.log
+/boraw1du204/oradata/wkabdev1/sysaux01.dbf
+/boraw1du204/oradata/wkabdev1/system_01.dbf
+/boraw1du204/oradata/wkabdev1/temp01.dbf
+/boraw1du204/oradata/wkabdev1/tivoliortempts.dbf
+/boraw1du204/oradata/wkabdev1/tivoliorts01.dbf
+/boraw1du204/oradata/wkabdev1/undotbs_01.dbf
+/boraw1du204/oradata/wkabdev1/users_01.dbf
+/boraw1du204/oradata/wkabdev1/wkab_data_01.dbf
+/boraw1du204/oradata/wkabdev1/wkab_data_02.dbf
+/boraw1du204/oradata/wkabdev1/wkab_lob_01.dbf
+/boraw1du204/oradata/wkabdev1/wkab_lob_02.dbf
+/boraw1du204/oradata/wkabdev1/xdb_01.dbf
+
+cd /boraw1du203/oradata/wkabdev1/
+rm -f *.ctl
+rm -f *.dbf
+
+cd /boraw1du204/oradata/wkabdev1/
+rm -f *.log
+rm -f *.dbf
+
+ ls /boraw1du*/oradata/wkabdev1/*
+
+
+## Note where is currebnt Datapump Dir points. Change at the end if needed.
+SQL> select directory_name, cast(directory_path as varchar2(128)) as directory_name from dba_directories where directory_name='DATA_PUMP_DIR';
+
+DIRECTORY_NAME                 DIRECTORY_NAME
+------------------------------ ---------------------------------------------------------------------------------------------------------------
+DATA_PUMP_DIR                  /orahome/wkab01/app/oracle/product/11.2.0/db_1/rdbms/log/
+
+
+
+
+----------------------------------------
+ 
+   #Remove
+ #  rm /boraw1du*/oradata/wkabdev1/*
+
+   #Confirm again
+   ls /boraw1du*/oradata/wkabdev1/*
+
+
+     cd $ORACLE_HOME/dbs
+   # to have backup in case. If file exist.
+   mv initwkabdev1.ora initwkadev1_backup.ora
+   mv spfilewkabdev1.ora spfilewkabdev1_backup.ora
+
+   mv initwkabdev1.ora.20120504 initwkabdev1.ora 
+   cp initwkadev1_backup.ora initwkadev1_new.ora
+   
+   mv initwkabdev1.ora initwkadev1_badfile.ora
+   mv initwkadev1_new.ora initwkabdev1.ora
+
+####################################################################################################################
+9. AUX (WKABDEV1) database
+    Make sure . $SETUPENV wkabdev1
+
+    sqlplus / as sysdba
+    startup pfile=/orahome/wkab01/app/oracle/product/11.2.0/db_3/dbs/initwkabdev1.ora force nomount;
+    #startup force nomount;
+####################################################################################################################
+10. AUX (WKABDEV1) database
+    Make sure . $SETUPENV wkabdev1
+
+    
+
+
+   rman
+   
+   connect target sys/no734s@wkabdev2
+   connect catalog wkabdev2/wkabdev2namr@rcatdev
+   connect AUXILIARY /
+   run{
+     allocate auxiliary channel t1 TYPE 'SBT_TAPE' PARMS 'ENV=(TDPO_OPTFILE=/boraw1du01/app/oracle/tdpoopt/tdpo.wkabdev2.opt)';
+     duplicate target database to wkabdev1;
+    } 
+
+
+   ## Once completed
+   sqlplus / as sysdba
+shutdown immediate;
+startup;
+ 
+
+####################################################################################################################
+
+       
+
+
+####################################################################################################################
+---->7. Move Database to NONEARCHIVELOG
+
+SQL> shutdown immediate;
+startup mount;
+
+SQL> alter database noarchivelog;
+##SQL> alter database archivelog;
+
+Database altered.
+
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> archive log list;
+
+
+---->8. this step need to be complete to avoid sending emails to actual customers
+
+Login to sqlplus wkab10/wkab10_wkabdev2 
+
+--Updates may take long time since a lot of records
+
+select count(*) from S_COMMUNICATION where COMM_MODE_ID in (3,6,10)
+and LOCATOR <> 'WKAB3.0@coreinc.com';
+
+
+update S_COMMUNICATION set LOCATOR = 'WKAB3.0@coreinc.com'
+where COMM_MODE_ID in (3,6,10)
+and LOCATOR <> 'WKAB3.0@coreinc.com';
+commit;
+
+select count(*) from s_report_recipient where email_address like '%@%'
+        and email_address <> 'WKAB3.0@coreinc.com'; 
+
+update s_report_recipient
+set email_address = 'WKAB3.0@coreinc.com'
+where email_address like '%@%'
+and email_address <> 'WKAB3.0@coreinc.com' ;
+commit;
+
+
+
+---->9.Change passwords
+
+ALTER PROFILE DEFAULT LIMIT 
+PASSWORD_VERIFY_FUNCTION NULL
+/
+
+alter user wkab10 identified by wkab10_wkabdev1;
+alter user beneng identified by beneng_wkabdev1; 
+                                  
+
+ALTER PROFILE DEFAULT LIMIT 
+PASSWORD_VERIFY_FUNCTION AI_PASSWORD_VALIDATE
+/
+
+
+
+###alter database rename global_name to WKABDEV1.WORLD;
+
+
+
+---->10. Move Database back to ARCHIVELOG
+
+SQL> shutdown immediate;
+startup mount;
+
+##SQL> alter database noarchivelog;
+alter database archivelog;
+
+Database altered.
+
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> archive log list;
+
+
+
+Create SPFILE
+sqlplus / as sysdba
+create spfile from pfile;
+
+shutdown immediate;
+startup
+
+
+#ALTER SYSTEM SET MEMORY_TARGET = 2000M SCOPE = SPFILE;
+
+shutdown immediate;
+startup
+
+#######################################################################################################################
+
+17. Perform full backup on WKABDEV1
+
+DBID prior to Dupl
+(DBID=2370294244)
+
+show all;
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name WKABDEV1 are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 3;
+CONFIGURE BACKUP OPTIMIZATION OFF;
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wkabdev1/rman_backups/%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 1 BACKUP TYPE TO BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1du101/wkabdev1/rman_backups/bkp_df%t_s%s_s%p';
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/boraw1du01/app/oracle/tdpoopt/tdpo.wkabdev1.opt)' RATE 62 M;
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev1/rman_backupssnapcf_wkabdev2.f';
+
+
+rman
+connect target /
+!!1Note new DBID connected to target database: WKABDEV1 (DBID=2384199354)
+connect catalog wkabdev1/wkabdev1namr@RCATDEV
+
+
+
+register database;
+
+show all;
+
+show schema;
+
+
+RMAN configuration parameters for database with db_unique_name WKABDEV1 are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/orahome/wkab01/app/oracle/product/11.2.0/db_3/dbs/snapcf_wkabdev1.f'; # default
+
+
+
+Make changes...
+
+
+##############################################################################################################################
+
+enable cron jobs
+
+#############################################################################################################################
+
+Basic checks.
+
+Login remotly from DBArtizan
+
+select * from dba_registry
+select * from dba_registry_history
+
+
+###########################################################################################################
+
+Change Datapump Dir if needed.Not for this database
+
+
+

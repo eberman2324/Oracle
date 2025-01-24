@@ -1,0 +1,494 @@
+Pimary Database:       TARGET (WKABQA3)
+Duplicate Database :    AUX    (WKABDEV3)
+RMAN Catalog Database: RMAN   (RCATDEV)
+
+
+Target Database wkabqa1 reside on boraw1q server
+Aux Database wkabdev3 reside on boraw1d Server
+
+
+#Prior to duplicate we need to Save last backup on wkabqa1 which will be used in future to restoration (duplication) over to Dev3.
+
+Run one time backup with keep forever option
+
+
+
+. $SETUPENV wkabqa3
+
+rman
+connect target /
+connect catalog wkabqa3/wkabqa3namr@RCATDEV
+
+
+RUN {
+ BACKUP DATABASE
+ TAG SEP2011_RELEASE
+ KEEP FOREVER
+ RESTORE POINT SEP252011;
+}
+
+
+
+
+
+
+cd $INSTANCE_OUTPUTS\rman_backups
+
+ls -altr
+
+-rw-r-----    1 oracle   dba      5787860992 Sep 25 07:15 bkp_df762764498_s5568_s1
+
+-rw-r-----    1 oracle   dba           49152 Sep 25 07:15 bkp_df762765315_s5569_s1
+
+-rw-r-----    1 oracle   dba         1432576 Sep 25 07:15 bkp_df762765319_s5570_s1
+
+-rw-r-----    1 oracle   dba         1318912 Sep 25 07:15 bkp_df762765321_s5571_s1
+
+
+
+rman
+connect target /
+connect catalog wkabqa3/wkabqa3namr@RCATDEV
+
+list backup summary;
+
+
+71037   B  F  A DISK        25-SEP-11       1       1       YES        SEP2011_RELEASE
+71067   B  F  A DISK        25-SEP-11       1       1       YES        SEP2011_RELEASE
+71095   B  A  A DISK        25-SEP-11       1       1       YES        SEP2011_RELEASE
+71106   B  F  A DISK        25-SEP-11       1       1       YES        SEP2011_RELEASE
+
+
+
+
+list restore point all;	   
+
+SCN              RSP Time  Type       Time      Name
+---------------- --------- ---------- --------- ----
+
+8255104458988                         25-SEP-11 SEP252011
+
+*** Capture sequence for duplication ************
+
+
+
+
+
+select sequence#,completion_time, next_change# as scn 
+         from v$archived_log 
+            order by completion_time desc;
+
+8261	09/25/2011 7:15:17.000 AM	8255104458998	   
+8260	09/25/2011 7:01:36.000 AM	8255104452994	   
+	   	   
+
+## use latest 7201
+
+
+#---- Move out first version backupsets first
+
+#cp -rp /boraw1du101/wkabdev3/backup_temp/bkp_df761799646_s5913_s1  /boraw1du101/wkabdev3/backup_temp/temp/bkp_df761799646_s5913_s1
+#cp -rp /boraw1du101/wkabdev3/backup_temp/bkp_df761799663_s5914_s1 /boraw1du101/wkabdev3/backup_temp/temp/bkp_df761799663_s5914_s1
+#cp -rp /boraw1du101/wkabdev3/backup_temp/bkp_df761800480_s5915_s1 /boraw1du101/wkabdev3/backup_temp/temp/bkp_df761800480_s5915_s1
+#cp -rp /boraw1du101/wkabdev3/backup_temp/snapcf_wkabqa1.f /boraw1du101/wkabdev3/backup_temp/temp/snapcf_wkabqa1.f
+#cp -rp /boraw1du101/wkabdev3/backup_temp/c-472815084-20110914-00 /boraw1du101/wkabdev3/backup_temp/temp/c-472815084-20110914-00
+
+#rm -f bkp_*
+
+------>TARGET WKABQA3 Directory and datafile location<----------------- 
+
+   ORACLE_HOME: /orahome/wkab01/app/oracle/product/11.2.0/db_2
+   ORACLE_BASE: /orahome/wkab01/app/oracle
+  
+   /boraw1qu01/app/oracle/admin/wkabqa3/diag
+
+
+  /boraw1qu101/wkabqa3/rman_backups
+
+  /boraw1qu101/wkabqa3/arch
+
+   /boraw1qu01/aetna/scripts
+
+
+select file_id,file_name from dba_data_files order by 2
+
+FILE_ID	FILE_NAME	   
+7	/boraw1qu203/oradata/wkabqa3/sysaux01.dbf	   
+1	/boraw1qu203/oradata/wkabqa3/system_01.dbf	   
+2	/boraw1qu203/oradata/wkabqa3/undotbs_01.dbf	   
+18	/boraw1qu204/oradata/wkabqa3/TAEDBA2.dbf	   
+3	/boraw1qu204/oradata/wkabqa3/beneng_data_01.dbf	   
+5	/boraw1qu204/oradata/wkabqa3/beneng_index_01.dbf	   
+20	/boraw1qu204/oradata/wkabqa3/tivoliorts01.dbf	   
+11	/boraw1qu204/oradata/wkabqa3/wkab_data_01.dbf	   
+13	/boraw1qu204/oradata/wkabqa3/wkab_index_01.dbf	   
+15	/boraw1qu204/oradata/wkabqa3/wkab_lob_01.dbf	   
+4	/boraw1qu205/oradata/wkabqa3/beneng_data_02.dbf	   
+6	/boraw1qu205/oradata/wkabqa3/beneng_index_02.dbf	   
+17	/boraw1qu205/oradata/wkabqa3/ejsadmin_01.dbf	   
+19	/boraw1qu205/oradata/wkabqa3/users_01.dbf	   
+12	/boraw1qu205/oradata/wkabqa3/wkab_data_02.dbf	   
+14	/boraw1qu205/oradata/wkabqa3/wkab_index_02.dbf	   
+16	/boraw1qu205/oradata/wkabqa3/wkab_lob_02.dbf	   
+8	/boraw1qu205/oradata/wkabqa3/xdb_01.dbf	   
+		   
+			
+	
+
+
+
+	
+select file_id,file_name  from dba_temp_files order by 1
+
+FILE_ID	FILE_NAME	   
+1	/boraw1qu203/oradata/wkabqa3/temp01.dbf	   
+2	/boraw1qu203/oradata/wkabqa3/tivoliortempts.dbf	   
+		  
+		
+	
+
+	
+
+select * from v$logfile
+
+GROUP#	STATUS	TYPE	MEMBER	IS_RECOVERY_DEST_FILE	   
+3	[NULL]	ONLINE	/boraw1qu203/oradata/wkabqa3/redo03.log	NO	   
+2	[NULL]	ONLINE	/boraw1qu203/oradata/wkabqa3/redo02.log	NO	   
+1	[NULL]	ONLINE	/boraw1qu203/oradata/wkabqa3/redo01.log	NO	   
+						   
+					
+			
+
+
+
+			
+select * from v$controlfile
+
+STATUS	NAME	IS_RECOVERY_DEST_FILE	BLOCK_SIZE	FILE_SIZE_BLKS	   
+[NULL]	/boraw1qu203/oradata/wkabqa3/control01.ctl	NO	8192	952	   
+[NULL]	/boraw1qu203/oradata/wkabqa3/control02.ctl	NO	8192	952	   
+[NULL]	/boraw1qu203/oradata/wkabqa3/control03.ctl	NO	8192	952	   
+					   
+						
+
+
+
+
+------>AUX WKABDEV3 Directory and datafile location<----------------- 
+
+   ORACLE_HOME: /orahome/wkab01/app/oracle/product/11.2.0/db_1
+   ORACLE_BASE: /orahome/wkab01/app/oracle
+   
+   /orahome/wkab01/app/oracle/admin/wkabdev3/diag
+   
+   /boraw1du101/wkabdev3/rman_backups
+
+
+select file_id,file_name from dba_data_files order by 1
+	
+FILE_ID	FILE_NAME	   
+1	/boraw1du205/oradata/wkabdev3/system_01.dbf	   
+2	/boraw1du205/oradata/wkabdev3/undotbs_01.dbf	   
+3	/boraw1du205/oradata/wkabdev3/beneng_data_01.dbf	   
+4	/boraw1du205/oradata/wkabdev3/beneng_data_02.dbf	   
+5	/boraw1du205/oradata/wkabdev3/beneng_index_01.dbf	   
+6	/boraw1du205/oradata/wkabdev3/beneng_index_02.dbf	   
+7	/boraw1du205/oradata/wkabdev3/sysaux01.dbf	   
+11	/boraw1du205/oradata/wkabdev3/wkab_data_01.dbf	   
+12	/boraw1du205/oradata/wkabdev3/wkab_data_02.dbf	   
+13	/boraw1du205/oradata/wkabdev3/wkab_index_01.dbf	   
+14	/boraw1du205/oradata/wkabdev3/wkab_index_02.dbf	   
+15	/boraw1du205/oradata/wkabdev3/wkab_lob_01.dbf	   
+16	/boraw1du205/oradata/wkabdev3/wkab_lob_02.dbf	   
+17	/boraw1du205/oradata/wkabdev3/ejsadmin_01.dbf	   
+18	/boraw1du205/oradata/wkabdev3/TAEDBA2.dbf	   
+19	/boraw1du205/oradata/wkabdev3/users_01.dbf	   
+20	/boraw1du205/oradata/wkabdev3/tivoliorts01.dbf	   
+		
+
+
+select file_id,file_name  from dba_temp_files order by 1
+
+FILE_ID	FILE_NAME	   
+1	/boraw1du205/oradata/wkabdev3/temp_01.dbf	   
+2	/boraw1du205/oradata/wkabdev3/tivoliortempts.dbf	   
+		
+
+select * from v$logfile
+
+GROUP#	STATUS	TYPE	MEMBER	IS_RECOVERY_DEST_FILE	   
+3	[NULL]	ONLINE	/boraw1du205/oradata/wkabdev3/redo03.log	NO	   
+2	[NULL]	ONLINE	/boraw1du205/oradata/wkabdev3/redo02.log	NO	   
+1	[NULL]	ONLINE	/boraw1du205/oradata/wkabdev3/redo01.log	NO
+
+
+select * from v$controlfile
+
+STATUS	NAME	IS_RECOVERY_DEST_FILE	BLOCK_SIZE	FILE_SIZE_BLKS	   
+[NULL]	/boraw1du205/oradata/wkabdev3/control01.ctl	NO	16384	514	   
+[NULL]	/boraw1du205/oradata/wkabdev3/control02.ctl	NO	16384	514	   
+[NULL]	/boraw1du205/oradata/wkabdev3/control03.ctl	NO	16384	514	   
+					
+	   
+
+
+
+
+1. Create directory or symbolic link on AUX Server and copy backupsets over
+   
+   cd /boraw1qu101/wkabqa3/rman_backups
+
+
+
+I used to be able to do similar links. But some reason I am getting this error:
+
+ln -s /boraw1du101/wkabdev3/backup_temp /boraw1qu101/wkabqa1/rman_backups
+ 
+ln: No such file or directory
+
+cd /boraw1du101/wkabdev3/
+mkdir rman_backups_qa3
+
+
+
+
+-rw-r-----    1 oracle   dba      5787860992 Sep 25 07:15 bkp_df762764498_s5568_s1
+
+-rw-r-----    1 oracle   dba           49152 Sep 25 07:15 bkp_df762765315_s5569_s1
+
+-rw-r-----    1 oracle   dba         1432576 Sep 25 07:15 bkp_df762765319_s5570_s1
+
+-rw-r-----    1 oracle   dba         1318912 Sep 25 07:15 bkp_df762765321_s5571_s1
+
+
+nohup scp -rp /boraw1qu101/wkabqa3/rman_backups/bkp_df762764498_s5568_s1 boraw1d:/boraw1du101/wkabdev3/rman_backups_qa3/bkp_df762764498_s5568_s1
+nohup scp -rp /boraw1qu101/wkabqa3/rman_backups/bkp_df762765315_s5569_s1 boraw1d:/boraw1du101/wkabdev3/rman_backups_qa3/bkp_df762765315_s5569_s1
+nohup scp -rp /boraw1qu101/wkabqa3/rman_backups/bkp_df762765319_s5570_s1 boraw1d:/boraw1du101/wkabdev3/rman_backups_qa3/bkp_df762765319_s5570_s1
+nohup scp -rp /boraw1qu101/wkabqa3/rman_backups/bkp_df762765321_s5571_s1 boraw1d:/boraw1du101/wkabdev3/rman_backups_qa3/bkp_df762765321_s5571_s1
+
+
+
+cd /
+
+mkdir /boraw1qu101
+cd /boraw1qu101
+mkdir wkabqa3
+
+
+ln -s /boraw1du101/wkabdev3/rman_backups_qa3 /boraw1qu101/wkabqa3/rman_backups
+
+
+*** Now we can see it 
+
+cd /boraw1qu101/wkabqa3/rman_backups
+
+
+2. Move init file from TARGET server to AUX server  However I would get latest in case any changes.
+  
+
+
+
+   . $SETUPENV wkabqa3
+   cd $ORACLE_HOME/dbs
+   sqlplus / as sysdba
+   create pfile from spfile;
+   exit
+   
+
+   scp  /orahome/wkab01/app/oracle/product/11.2.0/db_2/dbs/initwkabqa3.ora boraw1d.aetna.com:/orahome/wkab01/app/oracle/product/11.2.0/db_1/dbs/initwkabdev3_QA3.ora 
+
+  
+ . $SETUPENV wkabdev3
+   cd $ORACLE_HOME/dbs
+  
+ vi initwkabdev3_QA3.ora
+
+
+/boraw1qu203/oradata/wkabqa3/ - 11 GB
+/boraw1qu204/oradata/wkabqa3/ - 17 GB
+/boraw1qu205/oradata/wkabqa3/ - 16 GB
+
+*.control_files='/boraw1du205/oradata/wkabdev3/control01.ctl','/boraw1du205/oradata/wkabdev3/control02.ctl','/boraw1du205/oradata/wkabdev3/control03.ctl'
+
+
+*.db_file_name_convert='/boraw1qu203/oradata/wkabqa3/','/boraw1du205/oradata/wkabdev3/','/boraw1qu204/oradata/wkabqa3/','/boraw1du205/oradata/wkabdev3/','/boraw1qu205/oradata/wkabqa3/','/boraw1du205/oradata/wkabdev3/'
+
+
+*.log_file_name_convert='/boraw1qu203/oradata/wkabqa3/','/boraw1du205/oradata/wkabdev3/'
+
+
+*.diagnostic_dest='/orahome/wkab01/app/oracle/admin/wkabdev3/'
+
+*.log_archive_dest_1='LOCATION=/boraw1du101/wkabdev3/arch'
+*.utl_file_dir='/boraw1du01/wkabdev3/Utl_File_Dir'
+*._compression_compatibility='11.2.0'
+
+4. Create password file on AUX server. Check these could be completed before. 
+  
+   cd $ORACLE_HOME/dbs
+   orapwd file=$ORACLE_HOME/dbs/orapwwkabdev3 password=no734s entries=10
+
+
+
+   !!!Add oratab entry for new database
+
+   wkabdev3:/orahome/wkab01/app/oracle/product/11.2.0/db_1:N:/boraw1du01:/boraw1du101
+
+
+
+
+
+5.    Test connection from AUX(wkabdev3) server to TARGET (wkabqa1)   
+
+   . $SETUPENV wkabdev3
+
+   rman
+   
+   connect target sys/no734s@wkabqa1
+   connect catalog wkabqa3/wkabqa3namr@RCATDEV
+   connect AUXILIARY /
+   #connect AUXILIARY sys/no734s@wkabtrg1
+
+
+
+
+6. If this clone repeat process or AUX database exist then
+   delete all datafiles,redo logs and control files in AUX (wkabdev3) database
+
+   Make sure . $SETUPENV wkabdev3
+
+   AUX database (WKABDEV3)
+
+   cd $ORACLE_HOME/dbs
+
+   mv spfilewkabdev3.ora spfilewkabdev3_20110926.ora
+
+   mv initwkabdev3.ora initwkabdev3_QA1.ora
+   mv initwkabdev3_QA3.ora initwkabdev3.ora
+   sqlplus / as sysdba
+   shutdown immediate; 
+
+
+   
+   #Confirm
+   ls /boraw1du*/oradata/wkabdev3/*
+ 
+   #Remove
+   rm /boraw1du*/oradata/wkabdev3/*
+
+   #Confirm again
+   ls /boraw1du*/oradata/wkabdev3/*
+
+
+   #Optional delete old trace and log files
+
+  cd /orahome/wkab01/app/oracle/admin/wkabdev3
+
+   rm -rf ./diag
+ 
+
+   cd $ORACLE_HOME/dbs
+   # to have backup in case. If file exist.
+   
+   mv initwkabdev3.ora initwkabdev3_YYYYMMDD.ora
+   mv spfilewkabdev3.ora spfilewkabdev3_YYYYMMDD.ora
+   
+   mv initwkabdev3_QA3.ora initwkabdev3.ora
+
+
+
+7. AUX (WKABDEV3) database
+    Make sure . $SETUPENV wkabdev3
+
+    sqlplus / as sysdba
+   startup pfile=/orahome/wkab01/app/oracle/product/11.2.0/db_1/dbs/initwkabdev3.ora force nomount;
+   #startup pfile=/orahome/wkab01/app/oracle/product/11.2.0/db_1/dbs/initwkabdev3.ora;
+    startup force nomount;
+
+####################################################################################################################
+10. AUX (WKABDEV3) database
+    Make sure . $SETUPENV wkabdev3
+
+cd /boraw1qu101/wkabqa3/rman_backups
+
+
+
+
+
+  rman
+   
+   connect target sys/no734s@wkabqa3
+   connect catalog wkabqa3/wkabqa3namr@RCATDEV
+   connect AUXILIARY /
+
+!!! Worked this one --->Version 1
+
+run {
+    duplicate target database to wkabdev3
+      to restore point SEP252011; 
+}
+
+
+
+
+13. Move Database to NONEARCHIVELOG
+
+SQL> shutdown immediate;
+startup mount;
+
+SQL> alter database noarchivelog;
+##SQL> alter database archivelog;
+
+Database altered.
+
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> archive log list;
+
+alter database rename global_name to WKABDEV3.WORLD;
+alter user wkab10 identified by wkab10_wkabdev3;
+alter user beneng identified by beneng_wkabdev3; 
+
+
+
+14. --this step need to be complete to avoid sending emails to actual customers
+
+Login to sqlplus wkab10/wkab10_wkabqa3 
+
+--Updates may take long time since a lot of records
+
+select count(*) from S_COMMUNICATION where COMM_MODE_ID in (3,6,10)
+and LOCATOR <> 'WKAB3.0@coreinc.com';
+
+
+update S_COMMUNICATION set LOCATOR = 'WKAB3.0@coreinc.com'
+where COMM_MODE_ID in (3,6,10)
+and LOCATOR <> 'WKAB3.0@coreinc.com';
+commit;
+
+select count(*) from s_report_recipient where email_address like '%@%'
+        and email_address <> 'WKAB3.0@coreinc.com'; 
+
+update s_report_recipient
+set email_address = 'WKAB3.0@coreinc.com'
+where email_address like '%@%'
+and email_address <> 'WKAB3.0@coreinc.com' ;
+commit;
+        
+*** Will take long time look in *** (Select * from V$SESSION_LONGOPS) for monitor
+
+
+
+
+ALTER SYSTEM SET MEMORY_TARGET = 1200M SCOPE = SPFILE;
+
+
+
+
+list backup of controlfile;
+
+
+					

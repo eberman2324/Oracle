@@ -1,0 +1,15 @@
+ARCHIVELOG MODE (http://download.oracle.com/docs/cd/B10501_01/server.920/a96519/strategy.htm)
+
+Avoiding the Backup of Online Redo Logs
+
+Although it may seem that you should back up online redo logs along with the datafiles and control file, 
+this technique is dangerous. You should not back up online redo logs for the following reasons:
+
+The best method for protecting the online logs against media failure is by multiplexing them, that is, having multiple log members in each group,
+ on different disks and disk controllers. 
+If your database is in ARCHIVELOG mode, then the archiver is already archiving the filled redo logs. 
+If your database is in NOARCHIVELOG mode, then the only type of backups that you should perform are closed, consistent,
+ whole database backups. The files in this type of backup are all consistent and do not need recovery, so the online logs are not needed. 
+You may accidentally restore backups of online redo logs while not intending to, thereby corrupting the database. 
+A number of situations are possible in which restoring the online logs cause significant problems to the database.
+ The following sections describe scenarios that illustrate how restoring backed up online logs severely compromises recovery.

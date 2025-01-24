@@ -1,0 +1,6 @@
+fromuser=wkab10
+touser=tmp_restore
+tables=(t_communication)
+indexes=N
+constraints=N
+grants=N
