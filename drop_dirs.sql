@@ -1,0 +1,22 @@
+
+drop directory ADMIN_DIR;
+drop directory CODEDROP_EXPORTS;
+drop directory CTIS_DIR;
+drop directory DATA_PUMP_DIR;
+drop directory EXP_FIL_DIR;
+drop directory EXT;
+drop directory EXT_BAD_DIR;
+drop directory EXT_DIR;
+drop directory EXT_IN_DIR;
+drop directory EXT_LOG_DIR;
+drop directory EXT_TAB_DIR;
+drop directory JURIS_OUT;
+drop directory LAB_DIR;
+drop directory ORACLE_OCM_CONFIG_DIR;
+drop directory QQEST_EXT_DIR;
+drop directory QQEST_EXT_TAB_DIR;
+drop directory REPORT_DB_DIR;
+drop directory TIVOLIOR_TEMP;
+drop directory TOTEM_EXT_DIR;
+drop directory WORK_DIR;
+drop directory XMLDIR;
