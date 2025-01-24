@@ -1,0 +1,1051 @@
+Dev: aorinfw1d
+
+
+select * from dba_data_files order by 1
+
+FILE_NAME
+/oradata/ppmu100/PPMDEBIZ/aedba01.dbf
+/oradata/ppmu100/PPMDEBIZ/ppmfind01.dbf
+/oradata/ppmu100/PPMDEBIZ/sysaux01.dbf
+/oradata/ppmu100/PPMDEBIZ/system01.dbf
+/oradata/ppmu100/PPMDEBIZ/system02.dbf
+/oradata/ppmu100/PPMDEBIZ/system03.dbf
+/oradata/ppmu100/PPMDEBIZ/system04.dbf
+/oradata/ppmu100/PPMDEBIZ/system05.dbf
+/oradata/ppmu100/PPMDEBIZ/system06.dbf
+/oradata/ppmu100/PPMDEBIZ/system07.dbf
+/oradata/ppmu100/PPMDEBIZ/system08.dbf
+/oradata/ppmu100/PPMDEBIZ/system09.dbf
+/oradata/ppmu100/PPMDEBIZ/system10.dbf
+/oradata/ppmu100/PPMDEBIZ/system11.dbf
+/oradata/ppmu100/PPMDEBIZ/users01.dbf
+
+/oradata/ppmu101/PPMDEBIZ/a_archive01.dbf
+/oradata/ppmu101/PPMDEBIZ/a_int01.dbf
+/oradata/ppmu101/PPMDEBIZ/a_media01.dbf
+/oradata/ppmu101/PPMDEBIZ/a_nolog01.dbf
+/oradata/ppmu101/PPMDEBIZ/a_queue01.dbf
+/oradata/ppmu101/PPMDEBIZ/a_queue02.dbf
+/oradata/ppmu101/PPMDEBIZ/a_ref01.dbf
+/oradata/ppmu101/PPMDEBIZ/a_ref02.dbf
+/oradata/ppmu101/PPMDEBIZ/a_summ01.dbf
+/oradata/ppmu101/PPMDEBIZ/atools01.dbf
+/oradata/ppmu101/PPMDEBIZ/odm.dbf
+/oradata/ppmu101/PPMDEBIZ/olap.dbf
+/oradata/ppmu101/PPMDEBIZ/owad01.dbf
+/oradata/ppmu101/PPMDEBIZ/portal01.dbf
+/oradata/ppmu101/PPMDEBIZ/ppmrxd01.dbf
+/oradata/ppmu101/PPMDEBIZ/undo01.dbf
+/oradata/ppmu101/PPMDEBIZ/undo03.dbf
+
+/oradata/ppmu102/PPMDEBIZ/a_txn_data01.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_data02.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_data03.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_data04.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_ind01.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_ind02.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_ind03.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_ind04.dbf
+/oradata/ppmu102/PPMDEBIZ/a_txn_ind05.dbf
+/oradata/ppmu102/PPMDEBIZ/ctxd01.dbf
+/oradata/ppmu102/PPMDEBIZ/ppmfinclob01.dbf
+/oradata/ppmu102/PPMDEBIZ/ppmrxclob01.dbf
+
+/oraindex/ppmu200/PPMDEBIZ/ppmfinx01.dbf
+/oraindex/ppmu200/PPMDEBIZ/ppmrxx01.dbf
+
+/oraundo/ppmu400/PPMDEBIZ/undo02.dbf
+
+select * from dba_temp_files order by 1
+
+
+FILE_NAME
+/oratemp/ppmu300/PPMDEBIZ/temp01.dbf
+/oratemp/ppmu300/PPMDEBIZ/temp02.dbf
+
+
+
+select * from v$logfile
+
+MEMBER
+/oraredologs/ppmu501/PPMDEBIZ/log03b.dbf
+/oraredologs/ppmu500/PPMDEBIZ/log03a.dbf
+/oraredologs/ppmu501/PPMDEBIZ/log02b.dbf
+/oraredologs/ppmu500/PPMDEBIZ/log02a.dbf
+/oraredologs/ppmu500/PPMDEBIZ/log01a.dbf
+/oraredologs/ppmu501/PPMDEBIZ/log01b.dbf
+
+
+select * from v$controlfile
+
+NAME
+/oradata/ppmu100/PPMDEBIZ/cntrl01.ctl
+/oradata/ppmu101/PPMDEBIZ/cntrl02.ctl
+/oradata/ppmu102/PPMDEBIZ/cntrl03.ctl
+
+
+dev/ppmu100lv     64.00     41.93   35%       26     1% /oradata/ppmu100
+dev/ppmu101lv     64.00     28.87   55%       26     1% /oradata/ppmu101
+dev/ppmu102lv     64.00     25.06   61%       52     1% /oradata/ppmu102
+
+/dev/ppmu200lv     64.00     57.99   10%       14     1% /oraindex/ppmu200
+/dev/ppmu300lv     16.00      4.51   72%        9     1% /oratemp/ppmu300
+/dev/ppmu400lv     16.00      4.00   76%        8     1% /oraundo/ppmu400
+
+
+
+Check curr DIR and create or write down new DIR
+
+--Current
+/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1
+/orahome/u01/app/oracle
+/orahome/u01/app/oracle/admin/PPMDEBIZ/diag/rdbms/ppmdebiz/PPMDEBIZ/trace
+/oraarchivelog/ppmu600/PPMDEBIZ
+$INSTANCE_OUTPUTS - /orabackup/ppmu001/PPMDEBIZ
+
+
+aorinfw1d.aetna.com:PPMDEBIZ: lsnrctl status PPMDEBIZ
+
+LSNRCTL for IBM/AIX RISC System/6000: Version 12.1.0.2.0 - Production on 15-JAN-
+2018 10:15:10
+
+Copyright (c) 1991, 2014, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=aorinfw1d.aetna.com)(POR
+T=1551)))
+STATUS of the LISTENER
+------------------------
+Alias                     PPMDEBIZ
+Version                   TNSLSNR for IBM/AIX RISC System/6000: Version 12.1.0.2
+.0 - Production
+Start Date                16-OCT-2017 23:10:41
+Uptime                    90 days 12 hr. 4 min. 29 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/network/admin/listener.ora
+
+Listener Log File         /orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/network/admin/PPMDEBIZ_aorinfw1d/diag/tnslsnr/aorinfw1d/ppmdebiz/alert/log.xml
+
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aorinfw1d.aetna.com)(PORT=1551)))
+Services Summary...
+Service "PPMDEBIZ" has 1 instance(s).
+  Instance "PPMDEBIZ", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+
+
+SQL> show sga
+
+Total System Global Area 4294967296 bytes
+Fixed Size                  3792632 bytes
+Variable Size            2214592776 bytes
+Database Buffers         2063597568 bytes
+Redo Buffers               12984320 bytes
+
+
+
+
+rman
+
+connect target 
+
+connect catalog PPMDEBIZ/PPMDEBIZnamr@RCATDEV
+
+
+RMAN configuration parameters for database with db_unique_name PPMDEBIZ are:
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 31 DAYS;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/orabackup/ppmu001/PPMDEBIZ/rman_backups/%F_%d';
+
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F_%d';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/orabackup/ppmu001/PPMDEBIZ/rman_backups/bkp_df%t_s%s_p%p';
+
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/orahome/allu01/app/oracle/tdpoopt/tdpo.PPMDEBIZ.opt)';
+
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/orabackup/ppmu001/PPMDEBIZ/snapcf_PPMDEBIZ.f';
+
+
+
+--Save DIR
+
+CREATE OR REPLACE DIRECTORY APPS_DATA_FILE_DIR AS '/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/appsutil/outbound/PPMDEBIZ_aorinfw1d'
+/
+GRANT EXECUTE ON DIRECTORY APPS_DATA_FILE_DIR TO APPS WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY APPS_DATA_FILE_DIR TO APPS WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY APPS_DATA_FILE_DIR TO APPS WITH GRANT OPTION
+/
+CREATE OR REPLACE DIRECTORY CSR_XML_TOP AS '/aebsu05/app/FAHGOLD/FAHGOLD/apps/apps_st/appl/csr/12.0.0/patch/115/xml'
+/
+GRANT EXECUTE ON DIRECTORY CSR_XML_TOP TO APPS WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY CSR_XML_TOP TO APPS WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY CSR_XML_TOP TO APPS WITH GRANT OPTION
+/
+GRANT EXECUTE ON DIRECTORY CSR_XML_TOP TO CSR
+/
+GRANT READ ON DIRECTORY CSR_XML_TOP TO CSR
+/
+GRANT WRITE ON DIRECTORY CSR_XML_TOP TO CSR
+/
+CREATE OR REPLACE DIRECTORY DATA_PUMP_DIR AS '/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/rdbms/log/'
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR TO EXP_FULL_DATABASE
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR TO EXP_FULL_DATABASE
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR TO IMP_FULL_DATABASE
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR TO IMP_FULL_DATABASE
+/
+CREATE OR REPLACE DIRECTORY DATA_PUMP_DIR2 AS '/oraexport/meru276/'
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR2 TO EXP_FULL_DATABASE
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR2 TO EXP_FULL_DATABASE
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR2 TO IMP_FULL_DATABASE
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR2 TO IMP_FULL_DATABASE
+/
+GRANT EXECUTE ON DIRECTORY DATA_PUMP_DIR2 TO N025774 WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR2 TO N025774 WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR2 TO N025774 WITH GRANT OPTION
+/
+CREATE OR REPLACE DIRECTORY DATA_PUMP_DIR3 AS '/oraexport/meru276/PPMDEBIZ/'
+/
+GRANT EXECUTE ON DIRECTORY DATA_PUMP_DIR3 TO A236120 WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR3 TO A236120 WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR3 TO A236120 WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR3 TO EXP_FULL_DATABASE
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR3 TO EXP_FULL_DATABASE
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR3 TO IMP_FULL_DATABASE
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR3 TO IMP_FULL_DATABASE
+/
+GRANT EXECUTE ON DIRECTORY DATA_PUMP_DIR3 TO N025774 WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY DATA_PUMP_DIR3 TO N025774 WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY DATA_PUMP_DIR3 TO N025774 WITH GRANT OPTION
+/
+CREATE OR REPLACE DIRECTORY DMPDIR AS '/oraexport/ppmu800/dmpdir_PPMPEBIZ'
+/
+CREATE OR REPLACE DIRECTORY ECX_UTL_LOG_DIR_OBJ AS '/usr/tmp'
+/
+GRANT EXECUTE ON DIRECTORY ECX_UTL_LOG_DIR_OBJ TO APPS WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY ECX_UTL_LOG_DIR_OBJ TO APPS WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY ECX_UTL_LOG_DIR_OBJ TO APPS WITH GRANT OPTION
+/
+CREATE OR REPLACE DIRECTORY ECX_UTL_XSLT_DIR_OBJ AS '/usr/tmp'
+/
+GRANT EXECUTE ON DIRECTORY ECX_UTL_XSLT_DIR_OBJ TO APPS WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY ECX_UTL_XSLT_DIR_OBJ TO APPS WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY ECX_UTL_XSLT_DIR_OBJ TO APPS WITH GRANT OPTION
+/
+CREATE OR REPLACE DIRECTORY FND_DIAG_DIR AS '/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/rdbms/log'
+/
+GRANT EXECUTE ON DIRECTORY FND_DIAG_DIR TO APPS
+/
+GRANT READ ON DIRECTORY FND_DIAG_DIR TO APPS
+/
+GRANT WRITE ON DIRECTORY FND_DIAG_DIR TO APPS
+/
+CREATE OR REPLACE DIRECTORY IDR_DIR AS '/data1/R12/ab/apps/R1211BL/db/tech_st/11.1.0/admin/R1211BL_ap905app/diag/rdbms/r1211bl/R1211BL/ir'
+/
+CREATE OR REPLACE DIRECTORY ODPDIR AS '/usr/tmp'
+/
+GRANT READ ON DIRECTORY ODPDIR TO APPS WITH GRANT OPTION
+/
+GRANT WRITE ON DIRECTORY ODPDIR TO APPS WITH GRANT OPTION
+/
+GRANT READ ON DIRECTORY ODPDIR TO "PUBLIC"
+/
+GRANT WRITE ON DIRECTORY ODPDIR TO "PUBLIC"
+/
+CREATE OR REPLACE DIRECTORY OPATCH_INST_DIR AS '/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/OPatch'
+/
+CREATE OR REPLACE DIRECTORY OPATCH_LOG_DIR AS '/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/QOpatch'
+/
+CREATE OR REPLACE DIRECTORY OPATCH_SCRIPT_DIR AS '/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1/QOpatch'
+/
+CREATE OR REPLACE DIRECTORY ORACLE_BASE AS '/'
+/
+CREATE OR REPLACE DIRECTORY ORACLE_HOME AS '/'
+/
+CREATE OR REPLACE DIRECTORY ORACLE_OCM_CONFIG_DIR AS '/orahome/allu01/app/oracle/product/11.2.0/db_fsahdev/ccr/state'
+/
+GRANT READ ON DIRECTORY ORACLE_OCM_CONFIG_DIR TO ORACLE_OCM
+/
+GRANT WRITE ON DIRECTORY ORACLE_OCM_CONFIG_DIR TO ORACLE_OCM
+/
+CREATE OR REPLACE DIRECTORY PREUPGRADE_DIR AS '/orahome/allu01/app/oracle/cfgtoollogs/PPMDEBIZ/preupgrade/'
+/
+CREATE OR REPLACE DIRECTORY TIMEZDIF_DIR AS '/orahome/allu01/app/oracle/product/11.1.0/db_fahgold/oracore/zoneinfo'
+/
+
+
+
+-------------------------
+PROD
+aorinfm1p
+
+
+
+select * from dba_data_files order by 1
+FILE_NAME
+/oradata/ppmu100/PPMPEBIZ/aedba01.dbf
+/oradata/ppmu100/PPMPEBIZ/ppmfind01.dbf
+/oradata/ppmu100/PPMPEBIZ/sysaux01.dbf
+/oradata/ppmu100/PPMPEBIZ/system01.dbf
+/oradata/ppmu100/PPMPEBIZ/system02.dbf
+/oradata/ppmu100/PPMPEBIZ/system03.dbf
+/oradata/ppmu100/PPMPEBIZ/system04.dbf
+/oradata/ppmu100/PPMPEBIZ/system05.dbf
+/oradata/ppmu100/PPMPEBIZ/system06.dbf
+/oradata/ppmu100/PPMPEBIZ/system07.dbf
+/oradata/ppmu100/PPMPEBIZ/system08.dbf
+/oradata/ppmu100/PPMPEBIZ/system09.dbf
+/oradata/ppmu100/PPMPEBIZ/system10.dbf
+/oradata/ppmu100/PPMPEBIZ/system11.dbf
+/oradata/ppmu100/PPMPEBIZ/users01.dbf
+
+/oradata/ppmu101/PPMPEBIZ/a_archive01.dbf
+/oradata/ppmu101/PPMPEBIZ/a_int01.dbf
+/oradata/ppmu101/PPMPEBIZ/a_media01.dbf
+/oradata/ppmu101/PPMPEBIZ/a_nolog01.dbf
+/oradata/ppmu101/PPMPEBIZ/a_queue01.dbf
+/oradata/ppmu101/PPMPEBIZ/a_queue02.dbf
+/oradata/ppmu101/PPMPEBIZ/a_ref01.dbf
+/oradata/ppmu101/PPMPEBIZ/a_ref02.dbf
+/oradata/ppmu101/PPMPEBIZ/a_summ01.dbf
+/oradata/ppmu101/PPMPEBIZ/atools01.dbf
+/oradata/ppmu101/PPMPEBIZ/odm.dbf
+/oradata/ppmu101/PPMPEBIZ/olap.dbf
+/oradata/ppmu101/PPMPEBIZ/owad01.dbf
+/oradata/ppmu101/PPMPEBIZ/portal01.dbf
+/oradata/ppmu101/PPMPEBIZ/ppmrxd01.dbf
+/oradata/ppmu101/PPMPEBIZ/undo01.dbf
+
+/oradata/ppmu102/PPMPEBIZ/a_txn_data01.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_data02.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_data03.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_data04.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_ind01.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_ind02.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_ind03.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_ind04.dbf
+/oradata/ppmu102/PPMPEBIZ/a_txn_ind05.dbf
+/oradata/ppmu102/PPMPEBIZ/ctxd01.dbf
+/oradata/ppmu102/PPMPEBIZ/ppmfinclob01.dbf
+/oradata/ppmu102/PPMPEBIZ/ppmrxclob01.dbf
+
+/oraindex/ppmu200/PPMPEBIZ/ppmfinx01.dbf
+/oraindex/ppmu200/PPMPEBIZ/ppmrxx01.dbf
+
+/oraundo/ppmu400/PPMPEBIZ/undo02.dbf
+
+
+
+select * from dba_temp_files order by 1
+
+FILE_NAME
+/oratemp/ppmu300/PPMPEBIZ/temp01.dbf
+/oratemp/ppmu300/PPMPEBIZ/temp02.dbf
+/oratemp/ppmu300/PPMPEBIZ/temp_temp.dbf
+
+
+
+select * from v$logfile
+
+MEMBER
+/oraredologs/ppmu501/PPMPEBIZ/log03b.dbf
+/oraredologs/ppmu500/PPMPEBIZ/log03a.dbf
+/oraredologs/ppmu501/PPMPEBIZ/log02b.dbf
+/oraredologs/ppmu500/PPMPEBIZ/log02a.dbf
+/oraredologs/ppmu500/PPMPEBIZ/log01a.dbf
+/oraredologs/ppmu501/PPMPEBIZ/log01b.dbf
+
+select * from v$controlfile
+
+NAME
+/oradata/ppmu100/PPMPEBIZ/cntrl01.ctl
+/oradata/ppmu101/PPMPEBIZ/cntrl02.ctl
+/oradata/ppmu102/PPMPEBIZ/cntrl03.ctl
+
+dev/ppmu100lv     64.00     43.94   32%       23     1% /oradata/ppmu100
+dev/ppmu101lv     64.00     34.64   46%       31     1% /oradata/ppmu101
+dev/ppmu102lv     64.00     33.81   48%       21     1% /oradata/ppmu102
+dev/ppmu200lv     64.00     58.99    8%       10     1% /oraindex/ppmu200
+dev/ppmu300lv     16.00      7.93   51%       10     1% /oratemp/ppmu300
+dev/ppmu400lv     16.00      6.00   63%        8     1% /oraundo/ppmu400\\
+
+
+--Cur Dir
+
+/orahome/u01/app/oracle/product/11.2.0/db_2
+/orahome/u01/app/oracle
+/orahome/u01/app/oracle/diag/rdbms/ppmpebiz/PPMPEBIZ/trace
+$INSTANCE_OUTPUTS - /orabackup/ppmu001/PPMPEBIZ
+/oraarchivelog/ppmu600/PPMPEBIZ
+
+
+
+oracle:PPMPEBIZ@aorinfm1p> lsnrctl status PPMPEBIZ
+
+LSNRCTL for IBM/AIX RISC System/6000: Version 11.2.0.3.0 - Production on 15-JAN-
+2018 10:38:04
+
+Copyright (c) 1991, 2011, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=IPC)(KEY=EXTPROCPPMPEBIZ)))
+STATUS of the LISTENER
+------------------------
+Alias                     PPMPEBIZ
+Version                   TNSLSNR for IBM/AIX RISC System/6000: Version 11.2.0.3
+.0 - Production
+Start Date                10-DEC-2017 08:39:10
+Uptime                    36 days 1 hr. 58 min. 53 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /orahome/u01/app/oracle/product/11.2.0/db_2/network/admin/PPMPEBIZ_aorinfm1p/listener.ora
+
+Listener Log File         /orahome/u01/app/oracle/diag/tnslsnr/aorinfm1p/ppmpebiz/alert/log.xml
+
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROCPPMPEBIZ)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=PPMPEBIZ_IPC)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aorinfm1p.aetna.com)(PORT=1552)))
+Services Summary...
+Service "PPMPEBIZ" has 2 instance(s).
+  Instance "PPMPEBIZ", status UNKNOWN, has 1 handler(s) for this service...
+  Instance "PPMPEBIZ", status READY, has 1 handler(s) for this service...
+The command completed successfully
+
+
+
+SQL> show sga
+
+Total System Global Area 6413680640 bytes
+Fixed Size                  2233480 bytes
+Variable Size            4966058872 bytes
+Database Buffers         1426063360 bytes
+Redo Buffers               19324928 bytes
+
+
+
+
+
+rman
+
+connect target 
+
+connect catalog PPMPEBIZ/PPMPEBIZnamr@RCATPROD
+
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name PPMPEBIZ are:
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 31 DAYS;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/orabackup/ppmu001/PPMPEBIZ/backups/%F';
+
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1;
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/orahome/u01/app/oracle/tdpoopt/tdpo.PPMPEBIZ.opt)';
+
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/orabackup/ppmu001/PPMPEBIZ/backups/bkp_df%t_s%s_s%p';
+
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOA
+D TRUE ; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/orahome/u01/app/oracle/product/11.2.0/db_2/dbs/snapcf_PPMPEBIZ.f';
+
+
+
+
+
+aorinfm1p
+
+
+
+--New DIR and settings for Dev
+
+
+ORACLE_HOME      /orahome/allu01/app/oracle/product/11.2.0/db_2
+ORACLE_BASE      /orahome/allu01/app/oracle
+
+/orahome/allu01/app/oracle/product/11.2.0/db_2/network/admin/PPMDEBIZ_aorinfw1d
+
+
+
+
+---Actual DUPLICATATION steps
+
+
+
+
+
+1. (Done) Save 12c Dev backup
+
+Test backup
+
+cd /orahome/allu01/aetna/scripts/backup
+Take fresh backup
+ ./rman_general_purpose_oem.ksh PPMDEBIZ RCATDEV incremental_level0_backup_tape_oem.rman Y
+
+
+#Once backup completed. Get latest log file name
+cd $INSTANCE_OUTPUTS/rman_backups
+
+ls -altr *.log
+
+PPMDEBIZ_20180309_12:15:55_incremental_level0_backup_tape_oem.rman.log
+#Save Backup
+$BKPSCR/savebkp.ksh $ORACLE_SID PPMDEBIZ_20180309_12:15:55_incremental_level0_backup_tape_oem.rman.log b4DuplFromProd
+
+
+
+
+
+PPMDEBIZ backup saved as PPMDEBIZ_sbk_20180309_12:15:55_b4DuplFromProd.rman
+
+
+
+
+
+
+
+
+
+
+
+2. (Done)  create OEM blackout in Dev
+ comment out crontab entry for PPMDEBIZ
+
+0,15,30,45 0-23 * * * /orahome/allu01/aetna/scripts/monitor/scan_oracle.ksh PPMDEBIZ > /dev/null 2>&1
+
+
+--OEM suspend following
+BACKUP_PPMDEBIZ_ARCHIVE_LOG 
+BACKUP_PPMDEBIZ_DAILY_LEVEL0
+
+
+3. (Done) Run Production backup and safe it
+
+--Run and Safe Production backup for restore
+
+Login to aorinfm1p
+
+cd /orahome/u01/aetna/scripts/backup
+
+Test backup
+
+Take fresh backup
+ ./rman_general_purpose_oem.ksh PPMPEBIZ RCATPROD incremental_level0_backup_tape_oem.rman Y
+
+
+#Once backup completed. Get latest log file name
+cd $INSTANCE_OUTPUTS/rman_backups
+
+ls -altr *.log
+
+#Save Backup
+$BKPSCR/savebkp.ksh $ORACLE_SID PPMPEBIZ_20180312_09:57:19_incremental_level0_backup_tape_oem.rman.log Prod11gForDupl
+
+
+
+
+PPMPEBIZ backup saved as PPMPEBIZ_sbk_20180312_09:57:19_Prod11gForDupl.rman
+
+
+##Restore DataBase
+#connect target /
+#connect catalog PPMPEBIZ/PPMPEBIZnamr@RCATPROD
+#startup force nomount;
+#set DBID=2197364192;
+#reset database to incarnation 267023;
+#restore controlfile from 'c-2197364192-20180312-02';
+#alter database mount;
+#run{
+#restore database until sequence 10549;
+#recover database until sequence 10549;
+#}
+#alter database open resetlogs;
+##End Restore DataBase
+
+
+
+cd /orabackup/ppmu001/PPMPEBIZ/save_backup
+
+
+4.(Done) Create zopaword file on AUX server
+  
+    !! Copy from aorinfm1p
+sys/vx2Kk%bp
+
+Get latest sys zopaword from TPAM 
+
+Login to aorinfm1p
+
+cd $ORACLE_HOME/dbs
+
+scp orapwPPMPEBIZ aorinfw1d:/orahome/allu01/app/oracle/product/11.2.0/db_2/dbs/orapwPPMDEBIZ
+
+                            
+scp setupenv.ksh aorinfw1d:/orahome/allu01/aetna/scripts/setupenv.ksh
+
+
+
+
+
+
+
+
+
+
+
+
+5. Modify init.ora file on Dev box
+
+cd /orahome/allu01/app/oracle/product/11.2.0/db_2/dbs
+
+cp spfilePPMDEBIZ.ora spfilePPMDEBIZ.ora_xxx
+cp orapwPPMDEBIZ orapwPPMDEBIZ_xxx
+
+rm -f   spfilePPMDEBIZ.ora
+cp initPPMDEBIZ.ora initPPMDEBIZ.ora_xxx
+
+
+	/oradata/ppmu100/PPMPEBIZ/
+
+	/oradata/ppmu101/PPMPEBIZ/
+
+	/oradata/ppmu102/PPMPEBIZ/
+
+	/oraindex/ppmu200/PPMPEBIZ/
+
+	/oraundo/ppmu400/PPMPEBIZ/
+
+	/oratemp/ppmu300/PPMPEBIZ/
+
+**********************************
+
+	/oradata/ppmu100/PPMDEBIZ/
+
+	/oradata/ppmu101/PPMDEBIZ/
+
+	/oradata/ppmu102/PPMDEBIZ/
+
+	/oraindex/ppmu200/PPMDEBIZ/
+
+	/oraundo/ppmu400/PPMDEBIZ/
+
+	/oratemp/ppmu300/PPMDEBIZ/
+
+
+
+*.db_file_name_convert='/oradata/ppmu100/PPMPEBIZ/','/oradata/ppmu100/PPMDEBIZ/','/oradata/ppmu101/PPMPEBIZ/','/oradata/ppmu101/PPMDEBIZ/','/oradata/ppmu102/PPMPEBIZ/','/oradata/ppmu102/PPMDEBIZ/','/oraindex/ppmu200/PPMPEBIZ/','/oraindex/ppmu200/PPMDEBIZ/','/oraundo/ppmu400/PPMPEBIZ/','/oraundo/ppmu400/PPMDEBIZ/','/oratemp/ppmu300/PPMPEBIZ/','/oratemp/ppmu300/PPMDEBIZ/'
+
+
+
+/oraredologs/ppmu501/PPMPEBIZ/
+/oraredologs/ppmu500/PPMPEBIZ/
+
+
+/oraredologs/ppmu501/PPMDEBIZ/
+/oraredologs/ppmu500/PPMDEBIZ/
+
+
+
+
+
+*.log_file_name_convert='/oraredologs/ppmu501/PPMPEBIZ/','/oraredologs/ppmu501/PPMDEBIZ/','/oraredologs/ppmu500/PPMPEBIZ/','/oraredologs/ppmu500/PPMDEBIZ/'
+
+
+
+ 
+
+
+
+
+
+sqlplus / as sysdba
+
+shutdown immediate;
+
+exit
+
+cd /oradata/ppmu100/PPMDEBIZ/
+
+rm -f *.dbf
+
+cd /oradata/ppmu101/PPMDEBIZ/
+
+rm -f *.dbf
+
+cd /oradata/ppmu102/PPMDEBIZ/
+
+rm -f *.dbf
+
+
+cd /oraindex/ppmu200/PPMDEBIZ/
+
+rm -f *.dbf
+
+cd /oraundo/ppmu400/PPMDEBIZ/
+
+
+rm -f *.dbf
+
+cd /oratemp/ppmu300/PPMDEBIZ/
+
+rm -f *.dbf
+
+
+lsnrctl stop PPMDEBIZ
+
+
+
+
+
+
+6. Add entry into oratab
+   cd /etc
+   vi oratab
+
+  
+--Uncomment this
+PPMDEBIZ:/orahome/allu01/app/oracle/product/11.2.0/db_2:N:/orahome/allu01:/orabackup/ppmu001
+
+--Comment that
+#PPMDEBIZ:/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1:Y:/orahome/allu01:/orabackup/ppmu001
+
+
+
+
+
+
+
+. $SETUPENV PPMDEBIZ
+
+--test listener
+
+lsnrctrl start PPMDEBIZ
+
+
+
+
+7. tdpo stuff
+
+Production Oracle AIX Server: aorinfm1p
+/orahome/u01/app/oracle/tdpoopt/tdpo.PPMPEBIZ.opt
+
+Development Oracle AIX Server: aorinfw1d
+/orahome/allu01/app/oracle/tdpoopt (tdpo.PPMPEBIZ.opt file is there, but I am not sure if still working) 
+
+Once above completed by Storman
+
+Login to aorinfw1d
+
+Get from TPAM   
+rman
+   
+   connect target sys/vx2Kk%bp@PPMPEBIZ
+   connect catalog PPMPEBIZ/PPMPEBIZnamr@RCATPROD
+   connect AUXILIARY /
+   run{
+     allocate auxiliary channel t1 TYPE 'SBT_TAPE' PARMS 'ENV=(TDPO_OPTFILE=/orahome/allu01/app/oracle/tdpoopt/tdpo.PPMPEBIZ.opt)';
+     release channel t1;
+   } 
+
+
+
+
+
+8. Duplicate step
+
+Log to Prod box
+
+cd $SAVBKP
+     
+
+PPMPEBIZ backup saved as PPMPEBIZ_sbk_20180312_09:57:19_Prod11gForDupl.rman
+
+
+##Restore DataBase
+#connect target /
+#connect catalog PPMPEBIZ/PPMPEBIZnamr@RCATPROD
+#startup force nomount;
+#set DBID=2197364192;
+#reset database to incarnation 267023;
+#restore controlfile from 'c-2197364192-20180312-02';
+#alter database mount;
+#run{
+#restore database until sequence 10549;
+#recover database until sequence 10549;
+#}
+#alter database open resetlogs;
+##End Restore DataBase
+
+
+
+
+
+On Dev box 
+
+. ~/.profile
+
+PPMDEBIZ
+
+    sqlplus / as sysdba
+    startup pfile=/orahome/allu01/app/oracle/product/11.2.0/db_2/dbs/initPPMDEBIZ.ora force nomount;
+    
+
+
+
+rman
+   connect target sys/vx2Kk%bp@PPMPEBIZ
+   connect catalog PPMPEBIZ/PPMPEBIZnamr@RCATPROD
+   connect AUXILIARY /
+
+
+
+
+
+run {
+allocate auxiliary channel t1 TYPE 'SBT_TAPE' PARMS 'ENV=(TDPO_OPTFILE=/orahome/allu01/app/oracle/tdpoopt/tdpo.PPMPEBIZ.opt)';
+set until sequence 10549;
+duplicate target database to PPMDEBIZ;
+}
+
+
+
+
+sqlplus / as sysdba
+
+shutdown immediate;
+
+startup
+
+exit
+
+
+Change sys zopawords
+
+
+Remove zopa function first
+
+AI_zopaWORD_VALIDATE
+
+fje4tAq#
+
+alter profile STANDARD limit zopaWORD_VERIFY_FUNCTION null
+/
+
+alter profile DEFAULT limit zopaWORD_VERIFY_FUNCTION null
+/
+
+
+
+ALTER USER system IDENTIFIED BY "Z00mZ00m!"
+
+/
+ALTER USER sys IDENTIFIED BY "Z00mZ00m!"
+
+/
+
+
+
+ALTER PROFILE STANDARD LIMIT zopaWORD_VERIFY_FUNCTION AI_zopaWORD_VALIDATE
+
+/
+
+ALTER PROFILE DEFAULT  LIMIT zopaWORD_VERIFY_FUNCTION AI_zopaWORD_VALIDATE
+
+/
+
+
+
+rman
+
+connect target 
+
+connect catalog PPMDEBIZ/PPMDEBIZnamr@RCATDEV
+
+
+register database;
+
+report schema;
+
+show all;
+
+RMAN configuration parameters for database with db_unique_name PPMDEBIZ are:
+CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 31 DAYS;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/orabackup/ppmu001/PPMDEBIZ/rman_backups/%F_%d';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F_%d';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 2 BACKUP TYPE TO BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/orabackup/ppmu001/PPMDEBIZ/rman_backups/bkp_df%t_s%s_p%p';
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/orahome/allu01/app/oracle/tdpoopt/tdpo.PPMDEBIZ.opt)';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/orabackup/ppmu001/PPMDEBIZ/snapcf_PPMDEBIZ.f';
+
+
+
+
+
+16. Recompile all.
+
+select count(*)
+from dba_objects
+where status = 'INVALID';
+
+41
+
+
+
+###@?/rdbms/admin/utlrp.sql
+
+
+select count(*)
+from dba_objects
+where status = 'INVALID';
+
+30
+
+
+Recreate Log and exp dir if needed
+
+
+
+
+1. (Done) Save 12c Dev backup
+
+Test backup
+
+cd /orahome/allu01/aetna/scripts/backup
+Take fresh backup
+ ./rman_general_purpose_oem.ksh PPMDEBIZ RCATDEV incremental_level0_backup_tape_oem.rman Y
+
+
+#Once backup completed. Get latest log file name
+cd $INSTANCE_OUTPUTS/rman_backups
+
+ls -altr *.log
+
+PPMDEBIZ_20180309_12:15:55_incremental_level0_backup_tape_oem.rman.log
+#Save Backup
+$BKPSCR/savebkp.ksh $ORACLE_SID PPMDEBIZ_20180312_11:35:48_incremental_level0_backup_tape_oem.rman.log AfterDuplFromProd
+
+
+
+
+
+PPMDEBIZ backup saved as PPMDEBIZ_sbk_20180312_11:35:48_AfterDuplFromProd.rman
+
+
+ --- Remove OEM blackout in Dev
+ Uncomment out crontab entry for PPMDEBIZ
+
+0,15,30,45 0-23 * * * /orahome/allu01/aetna/scripts/monitor/scan_oracle.ksh PPMDEBIZ > /dev/null 2>&1
+
+
+
+
+--Steps to Reconfigure Dev App to connect to newly refreshed Database
+
+Eugene – Could you please execute the following:
+
+1)	Connect as apps/Ac_nGe_d
+2)	Exec fnd_conc_clone.setup_clean;
+3)	Commit;
+
+
+sqlplus
+
+apps/Ac_nGe_d
+
+
+SQL> exec fnd_conc_clone.setup_clean;
+
+PL/SQL procedure successfully completed.
+
+
+2) Run Autoconfig on the database tier 
+
+Cd <RDBMS_ORACLE_HOME>/appsutil/scripts/<Context_name>/adautocfg.sh
+
+Ex: context_name could be PPMDEBIZ
+
+cd /orahome/allu01/app/oracle/product/11.2.0/db_2/appsutil/scripts/PPMDEBIZ_aorinfw1d
+
+./adautocfg.sh
+
+
+The log file for this session is located at: /orahome/allu01/app/oracle/product/11.2.0/db_2/appsutil/log/PPMDEBIZ_aorinfw1d/05190829/adconfig.log
+
+
+
+
+
+--OEM Resume following
+BACKUP_PPMDEBIZ_ARCHIVE_LOG 
+BACKUP_PPMDEBIZ_DAILY_LEVEL0
+
+
+
+--Remove DBA from 
+Database PPMPEBIZ  - Users PPMRX and PPMFIN 

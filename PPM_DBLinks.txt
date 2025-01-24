@@ -1,0 +1,1416 @@
+PROD DB Links
+
+
+****************** OWNER: APPS
+
+CREATE DATABASE LINK APPS_TO_APPS
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'RI16'
+/
+CREATE DATABASE LINK APPS_TO_APPS.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PPMPEBIZ'
+/
+CREATE DATABASE LINK APPS_TO_APPS.US.ORACLE.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PRODPACK'
+/
+CREATE DATABASE LINK EDW_APPS_TO_WH
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'RI16'
+/
+CREATE DATABASE LINK EDW_APPS_TO_WH.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PPMPEBIZ'
+/
+CREATE DATABASE LINK EDW_APPS_TO_WH.US.ORACLE.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PRODPACK'
+/
+
+
+*****************OWNER: CLM
+
+CREATE DATABASE LINK AEBSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1560))(CONNECT_DATA=(SID=AEBSDEV)))'
+/
+CREATE DATABASE LINK AEBSDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1571))(CONNECT_DATA=(SID=AEBSDEV2)))'
+/
+CREATE DATABASE LINK AEBSPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1527)) ) (CONNECT_DATA = (SID = AEBSPERF)))'
+/
+CREATE DATABASE LINK AEBSPFIX.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1541))(CONNECT_DATA=(SID=AEBSPFIX)))'
+/
+CREATE DATABASE LINK AEBSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1521))(CONNECT_DATA=(SID=AEBSPROD)))'
+/
+CREATE DATABASE LINK AEBSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1526))(CONNECT_DATA=(SID=AEBSQA)))'
+/
+CREATE DATABASE LINK AEBSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1536))(CONNECT_DATA=(SID=AEBSQA2)))'
+/
+CREATE DATABASE LINK AEBSQA3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1548))(CONNECT_DATA=(SID=AEBSQA3)))'
+/
+CREATE DATABASE LINK AEBSTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=AEBSTRN)))'
+/
+CREATE DATABASE LINK AOAPRD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+CREATE DATABASE LINK ARDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1d.aetna.com)(Port = 1525))) (CONNECT_DATA = (SID = ARDEV )))'
+/
+CREATE DATABASE LINK ARPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1538))(CONNECT_DATA=(SID=ARPERF)))'
+/
+CREATE DATABASE LINK ARPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1531))(CONNECT_DATA=(SID=ARPROD)))'
+/
+CREATE DATABASE LINK ARQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1522))(CONNECT_DATA=(SID=ARQA)))'
+/
+CREATE DATABASE LINK ARQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1532))(CONNECT_DATA=(SID=ARQA2)))'
+/
+CREATE DATABASE LINK ARTRAIN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=ARTRAIN)))'
+/
+CREATE DATABASE LINK FAHDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHDEV)))'
+/
+CREATE DATABASE LINK FAHDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1541))(CONNECT_DATA=(SID=FAHDEV2)))'
+/
+CREATE DATABASE LINK FAHPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbm3p.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHPROD)))'
+/
+CREATE DATABASE LINK FAHQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=FAHQA)))'
+/
+CREATE DATABASE LINK FAHQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHQA2)))'
+/
+CREATE DATABASE LINK IFSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = ifsdbdev.aetna.com )(Port = 1552))) (CONNECT_DATA = (SID = IFSDEV )))'
+/
+CREATE DATABASE LINK IFSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+CREATE DATABASE LINK IFSPROD12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+CREATE DATABASE LINK IFSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+CREATE DATABASE LINK IFSQA12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+CREATE DATABASE LINK IFSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=15))(CONNECT_DATA=(SID=IFSQA2)))'
+/
+CREATE DATABASE LINK SRXADM.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+CREATE DATABASE LINK SRXDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+CREATE DATABASE LINK SRXDEV3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+CREATE DATABASE LINK SRXINT2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+CREATE DATABASE LINK SRXINT3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+CREATE DATABASE LINK SRXTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+CREATE DATABASE LINK SRXUAT.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+
+
+
+
+************* OWNER: PPMFIN
+
+CREATE DATABASE LINK AEBSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1560))(CONNECT_DATA=(SID=AEBSDEV)))'
+/
+CREATE DATABASE LINK AEBSDEV.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'AEBSDEV'
+/
+CREATE DATABASE LINK AEBSDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1571))(CONNECT_DATA=(SID=AEBSDEV2)))'
+/
+CREATE DATABASE LINK AEBSDEV2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsw1d.aetna.com)(PORT=1571))(CONNECT_DATA=(SID=AEBSDEV2)))'
+/
+CREATE DATABASE LINK AEBSGOLD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'AEBSGOLD'
+/
+CREATE DATABASE LINK AEBSPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1527)) ) (CONNECT_DATA = (SID = AEBSPERF)))'
+/
+CREATE DATABASE LINK AEBSPFIX.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1541))(CONNECT_DATA=(SID=AEBSPFIX)))'
+/
+CREATE DATABASE LINK AEBSPFIX.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'AEBSPFIX'
+/
+CREATE DATABASE LINK AEBSPGND.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1d.aetna.com)(Port = 1561))) (CONNECT_DATA = (SID = AEBSPGND)))'
+/
+CREATE DATABASE LINK AEBSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1521))(CONNECT_DATA=(SID=AEBSPROD)))'
+/
+CREATE DATABASE LINK AEBSPROD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1521))(CONNECT_DATA=(SID=AEBSPROD)))'
+/
+CREATE DATABASE LINK AEBSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1526))(CONNECT_DATA=(SID=AEBSQA)))'
+/
+CREATE DATABASE LINK AEBSQA.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'AEBSQA'
+/
+CREATE DATABASE LINK AEBSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1536))(CONNECT_DATA=(SID=AEBSQA2)))'
+/
+CREATE DATABASE LINK AEBSQA2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1536)) ) (CONNECT_DATA = (SID = AEBSQA2)))'
+/
+CREATE DATABASE LINK AEBSQA3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1548))(CONNECT_DATA=(SID=AEBSQA3)))'
+/
+CREATE DATABASE LINK AEBSQA3.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1548)) ) (CONNECT_DATA = (SID = AEBSQA3)))'
+/
+CREATE DATABASE LINK AEBSQA4.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1566)) ) (CONNECT_DATA = (SID = AEBSQA4)))'
+/
+CREATE DATABASE LINK AEBSTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=AEBSTRN)))'
+/
+CREATE DATABASE LINK AEBSTRN.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'AEBSTRN'
+/
+CREATE DATABASE LINK APPS_TO_APPS.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'MODDEV'
+/
+CREATE DATABASE LINK ARDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1d.aetna.com)(Port = 1525))) (CONNECT_DATA = (SID = ARDEV )))'
+/
+CREATE DATABASE LINK ARGOLD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'ARGOLD'
+/
+CREATE DATABASE LINK ARPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1538))(CONNECT_DATA=(SID=ARPERF)))'
+/
+CREATE DATABASE LINK ARPERF.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1538))(CONNECT_DATA=(SID=ARPERF)))'
+/
+CREATE DATABASE LINK ARPFIX.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'ARPFIX'
+/
+CREATE DATABASE LINK ARPGRND.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = ardbdev.aetna.com)(Port = 1548))) (CONNECT_DATA = (SID = ARPGRND)))'
+/
+CREATE DATABASE LINK ARPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1531))(CONNECT_DATA=(SID=ARPROD)))'
+/
+CREATE DATABASE LINK ARPROD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1531))(CONNECT_DATA=(SID=ARPROD)))'
+/
+CREATE DATABASE LINK ARQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1522))(CONNECT_DATA=(SID=ARQA)))'
+/
+CREATE DATABASE LINK ARQA.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1522)) ) (CONNECT_DATA = (SID = ARQA)))'
+/
+CREATE DATABASE LINK ARQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1532))(CONNECT_DATA=(SID=ARQA2)))'
+/
+CREATE DATABASE LINK ARQA2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'ARQA2'
+/
+CREATE DATABASE LINK ARTRAIN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=ARTRAIN)))'
+/
+CREATE DATABASE LINK ARTRAIN.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1d.aetna.com)(Port = 1531)) ) (CONNECT_DATA = (SID = ARTRAIN)))'
+/
+CREATE DATABASE LINK FAHDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(COMMUNITY=tcp.world)(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1521)))(CONNECT_DATA=(SID=FAHDEV)))'
+/
+CREATE DATABASE LINK FAHDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1541))(CONNECT_DATA=(SID=FAHDEV2)))'
+/
+CREATE DATABASE LINK FAHDEV2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(COMMUNITY=tcp.world)(PROTOCOL = TCP)(Host=aoradbw3d.aetna.com)(Port = 1541)))(CONNECT_DATA=(SID=FAHDEV2)))'
+/
+CREATE DATABASE LINK FAHGOLD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3d.aetna.com)(Port = 1521)) ) (CONNECT_DATA = (SID = FAHGOLD)))'
+/
+CREATE DATABASE LINK FAHPERF.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbm3p.aetna.com)(Port = 1521)) ) (CONNECT_DATA = (SID = FAHPERF)))'
+/
+CREATE DATABASE LINK FAHPGRND.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3d.aetna.com)(Port = 1551)) ) (CONNECT_DATA = (SID = FAHPGRND)))'
+/
+CREATE DATABASE LINK FAHPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbm3p.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHPROD)))'
+/
+CREATE DATABASE LINK FAHPROD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbm3p.aetna.com)(Port = 1531)) ) (CONNECT_DATA = (SID = FAHPROD)))'
+/
+CREATE DATABASE LINK FAHQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=FAHQA)))'
+/
+CREATE DATABASE LINK FAHQA.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3q.aetna.com)(Port = 1521)) ) (CONNECT_DATA = (SID = FAHQA)))'
+/
+CREATE DATABASE LINK FAHQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHQA2)))'
+/
+CREATE DATABASE LINK FAHQA2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3q.aetna.com)(Port = 1531)) ) (CONNECT_DATA = (SID = FAHQA2)))'
+/
+CREATE DATABASE LINK FSAHDEV.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw1d.aetna.com)(Port = 1572)) ) (CONNECT_DATA = (SID = FSAHDEV)))'
+/
+CREATE DATABASE LINK FSAHPROD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aoradbm1p.aetna.com)(PORT=1521))(CONNECT_DATA=(SID=FSAHPROD)))'
+/
+CREATE DATABASE LINK IFSDBDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = ifsdbdev.aetna.com)(Port = 1562))) (CONNECT_DATA = (SID = IFSPGRND)))'
+/
+CREATE DATABASE LINK IFSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = ifsdbdev.aetna.com )(Port = 1552))) (CONNECT_DATA = (SID = IFSDEV )))'
+/
+CREATE DATABASE LINK IFSPDRY.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'IFSPDRY'
+/
+CREATE DATABASE LINK IFSPERF.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'IFSPERF'
+/
+CREATE DATABASE LINK IFSPFIX.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1550)) ) (CONNECT_DATA = (SID = IFSPFIX)))'
+/
+CREATE DATABASE LINK IFSPGRND.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'IFSPGRND'
+/
+CREATE DATABASE LINK IFSPROD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aifsdbm1p.aetna.com)(PORT=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+CREATE DATABASE LINK IFSPROD12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+CREATE DATABASE LINK IFSQA.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'IFSQA'
+/
+CREATE DATABASE LINK IFSQA12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+CREATE DATABASE LINK IFSQA2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'IFSQA2'
+/
+CREATE DATABASE LINK IFSTRAIN.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'IFSTRAIN'
+/
+CREATE DATABASE LINK PPMD01.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PPMD01'
+/
+
+
+
+********** OWNER: PPMRX
+
+CREATE DATABASE LINK AOAPRD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+CREATE DATABASE LINK AOAPRD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+CREATE DATABASE LINK APPS_TO_APPS.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'MODDEV'
+/
+CREATE DATABASE LINK FAHDEV.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3d.aetna.com)(Port = 1531)) ) (CONNECT_DATA = (SID = FAHDEV)))'
+/
+CREATE DATABASE LINK FAHGOLD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3d.aetna.com)(Port = 1521)) ) (CONNECT_DATA = (SID = FAHGOLD)))'
+/
+CREATE DATABASE LINK FSAHDEV.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw1d.aetna.com)(Port = 1572)) ) (CONNECT_DATA = (SID = FSAHDEV)))'
+/
+CREATE DATABASE LINK FSAHGOLD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'FSAHGOLD'
+/
+CREATE DATABASE LINK FSAHPROD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbm1p.iwhouse.aetna.com)(Port = 1521)) ) (CONNECT_DATA = (SID = FSAHPROD)))'
+/
+CREATE DATABASE LINK FSAHQA.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'FSAHQA'
+/
+CREATE DATABASE LINK PPMD01.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PPMD01'
+/
+CREATE DATABASE LINK SRXADM.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+CREATE DATABASE LINK SRXADM.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+CREATE DATABASE LINK SRXDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+CREATE DATABASE LINK SRXDEV2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+CREATE DATABASE LINK SRXDEV3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+CREATE DATABASE LINK SRXDEV3.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+CREATE DATABASE LINK SRXINT2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+CREATE DATABASE LINK SRXINT2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+CREATE DATABASE LINK SRXINT3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+CREATE DATABASE LINK SRXINT3.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+CREATE DATABASE LINK SRXIT.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'SRXIT.AETNA.COM'
+/
+CREATE DATABASE LINK SRXTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+CREATE DATABASE LINK SRXTRN.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+CREATE DATABASE LINK SRXUAT.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+CREATE DATABASE LINK SRXUAT.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+
+
+
+DEV DB Links
+
+
+*************** OWNER: APPS
+
+CREATE DATABASE LINK APPS_TO_APPS
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'RI16'
+/
+CREATE DATABASE LINK APPS_TO_APPS.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PPMDEBIZ'
+/
+CREATE DATABASE LINK APPS_TO_APPS.US.ORACLE.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PRODPACK'
+/
+CREATE DATABASE LINK EDW_APPS_TO_WH
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'RI16'
+/
+CREATE DATABASE LINK EDW_APPS_TO_WH.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PPMDEBIZ'
+/
+CREATE DATABASE LINK EDW_APPS_TO_WH.US.ORACLE.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PRODPACK'
+/
+
+
+******** OWNER: CLM
+
+CREATE DATABASE LINK AEBSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1560))(CONNECT_DATA=(SID=AEBSDEV)))'
+/
+CREATE DATABASE LINK AEBSDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1571))(CONNECT_DATA=(SID=AEBSDEV2)))'
+/
+CREATE DATABASE LINK AEBSPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1527)) ) (CONNECT_DATA = (SID = AEBSPERF)))'
+/
+CREATE DATABASE LINK AEBSPFIX.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1541))(CONNECT_DATA=(SID=AEBSPFIX)))'
+/
+CREATE DATABASE LINK AEBSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1521))(CONNECT_DATA=(SID=AEBSPROD)))'
+/
+CREATE DATABASE LINK AEBSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1526))(CONNECT_DATA=(SID=AEBSQA)))'
+/
+CREATE DATABASE LINK AEBSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1536))(CONNECT_DATA=(SID=AEBSQA2)))'
+/
+CREATE DATABASE LINK AEBSQA3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1548))(CONNECT_DATA=(SID=AEBSQA3)))'
+/
+CREATE DATABASE LINK AEBSTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=AEBSTRN)))'
+/
+CREATE DATABASE LINK AOAPRD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+CREATE DATABASE LINK ARDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1d.aetna.com)(Port = 1525))) (CONNECT_DATA = (SID = ARDEV )))'
+/
+CREATE DATABASE LINK ARPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1538))(CONNECT_DATA=(SID=ARPERF)))'
+/
+CREATE DATABASE LINK ARPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1531))(CONNECT_DATA=(SID=ARPROD)))'
+/
+CREATE DATABASE LINK ARQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1522))(CONNECT_DATA=(SID=ARQA)))'
+/
+CREATE DATABASE LINK ARQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1532))(CONNECT_DATA=(SID=ARQA2)))'
+/
+CREATE DATABASE LINK ARTRAIN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=ARTRAIN)))'
+/
+CREATE DATABASE LINK FAHDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHDEV)))'
+/
+CREATE DATABASE LINK FAHDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1541))(CONNECT_DATA=(SID=FAHDEV2)))'
+/
+CREATE DATABASE LINK FAHPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbm3p.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHPROD)))'
+/
+CREATE DATABASE LINK FAHQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=FAHQA)))'
+/
+CREATE DATABASE LINK FAHQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHQA2)))'
+/
+CREATE DATABASE LINK IFSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = ifsdbdev.aetna.com )(Port = 1552))) (CONNECT_DATA = (SID = IFSDEV )))'
+/
+CREATE DATABASE LINK IFSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+CREATE DATABASE LINK IFSPROD12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+CREATE DATABASE LINK IFSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+CREATE DATABASE LINK IFSQA12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+CREATE DATABASE LINK IFSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=15))(CONNECT_DATA=(SID=IFSQA2)))'
+/
+CREATE DATABASE LINK SRXADM.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+CREATE DATABASE LINK SRXDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+CREATE DATABASE LINK SRXDEV3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+CREATE DATABASE LINK SRXINT2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+CREATE DATABASE LINK SRXINT3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+CREATE DATABASE LINK SRXTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+CREATE DATABASE LINK SRXUAT.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+
+
+********************** OWNER: PPMFIN
+
+CREATE DATABASE LINK AEBSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1560))(CONNECT_DATA=(SID=AEBSDEV)))'
+/
+CREATE DATABASE LINK AEBSDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1571))(CONNECT_DATA=(SID=AEBSDEV2)))'
+/
+CREATE DATABASE LINK AEBSPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1q.aetna.com)(Port = 1527)) ) (CONNECT_DATA = (SID = AEBSPERF)))'
+/
+CREATE DATABASE LINK AEBSPFIX.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1541))(CONNECT_DATA=(SID=AEBSPFIX)))'
+/
+CREATE DATABASE LINK AEBSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1521))(CONNECT_DATA=(SID=AEBSPROD)))'
+/
+CREATE DATABASE LINK AEBSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1526))(CONNECT_DATA=(SID=AEBSQA)))'
+/
+CREATE DATABASE LINK AEBSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1536))(CONNECT_DATA=(SID=AEBSQA2)))'
+/
+CREATE DATABASE LINK AEBSQA3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1548))(CONNECT_DATA=(SID=AEBSQA3)))'
+/
+CREATE DATABASE LINK AEBSTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=AEBSTRN)))'
+/
+
+!!!
+CREATE DATABASE LINK AOAPRD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+CREATE DATABASE LINK ARDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aebsw1d.aetna.com)(Port = 1525))) (CONNECT_DATA = (SID = ARDEV )))'
+/
+CREATE DATABASE LINK ARPERF.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1538))(CONNECT_DATA=(SID=ARPERF)))'
+/
+CREATE DATABASE LINK ARPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aebsm1p.aetna.com)(PORT=1531))(CONNECT_DATA=(SID=ARPROD)))'
+/
+CREATE DATABASE LINK ARQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1522))(CONNECT_DATA=(SID=ARQA)))'
+/
+CREATE DATABASE LINK ARQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1532))(CONNECT_DATA=(SID=ARQA2)))'
+/
+CREATE DATABASE LINK ARTRAIN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=ARTRAIN)))'
+/
+CREATE DATABASE LINK FAHDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHDEV)))'
+/
+CREATE DATABASE LINK FAHDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1541))(CONNECT_DATA=(SID=FAHDEV2)))'
+/
+CREATE DATABASE LINK FAHPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbm3p.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHPROD)))'
+/
+CREATE DATABASE LINK FAHQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1521))(CONNECT_DATA=(SID=FAHQA)))'
+/
+CREATE DATABASE LINK FAHQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3q.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHQA2)))'
+/
+CREATE DATABASE LINK IFSDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = ifsdbdev.aetna.com )(Port = 1552))) (CONNECT_DATA = (SID = IFSDEV )))'
+/
+
+!!!
+CREATE DATABASE LINK IFSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+CREATE DATABASE LINK IFSPROD12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+
+!!!
+CREATE DATABASE LINK IFSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+CREATE DATABASE LINK IFSQA12I.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+
+!!!
+CREATE DATABASE LINK IFSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=15))(CONNECT_DATA=(SID=IFSQA2)))'
+/
+
+!!!!
+CREATE DATABASE LINK SRXADM.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+
+!!!
+CREATE DATABASE LINK SRXDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+
+!!!
+CREATE DATABASE LINK SRXDEV3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+!!!
+CREATE DATABASE LINK SRXINT2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+!!!
+CREATE DATABASE LINK SRXINT3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+!!!
+CREATE DATABASE LINK SRXTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+!!!
+CREATE DATABASE LINK SRXUAT.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+
+
+************** OWNER: PPMRX
+
+CREATE DATABASE LINK AOAPRD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+CREATE DATABASE LINK AOAPRD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+CREATE DATABASE LINK APPS_TO_APPS.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'MODDEV'
+/
+CREATE DATABASE LINK FAHDEV.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3d.aetna.com)(Port = 1531)) ) (CONNECT_DATA = (SID = FAHDEV)))'
+/
+CREATE DATABASE LINK FAHGOLD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3d.aetna.com)(Port = 1521)) ) (CONNECT_DATA = (SID = FAHGOLD)))'
+/
+CREATE DATABASE LINK FSAHDEV.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw1d.aetna.com)(Port = 1572)) ) (CONNECT_DATA = (SID = FSAHDEV)))'
+/
+CREATE DATABASE LINK FSAHGOLD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'FSAHGOLD'
+/
+CREATE DATABASE LINK FSAHPROD.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbm1p.iwhouse.aetna.com)(Port = 1521)) ) (CONNECT_DATA = (SID = FSAHPROD)))'
+/
+CREATE DATABASE LINK FSAHQA.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'FSAHQA'
+/
+CREATE DATABASE LINK PPMD01.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'PPMD01'
+/
+CREATE DATABASE LINK SRXADM.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+CREATE DATABASE LINK SRXADM.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+CREATE DATABASE LINK SRXDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+CREATE DATABASE LINK SRXDEV2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+CREATE DATABASE LINK SRXDEV3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+CREATE DATABASE LINK SRXDEV3.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+CREATE DATABASE LINK SRXINT2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+CREATE DATABASE LINK SRXINT2.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+CREATE DATABASE LINK SRXINT3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+CREATE DATABASE LINK SRXINT3.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+CREATE DATABASE LINK SRXIT.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING 'SRXIT.AETNA.COM'
+/
+CREATE DATABASE LINK SRXTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+CREATE DATABASE LINK SRXTRN.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+CREATE DATABASE LINK SRXUAT.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+CREATE DATABASE LINK SRXUAT.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+
+
+
+
+******************** DB Links that needs to be created or re created *********************
+
+
+set echo on
+
+spool fix_ifsdbdev.out
+
+-- connect clm/clm
+
+connect ppmfin/ppmfin91
+
+show user
+
+drop database link      IFSDBDEV.WORLD;
+
+create database link    IFSDBDEV
+connect to apps identified by apps8apps
+using '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCO
+L = TCP)(Host = ifsdbdev.aetna.com)(Port = 1562))) (CONNECT_DATA = (SID = IFSPGR
+ND)))'
+;
+
+
+spool off;
+
+
+
+
+Owner: APPS
+
+
+
+sqlplus apps/apps
+
+drop database link APPS_TO_APPS.AETNA.COM;
+
+
+
+CREATE DATABASE LINK APPS_TO_APPS.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "apps"
+    USING 'PPMDEBIZ'
+/
+
+
+drop database link EDW_APPS_TO_WH.AETNA.COM;
+
+CREATE DATABASE LINK EDW_APPS_TO_WH.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "apps"
+    USING 'PPMDEBIZ'
+/
+
+
+
+
+OWNER: PPMFIN
+
+
+sqlplus ppmfin/ppmfin91
+
+
+
+!!!
+CREATE DATABASE LINK AOAPRD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY ""
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbm1p.aetna.com)(PORT = 1541)) (ADDRESS = (PROTOCOL = TCP)(HOST = asrxdbw1p.aetna.com)(PORT = 1541)) ) (CONNECT_DATA = (SERVICE_NAME = AOAPRD_APP)))'
+/
+
+
+!!!
+CREATE DATABASE LINK IFSPROD.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "LstM1nCng" 
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aifsdbm1p.aetna.com)(Port=1526))(CONNECT_DATA=(SID=IFSPROD)))'
+/
+
+
+!!!
+CREATE DATABASE LINK IFSQA.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "qqapps01"
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=1542))(CONNECT_DATA=(SID=IFSQA)))'
+/
+
+!!! - Database no longer exists
+CREATE DATABASE LINK IFSQA2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aebsw1q.aetna.com)(Port=15))(CONNECT_DATA=(SID=IFSQA2)))'
+/
+
+!!!!
+CREATE DATABASE LINK SRXADM.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1530))(CONNECT_DATA=(SID=SRXADM)))'
+/
+
+!!!
+CREATE DATABASE LINK SRXDEV2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1556))(CONNECT_DATA=(SID=SRXDEV2)))'
+/
+
+!!!
+CREATE DATABASE LINK SRXDEV3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1533))(CONNECT_DATA=(SID=SRXDEV3)))'
+/
+!!!
+CREATE DATABASE LINK SRXINT2.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1q.aetna.com)(Port=1566))(CONNECT_DATA=(SID=SRXINT2)))'
+/
+!!!
+CREATE DATABASE LINK SRXINT3.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1u.aetna.com)(PORT=1540))(ADDRESS=(PROTOCOL=tcp)(HOST=asrxdbw1q.aetna.com)(PORT=1540)))(CONNECT_DATA=(SERVICE_NAME=SRXINT3)))'
+/
+!!!
+CREATE DATABASE LINK SRXTRN.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbm1d.aetna.com)(Port=1580))(CONNECT_DATA=(SID=SRXTRN)))'
+/
+!!!
+CREATE DATABASE LINK SRXUAT.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=asrxdbw1u.aetna.com)(Port=1560))(CONNECT_DATA=(SID=SRXUAT)))'
+/
+
+
+
+*********** 2/27/2018 *****
+
+PPMPEBIZ. Peter Cai asked to rebuild DB links with new apps password
+
+PPMRX/ppmrx91
+
+drop database link FAHDEV.WORLD;
+
+
+CREATE DATABASE LINK FAHDEV.WORLD
+    CONNECT TO "APPS"
+    IDENTIFIED BY "Ebs_Fa8Shdev" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = aoradbw3d.aetna.com)(Port = 1531)) ) (CONNECT_DATA = (SID = FAHDEV)))'
+/
+
+CLM/Ac_nGe_d
+
+drop database link FAHDEV.AETNA.COM;
+
+
+CREATE DATABASE LINK FAHDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "Ebs_Fa8Shdev" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=aoradbw3d.aetna.com)(Port=1531))(CONNECT_DATA=(SID=FAHDEV)))'
+/
+
+PPMFIN/ppmfin91
+       
+drop database link FAHDEV.AETNA.COM;
+
+select * from global_name@FAHDEV.AETNA.COM
+
+
+CREATE DATABASE LINK FAHDEV.AETNA.COM
+    CONNECT TO "APPS"
+    IDENTIFIED BY "Ebs_Fa8Shdev" -- The database link password could not be read from the data dictionary. It is not available on Oracle 10gR2 and above.
+    USING '(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=aoradbw3d.aetna.com)(PORT=1531))(CONNECT_DATA= (SID=FAHDEV)))'
+/
+
+
+
+**** 4/10/2019 Peter Cai asked to rebuild DB Links in PPMDEBIZ
+
+ppmrx/Ac!nGe!d@PPMDEBIZ
+alter database link  FAHDEV.WORLD connect to APPS identified by apps8apps; 
+
+clm/Ac_nGe_d@PPMDEBIZ
+alter database link  FAHDEV.AETNA.COM connect to APPS identified by apps8apps;
+
+PPMFIN/ppmfin91@PPMDEBIZ
+
+alter database link  FAHDEV.AETNA.COM connect to APPS identified by apps8apps; 
+
+
+*** 4/25/2019 Peter asked to rebuild DB links in PPMDEBIZ
+
+
+ppmrx/Ac!nGe!d@PPMDEBIZ
+
+Not such link found
+
+clm/Ac_nGe_d@PPMDEBIZ
+alter database link  FAHQA.AETNA.COM connect to APPS identified by rqfsahqa2;
+
+PPMFIN/ppmfin91@PPMDEBIZ
+
+alter database link  FAHQA.AETNA.COM connect to APPS identified by rqfsahqa2; 
+
+
+APPS password is rqfsahqa2 in FAHQA
+
+
+
+PPMDEBIZ,PPMDEBIZ.WORLD  =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = aorinfw1d.aetna.com)(PORT = 1551))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME =  PPMDEBIZ)
+    )
+  )
+
+
+Ac_nGe_d
