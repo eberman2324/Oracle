@@ -1,0 +1,1112 @@
+Goal: To test 11g RMAN DUPLICATE capabilietes
+
+1. Duplicate FROM ACTIVE DATABASE using pre defined PFILE
+
+2. Duplicate FROM ACTIVE DATABASE with SFILE on same Server. 
+             SPFILE technique is easiest because during duplication RMAN automatically copies the server parameter file from the source database
+             to the auxiliary instance or restores it from backup
+    
+
+3. One of these methods try Duplicate to anather Server
+
+
+4. Duplicate from backups to same Server with SPFILE
+5. DuplicaTE from backups to same Server using pre defined PFILE
+6. One of these methods try Duplicate to anather Server
+
+
+RMAN 'Duplicate Database' Feature in 11G [ID 452868.1]
+
+
+****** Duplicate FROM ACTIVE DATABASE using pre defined PFILE. Same Server ****************************************************
+
+Target (Source) Database: DBATST
+Target (Source) Server: Floradev
+Aux Database: ORA11
+Aux Server: Floradev
+
+
+
+--------Current DBATST files and location
+
+
+---select * from dba_data_files order by 1
+
+/u02/oracle/DBATST/system/DBATST01.dbf
+/u02/oracle/DBATST/system/sysaux02.dbf
+/u06/oracle/DBATST/tools/tools01.dbf
+/u08/oracle/DBATST/rbs/undrbs01.dbf
+/u15/oracle/DBATST/data/USER_DATA01.dbf
+/u15/oracle/DBATST/data/dmdv01_rman.dbf
+/u15/oracle/DBATST/data/dmqa01_rman.dbf
+/u15/oracle/DBATST/data/drdv01_rman.dbf
+/u15/oracle/DBATST/data/drqa01_rman.dbf
+/u15/oracle/DBATST/data/rman01.dbf
+/u15/oracle/DBATST/data/wkabstgc_rman.dbf
+/u19/oracle/DBATST/index/JAR_INDEX_TEST1.dbf
+/u19/oracle/DBATST/index/JAR_INDEX_TEST2.dbf
+/u19/oracle/DBATST/index/JAR_INDEX_TEST3.dbf
+/u19/oracle/DBATST/index/JAR_INDEX_TEST4.dbf
+/u19/oracle/DBATST/index/USER_INDEX01.dbf
+/u25/oracle/DBATST/data/JAR_DATA_TEST1.dbf
+/u25/oracle/DBATST/data/JAR_DATA_TEST2.dbf
+/u25/oracle/DBATST/data/JAR_DATA_TEST3.dbf
+/u25/oracle/DBATST/data/JAR_DATA_TEST4.dbf
+/u25/oracle/DBATST/data/sysaux01.dbf
+
+
+---select * from dba_temp_files order by 1
+
+/u04/oracle/DBATST/temp/temp01.dbf
+
+
+
+---select * from v$controlfile
+
+/u02/oracle/DBATST/control1/control1_DBATST.ctl
+/u06/oracle/DBATST/control2/control2_DBATST.ctl
+
+---select * from v$logfile order by 3
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_01.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_01.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_02.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_02.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_03.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_06.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_04.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_04.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_05.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_05.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_06.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_03.log
+
+
+--- Sort by group
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_01.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_01.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_02.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_02.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_03.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_03.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_04.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_04.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_05.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_05.log
+
+/u02/oracle/DBATST/redolog1/redo_DBATST_06.log
+/u06/oracle/DBATST/redolog2/redo_DBATST_06.log
+
+
+$ORACLE_HOME = /u27/app/oracle/product/11.1.0/db_2
+$ORACLE_BASE = /u27/app/oracle/
+$INSTANCE_OUTPUTS =/u28/DBATST
+diag = /u07/oracle/DBATST
+DBATST:/u27/app/oracle/product/11.1.0/db_2:Y:/u01:/u28
+
+
+
+-------Future ORA11 files and location
+
+$ORACLE_HOME = /u27/app/oracle/product/11.1.0/db_2
+$ORACLE_BASE = /u27/app/oracle/
+
+ORA11:/u27/app/oracle/product/11.1.0/db_2:N:/u01:/u28
+
+
+
+
+
+--create Data directories if not exist..
+cd /u28/oracle
+mkdir ORA11
+Data, control files and redo will go here: /u28/oracle/ORA11
+
+--- create $INSTANCE_OUTPUTS directories if not exist..
+cd /u28
+mkdir ORA11
+cd ORA11
+mkdir datapump
+mkdir rman_backups
+
+
+--create diag directory if not exist..
+
+mkdir /u07/oracle/ORA11
+
+
+
+
+1. Double check to make sure Target (Source) has password file
+
+   cd $ORACLE_HOME/dbs
+   ls -altr orapwDBA*
+
+   Also . $SETUPENV DMDV01 (  to different db env)
+   sqlplus
+   sys/no734s@DBATST as sysdba
+   Should be able to connect. If not re create/create orapw file for DBATST
+
+
+2. Double check for AUX Database entry in oratab file
+
+   cd /etc
+
+   vi oratab
+   ORA11:/u27/app/oracle/product/11.1.0/db_2:N:/u01:/u28
+
+   . $SETUPENV ORA11 to make sure 
+
+
+3.  Make sure both TARGET and AUX databases have entry in listener and tnsnames.ora files
+
+    --- Create new entry in listener.ora file if not exist for AUX Database
+
+    ----    netstat -an|grep 1551
+
+   cd $ORACLE_HOME/network/admin
+
+   vi listener.ora
+
+ORA11 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = floradev.add.net)(PORT = 1551))
+  )
+
+SID_LIST_ORA11 =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = ORA11.WORLD)
+      (ORACLE_HOME = /u27/app/oracle/product/11.1.0/db_2)
+      (SID_NAME = ORA11)
+  )
+  )
+
+
+LOG_DIRECTORY_ORA11 = /u27/app/oracle/product/11.1.0/db_2/network/log 
+TRACE_DIRECTORY_ORA11 = /u27/app/oracle/product/11.1.0/db_2/network/trace 
+TRACE_FILE_ORA11 = ORA11.trc
+TRACE_TIMESTAMP_ORA11 = ON
+TRACE_LEVEL_ORA11 = OFF
+LOG_FILE_ORA11 = ORA11.log
+STARTUP_WAIT_TIME_ORA11 = 0
+CONNECT_TIMEOUT_ORA11 = 10
+DIAG_ADR_ENABLED_ORA11  = OFF
+    
+
+
+vi tnsnames.ora
+
+ORA11.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = floradev.add.net)(PORT = 1551))
+    )
+    (CONNECT_DATA =
+      (SID = ORA11)
+    )
+  )
+
+
+
+-- Start new listener
+   lsnrctl set current_listener ORA11
+   start
+
+
+
+4. Double check make sure AUX Server has orapw password
+
+   . $SETUPENV ORA11
+   cd $ORACLE_HOME/dbs
+   orapwd file=$ORACLE_HOME/dbs/orapwORA11 password=no734s entries=20
+
+5. Test connection from TARGET(DBATST) server to AUX (ORA11)
+
+      . $SETUPENV DBATST
+
+       tnsping ORA11
+
+      
+   rman
+   connect target /
+   connect AUXILIARY sys/no734s@ORA11   
+
+   #connect target sys/no734s@WKABQA4
+   #connect catalog wkabqa4/wkabqa4namr@rmanwdev
+   #connect AUXILIARY /
+   #connect AUXILIARY sys/no734s@WKABQA1
+
+
+
+6. Move init file from TARGET server to AUX server  However I would get latest in case any changes.
+
+
+   . $SETUPENV DBATST
+    cd $ORACLE_HOME/dbs
+    sqlplus / as sysdba
+
+    create pfile from spfile;
+
+
+    
+   cp -p /u27/app/oracle/product/11.1.0/db_2/dbs/initDBATST.ora /u27/app/oracle/product/11.1.0/db_2/dbs/initORA11.ora
+ 
+   vi initORA11.ora
+   -- replace DBATST with ORA11 in initORA11.ora file
+   -- Add entries below
+   
+   db_file_name_convert='/u02/oracle/DBATST/system/','/u28/oracle/ORA11/' ,'/u06/oracle/DBATST/tools/','/u28/oracle/ORA11/','/u08/oracle/DBATST/rbs/','/u28/oracle/ORA11/', '/u15/oracle/DBATST/data/', '/u28/oracle/ORA11/', '/u19/oracle/DBATST/index/', '/u28/oracle/ORA11/', '/u25/oracle/DBATST/data/', '/u28/oracle/ORA11/','/u04/oracle/DBATST/temp/, '/u28/oracle/ORA11/'
+   log_file_name_convert='/u02/oracle/DBATST/redolog1/','/u28/oracle/ORA11/redolog1/' ,'/u06/oracle/DBATST/redolog2/','/u28/oracle/ORA11/redolog2/'
+
+
+
+7.  Startup AUX (ORA11) database
+    Make sure . $SETUPENV ORA11
+
+    sqlplus / as sysdba
+    startup pfile=/u27/app/oracle/product/11.1.0/db_2/dbs/initORA11.ora force nomount;
+
+
+
+8.  . $SETUPENV ORA11 (AUX enviroment)
+
+   rman
+   
+   #connect target /
+   #connect catalog wkabqa4/wkabqa4namr@rmanwdev
+   connect target sys/no734s@DBATST
+   connect AUXILIARY sys/no734s@ORA11
+   
+
+run  {
+SET NEWNAME FOR TEMPFILE 1 TO '/u28/oracle/ORA11/temp01.dbf'; 
+duplicate target database to ORA11 FROM ACTIVE DATABASE;
+}
+
+  RMAN-00571: ===========================================================
+  RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+  RMAN-00571: ===========================================================
+  RMAN-03002: failure of Duplicate Db command at 11/16/2009 12:49:39
+  RMAN-05520: database name mismatch, auxiliary instance has DBATST, command speci
+  fied ORA11
+
+
+  !!! Go back to initORA11.ora and change DB_NAME from DBATST to ORA11
+
+  . $SETUPENV ORA11
+  sqlplus / as sysdba
+  shutdown abort
+
+  GO back to 7
+
+
+  RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 11/16/2009 12:55:14
+RMAN-05501: aborting duplication of target database
+RMAN-05517: tempfile /u04/oracle/DBATST/temp/temp01.dbf conflicts with file used
+ by target database
+   
+!!! Go back to initORA11.ora and remove temp file part from  DB_FILE_NAME_CONVERT portion
+!!! add SET NEWNAME FOR TEMPFILE 1 TO '/u28/oracle/ORA11/temp01.dbf'; to dup command
+
+. $SETUPENV ORA11
+  sqlplus / as sysdba
+  shutdown abort
+
+GO back to 7
+
+
+
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 11/16/2009 13:07:02
+RMAN-03015: error occurred in stored script Memory Script
+RMAN-03009: failure of backup command on ORA_DISK_1 channel at 11/16/2009 13:07:
+02
+ORA-19602: cannot backup or copy active file in NOARCHIVELOG mode
+
+
+!!! Move DBATST to archivelog mode for test only
+
+!!! Add these lines to DBATST database initDBATST.ora file
+
+. $SETUPENV DBATST
+cd $ORACLE_HOME/dbs
+log_archive_dest_1='LOCATION=/u28/DBATST/arch'
+log_archive_format='%r_%t_%s.arc'
+
+shutdown immediate;
+startup mount;
+alter database archivelog;/alter database noarchivelog;
+alter database open;
+archive log list;
+alter system archive log current;
+
+
+!!! Add these lines to ORA11 database initORA11.ora file
+. $SETUPENV ORA11
+shutdown abort
+log_archive_dest_1='LOCATION=/u28/ORA11/arch'
+log_archive_format='%r_%t_%s.arc'
+
+
+
+Go back to 7
+
+
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 11/16/2009 13:34:16
+RMAN-03015: error occurred in stored script Memory Script
+RMAN-03009: failure of backup command on ORA_DISK_1 channel at 11/16/2009 13:34:
+16
+ORA-17629: Cannot connect to the remote database server
+ORA-17629: Cannot connect to the remote database server
+
+
+!!! Currently DBATST is default location to TAPE. Let's clear it and move to DISK
+
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name DBATST are:
+
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE' CLEAR;
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 2 BACKUP TYPE TO COMPRESSED BACKUPS
+ET;
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE SBT_TAPE TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BZIP2'; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u27/app/oracle/product/11.1.0/db_2/dbs/
+snapcf_DBATST.f'; # default
+
+
+
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' CLEAR;
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' clear;
+
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 2 BACKUP TYPE  TO COMPRESSED BACKUPSET CLEAR;
+
+!!! Initiate duplicate process from AUX database RMAN Client (enviroment)
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 11/16/2009 14:10:02
+RMAN-06136: ORACLE error from auxiliary database: ORA-01503: CREATE CONTROLFILE
+failed
+ORA-01167: two files are the same file/group number or the same file
+ORA-01517: log member: '/u28/oracle/ORA11/redo_DBATST_01.log'
+ORA-01517: log member: '/u28/oracle/ORA11/redo_DBATST_01.log'
+
+
+!!! Modify initORA11.ora file to add (redolog1/redolog2 directories)
+. $SETUPENV ORA11
+
+vi initORA.ora
+log_file_name_convert='/u02/oracle/DBATST/redolog1/','/u28/oracle/ORA11/redolog1/' ,'/u06/oracle/DBATST/redolog2/','/u28/oracle/ORA11/redolog2/'
+
+cd /u28/oracle/ORA11
+mkdir redolog1
+mkdir redolog2
+
+shutdown abort
+
+Go to step 7
+
+
+WORKED!!!!!!!!
+
+
+Summary Notes from testing new 11g RMAN feature --FROM ACTIVE DATABASE--
+
+1. Only works if Target (Source) database in ARCHIVELOG mode
+
+2. Only works when starting RMAN client Software from AUX enviroment. 
+
+3.  Use following command during duplicate to avoid issues with Temp Tablespace. Also I duplicate command will fail if following option not specified.
+
+    SET NEWNAME FOR TEMPFILE 1 TO '/dirname/tempfilename.dbf'; 
+
+
+
+ 
+
+****** Duplicate FROM ACTIVE DATABASE using SFILE option which should copy spfile and convert all name parameters there. Same Server *****************
+
+
+*****************   THIS TEST DID NOT WORK ****************  See ORACLONE for example below **************************
+
+
+---- AUX database ORA11 already exist. This would be refresh -----
+
+
+1.   Rename initORA11.ora file (for AUX database)
+     
+     cd $ORACLE_HOME/dbs
+     mv initORA11.ora initORA11.backup.ora
+
+2.   Create new simple initORA11.ora
+
+     *.db_name='ORA11'
+
+
+
+
+3. Make sure AUX database is shutdown and all datafiles deleted
+
+   . $SETUPENV ORA11
+
+     shutdown immediate;
+
+     cd /u28/oracle/ORA11
+     floradev.add.net:ORA11:rm -f *.dbf
+                            rm -f *.ctl
+     floradev.add.net:ORA11:ls
+     control1_ORA11.ctl  control2_ORA11.ctl  redolog1            redolog2
+     floradev.add.net:ORA11:cd redolog1
+     floradev.add.net:ORA11:ls
+     redo_DBATST_01.log  redo_DBATST_03.log  redo_DBATST_05.log
+     redo_DBATST_02.log  redo_DBATST_04.log  redo_DBATST_06.log
+     floradev.add.net:ORA11:rm -f *.log
+     floradev.add.net:ORA11:cd ..
+     floradev.add.net:ORA11:ls
+     control1_ORA11.ctl  control2_ORA11.ctl  redolog1            redolog2
+     floradev.add.net:ORA11:cd redolog2
+     floradev.add.net:ORA11:ls
+     redo_DBATST_01.log  redo_DBATST_03.log  redo_DBATST_05.log
+     redo_DBATST_02.log  redo_DBATST_04.log  redo_DBATST_06.log
+     floradev.add.net:ORA11:rm -f *.log
+     floradev.add.net:ORA11:ls
+     floradev.add.net:ORA11:
+
+
+     cd $ORACLE_HOME/dbs
+     rm -f spfileORA11.ora
+
+
+    cd /u07/oracle/ORA11/diag/rdbms/ora11/ORA11/trace
+    rm -f 
+
+
+
+4.  Startup AUX (ORA11) database
+    Make sure . $SETUPENV ORA11
+
+    sqlplus / as sysdba
+    startup pfile=/u27/app/oracle/product/11.1.0/db_2/dbs/initORA11.ora force nomount;
+
+
+
+5.  . $SETUPENV ORA11 (AUX enviroment)
+
+   rman
+   
+   #connect target /
+   #connect catalog wkabqa4/wkabqa4namr@rmanwdev
+   connect target sys/no734s@DBATST
+   connect AUXILIARY sys/no734s@ORA11
+
+
+
+---MIKES------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RUN
+{
+set until sequence 2367;
+ALLOCATE AUXILIARY CHANNEL c1 DEVICE TYPE disk;
+ALLOCATE AUXILIARY CHANNEL c2 DEVICE TYPE disk;
+DUPLICATE TARGET DATABASE
+TO wkabdev3
+   DB_FILE_NAME_CONVERT '/boraw1qu201/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/', '/boraw1qu202/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/'
+SPFILE 
+   PARAMETER_VALUE_CONVERT '/boraw1qu201/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/', '/boraw1qu202/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/', '/boraw1qu01/app/oracle/admin/wkabqa1/', '/boraw1du01/app/oracle/admin/wkabdev3/', '/boraw1qu101/wkabqa1/arch', '/boraw1du101/wkabdev3/arch', '/boraw1qu01/wkabqa1/Utl_File_Dir', '/boraw1du01/wkabdev3/Utl_File_Dir'
+   SET LOG_FILE_NAME_CONVERT '/boraw1qu201/oradata/wkabqa1/', '/boraw1du201/oradata/wkabdev3/'
+   SET diagnostic_dest '/boraw1du01/app/oracle/admin/wkabdev3/'
+   SET instance_name 'wkabdev3'
+   set sga_target '1G'
+;
+}
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+RUN
+{
+
+SET NEWNAME FOR TEMPFILE 1 TO '/u28/oracle/ORA11/temp01.dbf';
+duplicate target database to ORA11 FROM ACTIVE DATABASE
+db_file_name_convert '/u02/oracle/DBATST/system/','/u28/oracle/ORA11/','/u06/oracle/DBATST/tools/','/u28/oracle/ORA11/','/u08/oracle/DBATST/rbs/','/u28/oracle/ORA11/', '/u15/oracle/DBATST/data/', '/u28/oracle/ORA11/', '/u19/oracle/DBATST/index/', '/u28/oracle/ORA11/', '/u25/oracle/DBATST/data/', '/u28/oracle/ORA11/'
+SPFILE 
+SET LOG_FILE_NAME_CONVERT '/u02/oracle/DBATST/redolog1/','/u28/oracle/ORA11/redolog1/','/u06/oracle/DBATST/redolog2/','/u28/oracle/ORA11/redolog2/'
+SET diagnostic_dest '/u07/oracle/ORA11/'
+set log_archive_dest_1 'LOCATION=/u28/ORA11/arch'
+SET instance_name 'ORA11'
+;
+}
+
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 11/17/2009 08:53:37
+RMAN-05001: auxiliary file name /u28/DBATST/arch/691506985_1_7669.arc conflicts
+with a file used by the target database
+
+!!! remove --> PARAMETER_VALUE_CONVERT '/u28/DBATST/arch/', '/u28/ORA11/arch/'
+    add    --> set log_archive_dest_1 'LOCATION=/u28/DBATST/arch'   
+
+   Go to 3
+
+
+!!!! Attempt above corrupted DBATST. Will attempt to re create control files
+
+cd /u06/oracle/DBATST/control2
+cp control2_DBATST.ctl /u02/oracle/DBATST/control1/control1_DBATST.ctl
+
+
+  shutdown abort
+
+
+  cd /u02/oracle/DBATST/control1
+  mv control1_DBATST.ctl control1_DBATST.ctl.sav5
+  
+  cd /u06/oracle/DBATST/control2
+  mv control2_DBATST.ctl control2_DBATST.ctl.sav5
+
+
+   cd /u07/oracle/DBATST/create/
+  vi createcontrol.sql
+  
+
+  Make sure: . $SETUPENV DBATST
+
+       u07/oracle/DBATST/create/
+
+       sqlplus / as sysdba
+      
+       spool /u07/oracle/DBATST/create/createcontrol.log
+       @/u07/oracle/DBATST/create/createcontrol.sql
+
+       RECOVER DATABASE USING BACKUP CONTROLFILE UNTIL CANCEL;
+       recover database until cancel using backup controlfile;
+       ...
+
+	Specify log: {<RET>=suggested | filename | AUTO | CANCEL}
+
+	Specify the path and archivelog files name which you have just copied.
+
+        or
+
+        AUTO
+        ...
+
+        CANCEL (did not have to do last time, just do ALTER...)
+
+       ...
+       ALTER DATABASE OPEN RESETLOGS;
+ALTER DATABASE OPEN NORESETLOGS;
+       spool off
+       shutdown immediate;
+       startup
+       
+       
+       ALTER TABLESPACE TEMP ADD TEMPFILE '/u04/oracle/DBATST/temp/temp01.dbf' SIZE 300M REUSE AUTOEXTEND ON NEXT 524288000  MAXSIZE 5000M;
+
+
+See MetaLink Notes# 465478.1, 418476.1, 578195.1
+
+RECOVER DATAFILE '/u02/oracle/DBATST/system/DBATST01.dbf';
+
+
+!!!!! Re create DBATST database !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+ cd /u02/oracle/DBATST/control1
+  rm -f 
+  
+  cd /u06/oracle/DBATST/control2
+  rm -f 
+
+
+  cd /u02/oracle/DBATST/redolog1
+  rm -f 
+  cd /u06/oracle/DBATST/redolog2
+  rm -f 
+
+1. create create_db.sql
+
+   cd /u07/oracle/DBATST/create/
+
+   vi create_db.sql
+
+
+2
+  ps -ef | grep DBATST
+  sqlplus / as sysdba
+  spool /u07/oracle/DBATST/create/create_db.log
+  startup nomount pfile=/u27/app/oracle/product/11.1.0/db_2/dbs/initDBATST.ora
+  
+       @/u07/oracle/DBATST/create/create_db.sql
+   
+
+   @?/rdbms/admin/catalog.sql
+
+   @?/rdbms/admin/catproc.sql
+
+   spool off
+  
+   shutdown immediate
+
+   startup
+
+
+3. -- Create other tablespaces
+
+    CREATE TABLESPACE USERS
+    DATAFILE '/u06/oracle/DBATST/tools/tools01.dbf' SIZE 500M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL UNIFORM SIZE 1024K
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT MANUAL
+   / 
+  
+      
+
+    CREATE TABLESPACE USER_DATA
+    DATAFILE '/u15/oracle/DBATST/data/USER_DATA01.dbf' SIZE 750M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO
+   /
+
+   CREATE TABLESPACE USER_INDEX
+    DATAFILE '/u19/oracle/DBATST/index/USER_INDEX01.dbf' SIZE 750M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO
+   /
+
+  -- Create aedba user  IMP_FULL_DATABASE
+     CREATE USER AEDBA IDENTIFIED BY "aedba"
+    DEFAULT TABLESPACE USERS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+   /
+	GRANT "CONNECT" TO AEDBA
+	/
+	GRANT DATAPUMP_IMP_FULL_DATABASE TO AEDBA
+	/
+	GRANT DATAPUMP_EXP_FULL_DATABASE TO AEDBA
+	/
+	GRANT DBA TO AEDBA
+	/
+	GRANT EXP_FULL_DATABASE TO AEDBA
+	/
+	GRANT IMP_FULL_DATABASE TO AEDBA
+	/
+	GRANT "RESOURCE" TO AEDBA
+	/
+	ALTER USER AEDBA DEFAULT ROLE "CONNECT",
+                              DATAPUMP_IMP_FULL_DATABASE,
+                              DATAPUMP_EXP_FULL_DATABASE,
+                              DBA,
+                              EXP_FULL_DATABASE,
+                              IMP_FULL_DATABASE,
+                              "RESOURCE"
+	/
+
+
+  -- Create DIR
+     CREATE OR REPLACE DIRECTORY data_pump_dir AS '/u28/DBATST/datapump'; 
+
+
+--Used this one   
+impdp aedba/aedba DIRECTORY=data_pump_dir DUMPFILE=dbatst.dmp TABLES=AE_SPACEINFO,AE_SPACEINFO_LATEST  LOGFILE=AEDBA_import.log
+
+impdp aedba/aedba SCHEMAS=aedba DIRECTORY=data_pump_dir LOGFILE=AEDBA_import.log DUMPFILE=dbatst.dmp
+
+
+Test from DR02
+
+5 5 * * * /home/oracle/scripts/space/gather_spaceinfo.sh > /home/oracle/scripts/space/logs/gather_spacinfo.stdout 2>&1
+
+./gather_spaceinfo.sh > /home/oracle/scripts/space/logs/gather_spacinfo.stdout 2>&1
+
+
+*******************************************************************************************************************************
+*******************************************************************************************************************************
+*******************************************************************************************************************************
+*******************************************************************************************************************************
+*******************************************************************************************************************************
+*******************************************************************************************************************************
+
+!!!! Once DBATST finally re created do following tasks.
+
+A. Go back and create ORA11 clone wiht out SPFILE option (we know this should work)
+
+B. Duplicate ORA11 to oraclone ****** Duplicate FROM ACTIVE DATABASE using SFILE option which should copy spfile and convert all name parameters there. Same Server *****************
+
+
+
+Target (Source) Database: ORA11
+Target (Source) Server: Floradev
+
+Aux Database: oraclone
+Aux Server: Floradev
+
+
+
+--------Current ORA11 files and location
+
+
+---select * from dba_data_files order by 1
+
+/u28/oracle/ORA11/DBATST01.dbf
+/u28/oracle/ORA11/USER_DATA01.dbf
+/u28/oracle/ORA11/USER_INDEX01.dbf
+/u28/oracle/ORA11/dmdv01_rman.dbf
+/u28/oracle/ORA11/dmqa01_rman.dbf
+/u28/oracle/ORA11/drdv01_rman.dbf
+/u28/oracle/ORA11/drqa01_rman.dbf
+/u28/oracle/ORA11/sysaux02.dbf
+/u28/oracle/ORA11/tools01.dbf
+/u28/oracle/ORA11/undrbs01.dbf
+/u28/oracle/ORA11/wkabstgc_rman.dbf
+
+
+---select * from dba_temp_files order by 1
+
+/u28/oracle/ORA11/temp01.dbf
+
+
+
+---select * from v$controlfile
+
+/u28/oracle/ORA11/control1_ORA11.ctl
+/u28/oracle/ORA11/control2_ORA11.ctl
+
+---select * from v$logfile order by 3
+
+/u28/oracle/ORA11/redolog1/redo_DBATST_01.log
+/u28/oracle/ORA11/redolog1/redo_DBATST_02.log
+/u28/oracle/ORA11/redolog1/redo_DBATST_03.log
+/u28/oracle/ORA11/redolog1/redo_DBATST_04.log
+/u28/oracle/ORA11/redolog1/redo_DBATST_05.log
+/u28/oracle/ORA11/redolog1/redo_DBATST_06.log
+/u28/oracle/ORA11/redolog2/redo_DBATST_01.log
+/u28/oracle/ORA11/redolog2/redo_DBATST_02.log
+/u28/oracle/ORA11/redolog2/redo_DBATST_03.log
+/u28/oracle/ORA11/redolog2/redo_DBATST_04.log
+/u28/oracle/ORA11/redolog2/redo_DBATST_05.log
+/u28/oracle/ORA11/redolog2/redo_DBATST_06.log
+
+
+
+
+$ORACLE_HOME = /u27/app/oracle/product/11.1.0/db_2
+$ORACLE_BASE = /u27/app/oracle/
+$INSTANCE_OUTPUTS =/u28/ORA11
+diag = /u07/oracle/ORA11/
+ORA11:/u27/app/oracle/product/11.1.0/db_2:N:/u01:/u28
+
+
+
+-------Future oraclone files and location
+
+$ORACLE_HOME = /u27/app/oracle/product/11.1.0/db_2
+$ORACLE_BASE = /u27/app/oracle/
+
+oraclone:/u27/app/oracle/product/11.1.0/db_2:N:/u01:/u28
+
+
+
+
+
+--create Data directories if not exist..
+cd /u28/oracle
+mkdir oraclone
+Data, control files and redo will go here: /u28/oracle/oraclone
+
+cd oraclone
+mkdir redolog1
+mkdir redolog2
+
+--- create $INSTANCE_OUTPUTS directories if not exist..
+cd /u28
+mkdir oraclone
+cd oraclone
+mkdir datapump
+mkdir rman_backups
+mkdir arch
+
+--create diag directory if not exist..
+
+mkdir /u07/oracle/oraclone
+
+1. Double check to make sure Target (Source) has password file
+
+   cd $ORACLE_HOME/dbs
+   ls -altr orapwORA11*
+
+   Also . $SETUPENV DMDV01 (  to different db env)
+   sqlplus
+   sys/no734s@ORA11 as sysdba
+   Should be able to connect. If not re create/create orapw file for ORA11
+
+
+2. Double check for AUX Database entry in oratab file
+
+   cd /etc
+
+   vi oratab
+   oraclone:/u27/app/oracle/product/11.1.0/db_2:N:/u01:/u28
+
+   . $SETUPENV oraclone to make sure 
+
+
+3.  Make sure both TARGET and AUX databases have entry in listener and tnsnames.ora files
+
+    --- Create new entry in listener.ora file if not exist for AUX Database
+
+    ----    netstat -an|grep 1552
+
+   cd $ORACLE_HOME/network/admin
+
+   vi listener.ora
+
+oraclone =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = floradev.add.net)(PORT = 1552))
+  )
+
+SID_LIST_oraclone =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = oraclone.WORLD)
+      (ORACLE_HOME = /u27/app/oracle/product/11.1.0/db_2)
+      (SID_NAME = oraclone)
+  )
+  )
+
+
+LOG_DIRECTORY_oraclone = /u27/app/oracle/product/11.1.0/db_2/network/log 
+TRACE_DIRECTORY_oraclone = /u27/app/oracle/product/11.1.0/db_2/network/trace 
+TRACE_FILE_ORA11 = oraclone.trc
+TRACE_TIMESTAMP_oraclone = ON
+TRACE_LEVEL_oraclone = OFF
+LOG_FILE_ORA11 = oraclone.log
+STARTUP_WAIT_TIME_oraclone = 0
+CONNECT_TIMEOUT_oraclone = 10
+DIAG_ADR_ENABLED_oraclone  = OFF
+    
+
+
+vi tnsnames.ora
+
+oraclone.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = floradev.add.net)(PORT = 1552))
+    )
+    (CONNECT_DATA =
+      (SID = oraclone)
+    )
+  )
+
+
+
+-- Start new listener
+   lsnrctl set current_listener oraclone
+   start
+
+
+
+4. Double check make sure AUX Server has orapw password
+
+   . $SETUPENV oraclone
+   cd $ORACLE_HOME/dbs
+   orapwd file=$ORACLE_HOME/dbs/orapworaclone password=no734s entries=20
+
+5. Test connection from TARGET(ORA11) server to AUX (oraclone) and back
+
+      . $SETUPENV ORA11
+
+       tnsping oraclone
+
+      
+   rman
+   connect target /
+   connect AUXILIARY sys/no734s@oraclone   
+   
+    . $SETUPENV oraclone
+   rman
+
+   connect target sys/no734s@ORA11
+   connect AUXILIARY sys/no734s@oraclone
+
+   #connect catalog wkabqa4/wkabqa4namr@rmanwdev
+   #connect AUXILIARY /
+   #connect AUXILIARY sys/no734s@WKABQA1
+
+
+
+6. Move init file from TARGET server to AUX server  However I would get latest in case any changes.
+
+
+   . $SETUPENV ORA11
+    cd $ORACLE_HOME/dbs
+    sqlplus / as sysdba
+
+    create pfile from spfile;
+
+
+    
+   cp -p /u27/app/oracle/product/11.1.0/db_2/dbs/initORA11.ora /u27/app/oracle/product/11.1.0/db_2/dbs/initoraclone.ora
+ 
+   vi initoraclone.ora
+   Create new simple (dummy parameter file) initoraclone.ora
+
+     *.db_name='oraclone'
+     
+
+
+
+
+
+7.  Startup AUX (oraclone) database
+    Make sure . $SETUPENV oraclone
+
+    sqlplus / as sysdba
+    startup pfile=/u27/app/oracle/product/11.1.0/db_2/dbs/initoraclone.ora force nomount;
+
+
+
+8.  . $SETUPENV oraclone (AUX enviroment)
+
+   rman
+   
+   #connect target /
+   #connect catalog wkabqa4/wkabqa4namr@rmanwdev
+   connect target sys/no734s@ORA11
+   connect AUXILIARY sys/no734s@oraclone
+
+
+
+
+
+---MIKES------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+RUN
+{
+set until sequence 2367;
+ALLOCATE AUXILIARY CHANNEL c1 DEVICE TYPE disk;
+ALLOCATE AUXILIARY CHANNEL c2 DEVICE TYPE disk;
+DUPLICATE TARGET DATABASE
+TO wkabdev3
+   DB_FILE_NAME_CONVERT '/boraw1qu201/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/', '/boraw1qu202/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/'
+SPFILE 
+   PARAMETER_VALUE_CONVERT '/boraw1qu201/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/', '/boraw1qu202/oradata/wkabqa1/', '/boraw1du203/oradata/wkabdev3/', '/boraw1qu01/app/oracle/admin/wkabqa1/', '/boraw1du01/app/oracle/admin/wkabdev3/', '/boraw1qu101/wkabqa1/arch', '/boraw1du101/wkabdev3/arch', '/boraw1qu01/wkabqa1/Utl_File_Dir', '/boraw1du01/wkabdev3/Utl_File_Dir'
+   SET LOG_FILE_NAME_CONVERT '/boraw1qu201/oradata/wkabqa1/', '/boraw1du201/oradata/wkabdev3/'
+   SET diagnostic_dest '/boraw1du01/app/oracle/admin/wkabdev3/'
+   SET instance_name 'wkabdev3'
+   set sga_target '1G'
+;
+}
+-----------------------------------------------------------------------------------------------------------------------------------
+## Do not want to use this PARAMETER_VALUE_CONVERT I would rather set all parameters exsplicitly
+RUN
+{
+SET NEWNAME FOR TEMPFILE 1 TO '/u28/oracle/oraclone/temp01.dbf';
+duplicate target database to oraclone FROM ACTIVE DATABASE
+db_file_name_convert'/u28/oracle/ORA11/','/u28/oracle/oraclone/'
+SPFILE 
+SET LOG_FILE_NAME_CONVERT '/u28/oracle/ORA11/redolog1/','/u28/oracle/oraclone/redolog1/','/u28/oracle/ORA11/redolog2/','/u28/oracle/oraclone/redolog2/'
+SET diagnostic_dest '/u07/oracle/oraclone/'
+set log_archive_dest_1 'LOCATION=/u28/oraclone/arch'
+set control_files='/u28/oracle/oraclone/control1_oraclone.ctl','/u28/oracle/oraclone/control2_oraclone.ctl'
+SET instance_name 'oraclone';
+}
+
+
+
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 11/18/2009 10:24:07
+RMAN-06764: Target instance not started with SPFILE
+
+
+!!! Self explaintory error
+
+. $SETUPENV ORA11
+
+sqlplus / as sysdba
+create sfile from pfile;
+
+shutdown immediate;
+startup
+
+Go to 7
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of Duplicate Db command at 11/18/2009 10:31:48
+RMAN-06136: ORACLE error from auxiliary database: ORA-01503: CREATE CONTROLFILE failed
+
+ORA-00200: control file could not be created
+ORA-00202: control file: '/u28/oracle/ORA11/control1_ORA11.ctl'
+ORA-27086: unable to lock file - already in use
+IBM AIX RISC System/6000 Error: 13: Permission denied
+Additional information: 8
+Additional information: 3993760
+
+
+!!! Remove control_files from dummy pfile and move to rman RUN { portion
+
+set control_files='/u28/oracle/oraclone/control1_oraclone.ctl','/u28/oracle/oraclone/control2_oraclone.ctl'
+
+
+--- WORKED ----
+
+
+
+RUN
+{
+SET NEWNAME FOR TEMPFILE 1 TO '/Your_temp_file_DIR/temp01.dbf';
+duplicate target database to oraclone FROM ACTIVE DATABASE
+db_file_name_convert'/DIR/data/ORA11/','/DIR/data/oraclone/'
+SPFILE 
+SET LOG_FILE_NAME_CONVERT '/DIR/redolog1/ORA11','/DIR/redolog1/oraclone/','/DIR/redolog2/ORA11','/DIR/redolog2/oraclone/'
+SET diagnostic_dest '/diag_dir/oraclone/'
+set log_archive_dest_1 'LOCATION=/DIR/oraclone/arch'
+set control_files='/DIR/oraclone/control1_oraclone.ctl','/DIR/oraclone/control2_oraclone.ctl'
+SET instance_name 'oraclone';
+}
+
+

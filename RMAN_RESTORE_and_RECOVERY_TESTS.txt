@@ -1,0 +1,599 @@
+******************START FRESH TEST and perform FULL DATABASE BACKUP**************
+
+run
+{
+   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT;
+   DELETE NOPROMPT OBSOLETE;
+
+}
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+14491   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T094818
+
+14492   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T094818
+
+14493   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T094818
+
+14494   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T094818
+
+14638   B  A  A DISK        02-NOV-07       1       1       YES        TAG20071102T095945
+
+14680   B  F  A DISK        02-NOV-07       1       1       NO         TAG20071102T095948
+
+
+
+ls -altr
+
+-rw-r-----   1 oracle   dba       890871808 Nov 02 09:57 bkp_df637580900_s267_s1
+-rw-r-----   1 oracle   dba      1221271552 Nov 02 09:58 bkp_df637580900_s270_s1
+-rw-r-----   1 oracle   dba      1658191872 Nov 02 09:59 bkp_df637580900_s268_s1
+-rw-r-----   1 oracle   dba      1473634304 Nov 02 09:59 bkp_df637580900_s269_s1
+-rw-r-----   1 oracle   dba           10752 Nov 02 09:59 bkp_df637581585_s271_s1
+-rw-r-----   1 oracle   dba        11952128 Nov 02 09:59 snapcf_dpdevug.f
+-rw-r-----   1 oracle   dba        11976704 Nov 02 09:59 c-3932175216-20071102-03
+
+
+
+connect target /
+
+connect catalog DPDEVUG/DPDEVUGnamr@rmanwdev
+
+RMAN> restore validate database;
+
+Starting restore at 02-NOV-07
+starting full resync of recovery catalog
+full resync complete
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+using channel ORA_DISK_3
+using channel ORA_DISK_4
+
+channel ORA_DISK_1: starting validation of datafile backupset
+channel ORA_DISK_2: starting validation of datafile backupset
+channel ORA_DISK_3: starting validation of datafile backupset
+channel ORA_DISK_4: starting validation of datafile backupset
+channel ORA_DISK_1: reading from backup piece /u10/oraback/DPDEVUG/rman_backups/
+bkp_df637580900_s267_s1
+channel ORA_DISK_2: reading from backup piece /u10/oraback/DPDEVUG/rman_backups/
+bkp_df637580900_s270_s1
+channel ORA_DISK_3: reading from backup piece /u10/oraback/DPDEVUG/rman_backups/
+bkp_df637580900_s268_s1
+channel ORA_DISK_4: reading from backup piece /u10/oraback/DPDEVUG/rman_backups/
+bkp_df637580900_s269_s1
+channel ORA_DISK_1: restored backup piece 1
+piece handle=/u10/oraback/DPDEVUG/rman_backups/bkp_df637580900_s267_s1 tag=TAG20
+071102T094818
+channel ORA_DISK_1: validation complete, elapsed time: 00:09:46
+channel ORA_DISK_2: restored backup piece 1
+piece handle=/u10/oraback/DPDEVUG/rman_backups/bkp_df637580900_s270_s1 tag=TAG20
+071102T094818
+channel ORA_DISK_2: validation complete, elapsed time: 00:12:02
+channel ORA_DISK_4: restored backup piece 1
+piece handle=/u10/oraback/DPDEVUG/rman_backups/bkp_df637580900_s269_s1 tag=TAG20
+071102T094818
+channel ORA_DISK_4: validation complete, elapsed time: 00:13:07
+channel ORA_DISK_3: restored backup piece 1
+piece handle=/u10/oraback/DPDEVUG/rman_backups/bkp_df637580900_s268_s1 tag=TAG20
+071102T094818
+channel ORA_DISK_3: validation complete, elapsed time: 00:13:42
+Finished restore at 02-NOV-07
+
+
+
+RMAN> list incarnation of database;
+
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+1       2       DPDEVUG  3932175216       CURRENT 26876790498 13-AUG-07
+
+
+
+*********************COMPLETE DATABASE RECOVERY start******************************************************
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+*****>DELETE ALL DATAFILES, CONTROL FILES...
+sqlplus / as sysdba
+Shutdown immediate;
+Startup;
+
+Getting Error....
+
+
+
+
+
+#####>>> ./rman_general_purpose.ksh DPDEVUG rmanwdev restore_database.rman
+#####>>> CHECK in Log file 
+/u01/app/oracle/aetna/db_admin/db_DPDEVUG/log
+
+#### script example ##################################################################################
+run {
+   shutdown immediate;
+    startup mount
+    restore database;
+    recover database;
+    alter database open;
+}
+
+
+*** This is example of Complete Database Restore up to the point of failure....
+**** It will recover data which was saved in recent Level0 backupset and re apply all archivelogs
+which had been generated after (up to failure) 
+
+*********************COMPLETE DATABASE RECOVERY end**************************************************
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+
+*********************INCOMPLETE Database RECOVERY start**********************************************
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+
+*****>DELETE ALL DATAFILES, CONTROL FILES...
+sqlplus / as sysdba
+Shutdown immediate;
+Startup;
+
+Getting Error....
+
+**Run  ./rman_general_purpose.ksh DPDEVUG rmanwdev restore_incomplete.rman
+#### script example ##################################################################################
+run {
+    shutdown immediate;
+    startup mount
+    set until time "TO_DATE('11/02/2007:10:00','MM/DD/YYYY HH24:MI')";
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}
+######################################################################################################
+
+
+RMAN> list incarnation of database;
+
+new incarnation of database registered in recovery catalog
+starting full resync of recovery catalog
+full resync complete
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+1       2       DPDEVUG  3932175216       PARENT  26876790498 13-AUG-07
+1       14761   DPDEVUG  3932175216       CURRENT 26943089665 02-NOV-07
+
+
+
+*********************INCOMPLETE Database RECOVERY end**********************************************
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+
+
+
+## Run new full backup again
+run
+{
+   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT;
+   DELETE NOPROMPT OBSOLETE;
+
+}
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+29152   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+
+29153   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+
+29154   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+
+29155   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+
+29304   B  A  A DISK        02-NOV-07       1       1       YES        TAG20071102T130559
+
+29347   B  F  A DISK        02-NOV-07       1       1       NO         TAG20071102T130603
+
+
+ls -altr
+-rw-r-----   1 oracle   dba       888872960 Nov 02 13:03 bkp_df637592140_s277_s1
+-rw-r-----   1 oracle   dba      1221271552 Nov 02 13:04 bkp_df637592141_s280_s1
+-rw-r-----   1 oracle   dba      1473617920 Nov 02 13:05 bkp_df637592140_s279_s1
+-rw-r-----   1 oracle   dba      1658134528 Nov 02 13:05 bkp_df637592140_s278_s1
+-rw-r-----   1 oracle   dba          616960 Nov 02 13:06 bkp_df637592760_s281_s1
+-rw-r-----   1 oracle   dba        11952128 Nov 02 13:06 snapcf_dpdevug.f
+-rw-r-----   1 oracle   dba        11976704 Nov 02 13:06 c-3932175216-20071102-05
+
+
+
+******************RE CATALOG OLD OBLSOLETED SAVED BACKUPSETS TEST CASE start ************************
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+
+Copy backupsets above to different directory
+
+cp bkp_df637592140_s277_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df637592140_s277_s1
+cp bkp_df637592141_s280_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df637592141_s280_s1
+cp bkp_df637592140_s279_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df637592140_s279_s1
+cp bkp_df637592140_s278_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df637592140_s278_s1
+cp bkp_df637592760_s281_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df637592760_s281_s1
+cp snapcf_dpdevug.f /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/snapcf_dpdevug.f
+cp c-3932175216-20071102-05 /u10/oraback/DPDEVUG/rman_backups/rman_backups_saved/c-3932175216-20071102-05
+
+
+
+## Run new full backup again which will delete previous sets
+
+
+run
+{
+   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT;
+   DELETE NOPROMPT OBSOLETE;
+
+}
+
+
+Now we have brand new backupset set 
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+29401   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29402   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29403   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29404   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29547   B  A  A DISK        02-NOV-07       1       1       YES        TAG20071102T142928
+29589   B  F  A DISK        02-NOV-07       1       1       NO         TAG20071102T142932
+
+
+
+
+Copy back saved backup set
+
+cp bkp_df637592140_s277_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637592140_s277_s1
+cp bkp_df637592141_s280_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637592141_s280_s1
+cp bkp_df637592140_s279_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637592140_s279_s1
+cp bkp_df637592140_s278_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637592140_s278_s1
+cp bkp_df637592760_s281_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637592760_s281_s1
+cp snapcf_dpdevug.f /u10/oraback/DPDEVUG/rman_backups/snapcf_dpdevug.f
+cp c-3932175216-20071102-05 /u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071102-05
+
+
+ls -altr
+-rw-r-----   1 oracle   dba       892239872 Nov 02 14:28 bkp_df637597069_s287_s1
+-rw-r-----   1 oracle   dba      1228546048 Nov 02 14:28 bkp_df637597069_s286_s1
+-rw-r-----   1 oracle   dba      1646247936 Nov 02 14:28 bkp_df637597069_s285_s1
+-rw-r-----   1 oracle   dba      1467006976 Nov 02 14:29 bkp_df637597069_s284_s1
+-rw-r-----   1 oracle   dba           11776 Nov 02 14:29 bkp_df637597769_s288_s1
+-rw-r-----   1 oracle   dba        11976704 Nov 02 14:29 c-3932175216-20071102-06
+
+-rw-r-----   1 oracle   dba       888872960 Nov 02 14:33 bkp_df637592140_s277_s1
+-rw-r-----   1 oracle   dba      1221271552 Nov 02 14:34 bkp_df637592141_s280_s1
+-rw-r-----   1 oracle   dba      1473617920 Nov 02 14:34 bkp_df637592140_s279_s1
+-rw-r-----   1 oracle   dba          616960 Nov 02 14:34 bkp_df637592760_s281_s1
+-rw-r-----   1 oracle   dba        11952128 Nov 02 14:35 snapcf_dpdevug.f
+-rw-r-----   1 oracle   dba      1658134528 Nov 02 14:35 bkp_df637592140_s278_s1
+drwxr-sr-x   3 oracle   dba            1024 Nov 02 14:35 .
+-rw-r-----   1 oracle   dba        11976704 Nov 02 14:35 c-3932175216-20071102-05
+
+
+
+
+
+
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637592140_s277_s1';
+cataloged backuppiece
+backup piece handle=/u10/oraback/DPDEVUG/rman_backups/bkp_df637592140_s277_s1 recid=286 stamp=637598414
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637592141_s280_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637592140_s279_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637592140_s278_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637592760_s281_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071102-05';
+
+## This command failed. Looks like no need to re catalog at all ###############################
+#CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/snapcf_dpdevug.f';
+
+ORA-19608: /u10/oraback/DPDEVUG/rman_backups/snapcf_dpdevug.f is not a backup piece
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of catalog command at 11/02/2007 14:41:56
+RMAN-06209: List of failed objects
+RMAN-06211: ==========================
+RMAN-06212:   Object Type   Filename/Handle
+RMAN-06213: --------------- ---------------------------------------------------
+RMAN-06214: Backup Piece    /u10/oraback/DPDEVUG/rman_backups/snapcf_dpdevug.f
+
+###############################################################################################
+
+
+
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+29401   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29402   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29403   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29404   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T141748
+29547   B  A  A DISK        02-NOV-07       1       1       YES        TAG20071102T142928
+29589   B  F  A DISK        02-NOV-07       1       1       NO         TAG20071102T142932
+
+29620   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+29661   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+29734   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+29807   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T125539
+29881   B  A  A DISK        02-NOV-07       1       1       YES        TAG20071102T130559
+29926   B  F  A DISK        02-NOV-07       1       1       NO         TAG20071102T130603
+
+
+
+*****>DELETE ALL DATAFILES, CONTROL FILES...
+sqlplus / as sysdba
+Shutdown immediate;
+Startup;
+
+Getting Error....
+
+**Run  ./rman_general_purpose.ksh DPDEVUG rmanwdev restore_incomplete.rman
+
+#### script example ##################################################################################
+run {
+    shutdown immediate;
+    startup mount
+    set until time "TO_DATE('11/02/2007:13:07','MM/DD/YYYY HH24:MI')";
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}
+#######################################################################################################
+
+
+
+RMAN> list incarnation of database;
+
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+1       2       DPDEVUG  3932175216       PARENT  26876790498 13-AUG-07
+1       14761   DPDEVUG  3932175216       PARENT  26943089665 02-NOV-07
+1       29946   DPDEVUG  3932175216       CURRENT 26943093454 02-NOV-07
+
+******************RE CATALOG OLD OBLSOLETED SAVED BACKUPSETS TEST CASE end *************************
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+
+*************THIS TEST WILL BE PROOF ability to restore from old Incarnations ***********************
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+#####################################################################################################
+
+
+#### Backupsets below belong to  14761 Inc Key
+
+###Copy backupsets for future use #####################################################################
+
+
+cp bkp_df637597069_s287_s1 /u10/oraback/DPDEVUG/rman_backups/rman_backups_saved/bkp_df637597069_s287_s1
+cp bkp_df637597069_s286_s1 /u10/oraback/DPDEVUG/rman_backups/rman_backups_saved/bkp_df637597069_s286_s1
+cp bkp_df637597069_s285_s1 /u10/oraback/DPDEVUG/rman_backups/rman_backups_saved/bkp_df637597069_s285_s1
+cp bkp_df637597069_s284_s1 /u10/oraback/DPDEVUG/rman_backups/rman_backups_saved/bkp_df637597069_s284_s1
+cp bkp_df637597769_s288_s1 /u10/oraback/DPDEVUG/rman_backups/rman_backups_saved/bkp_df637597769_s288_s1
+cp c-3932175216-20071102-06 /u10/oraback/DPDEVUG/rman_backups/rman_backups_saved/c-3932175216-20071102-06
+
+## Run new full backup again which will delete previous sets
+
+
+run
+{
+   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT;
+   DELETE NOPROMPT OBSOLETE;
+
+}
+
+
+ls -altr
+
+-rw-r-----   1 oracle   dba       892248064 Nov 02 15:55 bkp_df637602393_s296_s1
+-rw-r-----   1 oracle   dba      1228546048 Nov 02 15:55 bkp_df637602393_s295_s1
+-rw-r-----   1 oracle   dba      1646182400 Nov 02 15:57 bkp_df637602393_s294_s1
+-rw-r-----   1 oracle   dba      1467064320 Nov 02 15:57 bkp_df637602393_s293_s1
+-rw-r-----   1 oracle   dba           22528 Nov 02 15:57 bkp_df637603055_s297_s1
+-rw-r-----   1 oracle   dba        11952128 Nov 02 15:57 snapcf_dpdevug.f
+-rw-r-----   1 oracle   dba        11976704 Nov 02 15:57 c-3932175216-20071102-08
+
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+44666   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T154631
+44667   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T154631
+44668   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T154631
+44669   B  F  A DISK        02-NOV-07       1       1       YES        TAG20071102T154631
+44814   B  A  A DISK        02-NOV-07       1       1       YES        TAG20071102T155734
+44856   B  F  A DISK        02-NOV-07       1       1       NO         TAG20071102T155738
+
+
+
+
+
+###Copy backupsets back to rman_backups directory #####################################################################
+
+Copy back saved backup set
+
+cp bkp_df637597069_s287_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s287_s1
+cp bkp_df637597069_s286_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s286_s1
+cp bkp_df637597069_s285_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s285_s1
+cp bkp_df637597069_s284_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s284_s1
+cp bkp_df637597769_s288_s1 /u10/oraback/DPDEVUG/rman_backups/bkp_df637597769_s288_s1
+cp c-3932175216-20071102-06 /u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071102-06
+
+
+
+###Re catalog 
+
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s287_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s286_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s285_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637597069_s284_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df637597769_s288_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071102-06';
+
+
+*****>DELETE ALL DATAFILES, CONTROL FILES...
+sqlplus / as sysdba
+Shutdown immediate;
+Startup;
+
+Getting Error....
+
+#### Last Incarnation Restore and Recovery
+./rman_general_purpose.ksh DPDEVUG rmanwdev restore_past_incarnation.rman
+
+
+#### script example ##################################################################################
+    shutdown immediate;
+    startup nomount;
+    reset database to incarnation 14761;
+    restore controlfile;
+    alter database mount;
+run {
+    set until time "TO_DATE('11/02/2007:14:30','MM/DD/YYYY HH24:MI')";
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}
+#######################################################################################################
+
+**********************************OR YOU CAN DO IT MANUALLY WITHIN RMAN promt********************
+
+
+
+
+
+RMAN> list incarnation of database;
+
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+1       2       DPDEVUG  3932175216       PARENT  26876790498 13-AUG-07
+1       14761   DPDEVUG  3932175216       PARENT  26943089665 02-NOV-07
+1       29946   DPDEVUG  3932175216       CURRENT 26943093454 02-NOV-07
+
+RMAN> shutdown immediate;
+
+database dismounted
+Oracle instance shut down
+
+RMAN> startup nomount;
+
+connected to target database (not started)
+Oracle instance started
+
+Total System Global Area    1577058304 bytes
+
+Fixed Size                     2073160 bytes
+Variable Size                738201016 bytes
+Database Buffers             822083584 bytes
+Redo Buffers                  14700544 bytes
+
+RMAN> reset database to incarnation 14761;
+
+database reset to incarnation 14761
+
+RMAN> restore controlfile;
+
+Starting restore at 05-NOV-07
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: sid=1092 devtype=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: sid=1091 devtype=DISK
+allocated channel: ORA_DISK_3
+channel ORA_DISK_3: sid=1090 devtype=DISK
+allocated channel: ORA_DISK_4
+channel ORA_DISK_4: sid=1089 devtype=DISK
+
+channel ORA_DISK_1: starting datafile backupset restore
+channel ORA_DISK_1: restoring control file
+channel ORA_DISK_1: reading from backup piece /u10/oraback/DPDEVUG/rman_backups/
+c-3932175216-20071102-06
+channel ORA_DISK_1: restored backup piece 1
+piece handle=/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071102-06 tag=TAG2
+0071102T142932
+channel ORA_DISK_1: restore complete, elapsed time: 00:00:03
+output filename=/u02/oradata/DPDEVUG/control1DPDEVUG.ctl
+output filename=/u06/oradata/DPDEVUG/control2DPDEVUG.ctl
+Finished restore at 05-NOV-07
+
+RMAN> alter database mount;
+
+database mounted
+released channel: ORA_DISK_1
+released channel: ORA_DISK_2
+released channel: ORA_DISK_3
+released channel: ORA_DISK_4
+
+RMAN> run {
+
+    set until time "TO_DATE('11/02/2007:14:30','MM/DD/YYYY HH24:MI')";
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}
+
+
+_________________________________________________________________________________
+
+
+###############################################
+
+
+connect target /
+
+connect catalog DPDEVUG/DPDEVUGnamr@rmanwdev
+
+

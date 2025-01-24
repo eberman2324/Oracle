@@ -1,0 +1,110 @@
+
+
+RMAN> connect catalog wkabdev2/wkabdev2namr@rmanwdev
+
+connected to recovery catalog database
+
+RMAN> show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wk
+abdev2/rman_backups/%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1du101/wkabdev2/rman_backups/
+bkp_df%t_s%s_s%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev2/rman_backups/snapc
+f_wkabdev2.f';
+
+
+*****************************************************************************************
+
+ RMAN> connect target /
+
+connected to target database: WKABQA1 (DBID=438249359)
+
+RMAN> connect catalog wkabqa1/wkabqa1namr@rmanwdev
+
+connected to recovery catalog database
+
+
+RMAN> show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1qu101/wk
+abqa1/rman_backups/%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1qu101/wkabqa1/rman_backups/b
+kp_df%t_s%s_s%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1qu101/wkabqa1/rman_backups/snapcf
+_wkabqa1.f';
+
+
+*************************************************************************************
+
+RMAN> connect catalog wkabqa2/wkabqa2namr@rmanwdev
+
+connected to recovery catalog database
+
+RMAN> show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1qu101/wk
+abqa2/rman_backups/%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1qu101/wkabqa2/rman_backups/b
+kp_df%t_s%s_s%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1qu101/wkabqa2/rman_backups/snapcf
+_wkabqa2.f';
+
+RMAN>
+
+***************************************************************************************
+RMAN> connect target /
+
+connected to target database: WKABSTRS (DBID=3018706985)
+
+RMAN> connect catalog WKABSTRS/WKABSTRSnamr@rmanwdev
+
+connected to recovery catalog database
+
+RMAN> show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1su101/w;
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1su101/wkabstrs/rman_backups;
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1su01/app/oracle/product/9.2.0a/dt
+
+RMAN>
+connect catalog WKABSTRS/WKABSTRSnamr@rmanwdev
+
+****************************************************************************************
+connect catalog wkabdev1_rman/SQL@rmanwdev

@@ -1,0 +1,162 @@
+run 
+{
+   
+   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT tag full_hot_backup;
+   DELETE NOPROMPT OBSOLETE;
+}
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+
+
+91255   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91256   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91257   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91258   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91259   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91260   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91261   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91262   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91263   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91264   B  F  A DISK        26-NOV-07       1       1       YES        TAG2007126T124923
+
+91265   B  F  A DISK        26-NOV-07       1       1       YES        TAG2007126T124923
+
+91266   B  F  A DISK        26-NOV-07       1       1       YES        TAG2007126T124923
+
+91267   B  F  A DISK        26-NOV-07       1       1       YES        TAG2007126T124923
+
+91945   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+91988   B  F  A DISK        26-NOV-07       1       1       NO         TAG2007126T130052
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 			
+++++++AS YOU COULD SEE IN THIS CASE ONLY ARCHIVELOG BACKUPSETS GET OUR TAG NAME ASSIGNED+++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+                        
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
++++++++++++++++++++++++ Add TAG after BACKUP DATABASE +++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+
+run 
+{
+   
+   BACKUP DATABASE TAG = FULL_HOT_BACKUP PLUS ARCHIVELOG DELETE INPUT TAG FULL_HOT_BACKUP;
+   DELETE NOPROMPT OBSOLETE;
+}
+
+92266   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+92267   B  F  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+92268   B  F  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+92269   B  F  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+92270   B  F  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+92419   B  A  A DISK        26-NOV-07       1       1       YES        FULL_HOT_BACKUP
+
+92465   B  F  A DISK        26-NOV-07       1       1       NO         TAG2007126T141620
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+++++++AS YOU COULD SEE IN THIS CASE BOTH DATAFILES BACKUPSETS AND  ARCHIVELOG BACKUPSETS GET OUR TAG NAME ASSIGNED++
+++++++HOWEVER CONTROL FILE BACKUPSET STILL GETS DEFAULT RMAN TAG NAME+++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
+
+
+
+
+I got some information from Oracle on Control File TAG. It possible but you will
+ need change CONFIGURE CONTROLFILE AUTOBACKUP CLEAR; and modify backup script 
+to add BACKUP CURRENT CONTROLFILE TAG = xxxx. So now you will be manually conrolling CONTROL and SPFILE  backup
+ 
+All what I  read so far Oracle wants to have CONFIGURE CONTROLFILE AUTOBACKUP ON; 
+ 
+Here is full link to my TAR
+ 
+https://metalink.oracle.com/metalink/plsql/f?p=110:20:7537968809601548902::::P20_TARNUM,P20_CTRYCODE:6645198.992,
+ 
+ 
+ 
+UPDATE
+=======
+Hi Eugene,
+
+
+Since your control file autoback is on, the control file will be automatically backed up by RMAN.
+The settings are specified using the CONFIGURE command.
+
+The manual does not specify that TAG can be using with the CONFIGURE command 
+See CONFIGURE syntax in the following manual:
+Oracle® Database Backup and Recovery Reference
+10g Release 2 (10.2)
+Part Number B14194-03
+
+Example:
+CONFIGURE CONTROLFILE AUTOBACKUP ON; 
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '?/oradata/%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE sbt TO 'cf_auto_%F';
+CONFIGURE CONTROLFILE AUTOBACKUP CLEAR; # returns to default setting of OFF
+
+
+To specify a TAG, you need to back up the control file in your script.
+This example backs up the current control file to the default disk device and assigns a tag:
+BACKUP CURRENT CONTROLFILE TAG = mondaypmbackup;
+
+
+**************One good example of how to use same tag during FULL BACKUP run***************************
+ run
+{
+CONFIGURE CONTROLFILE AUTOBACKUP CLEAR;
+BACKUP CHECK LOGICAL DATABASE TAG=BACKUP_DPDEVUG PLUS ARCHIVELOG DELETE INPUT TAG=BACKUP_DPDEVUG_ARC;
+DELETE NOPROMPT OBSOLETE;
+BACKUP CURRENT CONTROLFILE TAG=BACKUP_DPDEVUG_CTL;
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+}
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+96025   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96026   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96027   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96028   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96171   B  A  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG_ARC
+
+96218   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG_CTL
+
+96256   B  A  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG_ARC
+
+96257   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96258   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96259   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96260   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG
+
+96403   B  A  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG_ARC
+
+96450   B  F  A DISK        03-DEC-07       1       1       YES        BACKUP_DPDEVUG_CTL
+

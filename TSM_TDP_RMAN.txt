@@ -1,0 +1,800 @@
+http://forums.oracle.com/forums/thread.jspa?threadID=474840
+
+http://download.oracle.com/docs/cd/B19306_01/backup.102/b14191/rcmconfg003.htm#sthref535
+
+Matalink: 290427.1 and 1061742.6
+
+RMAN> CONFIGURE CHANNEL DEVICE TYPE sbt 
+      PARMS='ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+
+RMAN> allocate channel tivoli type 'SBT_TAPE' 
+      parms 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';    
+
+OR 
+
+RMAN> configure channel device type 'SBT_TAPE' 
+      parms 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';   
+
+
+run
+{
+   allocate channel t1 type 'sbt_tape' parms 
+            'ENV=(TDPO_OPTFILE=/orc8/scripts/tdpo.opt)';
+    backup
+      filesperset 5
+      format 'df_%t_%s_%p'
+      (database);
+    release channel t1;
+}
+
+
+
+
+RMAN> CONFIGURE RETENTION POLICY TO RECOVERY WINDOW OF 7 DAYS;
+RMAN> CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+RMAN> CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 3;
+RMAN> CONFIGURE CONTROLFILE AUTOBACKUP ON;
+
+
+RMAN CONFIGURATION with Tivoli
+
+Currenlty we have RMAN backup configured to local disk.
+
+What would be steps to convert RMAN backup to TSM? Does anybody have example of how 
+
+
+********************************WKABDEV2*******************************************
+
+connect target /
+
+connect catalog wkabdev2/wkabdev2namr@rmanwdev
+
+show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wkabdev2/rman_backups/%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1du101/wkabdev2/rman_backups/bkp_df%t_s%s_s%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev2/rman_backups/snapcf_wkabdev2.f';
+
+****need to be changed for TAPE****************************************************************
+
+CONFIGURE DEFAULT DEVICE TYPE TO sbt;
+CONFIGURE CHANNEL DEVICE TYPE sbt  parms='ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+CONFIGURE DEVICE TYPE sbt BACKUP TYPE TO COMPRESSED BACKUPSET; #this could not work in 9i only at 10g
+CONFIGURE DEVICE TYPE sbt PARALLELISM 2;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE sbt TO '%F';  
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE sbt TO 1; # default needs to test
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE sbt TO 1; # default needs to test
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev2/rman_backups/snapcf_wkabdev2.f'; #leave existing
+
+
+*******test connections from ORACLE to TSM************************
+
+cd $ORACLE_HOME/bin
+
+export TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt
+
+boraw1d.add.net:wkabdev1:sbttest test
+The sbt function pointers are loaded from oracle.static library.
+libobk.a(shr.o) could not be loaded.  Check that it is installed
+
+cd /usr/tivoli/tsm/client/oracle/bin64/
+libobk64.a
+
+
+##unlink $ORACLE_HOME/lib/libobk.a
+
+
+ln -s /usr/tivoli/tsm/client/oracle/bin64/libobk64.a $ORACLE_HOME/lib/libobk.a
+
+Make sure Unix System Admin give oracle user write permission to this directory /usr/tivoli/tsm/client/oracle/bin64/
+
+
+boraw1d.add.net:wkabdev1:sbttest test
+The sbt function pointers are loaded from libobk.a(shr.o) library.
+Return code -1 from sbtinit, bsercoer = 7011, bsercerrno = 406
+sbtopen: System error - eg. malloc, fork errors
+
+
+*******THIS IS AN EXAMPLE FROM datamart ********************************************
+
+cd /u01/app/oracle/product/8.1.7/bin
+sbttest test
+
+The sbt function pointers are loaded.
+-- sbtinit succeeded
+Return code -1 from sbtinit, bsercoer = 0, bsercerrno = 0
+Message 0 not found;  product=RDBMS; facility=SBT
+**************************************************************************************************
+
+
+*******************************Re Configure WKABDEV1*********************************
+rman
+
+connect target /
+
+connect catalog wkabdev1_rman/SQL@rmanwdev
+
+RMAN> show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wkabdev1/rman_backups/%F';
+
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1du101/wkabdev1/rman_backups/bkp_df%t_s%s_s%p';
+
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev1/rman_backups/snapcf_wkabdev2.f';
+
+
+
+
+*******************************Re Configure WKABDEV2*********************************
+connect target /
+
+connect catalog wkabdev2/wkabdev2namr@rmanwdev
+
+show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wkabdev2/rman_backups/%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1du101/wkabdev2/rman_backups/bkp_df%t_s%s_s%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev2/rman_backups/snapcf_wkabdev2.f';
+
+****need to be changed for TAPE****************************************************************
+
+CONFIGURE DEFAULT DEVICE TYPE TO sbt;
+CONFIGURE CHANNEL DEVICE TYPE sbt  parms='ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+CONFIGURE DEVICE TYPE sbt BACKUP TYPE TO COMPRESSED BACKUPSET; #this could not work in 9i only at 10g
+CONFIGURE DEVICE TYPE sbt PARALLELISM 2;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE sbt TO '%F';  
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE sbt TO 1; # default needs to test
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE sbt TO 1; # default needs to test
+
+****
+RMAN> show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wkabdev2/rman_backups/%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 6;
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 2;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1du101/wkabdev2/rman_backups/bkp_df%t_s%s_s%p';
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev2/rman_backups/snapcf_wkabdev2.f';
+
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK CLEAR;
+CONFIGURE DEVICE TYPE DISK CLEAR;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK CLEAR;
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK CLEAR;
+CONFIGURE CHANNEL DEVICE TYPE DISK CLEAR;
+
+show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1;
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO 'SBT_TAPE';
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' TO '%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE 'SBT_TAPE' PARALLELISM 2;
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' TO 1;
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1du101/wkabdev2/rman_backups/snapcf_wkabdev2.f';
+
+
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE 'SBT_TAPE' CLEAR;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1du101/wkabdev2/rman_backups/%F';
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE SBT_TAPE  CLEAR;
+
+
+CONFIGURE CHANNEL sbt DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+
+##First Test
+BACKUP CURRENT CONTROLFILE;
+
+RMAN> BACKUP CURRENT CONTROLFILE;
+
+Starting backup at 04-JAN-08
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of backup command at 01/04/2008 09:21:50
+ORA-19554: error allocating device, device type: SBT_TAPE, device name:
+ORA-27000: skgfqsbi: failed to initialize storage subsystem (SBT) layer
+IBM AIX RISC System/6000 Error: 406: Unknown system error
+Additional information: 7011
+ORA-19511: Error received from media manager layer, error text:
+   SBT error = 7011, errno = 406, sbtopen: system error
+
+
+BACKUP TABLESPACE USERS;
+
+
+##################################################################
+##### Back up FULL plus ARCHIVELOGS 
+##################################################################
+run 
+{
+   BACKUP DATABASE PLUS ARCHIVELOG DELETE INPUT; 
+   DELETE NOPROMPT OBSOLETE;
+   
+}
+exit;
+
+run
+{
+ Allocate channel sbt type 'SBT_TAPE' PARMS 
+ 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)'; 
+  BACKUP TABLESPACE USERS;
+  release channel sbt;
+
+}
+
+
+I do see file tdpo.opt file /usr/tivoli/tsm/client/oracle/bin64/
+
+DSMI_ORC_CONFIG     /usr/tivoli/tsm/client/api/bin/dsm.opt
+
+should this be re pointed to bin64 ? and file dsm.opt file copied to bin64 ?
+
+
+#####################################################################
+CONFIGURE DEVICE TYPE 'SBT_TAPE' CLEAR; 
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' clear; 
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' clear;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE 'SBT_TAPE' clear;
+#####################################################################
+
+
+
+
+###################Test TDP/RMAN configuration to TSM on Floradev##################################################
+rman
+
+connect target /
+## For some reason it only works after connecting to any catalog
+## I used WKABDEV2 catalog connections just to test
+connect catalog wkabdev2/wkabdev2namr@rmanwdev
+
+run{
+  allocate channel c1 type 'sbt_tape' parms 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin/tdpo.opt)';
+  release channel c1;
+}
+
+
+RMAN-03022: compiling command: allocate
+RMAN-03023: executing command: allocate
+RMAN-08030: allocated channel: c1
+RMAN-08500: channel c1: sid=13 devtype=SBT_TAPE
+RMAN-08526: channel c1: Tivoli Data Protection for Oracle: version 5.2.0.0
+
+RMAN-03022: compiling command: release
+RMAN-03023: executing command: release
+RMAN-08031: released channel: c1
+
+
+*******************************************************************************************************************
+/usr/tivoli/tsm/client/oracle/bin
+
+sbttest test
+
+The sbt function pointers are loaded.
+-- sbtinit succeeded
+Return code -1 from sbtinit, bsercoer = 0, bsercerrno = 0
+Message 0 not found;  product=RDBMS; facility=SBT
+
+
+********************************************************************************************************************
+
+cd /usr/tivoli/tsm/client/oracle/bin
+tdpoconf SHOWENV
+
+
+IBM Tivoli Storage Manager for Databases:
+Data Protection for Oracle
+Version 5, Release 2, Level 0.0
+(C) Copyright IBM Corporation 1997, 2003. All rights reserved.
+
+
+DATA PROTECTION FOR ORACLE INFORMATION
+ Version:              5
+ Release:              2
+ Level:                0
+ Sublevel:             0
+ Platform:             32bit TDP Oracle AIX
+
+TSM SERVER INFORMATION
+ Server Name:          AETNA_TSM
+ Server Address:       BCLEW1P.ADD.NET
+ Communication Method: TCP/IP
+
+SESSION INFORMATION
+ Owner Name:           oracle
+ Node Name:            datamart_rman
+ DSMI_DIR:             /usr/tivoli/tsm/client/api/bin
+ DSMI_ORC_CONFIG:      /usr/tivoli/tsm/client/api/bin/dsm.opt
+ TDPO_OPTFILE:         /usr/tivoli/tsm/client/oracle/bin/tdpo.opt
+ Password Directory:   /usr/tivoli/tsm/client/oracle/bin
+ Compression:          FALSE
+
+ANS1017E (RC-50)  Session rejected: TCP/IP connection failure
+
+
+*******************11g Floradev RMAN/TDP Test****************************
+I think were ready for a test 
+
+IBM Tivoli Storage Manager for Databases:
+Data Protection for Oracle
+Version 5, Release 4, Level 1.0
+(C) Copyright IBM Corporation 1997, 2007. All rights reserved.
+
+Data Protection for Oracle Information
+Version: 5
+Release: 4
+Level: 1
+Sublevel: 0
+Platform: 64bit TDP Oracle AIX
+
+Tivoli Storage Manager Server Information
+Server Name: BTSMM1P
+Server Address: BTSMM1P.ADD.NET
+Server Type: AIX-RS/6000
+Server Port: 1500
+Communication Method: TCP/IP
+
+Session Information
+Owner Name: oracle
+Node Name: floradev_rman
+Node Type: TDP Oracle AIX
+DSMI_DIR: /usr/tivoli/tsm/client/api/bin64
+DSMI_ORC_CONFIG: /usr/tivoli/tsm/client/api/bin64/dsm.opt
+TDPO_OPTFILE: /usr/tivoli/tsm/client/oracle/bin64/tdpo.opt
+Password Directory: /home/oracle/
+Compression: FALSE
+License Information: License file exists and contains valid license data.
+
+
+
+. $SETUPENV DRDV01
+
+
+cd $ORACLE_HOME/bin
+
+
+sbttest test
+
+The sbt function pointers are loaded from oracle.static library.
+libobk.a(shr.o) could not be loaded.  Check that it is installed
+
+
+Do the following based on Metalink Note: 290427.1
+
+cd /usr/tivoli/tsm/client/oracle/bin64/
+ln -s /usr/tivoli/tsm/client/oracle/bin64/libobk64.a $ORACLE_HOME/lib/libobk.a
+
+Try again
+
+The sbt function pointers are loaded from libobk.a(shr.o) library.
+-- sbtinit succeeded
+Return code -1 from sbtinit, bsercoer = 0, bsercerrno = 0
+Message 0 not found;  product=RDBMS; facility=SBT
+
+rman
+
+connect target /
+run{
+  allocate channel c1 type 'sbt_tape' parms 'ENV=(TDPO_OPTFILE=/home/oracle/tdpoopt/tdpo.HEPY.opt)';
+  release channel c1;
+}
+
+using target database control file instead of recovery catalog
+allocated channel: c1
+channel c1: SID=109 device type=SBT_TAPE
+channel c1: Data Protection for Oracle: version 5.4.1.0
+
+released channel: c1
+
+
+
+
+rman
+
+connect target /
+run{
+  allocate channel c1 type 'sbt_tape' parms 'ENV=(TDPO_OPTFILE=/u01/app/oracle/tdpoopt/tdpo.DRYDBAR.opt)';
+  release channel c1;
+}
+
+
+rman
+
+connect target /
+run{
+  allocate channel c1 type 'sbt_tape' parms 'ENV=(TDPO_OPTFILE=/u01/app/oracle/tdpoopt/tdpo.DRYDBAR.opt)';
+  BACKUP CURRENT CONTROLFILE;
+}
+
+
+
+
+
+
+
+. $SETUPENV DBATST
+
+cd $ORACLE_HOME/bin
+
+
+sbttest test
+
+Do the following based on Metalink Note: 290427.1
+
+cd /usr/tivoli/tsm/client/oracle/bin64/
+ln -s /usr/tivoli/tsm/client/oracle/bin64/libobk64.a $ORACLE_HOME/lib/libobk.a
+
+Try again
+
+rman
+
+connect target /
+run{
+  allocate channel c1 type 'sbt_tape' parms 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+  release channel c1;
+}
+
+using target database control file instead of recovery catalog
+allocated channel: c1
+channel c1: SID=109 device type=SBT_TAPE
+channel c1: Data Protection for Oracle: version 5.4.1.0
+
+released channel: c1
+
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/10.2.0/dbs/snapcf_DBATST.f'; # default
+
+**************Change to Tape ***************************************
+CONFIGURE DEFAULT DEVICE TYPE TO sbt;
+CONFIGURE CHANNEL DEVICE TYPE sbt  parms='ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+CONFIGURE DEVICE TYPE sbt BACKUP TYPE TO COMPRESSED BACKUPSET; #this could not work in 9i only at 10g
+CONFIGURE DEVICE TYPE sbt PARALLELISM 2;
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE sbt TO '%F'; 
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO sbt; 
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE sbt TO 1; # default needs to test
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE sbt TO 1; # default needs to test
+
+--Test
+RUN
+{
+  allocate channel c1 type 'sbt' parms 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+   BACKUP CURRENT CONTROLFILE;
+}
+
+or
+
+RUN
+{
+  allocate channel c1 type 'sbt' parms 'ENV=(TDPO_OPTFILE=/orahome/allu01/app/oracle/tdpoopt/tdpo.DEDYP001.opt)';
+   BACKUP CURRENT CONTROLFILE;
+}
+
+
+
+
+
+shutdown immediate;
+STARTUP MOUNT;
+run
+{
+  allocate channel c1 type 'sbt' parms 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)';
+  DELETE FORCE NOPROMPT OBSOLETE;
+  BACKUP INCREMENTAL LEVEL 0 DATABASE  tag full_cold_backup;
+  
+}
+alter database open;
+exit;
+
+--Delete files
+
+--Restore/Recovery Test
+
+shutdown immediate;
+STARTUP MOUNT;
+run {
+    allocate channel c1 type 'sbt' parms 'ENV=(TDPO_OPTFILE=/usr/tivoli/tsm/client/oracle/bin64/tdpo.opt)'; 
+    restore database;
+    recover database;
+}
+alter database open;
+
+*******************************************************************************
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03009: failure of delete command on c1 channel at 03/10/2009 09:15:39
+ORA-19509: failed to delete sequential file, handle="01k9i7nq_1_1", parms=""
+ORA-27027: sbtremove2 returned error
+ORA-19511: Error received from media manager layer, error text:
+   ANS1126E (RC27)   The file space cannot be deleted because this node does not
+ have
+
+
+How to fix error above
+
+Eugene, the error you received: ANS1126E (RC27) The file space cannot be deleted because this node does not have permission to delete archived or backed up data
+ 
+Has been corrected with the new setting below:
+ 
+ Archive Delete Allowed?: Yes
+ Backup Delete Allowed?: Yes
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+3       B  0  A SBT_TAPE    10-MAR-09       1       1       YES        FULL_COLD_BACKUP
+
+4       B  F  A SBT_TAPE    10-MAR-09       1       1       NO         TAG20090310T091055
+
+5       B  0  A SBT_TAPE    10-MAR-09       1       1       YES        FULL_COLD_BACKUP
+
+6       B  F  A SBT_TAPE    10-MAR-09       1       1       NO         TAG20090310T092138
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+5       B  0  A SBT_TAPE    10-MAR-09       1       1       YES        FULL_COLD_BACKUP
+
+6       B  F  A SBT_TAPE    10-MAR-09       1       1       NO         TAG20090310T092138
+
+7       B  0  A SBT_TAPE    10-MAR-09       1       1       YES        FULL_COLD_BACKUP
+
+8       B  F  A SBT_TAPE    10-MAR-09       1       1       NO         TAG20090310T092446
+
+
+*******************************How to check backupsets on TSM Server *************************
+
+from the AIX prompt 
+export DSM_DIR=/usr/tivoli/tsm/client/api/bin64
+export DSM_CONFIG=/usr/tivoli/tsm/client/api/bin64/dsm.opt
+dsmc
+hit 'Enter' to accept the user id
+Enter the password: rman
+
+from the TSM prompt
+
+dsmc q b /adsmorc/*/*
+enter 'Quit' to exit
+
+
+***************************************************
+
+  Oracle> /opt/tivoli/tsm/client/oracle/bin64/tdpoconf passw
+
+And the password is ora.
+
+
+
+***************Datarep TDP Test 8i after AIX upgrade to 5.3 TL09******************************
+
+40 17 * * 0 /usr/local/oracle/bin/rman/rman.ksh incremental_level0_backup.rman > /usr/local/oracle/log/rman/incremental_level0_backup.rman.nohup.out 2>&1
+
+view incremental_level0_backup.rman
+
+allocate channel t1 type 'sbt_tape';
+
+dr02/dr02namr@rmanwprd
+
+
+rman
+
+connect target /
+
+connect catalog dr02/dr02namr@rmanwprd
+run{
+  allocate channel t1 type 'sbt_tape';
+  release channel t1;
+}
+
+RMAN-03022: compiling command: allocate
+RMAN-03023: executing command: allocate
+RMAN-08030: allocated channel: t1
+RMAN-08500: channel t1: sid=51 devtype=SBT_TAPE
+RMAN-08526: channel t1: Tivoli Data Protection for Oracle: version 5.2.0.0
+
+RMAN-03022: compiling command: release
+RMAN-03023: executing command: release
+RMAN-08031: released channel: t1
+
+
+******** TSM TDP error log *************************************
+
+
+ /usr/tivoli/tsm/client/ba/logs/dsmerror.log
+
+
+****************************************
+
+Pete, Storman would like to see the following standards adhered to in regards to placement of the tdpo.opt file and password file:
+For below $HOME = ~oracle
+$HOME/tdpoopt - This directory will have an opt file for each instance of the format tdpo.$ORACLE_SID.opt
+The TDPO password file(s) created by Storman will continue to reside in $HOME.
+Please pass this info along to all of the Oracle DBA's.
+Tom S.
+
+Here is what Mike did on boraw1d
+
+Eugene,
+   FYI - I switched wkabdev1 over to this a while back and now
+   I've just switched the rest of the boraw1d databases over to using the TDPO_FS option.
+   The only thing it really means is that now each of the instances has it's own opt file under $HOME/tdpoopt. 
+   Then going forward, we can safely use tdposync to clean up orphaned backups on the TDP side.
+
+ --Same thing on most servers
+ $ORACLE_BASE/tdpoopt
+ or
+ $HOME/tdpoopt
+ 
+It's $HOME/tdpoopt, but when we had originally started talking about it with the TDP guys,
+I was suggesting $ORACLE_BASE so I had put a couple of opt files out in ORACLE_BASE, 
+but their official decision was $HOME/tdpoopt since they put the password file for TDP in $HOME
+
+Here's the description of what we worked out with the TSM guys regarding RMAN, TDP, and TDPOSYNC.
+It's a long e-mail including a summary of the issue so if you already know all that, you can skip down to the "How Does This Affect Me" part towards the bottom.
+I know there are several tight deadlines you're all looking at with Grid Control and Zeke.  This isn't time-critical, but don't mess around with TDPOSYNC until you sort through this one.  We can also talk about it at the next OSC meeting.
+ 
+Mike
+ 
+The Problem
+You're familiar with "crosscheck" in RMAN.  It checks the items (archivelogs and backups) that the RMAN catalog thinks should be around and confirms that they
+are available on the storage media - disk or tape.  TDP has a corresponding utility called TDPOSYNC that does the same thing, but in reverse.
+It checks the backups that TDP has in it's catalog and confirms that RMAN still knows about that backup.  It does this by comparing all of the backups it has for a node with the backup handles it sees in the RMAN catalog.  It then allows you to delete any backups in TDP that it thinks are orphans.
+ 
+The problem comes when there are multiple instances on a box each with it's own RMAN catalog.  Say you run TDPOSYNC to look for orphaned backups in TDP for a particular instance and enter the RMAN catalog credentials just for the instance you're interested in.  TDPOSYNC will look at all of the backups it knows about (for all instances) but will find only the backups for one instance when it looks in the RMAN catalog.  As a result, it will show all of the backups of the other instances as orphans.  If you then use TDPOSYNC to clean them up, you'll be removing valid backups for the other instances.
+ 
+The Solution
+There are multiple ways around this.  TDPOSYNC lets you specify the number of catalogs you want it to search and then enter credentials for each of them.  There's a bug with this method in the version of TDP out on most of the boxes.  It also has a drawback in that if you forget about an instance - it's backups will show as orphans.  
+ 
+The IBM recommended way and the way we've chosen to go is to have one TDPO options file for each instance.  All of the parameters specified in the file will be the same EXCEPT one - the TDPO_FS parameter.  This is the "filespace" parameter.  TDP attaches this info to all of the backups using that opt file.  So for example here's part of the opt file for the instance wkabdev2 on boraw1d:
+... stuff before ...
+TDPO_FS wkabdev2
+TDPO_NODE boraw1d-ora
+TDPO_OWNER oracle
+TDPO_PSWDPATH /boraw1du01/app/oracle
+... stuff after ...
+
+Now, if I want to run TDPOSYNC for the wkabdev2 instance, I can specify the TDP options file for the instance and it will only do it's comparisons for backups with the filespace specified in the TDPO_FS parameter in the file.  So to run TDPOSYNC for DMDV01, it would look like:
+
+./tdposync sync -TDPO_OPT=/boraw1du01/app/oracle/tdpoopt/tdpo.wkabdev2.opt
+
+And it will only compare backups with a  filespace of "wkabdev2" and ignore the backups with other filespaces.
+
+What This Means to Me
+One of the TSM guys (most likely Mike Giordano) will be getting in touch with you about switching your boxes over if they haven't already. 
+For your boxes already configured for TDP, you should already have a password file out there in oracle's $HOME directory called something like "TDPO.boraw1d_tdp".  This is part of the setup to authenticate you over to the TDP node.  It is something that the TSM guys do to set you up initially. 
+The thing that's new here is that now, you will also have a sub-directory under $HOME called tdpoopt.  Under this directory you should have one file for each instance you want to back up to TDP.  The file should be of the format TDPO.<instance name>.opt.  Storeman will set this up for you initially, but you can create your own if you add another instance or something.  The key thing is that within the file, the TDPO_FS parameter should be set to the name of the instance. 
+To begin using the filespace in your backups you will need to change the channel configuration in RMAN for each instance to point to the opt file for that instance.  So in the case of my wkabdev2 instance, this looks like:
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/boraw1du01/app/oracle/tdpoopt/tdpo.wkabdev2.opt)'; 
+When you do this, the backups you had done previously without a filespace specified will not be visible from RMAN unless you go into the opt file and comment out the TDPO_FS parameter (put a * in front of it to comment it out).  So of you have archival backups without a filespace specified that need to be maintained for a period of time don't jump on this right a way.  I have a couple of ideas for working through it.  Let me know and I'll give you some options that might work for you. 
+If you're not maintaining backups for longer than your recovery window, then you can do the following: 
+Make sure all of your instances on a given box are using the filespace parameter for a period of time longer than your desired recovery window.  
+Don't do a crosscheck backup or tdposync until after all of your old backups are outside your desired recovery window.  In other words wait until all of your old backups without a filespace are old enough that you don't need them any more. 
+Once you're sure that anything without a filespace is no longer useful, then for each instance/rman catalog: 
+Do a crosscheck backup and delete expired in rman. 
+Do a tdposync specifying the opt file and rman catalog credientials for the instance you are checking
+
+
+for datamart:
+tdposync SYNCdb -TDPO_OPTfile=/home/oracle/tdpoopt/tdpo.DM02.opt
+ 
+for datarep:
+tdposync SYNCdb -TDPO_OPTfile=/home/oracle/tdpoopt/tdpo.DR02.opt
+
+
+rman
+connect target /
+connect catalog DRSTG/DRSTGnamr@DBATST
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/home/oracle/tdpoopt/tdpo.DRSTG.opt)'; 
+
+rman
+connect target /
+connect catalog DMSTG/DMSTGnamr@DBATST
+CONFIGURE CHANNEL DEVICE TYPE 'SBT_TAPE' PARMS  'ENV=(TDPO_OPTFILE=/home/oracle/tdpoopt/tdpo.DMSTG.opt)'; 
+
+
+
+
+******************** Latest on RMAN TSM
+
+1. How to check TSM File spaces (where is my backupsets going?)
+
+
+!!!If adsmorc File Space have your backupsets it's not good need to be under DB Name File space!!!
+
+dsmadmc -id=query -displaymode=table -outfile=query.out -pa=query "select distinct filespace_name from backups where node_name='AORADBW1D-ORA' and backup_date >= '2011-09-01 00:00:00.000000'"
+
+
+
+
+dsmadmc -id=query -displaymode=table -outfile=query.out -pa=query "select LL_NAME from backups where node_name='AORADBW1D-ORA' and filespace_name = '/adsmorc' and  backup_date >= '2011-09-01 00:00:00.000000'"
+
+dsmadmc -id=query -displaymode=table -outfile=query.out -pa=query "select LL_NAME from backups where node_name='AORADBW1D-ORA' and filespace_name = '/DEDYT001' and  backup_date >= '2011-09-01 00:00:00.000000'"
+
+
+****** Test rman TSM connection from one server to anather
+
+rman
+
+connect target /
+run{
+  allocate channel c1 type 'sbt_tape' parms 'ENV=(TDPO_OPTFILE=/home/oracle/tdpoopt/tdpo.HEPYPRD.opt)';
+  release channel c1;
+}
+
+or for example from UAT box to TST catalog
+
+connect catalog HEPYUAT/HEPYUATnamr@RCATDEV
+
+or for example from QA2 box to UAT catalog
+
+connect catalog HEPYUAT/HEPYUATnamr@RCATDEV
+
+or for example from STS box to PROD catalog
+
+connect catalog HEPYPRD/HEPYPRDnamr@RCATPROD
+

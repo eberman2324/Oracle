@@ -1,0 +1,107 @@
+***11/14/2007****
+*****************
+
+-rw-r-----   1 oracle   dba      1311236096 Nov 12 23:40 bkp_df638494229_s199_s1
+-rw-r-----   1 oracle   dba      1366491136 Nov 12 23:40 bkp_df638494229_s198_s1
+-rw-r-----   1 oracle   dba      1549852672 Nov 12 23:40 bkp_df638494229_s200_s1
+-rw-r-----   1 oracle   dba      1652981760 Nov 12 23:40 bkp_df638494229_s197_s1
+-rw-r-----   1 oracle   dba         1290240 Nov 12 23:41 bkp_df638494862_s201_s1
+22485   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+22486   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+22487   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+22488   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+22673   B  A  A DISK        12-NOV-07       1       1       YES        TAG20071112T234101
+
+change backup tag TAG20071112T233027 keep forever nologs;
+
+
+-rw-r-----   1 oracle   dba        89872896 Nov 13 07:31 arc_df638523033_s205_s1
+-rw-r-----   1 oracle   dba        93971968 Nov 13 07:31 arc_df638523033_s203_s1
+-rw-r-----   1 oracle   dba        91456512 Nov 13 07:31 arc_df638523033_s202_s1
+-rw-r-----   1 oracle   dba        94110208 Nov 13 07:31 arc_df638523033_s204_s1
+-rw-r-----   1 oracle   dba        89777152 Nov 13 07:31 arc_df638523070_s207_s1
+-rw-r-----   1 oracle   dba        89930752 Nov 13 07:31 arc_df638523071_s208_s1
+-rw-r-----   1 oracle   dba       109151744 Nov 13 07:31 arc_df638523071_s209_s1
+-rw-r-----   1 oracle   dba       115767808 Nov 13 07:31 arc_df638523070_s206_s1
+-rw-r-----   1 oracle   dba       112007680 Nov 13 07:32 arc_df638523098_s213_s1
+-rw-r-----   1 oracle   dba       101959168 Nov 13 07:32 arc_df638523098_s212_s1
+-rw-r-----   1 oracle   dba        82447360 Nov 13 07:32 arc_df638523097_s210_s1
+-rw-r-----   1 oracle   dba       129015808 Nov 13 07:32 arc_df638523097_s211_s1
+23175   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23176   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23177   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23178   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23179   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23180   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23181   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23182   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23183   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23184   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23185   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+23186   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T073032
+
+
+-rw-r-----   1 oracle   dba         1153536 Nov 13 12:30 arc_df638541021_s217_s1
+-rw-r-----   1 oracle   dba        12244992 Nov 13 12:30 arc_df638541021_s216_s1
+-rw-r-----   1 oracle   dba        12887552 Nov 13 12:30 arc_df638541021_s215_s1
+-rw-r-----   1 oracle   dba        13407744 Nov 13 12:30 arc_df638541021_s214_s1
+23758   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T123021
+23759   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T123021
+23760   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T123021
+23761   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T123021
+
+-rw-r-----   1 oracle   dba        48547840 Nov 13 18:30 arc_df638562610_s220_s1
+-rw-r-----   1 oracle   dba        57817600 Nov 13 18:30 arc_df638562610_s219_s1
+-rw-r-----   1 oracle   dba        78288384 Nov 13 18:30 arc_df638562610_s221_s1
+-rw-r-----   1 oracle   dba        82980352 Nov 13 18:30 arc_df638562610_s218_s1
+23928   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T183009
+23929   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T183009
+23930   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T183009
+23931   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T183009
+**************************************************************************************
+-rw-r-----   1 oracle   dba        39454208 Nov 13 23:30 bkp_df638580613_s223_s1
+-rw-r-----   1 oracle   dba        38204416 Nov 13 23:30 bkp_df638580613_s222_s1
+-rw-r-----   1 oracle   dba        35524608 Nov 13 23:30 bkp_df638580613_s225_s1
+-rw-r-----   1 oracle   dba        40378880 Nov 13 23:30 bkp_df638580613_s224_s1
+-rw-r-----   1 oracle   dba      1315708928 Nov 13 23:40 bkp_df638580641_s229_s1
+-rw-r-----   1 oracle   dba      1366753280 Nov 13 23:40 bkp_df638580641_s228_s1
+-rw-r-----   1 oracle   dba      1543577600 Nov 13 23:41 bkp_df638580641_s226_s1
+-rw-r-----   1 oracle   dba      1652678656 Nov 13 23:41 bkp_df638580641_s227_s1
+-rw-r-----   1 oracle   dba         1288704 Nov 13 23:41 bkp_df638581285_s230_s1
+24068   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T233012
+24069   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T233012
+24070   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T233012
+24071   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T233012
+24072   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24073   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24074   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24075   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24270   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T234124
+
+
+-rw-r-----   1 oracle   dba        99518976 Nov 14 07:31 arc_df638609435_s233_s1
+-rw-r-----   1 oracle   dba        98656768 Nov 14 07:31 arc_df638609435_s232_s1
+-rw-r-----   1 oracle   dba        99013632 Nov 14 07:31 arc_df638609435_s231_s1
+-rw-r-----   1 oracle   dba       137794048 Nov 14 07:31 arc_df638609435_s234_s1
+-rw-r-----   1 oracle   dba        97870336 Nov 14 07:31 arc_df638609462_s235_s1
+-rw-r-----   1 oracle   dba        97676288 Nov 14 07:31 arc_df638609462_s237_s1
+-rw-r-----   1 oracle   dba        97487360 Nov 14 07:31 arc_df638609462_s236_s1
+-rw-r-----   1 oracle   dba       117865984 Nov 14 07:31 arc_df638609472_s238_s1
+-rw-r-----   1 oracle   dba        89029632 Nov 14 07:31 arc_df638609489_s239_s1
+-rw-r-----   1 oracle   dba       111471616 Nov 14 07:31 arc_df638609490_s241_s1
+-rw-r-----   1 oracle   dba        28018688 Nov 14 07:31 arc_df638609506_s242_s1
+-rw-r-----   1 oracle   dba       121777664 Nov 14 07:31 arc_df638609489_s240_s1
+-rw-r-----   1 oracle   dba        15245312 Nov 14 09:12 snapcf_dpdevug.f
+24756   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24757   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24758   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24759   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24760   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24761   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24762   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24763   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24764   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24765   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24766   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24767   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+**************************************************************************************************

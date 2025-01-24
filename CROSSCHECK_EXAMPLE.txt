@@ -1,0 +1,148 @@
+*********RUN FULL BACKUP
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+55374   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+
+55375   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+
+55376   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+
+55377   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+
+55522   B  A  A DISK        05-NOV-07       1       1       YES        TAG20071105T113827
+
+55563   B  F  A DISK        05-NOV-07       1       1       NO         TAG20071105T113830
+
+
+****RUN ARCHIVELOG BACKUP
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+55374   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+55375   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+55376   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+55377   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T112549
+55522   B  A  A DISK        05-NOV-07       1       1       YES        TAG20071105T113827
+55563   B  F  A DISK        05-NOV-07       1       1       NO         TAG20071105T113830
+
+55606   B  A  A DISK        05-NOV-07       1       1       YES        TAG20071105T114230
+55607   B  A  A DISK        05-NOV-07       1       1       YES        TAG20071105T114230
+55619   B  F  A DISK        05-NOV-07       1       1       NO         TAG20071105T114234
+
+
+
+
+-rw-r-----   1 oracle   dba       892248064 Nov 05 11:34 bkp_df637845951_s313_s1
+-rw-r-----   1 oracle   dba      1228546048 Nov 05 11:36 bkp_df637845951_s312_s1
+-rw-r-----   1 oracle   dba      1466851328 Nov 05 11:37 bkp_df637845951_s310_s1
+-rw-r-----   1 oracle   dba      1644994560 Nov 05 11:38 bkp_df637845951_s311_s1
+-rw-r-----   1 oracle   dba           10240 Nov 05 11:38 bkp_df637846707_s314_s1
+-rw-r-----   1 oracle   dba        11993088 Nov 05 11:38 c-3932175216-20071105-03
+
+-rw-r-----   1 oracle   dba            2560 Nov 05 11:42 arc_df637846951_s317_s1
+-rw-r-----   1 oracle   dba            9216 Nov 05 11:42 arc_df637846951_s316_s1
+-rw-r-----   1 oracle   dba        11993088 Nov 05 11:42 c-3932175216-20071105-0
+
+
+restore validate database;
+
+restore archivelog all validate;
+
+
+change backup tag TAG20071105T112549 keep forever nologs; ## be aware if 'logs' option since all arc logs will be marked too
+
+change backup tag TAG20071105T113830 keep forever nologs; 
+
+
+crosscheck backup; 
+crosscheck archivelog all;
+
+
+*********RUN FULL BACKUP
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+55374   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T112549
+55375   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T112549
+55376   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T112549
+55377   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T112549
+55522   B  A  A DISK        05-NOV-07       1       1       YES        TAG2007105T113827
+55563   B  F  A DISK        05-NOV-07       1       1       NO         TAG2007105T113830
+
+55606   B  A  A DISK        05-NOV-07       1       1       YES        TAG2007105T114230
+55607   B  A  A DISK        05-NOV-07       1       1       YES        TAG2007105T114230
+55683   B  A  A DISK        05-NOV-07       1       1       YES        TAG2007105T122618
+
+55684   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T122620
+55685   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T122620
+55686   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T122620
+55687   B  F  A DISK        05-NOV-07       1       1       YES        TAG2007105T122620
+55839   B  A  A DISK        05-NOV-07       1       1       YES        TAG2007105T123711
+55890   B  F  A DISK        05-NOV-07       1       1       NO         TAG2007105T123715
+
+
+-rw-r-----   1 oracle   dba       892248064 Nov 05 11:34 bkp_df637845951_s313_s1
+-rw-r-----   1 oracle   dba      1228546048 Nov 05 11:36 bkp_df637845951_s312_s1
+-rw-r-----   1 oracle   dba      1466851328 Nov 05 11:37 bkp_df637845951_s310_s1
+-rw-r-----   1 oracle   dba      1644994560 Nov 05 11:38 bkp_df637845951_s311_s1
+-rw-r-----   1 oracle   dba           10240 Nov 05 11:38 bkp_df637846707_s314_s1
+-rw-r-----   1 oracle   dba        11993088 Nov 05 11:38 c-3932175216-20071105-03
+
+-rw-r-----   1 oracle   dba            2560 Nov 05 11:42 arc_df637846951_s317_s1
+-rw-r-----   1 oracle   dba            9216 Nov 05 11:42 arc_df637846951_s316_s1
+-rw-r-----   1 oracle   dba         1151488 Nov 05 12:26 bkp_df637849578_s319_s1
+-rw-r-----   1 oracle   dba           12800 Nov 05 12:37 bkp_df637850232_s324_s1
+-rw-r-----   1 oracle   dba           11776 Nov 05 12:41 bkp_df637850484_s326_s1
+
+-rw-r-----   1 oracle   dba       892248064 Nov 05 12:50 bkp_df637850489_s330_s1
+-rw-r-----   1 oracle   dba      1228546048 Nov 05 12:51 bkp_df637850489_s329_s1
+-rw-r-----   1 oracle   dba      1466728448 Nov 05 12:52 bkp_df637850489_s327_s1
+-rw-r-----   1 oracle   dba      1644969984 Nov 05 12:52 bkp_df637850489_s328_s1
+-rw-r-----   1 oracle   dba           11776 Nov 05 12:52 bkp_df637851150_s331_s1
+-rw-r-----   1 oracle   dba        11993088 Nov 05 12:52 c-3932175216-20071105-06
+
+
+
+*****PERFORM INCOMPLETE RECOVERY until 11:38 (saved backup)
+
+
+  change backup tag TAG20071105T112549 NOKEEP;
+  change backup tag TAG20071105T113830 NOKEEP;
+
+
+******FULL BACKUP AGAIN
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+66627   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T132148
+66628   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T132148
+66629   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T132148
+66630   B  F  A DISK        05-NOV-07       1       1       YES        TAG20071105T132148
+66779   B  A  A DISK        05-NOV-07       1       1       YES        TAG20071105T133642
+66822   B  F  A DISK        05-NOV-07       1       1       NO         TAG20071105T133646
+
+
+
+-rw-r-----   1 oracle   dba       892747776 Nov 05 13:31 bkp_df637852909_s340_s1
+-rw-r-----   1 oracle   dba      1228546048 Nov 05 13:33 bkp_df637852909_s339_s1
+-rw-r-----   1 oracle   dba      1466851328 Nov 05 13:34 bkp_df637852909_s337_s1
+-rw-r-----   1 oracle   dba      1644961792 Nov 05 13:36 bkp_df637852909_s338_s1
+-rw-r-----   1 oracle   dba          988672 Nov 05 13:36 bkp_df637853803_s341_s1
+-rw-r-----   1 oracle   dba        11993088 Nov 05 13:36 c-3932175216-20071105-08
+

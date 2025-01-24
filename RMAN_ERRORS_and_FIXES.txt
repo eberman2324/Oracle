@@ -1,0 +1,55 @@
+RMAN Issues and Fixes
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03002: failure of backup plus archivelog command at 07/22/2009 01:05:29
+ORA-19575: expected 10173 blocks in file /boraw1du101/wkabdev1/arch/1_361.dbf, found 0
+
+ 
+
+or 
+
+RMAN-03002: failure of backup plus archivelog command at 07/31/2009 17:57:34
+ORA-19563:  header validation failed for file
+
+
+rman
+
+connect target /
+
+connect catalog wkabdev1/wkabdev1namr@rmanwdev
+
+crosscheck archivelog all; 
+
+00 01 * * * /boraw1du01/aetna/scripts/backup/
+
+./rman_general_purpose.ksh wkabdev1 rmanwdev full_level0_backup.rman
+
+
+Database Was upgraded from 9i to 11g. Was using RMAN before. Had to delete 2 archivelog files (from old version pre upgrade) and run following command:
+
+
+crosscheck archivelog all;
+
+Then re run backup. That fixed
+
+
+************************************************************************************************************************************************************
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-03007: retryable error occurred during execution of command: backup
+RMAN-07004: unhandled exception during command execution on channel t1
+RMAN-10035: exception raised in RPC: ORA-19502: write error on file "DM02_5uj07p
+5g_1_1", blockno 138881921 (blocksize=512)
+ORA-27030: skgfwrt: sbtwrite2 returned error
+ORA-19511: ANS1017E (RC-50)  Session rejected: TCP/IP connection failure
+RMAN-10031: ORA-19624 occurred during call to DBMS_BACKUP_RESTORE.BACKUPPIECECREATE
+
+
++++++++++++++According to Mike this error is network related++++++++++++++++++++++++++++
++++++++++++++Run archivelog backup job after OR Re run Level0 job+++++++++++++++++++++++
+
+/usr/local/oracle/bin/rman/rman.ksh archivelog_bkup.rman

@@ -1,0 +1,576 @@
+
+connect catalog DPDEVUG/DPDEVUGnamr@rmanwdev
+/u01/app/oracle/aetna/db_mgmt/backup/rman_list_database.ksh DPDEVUG
+
+/u01/app/oracle/aetna/db_admin/db_DPDEVUG/log
+
+
+
+***1. Currently we have 2 Full backup packages************************************************
+**********************************************************************************************
+
+oracle:DPDEVUG:>cd /u10/oraback/DPDEVUG/rman_backups
+oracle:DPDEVUG:>ls -altr
+
+-rw-r-----   1 oracle   dba        11067392 Dec 04 17:03 snapcf_DPDEVUG.f
+
+-rw-r-----   1 oracle   dba      1371947008 Dec 05 08:03 bkp_df640511533_s150_s1
+-rw-r-----   1 oracle   dba      1362518016 Dec 05 08:04 bkp_df640511533_s151_s1
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 08:04 bkp_df640511533_s149_s1
+-rw-r-----   1 oracle   dba      1348935680 Dec 05 08:04 bkp_df640511533_s148_s1
+-rw-r-----   1 oracle   dba          681472 Dec 05 08:05 bkp_df640512309_s152_s1
+-rw-r-----   1 oracle   dba        11091968 Dec 05 08:05 c-3932175216-20071205-00
+
+-rw-r-----   1 oracle   dba           31232 Dec 05 08:08 bkp_df640512496_s154_s1
+-rw-r-----   1 oracle   dba      1371963392 Dec 05 08:20 bkp_df640512500_s157_s1
+-rw-r-----   1 oracle   dba      1362509824 Dec 05 08:21 bkp_df640512500_s158_s1
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 08:21 bkp_df640512500_s156_s1
+-rw-r-----   1 oracle   dba      1348739072 Dec 05 08:21 bkp_df640512500_s155_s1
+-rw-r-----   1 oracle   dba          104448 Dec 05 08:21 bkp_df640513303_s159_s1
+-rw-r-----   1 oracle   dba        11091968 Dec 05 08:21 c-3932175216-20071205-01
+
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+231888  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+231889  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+231890  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+231891  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+232034  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080509
+232076  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T080512
+
+232114  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080816
+232115  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232116  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232117  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232118  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232261  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T082143
+232303  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T082146
+
+
+*****get archive files seq**************************************************************
+
+RMAN> SPOOL LOG TO 'listb.txt'
+RMAN> list backup;
+RMAN> SPOOL LOG OFF;
+
+
+BS Key  Size       Device Type Elapsed Time Completion Time
+------- ---------- ----------- ------------ ---------------
+232034  665.00K    DISK        00:00:01     05-DEC-07
+        BP Key: 232068   Status: AVAILABLE  Compressed: YES  Tag: TAG20071205T080509
+
+        Piece Name: /u10/oraback/DPDEVUG/rman_backups/bkp_df640512309_s152_s1
+
+  List of Archived Logs in backup set 232034
+  Thrd Seq     Low SCN    Low Time  Next SCN   Next Time
+  ---- ------- ---------- --------- ---------- ---------
+  1    6       26951676297 05-DEC-07 26951676689 05-DEC-07
+**********************************************************************************************
+
+
+RMAN> list incarnation of database;
+
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+109545  109677  DPDEVUG  3932175216       PARENT  26876790498 13-AUG-07
+109545  109546  DPDEVUG  3932175216       PARENT  26951418973 04-DEC-07
+109545  122118  DPDEVUG  3932175216       PARENT  26951425539 04-DEC-07
+109545  211527  DPDEVUG  3932175216       ORPHAN  26951428307 04-DEC-07
+
+109545  221896  DPDEVUG  3932175216       CURRENT 26951428307 04-DEC-07
+
+
+RMAN> VALIDATE BACKUPSET 231888,231889,231890,231891,232034,232076;
+
+RMAN> restore archivelog all validate;
+
+
+****2. UNCATALOG first FULL BACKUP package*********************************************************
+
+*** Copy to different directory just in case ***
+
+cp -p bkp_df640511533_s150_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df640511533_s150_s1
+cp -p bkp_df640511533_s151_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df640511533_s151_s1
+cp -p bkp_df640511533_s149_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df640511533_s149_s1
+cp -p bkp_df640511533_s148_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df640511533_s148_s1
+cp -p bkp_df640512309_s152_s1 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/bkp_df640512309_s152_s1
+cp -p c-3932175216-20071205-00 /u10/oraback/DPDEVUG/rman_backups/DPDEVUG_20071205/c-3932175216-20071205-00
+
+
+
+
+
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s150_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s151_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s149_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s148_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640512309_s152_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071205-00' uncatalog;
+
+
+****VERIFY UNCATALOG*****
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+232114  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080816
+232115  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232116  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232117  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232118  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232261  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T082143
+232303  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T082146
+
+
+****3. CATALOG saved (uncatalog) FULL BACKUP package back for future restore******************************************
+
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s150_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s151_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s149_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s148_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640512309_s152_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071205-00';
+
+****VERIFY CATALOG******
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+232114  B  A  A DISK        05-DEC-07       1       1       YES        TAG2007105T080816
+232115  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T080818
+232116  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T080818
+232117  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T080818
+232118  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T080818
+232261  B  A  A DISK        05-DEC-07       1       1       YES        TAG2007105T082143
+232303  B  F  A DISK        05-DEC-07       1       1       NO         TAG2007105T082146
+
+232362  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T075211
+232402  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T075211
+232475  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T075211
+232548  B  F  A DISK        05-DEC-07       1       1       YES        TAG2007105T075211
+232622  B  A  A DISK        05-DEC-07       1       1       YES        TAG2007105T080509
+232667  B  F  A DISK        05-DEC-07       1       1       NO         TAG2007105T080512
+
+
+****4. Restore from cataloged backup package *****************************************************************************
+
+SQLPLUS> sqlplus / as sysdba
+Shutdown immediate;
+exit
+*****>DELETE ALL DATAFILES, CONTROL FILES...
+
+cd /u01/app/oracle/aetna/db_mgmt/backup/ 
+./rman_general_purpose.ksh DPDEVUG rmanwdev restore_incomplete.rman
+
+### restore_incomplete.rman ###
+#run {
+#    shutdown immediate;
+#    startup mount
+#    set until sequence 7 thread 1;
+#    restore database;
+#    recover database;
+#    alter database open resetlogs;
+#}
+
+
+RMAN> list incarnation of database;
+
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+109545  109677  DPDEVUG  3932175216       PARENT  26876790498 13-AUG-07
+109545  109546  DPDEVUG  3932175216       PARENT  26951418973 04-DEC-07
+109545  122118  DPDEVUG  3932175216       PARENT  26951425539 04-DEC-07
+109545  211527  DPDEVUG  3932175216       ORPHAN  26951428307 04-DEC-07
+109545  221896  DPDEVUG  3932175216       PARENT  26951428307 04-DEC-07
+
+109545  232684  DPDEVUG  3932175216       CURRENT 26951676690 05-DEC-07
+
+
+****5. UNCATALOG first FULL BACKUP package again ************************************************************************
+
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s150_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s151_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s149_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s148_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640512309_s152_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071205-00' uncatalog;
+
+**** 6. FULL BACKUP ******************************************************************************************************
+cd /u01/app/oracle/aetna/db_mgmt/backup
+./rman_general_purpose.ksh DPDEVUG rmanwdev restore_database.rman
+restore_database.rman
+
+oracle:DPDEVUG:>cd /u10/oraback/DPDEVUG/rman_backups
+oracle:DPDEVUG:>ls -altr
+
+-rw-r-----   1 oracle   dba        11067392 Dec 04 17:03 snapcf_DPDEVUG.f
+
+-rw-r-----   1 oracle   dba      1371947008 Dec 05 08:03 bkp_df640511533_s150_s1
+-rw-r-----   1 oracle   dba      1362518016 Dec 05 08:04 bkp_df640511533_s151_s1
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 08:04 bkp_df640511533_s149_s1
+-rw-r-----   1 oracle   dba      1348935680 Dec 05 08:04 bkp_df640511533_s148_s1
+-rw-r-----   1 oracle   dba          681472 Dec 05 08:05 bkp_df640512309_s152_s1
+-rw-r-----   1 oracle   dba        11091968 Dec 05 08:05 c-3932175216-20071205-00
+
+-rw-r-----   1 oracle   dba           31232 Dec 05 08:08 bkp_df640512496_s154_s1
+-rw-r-----   1 oracle   dba      1371963392 Dec 05 08:20 bkp_df640512500_s157_s1
+-rw-r-----   1 oracle   dba      1362509824 Dec 05 08:21 bkp_df640512500_s158_s1
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 08:21 bkp_df640512500_s156_s1
+-rw-r-----   1 oracle   dba      1348739072 Dec 05 08:21 bkp_df640512500_s155_s1
+-rw-r-----   1 oracle   dba          104448 Dec 05 08:21 bkp_df640513303_s159_s1
+
+-rw-r-----   1 oracle   dba        11157504 Dec 05 11:40 c-3932175216-20071205-02
+-rw-r-----   1 oracle   dba         1136128 Dec 05 11:52 bkp_df640525955_s164_s1
+-rw-r-----   1 oracle   dba          681472 Dec 05 11:52 bkp_df640525955_s163_s1
+-rw-r-----   1 oracle   dba         2118144 Dec 05 11:52 bkp_df640525955_s162_s1
+-rw-r-----   1 oracle   dba      1362542592 Dec 05 12:03 bkp_df640525958_s168_s1
+-rw-r-----   1 oracle   dba      1371947008 Dec 05 12:03 bkp_df640525958_s167_s1
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 12:04 bkp_df640525958_s166_s1
+-rw-r-----   1 oracle   dba      1348935680 Dec 05 12:04 bkp_df640525958_s165_s1
+-rw-r-----   1 oracle   dba          310784 Dec 05 12:04 bkp_df640526665_s169_s1
+-rw-r-----   1 oracle   dba        11157504 Dec 05 12:04 c-3932175216-20071205-03
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+232114  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080816
+232115  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232116  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232117  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232118  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232261  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T082143
+
+242482  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T114025
+
+242955  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242956  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242957  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242958  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242959  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242960  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242961  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+243108  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T120424
+243150  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T120428
+
+****7. CATALOG saved (uncatalog) FULL BACKUP package back for future restore******************************************
+
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s150_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s151_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s149_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s148_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640512309_s152_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071205-00';
+
+***VERIFY CATALOG *******
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+232114  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080816
+232115  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232116  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232117  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232118  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232261  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T082143
+
+242482  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T114025
+
+242955  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242956  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242957  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242958  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242959  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242960  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242961  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+243108  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T120424
+243150  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T120428
+
+243181  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+243221  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+243294  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+243367  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+243441  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080509
+243486  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T080512
+
+
+RMAN> VALIDATE BACKUPSET 243181,243221,243294,243367,243441,243486;
+
+RMAN> restore archivelog all validate;
+
+
+****8. Restore from cataloged backup package again ***>set until sequence 7 thread 1;*****************************************
+
+
+
+SQLPLUS> sqlplus / as sysdba
+Shutdown immediate;
+exit
+*****>DELETE ALL DATAFILES, CONTROL FILES...
+
+cd /u01/app/oracle/aetna/db_mgmt/backup/ 
+./rman_general_purpose.ksh DPDEVUG rmanwdev restore_incomplete.rman
+
+### restore_incomplete.rman ###
+#run {
+#    shutdown immediate;
+#    startup mount
+#    set until sequence 7 thread 1;
+#    restore database;
+#    recover database;
+#    alter database open resetlogs;
+#}
+
+*******!!! NO GOOD do not do this *****MUST reset database to old incarnation **********************************************
+*******!!! set until sequence 7 thread 1; would now pull out from latest FULL BACKUP package (backupsets)
+*******!!! because database was open resetlogs and old archivelog files entries gone!!
+*******!!! set until sequence 7 thread 1; --> now part of latest backupsets (FULL BACKUP)***********************************
+
+****9. Restore from cataloged backup package + set to past incarnation *****************************************************
+
+./rman_general_purpose.ksh DPDEVUG rmanwdev restore_past_incarnation.rman 
+
+
+
+    shutdown immediate;
+    startup nomount;
+    reset database to incarnation 221896;
+    restore controlfile;
+    alter database mount;
+run {
+    set until sequence 7 thread 1;
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}
+
+
+
+RMAN> list incarnation of database;
+
+
+List of Database Incarnations
+DB Key  Inc Key DB Name  DB ID            STATUS  Reset SCN  Reset Time
+------- ------- -------- ---------------- --- ---------- ----------
+109545  109677  DPDEVUG  3932175216       PARENT  26876790498 13-AUG-07
+109545  109546  DPDEVUG  3932175216       PARENT  26951418973 04-DEC-07
+109545  122118  DPDEVUG  3932175216       PARENT  26951425539 04-DEC-07
+109545  211527  DPDEVUG  3932175216       ORPHAN  26951428307 04-DEC-07
+109545  221896  DPDEVUG  3932175216       PARENT  26951428307 04-DEC-07
+109545  232684  DPDEVUG  3932175216       ORPHAN  26951676690 05-DEC-07
+109545  243659  DPDEVUG  3932175216       CURRENT 26951676690 05-DEC-07
+
+****10. UNCATALOG first FULL BACKUP package again ************************************************************************
+
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s150_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s151_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s149_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s148_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/bkp_df640512309_s152_s1' uncatalog;
+change backuppiece '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071205-00' uncatalog;
+
+
+****VERIFY UNCATALOG *****************
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+232114  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080816
+232115  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232116  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232117  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+232118  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T080818
+
+232261  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T082143
+242482  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T114025
+242955  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242956  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242957  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T115235
+242958  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242959  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242960  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+242961  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T115236
+243108  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T120424
+
+243150  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T120428
+
+
+**** 11. FULL BACKUP again ******************************************************************************************************
+cd /u01/app/oracle/aetna/db_mgmt/backup
+./rman_general_purpose.ksh DPDEVUG rmanwdev full_level0_backup.rman
+
+
+-rw-r-----   1 oracle   dba        11067392 Dec 04 17:03 snapcf_DPDEVUG.f
+
+-rw-r-----   1 oracle   dba      1371947008 Dec 05 08:03 bkp_df640511533_s150_s
+-rw-r-----   1 oracle   dba      1362518016 Dec 05 08:04 bkp_df640511533_s151_s
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 08:04 bkp_df640511533_s149_s
+-rw-r-----   1 oracle   dba      1348935680 Dec 05 08:04 bkp_df640511533_s148_s
+-rw-r-----   1 oracle   dba          681472 Dec 05 08:05 bkp_df640512309_s152_s
+
+-rw-r-----   1 oracle   dba           31232 Dec 05 08:08 bkp_df640512496_s154_s
+-rw-r-----   1 oracle   dba      1371963392 Dec 05 08:20 bkp_df640512500_s157_s
+-rw-r-----   1 oracle   dba      1362509824 Dec 05 08:21 bkp_df640512500_s158_s
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 08:21 bkp_df640512500_s156_s
+-rw-r-----   1 oracle   dba      1348739072 Dec 05 08:21 bkp_df640512500_s155_s
+-rw-r-----   1 oracle   dba          104448 Dec 05 08:21 bkp_df640513303_s159_s
+
+-rw-r-----   1 oracle   dba         1136128 Dec 05 11:52 bkp_df640525955_s164_s
+-rw-r-----   1 oracle   dba          681472 Dec 05 11:52 bkp_df640525955_s163_s
+-rw-r-----   1 oracle   dba         2118144 Dec 05 11:52 bkp_df640525955_s162_s
+-rw-r-----   1 oracle   dba      1362542592 Dec 05 12:03 bkp_df640525958_s168_s
+-rw-r-----   1 oracle   dba      1371947008 Dec 05 12:03 bkp_df640525958_s167_s
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 12:04 bkp_df640525958_s166_s
+-rw-r-----   1 oracle   dba      1348935680 Dec 05 12:04 bkp_df640525958_s165_s
+-rw-r-----   1 oracle   dba          310784 Dec 05 12:04 bkp_df640526665_s169_s
+-rw-r-----   1 oracle   dba        11157504 Dec 05 13:31 c-3932175216-20071205-0
+
+-rw-r-----   1 oracle   dba          310784 Dec 05 13:38 bkp_df640532333_s158_s
+-rw-r-----   1 oracle   dba          681472 Dec 05 13:38 bkp_df640532333_s157_s
+-rw-r-----   1 oracle   dba          734208 Dec 05 13:38 bkp_df640532333_s156_s
+-rw-r-----   1 oracle   dba      1362534400 Dec 05 13:50 bkp_df640532336_s162_s
+-rw-r-----   1 oracle   dba      1371930624 Dec 05 13:50 bkp_df640532336_s161_s
+-rw-r-----   1 oracle   dba      1169924096 Dec 05 13:50 bkp_df640532336_s160_s
+-rw-r-----   1 oracle   dba      1348935680 Dec 05 13:51 bkp_df640532336_s159_s
+-rw-r-----   1 oracle   dba          964096 Dec 05 13:51 bkp_df640533102_s163_s
+-rw-r-----   1 oracle   dba        11157504 Dec 05 13:51 c-3932175216-20071205-1
+
+
+****12. CATALOG saved (uncatalog) FULL BACKUP package back for future restore******************************************
+
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s150_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s151_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s149_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640511533_s148_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/bkp_df640512309_s152_s1';
+CATALOG BACKUPPIECE '/u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071205-00';
+
+RMAN> list backup summary;
+
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+....
+
+253633  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+253672  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+253744  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+253816  B  F  A DISK        05-DEC-07       1       1       YES        TAG20071205T075211
+253889  B  A  A DISK        05-DEC-07       1       1       YES        TAG20071205T080509
+
+....
+253933  B  F  A DISK        05-DEC-07       1       1       NO         TAG20071205T133119
+
+
+RMAN> VALIDATE BACKUPSET 253633,253672,253744,253816,253889;
+
+RMAN> restore archivelog all validate;
+
+****13. Restore from cataloged backup package + set to past incarnation *****************************************************
+
+SQLPLUS> sqlplus / as sysdba
+Shutdown immediate;
+exit
+*****>DELETE ALL DATAFILES, CONTROL FILES...
+
+
+./rman_general_purpose.ksh DPDEVUG rmanwdev restore_past_incarnation.rman 
+
+
+
+    shutdown immediate;
+    startup nomount;
+    reset database to incarnation 243659;
+    set dbid=3932175216;
+    restore controlfile;
+    alter database mount;
+run {
+    set until sequence 7 thread 1;
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}
+
+cp -p c-3932175216-20071205-00 /u10/oraback/DPDEVUG/rman_backups/c-3932175216-20071205-00
+
+
+try adding %t  to CONFIGURE CONTROLFILE AUTOBACKUP FORMAT
+
+select * from dpdevug.rc_database_incarnation order by resetlogs_time;
+select * from dpdevug.rc_archived_log  order by sequence#;
+
+
+*************Things to do for tommorrow****
+
+1 Run Full Backup (tom could be doing it for me) double chek in morning
+2 Run Archivelog backup
+  list backup;
+
+  Get last seq from full backup package
+
+3 incompoete recvoery utnil sez# 4
+
+./rman_general_purpose.ksh DPDEVUG rmanwdev restore_incomplete.rman
+
+### restore_incomplete.rman ###
+#run {
+#    shutdown immediate;
+#    startup mount
+#    set until sequence 7 thread 1;
+#    restore database;
+#    recover database;
+#    alter database open resetlogs;
+#}
+
+
+
+
+4. show all;
+   reconfigure
+   uncatalog 
+
+5. FULL BACKUP 
+   archvieloglog
+
+6 catalog saved packageds
+
+7.     shutdown immediate;
+    startup nomount;
+    reset database to incarnation 243659;
+    set dbid=3932175216;
+    restore controlfile;
+    alter database mount;
+run {
+    set until sequence 7 thread 1;
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}
+
+8 show all;
+  reconfigure
+  uncatalog 

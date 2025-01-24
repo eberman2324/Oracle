@@ -1,0 +1,400 @@
+***11/16/2007****
+*****************
+
+-rw-r-----   1 oracle   dba      1311236096 Nov 12 23:40 bkp_df638494229_s199_s1
+-rw-r-----   1 oracle   dba      1366491136 Nov 12 23:40 bkp_df638494229_s198_s1
+-rw-r-----   1 oracle   dba      1549852672 Nov 12 23:40 bkp_df638494229_s200_s1
+-rw-r-----   1 oracle   dba      1652981760 Nov 12 23:40 bkp_df638494229_s197_s1
+22485   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+22486   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+22487   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+22488   B  F  A DISK        12-NOV-07       1       1       YES        TAG20071112T233027
+
+**********************FULL BACKUP ABOVE WAS SAVED with KEEP FOREVER NOLOGS********************************
+
+-rw-r-----   1 oracle   dba      1315708928 Nov 13 23:40 bkp_df638580641_s229_s1
+-rw-r-----   1 oracle   dba      1366753280 Nov 13 23:40 bkp_df638580641_s228_s1
+-rw-r-----   1 oracle   dba      1543577600 Nov 13 23:41 bkp_df638580641_s226_s1
+-rw-r-----   1 oracle   dba      1652678656 Nov 13 23:41 bkp_df638580641_s227_s1
+-rw-r-----   1 oracle   dba         1288704 Nov 13 23:41 bkp_df638581285_s230_s1
+24072   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24073   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24074   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24075   B  F  A DISK        13-NOV-07       1       1       YES        TAG20071113T233039
+24270   B  A  A DISK        13-NOV-07       1       1       YES        TAG20071113T234124
+24756   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+
+*******FULL BACKUP ABOVE WAS SAVED with KEEP FOREVER LOGS****************************************
+**********THIS WOULD KEEP ALL ARCHIVE LOG BACKUPSETS AFTER**see below****************************
+
+-rw-r-----   1 oracle   dba        99518976 Nov 14 07:31 arc_df638609435_s233_s1
+-rw-r-----   1 oracle   dba        98656768 Nov 14 07:31 arc_df638609435_s232_s1
+-rw-r-----   1 oracle   dba        99013632 Nov 14 07:31 arc_df638609435_s231_s1
+-rw-r-----   1 oracle   dba       137794048 Nov 14 07:31 arc_df638609435_s234_s1
+-rw-r-----   1 oracle   dba        97870336 Nov 14 07:31 arc_df638609462_s235_s1
+-rw-r-----   1 oracle   dba        97676288 Nov 14 07:31 arc_df638609462_s237_s1
+-rw-r-----   1 oracle   dba        97487360 Nov 14 07:31 arc_df638609462_s236_s1
+-rw-r-----   1 oracle   dba       117865984 Nov 14 07:31 arc_df638609472_s238_s1
+-rw-r-----   1 oracle   dba        89029632 Nov 14 07:31 arc_df638609489_s239_s1
+-rw-r-----   1 oracle   dba       111471616 Nov 14 07:31 arc_df638609490_s241_s1
+-rw-r-----   1 oracle   dba        28018688 Nov 14 07:31 arc_df638609506_s242_s1
+-rw-r-----   1 oracle   dba       121777664 Nov 14 07:31 arc_df638609489_s240_s1
+24757   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24758   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24759   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24760   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24761   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24762   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24763   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24764   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24765   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24766   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+24767   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T073034
+
+
+-rw-r-----   1 oracle   dba        12777472 Nov 14 12:30 arc_df638627418_s246_s1
+-rw-r-----   1 oracle   dba        17454592 Nov 14 12:30 arc_df638627418_s245_s1
+-rw-r-----   1 oracle   dba        26533376 Nov 14 12:30 arc_df638627418_s243_s1
+-rw-r-----   1 oracle   dba        17803776 Nov 14 12:30 arc_df638627418_s244_s1
+25077   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T123017
+25078   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T123017
+25079   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T123017
+25080   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T123017
+
+-rw-r-----   1 oracle   dba        50870272 Nov 14 18:30 arc_df638649023_s249_s1
+-rw-r-----   1 oracle   dba        59857920 Nov 14 18:30 arc_df638649023_s248_s1
+-rw-r-----   1 oracle   dba        75606016 Nov 14 18:30 arc_df638649023_s250_s1
+-rw-r-----   1 oracle   dba        83385344 Nov 14 18:30 arc_df638649023_s247_s1
+25256   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T183022
+25257   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T183022
+25258   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T183022
+25259   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T183022
+**************************************************************************************************************
+-rw-r-----   1 oracle   dba        38528000 Nov 14 23:30 bkp_df638667020_s252_s1
+-rw-r-----   1 oracle   dba        32553472 Nov 14 23:30 bkp_df638667020_s254_s1
+-rw-r-----   1 oracle   dba        36511232 Nov 14 23:30 bkp_df638667020_s253_s1
+-rw-r-----   1 oracle   dba        45549568 Nov 14 23:30 bkp_df638667020_s251_s1
+-rw-r-----   1 oracle   dba      1318404096 Nov 14 23:40 bkp_df638667038_s255_s1
+-rw-r-----   1 oracle   dba      1387732992 Nov 14 23:40 bkp_df638667039_s257_s1
+-rw-r-----   1 oracle   dba      1543741440 Nov 14 23:40 bkp_df638667038_s256_s1
+-rw-r-----   1 oracle   dba      1685929984 Nov 14 23:41 bkp_df638667039_s258_s1
+-rw-r-----   1 oracle   dba         1218048 Nov 14 23:41 bkp_df638667681_s259_s1
+25397   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T233019
+25398   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T233019
+25399   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T233019
+25400   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T233019
+25401   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25402   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25403   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25404   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25598   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T234118
+
+-rw-r-----   1 oracle   dba        97992192 Nov 15 07:31 arc_df638695840_s260_s1
+-rw-r-----   1 oracle   dba       101834240 Nov 15 07:31 arc_df638695840_s263_s1
+-rw-r-----   1 oracle   dba       100206080 Nov 15 07:31 arc_df638695840_s261_s1
+-rw-r-----   1 oracle   dba        99440128 Nov 15 07:31 arc_df638695840_s262_s1
+-rw-r-----   1 oracle   dba        89341440 Nov 15 07:31 arc_df638695878_s266_s1
+-rw-r-----   1 oracle   dba        96620032 Nov 15 07:31 arc_df638695877_s265_s1
+-rw-r-----   1 oracle   dba        97269248 Nov 15 07:31 arc_df638695877_s264_s1
+-rw-r-----   1 oracle   dba       123228672 Nov 15 07:31 arc_df638695880_s267_s1
+-rw-r-----   1 oracle   dba        44983296 Nov 15 07:32 arc_df638695915_s271_s1
+-rw-r-----   1 oracle   dba       111500288 Nov 15 07:32 arc_df638695907_s270_s1
+-rw-r-----   1 oracle   dba       104410624 Nov 15 07:32 arc_df638695907_s269_s1
+-rw-r-----   1 oracle   dba       130575360 Nov 15 07:32 arc_df638695906_s268_s1
+26097   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26098   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26099   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26100   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26101   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26102   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26103   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26104   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26105   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26106   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26107   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26108   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+
+
+-rw-r-----   1 oracle   dba         8412160 Nov 15 12:30 arc_df638713814_s274_s1
+-rw-r-----   1 oracle   dba        19682304 Nov 15 12:30 arc_df638713814_s272_s1
+-rw-r-----   1 oracle   dba        17949696 Nov 15 12:30 arc_df638713814_s273_s1
+26399   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T123013
+26400   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T123013
+26401   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T123013
+
+-rw-r-----   1 oracle   dba        47007232 Nov 15 18:30 arc_df638735412_s278_s1
+-rw-r-----   1 oracle   dba        56992768 Nov 15 18:30 arc_df638735412_s276_s1
+-rw-r-----   1 oracle   dba        80928256 Nov 15 18:30 arc_df638735412_s277_s1
+-rw-r-----   1 oracle   dba        83119616 Nov 15 18:30 arc_df638735412_s275_s1
+-rw-r-----   1 oracle   dba           11776 Nov 15 18:30 arc_df638735438_s279_s1
+26567   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26568   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26569   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26570   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26571   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+
+-rw-r-----   1 oracle   dba         3461632 Nov 15 23:30 bkp_df638753417_s280_s1
+-rw-r-----   1 oracle   dba         9854976 Nov 15 23:30 bkp_df638753417_s282_s1
+-rw-r-----   1 oracle   dba        10842112 Nov 15 23:30 bkp_df638753417_s281_s1
+-rw-r-----   1 oracle   dba        15245312 Nov 15 23:30 snapcf_dpdevug.f
+-rw-r-----   1 oracle   dba      1312202752 Nov 15 23:40 bkp_df638753436_s283_s1
+-rw-r-----   1 oracle   dba      1389363200 Nov 15 23:41 bkp_df638753437_s285_s1
+-rw-r-----   1 oracle   dba      1535852544 Nov 15 23:41 bkp_df638753436_s284_s1
+-rw-r-----   1 oracle   dba      1685643264 Nov 15 23:41 bkp_df638753437_s286_s1
+-rw-r-----   1 oracle   dba         1299968 Nov 15 23:41 bkp_df638754088_s287_s1
+26665   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T233016
+26666   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T233016
+26667   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T233016
+26668   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26669   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26670   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26671   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26829   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T234127
+
+
+-rw-r-----   1 oracle   dba        99825152 Nov 16 07:30 arc_df638782222_s288_s1
+-rw-r-----   1 oracle   dba       100855808 Nov 16 07:30 arc_df638782222_s290_s1
+-rw-r-----   1 oracle   dba        98537472 Nov 16 07:30 arc_df638782222_s291_s1
+-rw-r-----   1 oracle   dba        99355648 Nov 16 07:30 arc_df638782222_s289_s1
+-rw-r-----   1 oracle   dba        98491392 Nov 16 07:31 arc_df638782258_s292_s1
+-rw-r-----   1 oracle   dba       132785152 Nov 16 07:31 arc_df638782259_s294_s1
+-rw-r-----   1 oracle   dba        97451008 Nov 16 07:31 arc_df638782259_s293_s1
+-rw-r-----   1 oracle   dba       123573248 Nov 16 07:31 arc_df638782259_s295_s1
+-rw-r-----   1 oracle   dba        80576512 Nov 16 07:32 arc_df638782295_s297_s1
+-rw-r-----   1 oracle   dba       113224704 Nov 16 07:32 arc_df638782296_s298_s1
+-rw-r-----   1 oracle   dba       118219776 Nov 16 07:32 arc_df638782296_s299_s1
+-rw-r-----   1 oracle   dba       117619200 Nov 16 07:32 arc_df638782295_s296_s1
+-rw-r-----   1 oracle   dba        57757184 Nov 16 07:32 arc_df638782322_s300_s1
+27360   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27361   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27362   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27363   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27364   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27365   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27366   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27367   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27368   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27369   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27370   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27371   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27372   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+
+**************TEST shows that KEEP LOGS option keeps FULL BACKUP (BACKUPSETS) + ARCHIVE BACKUPSET in package ******
+**************However it keeps all other archivelog backupsets which generated after*******************************
+**************Not what we want*************************************************************************************
+
+
+
+*****************************************************************
+RMAN> change backup tag TAG20071112T233027 NOKEEP;
+*****************************************************************
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: sid=1056 devtype=DISK
+allocated channel: ORA_DISK_2
+channel ORA_DISK_2: sid=1057 devtype=DISK
+allocated channel: ORA_DISK_3
+channel ORA_DISK_3: sid=1047 devtype=DISK
+allocated channel: ORA_DISK_4
+channel ORA_DISK_4: sid=1050 devtype=DISK
+keep attributes for the backup are deleted
+backup set key=22485 recid=193 stamp=638494819
+keep attributes for the backup are deleted
+backup set key=22486 recid=194 stamp=638494837
+keep attributes for the backup are deleted
+backup set key=22487 recid=195 stamp=638494854
+keep attributes for the backup are deleted
+backup set key=22488 recid=196 stamp=638494858
+
+********************************************************************
+RMAN> change backup tag TAG20071113T233039 NOKEEP;
+*********************************************************************
+using channel ORA_DISK_1
+using channel ORA_DISK_2
+using channel ORA_DISK_3
+using channel ORA_DISK_4
+keep attributes for the backup are deleted
+backup set key=24072 recid=222 stamp=638581236
+keep attributes for the backup are deleted
+backup set key=24073 recid=223 stamp=638581257
+keep attributes for the backup are deleted
+backup set key=24074 recid=224 stamp=638581272
+keep attributes for the backup are deleted
+backup set key=24075 recid=225 stamp=638581275
+
+***************************************************************************
+RMAN>DELETE NOPROMPT OBSOLETE;
+***************************************************************************
+
+
+
+-rw-r-----   1 oracle   dba      1318404096 Nov 14 23:40 bkp_df638667038_s255_s1
+-rw-r-----   1 oracle   dba      1387732992 Nov 14 23:40 bkp_df638667039_s257_s1
+-rw-r-----   1 oracle   dba      1543741440 Nov 14 23:40 bkp_df638667038_s256_s1
+-rw-r-----   1 oracle   dba      1685929984 Nov 14 23:41 bkp_df638667039_s258_s1
+-rw-r-----   1 oracle   dba         1218048 Nov 14 23:41 bkp_df638667681_s259_s1
+25401   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25402   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25403   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25404   B  F  A DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+25598   B  A  A DISK        14-NOV-07       1       1       YES        TAG20071114T234118
+
+
+RMAN> change backupset 25401 UNAVAILABLE;
+
+changed backup piece unavailable
+backup piece handle=/u10/oraback/DPQA89/rman_backups/bkp_df638667038_s255_s1 rec
+id=251 stamp=638667039
+Changed 1 objects to UNAVAILABLE status
+
+RMAN> change backupset 25402 UNAVAILABLE;
+
+changed backup piece unavailable
+backup piece handle=/u10/oraback/DPQA89/rman_backups/bkp_df638667039_s257_s1 re
+id=252 stamp=638667039
+Changed 1 objects to UNAVAILABLE status
+
+
+RMAN> change backupset 25402 UNAVAILABLE;
+
+changed backup piece unavailable
+backup piece handle=/u10/oraback/DPQA89/rman_backups/bkp_df638667039_s257_s1 rec
+id=252 stamp=638667039
+Changed 1 objects to UNAVAILABLE status
+
+
+RMAN> change backupset 25403 UNAVAILABLE;
+
+changed backup piece unavailable
+backup piece handle=/u10/oraback/DPQA89/rman_backups/bkp_df638667038_s256_s1 rec
+id=253 stamp=638667039
+Changed 1 objects to UNAVAILABLE status
+
+
+RMAN> change backupset 25404 UNAVAILABLE;
+
+changed backup piece unavailable
+backup piece handle=/u10/oraback/DPQA89/rman_backups/bkp_df638667039_s258_s1 rec
+id=254 stamp=638667039
+Changed 1 objects to UNAVAILABLE status
+
+
+RMAN> change backupset 25598 UNAVAILABLE;
+
+changed backup piece unavailable
+backup piece handle=/u10/oraback/DPQA89/rman_backups/bkp_df638667681_s259_s1 rec
+id=255 stamp=638667682
+Changed 1 objects to UNAVAILABLE status
+
+******************************************************************************************************************
+
+
+-rw-r-----   1 oracle   dba        97992192 Nov 15 07:31 arc_df638695840_s260_s1
+-rw-r-----   1 oracle   dba       101834240 Nov 15 07:31 arc_df638695840_s263_s1
+-rw-r-----   1 oracle   dba       100206080 Nov 15 07:31 arc_df638695840_s261_s1
+-rw-r-----   1 oracle   dba        99440128 Nov 15 07:31 arc_df638695840_s262_s1
+-rw-r-----   1 oracle   dba        89341440 Nov 15 07:31 arc_df638695878_s266_s1
+-rw-r-----   1 oracle   dba        96620032 Nov 15 07:31 arc_df638695877_s265_s1
+-rw-r-----   1 oracle   dba        97269248 Nov 15 07:31 arc_df638695877_s264_s1
+-rw-r-----   1 oracle   dba       123228672 Nov 15 07:31 arc_df638695880_s267_s1
+-rw-r-----   1 oracle   dba        44983296 Nov 15 07:32 arc_df638695915_s271_s1
+-rw-r-----   1 oracle   dba       111500288 Nov 15 07:32 arc_df638695907_s270_s1
+-rw-r-----   1 oracle   dba       104410624 Nov 15 07:32 arc_df638695907_s269_s1
+-rw-r-----   1 oracle   dba       130575360 Nov 15 07:32 arc_df638695906_s268_s1
+26097   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26098   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26099   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26100   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26101   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26102   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26103   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26104   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26105   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26106   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26107   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+26108   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T073038
+
+
+-rw-r-----   1 oracle   dba         8412160 Nov 15 12:30 arc_df638713814_s274_s1
+-rw-r-----   1 oracle   dba        19682304 Nov 15 12:30 arc_df638713814_s272_s1
+-rw-r-----   1 oracle   dba        17949696 Nov 15 12:30 arc_df638713814_s273_s1
+26399   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T123013
+26400   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T123013
+26401   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T123013
+
+-rw-r-----   1 oracle   dba        47007232 Nov 15 18:30 arc_df638735412_s278_s1
+-rw-r-----   1 oracle   dba        56992768 Nov 15 18:30 arc_df638735412_s276_s1
+-rw-r-----   1 oracle   dba        80928256 Nov 15 18:30 arc_df638735412_s277_s1
+-rw-r-----   1 oracle   dba        83119616 Nov 15 18:30 arc_df638735412_s275_s1
+-rw-r-----   1 oracle   dba           11776 Nov 15 18:30 arc_df638735438_s279_s1
+26567   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26568   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26569   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26570   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+26571   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T183011
+
+-rw-r-----   1 oracle   dba         3461632 Nov 15 23:30 bkp_df638753417_s280_s1
+-rw-r-----   1 oracle   dba         9854976 Nov 15 23:30 bkp_df638753417_s282_s1
+-rw-r-----   1 oracle   dba        10842112 Nov 15 23:30 bkp_df638753417_s281_s1
+-rw-r-----   1 oracle   dba        15245312 Nov 15 23:30 snapcf_dpdevug.f
+-rw-r-----   1 oracle   dba      1312202752 Nov 15 23:40 bkp_df638753436_s283_s1
+-rw-r-----   1 oracle   dba      1389363200 Nov 15 23:41 bkp_df638753437_s285_s1
+-rw-r-----   1 oracle   dba      1535852544 Nov 15 23:41 bkp_df638753436_s284_s1
+-rw-r-----   1 oracle   dba      1685643264 Nov 15 23:41 bkp_df638753437_s286_s1
+-rw-r-----   1 oracle   dba         1299968 Nov 15 23:41 bkp_df638754088_s287_s1
+26665   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T233016
+26666   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T233016
+26667   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T233016
+26668   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26669   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26670   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26671   B  F  A DISK        15-NOV-07       1       1       YES        TAG20071115T233034
+26829   B  A  A DISK        15-NOV-07       1       1       YES        TAG20071115T234127
+
+
+-rw-r-----   1 oracle   dba        99825152 Nov 16 07:30 arc_df638782222_s288_s1
+-rw-r-----   1 oracle   dba       100855808 Nov 16 07:30 arc_df638782222_s290_s1
+-rw-r-----   1 oracle   dba        98537472 Nov 16 07:30 arc_df638782222_s291_s1
+-rw-r-----   1 oracle   dba        99355648 Nov 16 07:30 arc_df638782222_s289_s1
+-rw-r-----   1 oracle   dba        98491392 Nov 16 07:31 arc_df638782258_s292_s1
+-rw-r-----   1 oracle   dba       132785152 Nov 16 07:31 arc_df638782259_s294_s1
+-rw-r-----   1 oracle   dba        97451008 Nov 16 07:31 arc_df638782259_s293_s1
+-rw-r-----   1 oracle   dba       123573248 Nov 16 07:31 arc_df638782259_s295_s1
+-rw-r-----   1 oracle   dba        80576512 Nov 16 07:32 arc_df638782295_s297_s1
+-rw-r-----   1 oracle   dba       113224704 Nov 16 07:32 arc_df638782296_s298_s1
+-rw-r-----   1 oracle   dba       118219776 Nov 16 07:32 arc_df638782296_s299_s1
+-rw-r-----   1 oracle   dba       117619200 Nov 16 07:32 arc_df638782295_s296_s1
+-rw-r-----   1 oracle   dba        57757184 Nov 16 07:32 arc_df638782322_s300_s1
+27360   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27361   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27362   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27363   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27364   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27365   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27366   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27367   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27368   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27369   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27370   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27371   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+27372   B  A  A DISK        16-NOV-07       1       1       YES        TAG20071116T073019
+
+
+****************************************************************************************************
+
+list backup summary;
+
+List of Backups
+===============
+Key     TY LV S Device Type Completion Time #Pieces #Copies Compressed Tag
+------- -- -- - ----------- --------------- ------- ------- ---------- ---
+25401   B  F  U DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+
+25402   B  F  U DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+
+25403   B  F  U DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+
+25404   B  F  U DISK        14-NOV-07       1       1       YES        TAG20071114T233037
+
+25598   B  A  U DISK        14-NOV-07       1       1       YES        TAG20071114T234118
+
+

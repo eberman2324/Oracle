@@ -1,0 +1,20 @@
+
+    ##delete all redo.log files
+
+
+    >rman
+    connect target /
+    connect catalog DPDEVUG/DPDEVUGnamr@rmanwdev
+    shutdown immediate;
+    startup force nomount;
+    set dbid=3075209898;
+    #Try this next time restore controlfile from '/u10/oraback/DPDEVUG/rman_backups/c-3075456727-20071112-01' (or whatever the backup set number is)
+    restore controlfile;
+    alter database mount;
+    
+run {
+    set until time "TO_DATE('11/10/2007','MM/DD/YYYY')";
+    restore database;
+    recover database;
+    alter database open resetlogs;
+}

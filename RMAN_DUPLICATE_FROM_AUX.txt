@@ -1,0 +1,262 @@
+Pimary Database:       SOURCE (DPQA89)
+Duplicate Database:    AUX    (DPDEVUG)
+RMAN Catalog Database: RMAN   (RMANWDEV) 
+
+
+******************************************************************************************************************
+*** STEP 1 *******************************************************************************************************
+******************************************************************************************************************
+
+1. Create and Oracle Password File for SOURCE Database
+
+******************************************************************************************************************
+*** STEP 2 *******************************************************************************************************
+******************************************************************************************************************
+
+2. Ensure SQL Net Connectivity to the SOURCE Database. Make sure add entry in tnsnames.ora in AUX to SOURCE
+
+******************************************************************************************************************
+*** STEP 3 *******************************************************************************************************
+******************************************************************************************************************
+
+3. Create Init File for AUX database.
+   
+   If Database is using SFILE to startup database we will need to CREATE LATEST PFILE 
+   CREATE PFILE FROM SFILE; 
+   
+******************************************************************************************************************
+*** STEP 4 *******************************************************************************************************
+******************************************************************************************************************
+   
+4. AUX: 
+   Execute build_set_db_files.ksh DPQA89 DPDEVUG
+   Paste output from set_DPDEVUG_file_names.txt into future duplicate script
+   Research for missing files and edit appropriate
+
+
+******************************************************************************************************************
+*** STEP 5 *******************************************************************************************************
+******************************************************************************************************************
+
+5. AUX: Check make sure we have space on mount points where new files would go
+
+******************************************************************************************************************
+*** STEP 6 *******************************************************************************************************
+******************************************************************************************************************
+
+6. AUX: Make sure symbolic link with (SOURCE backup directory mame created) or 
+        Create directory with same name as on SOURCE Server. 
+        
+        Example 1: 
+              mkdir /u10/oraback/DPQA89/rman_backups
+      
+        Example 2:
+              ln -s /u10/oraback/DPQA89/backup_temp /u10/oraback/DPQA89/rman_backups
+
+******************************************************************************************************************
+*** STEP 7 *******************************************************************************************************
+******************************************************************************************************************
+
+7. Examples: Test connection from AUX to SOURCE within RMAN
+   >rman
+   
+   connect target sys/sysdpqa89@DPQA89
+   connect AUXILIARY SYS/sysDPDEVUG@DPDEVUG
+  
+******************************************************************************************************************
+*** STEP 8 *******************************************************************************************************
+******************************************************************************************************************
+
+8.  Comment out any RMAN related jobs on both AUX and SOURCE
+
+******************************************************************************************************************
+*** STEP 9 *******************************************************************************************************
+******************************************************************************************************************
+
+9. Extract Security ddl's  from existing AUX database if necessary to re apply after duplicate completed
+
+*******************************************************************************************************************
+*** STEP 10 *******************************************************************************************************
+*******************************************************************************************************************
+
+10. Double check script duplicate_database.rman Scripts located in AUX server !!
+    
+  
+    The best way is to use set until sequence xxx thread 1;
+    Use first sequence after last full database backup.
+
+    ***EXAMPLE***
+    
+    on SOURCE cd /u10/oraback/DPQA89/rman_backups
+
+    -rw-r-----   1 oracle   dba         8943104 Nov 08 23:30 bkp_df638148609_s72_s1
+    -rw-r-----   1 oracle   dba         9732096 Nov 08 23:30 bkp_df638148609_s71_s1
+    -rw-r-----   1 oracle   dba        10938368 Nov 08 23:30 bkp_df638148609_s70_s1
+    -rw-r-----   1 oracle   dba        14098432 Nov 08 23:30 snapcf_dpdevug.f
+    -rw-r-----   1 oracle   dba      1311162368 Nov 08 23:40 bkp_df638148614_s73_s1
+    -rw-r-----   1 oracle   dba      1371422720 Nov 08 23:40 bkp_df638148615_s75_s1
+    -rw-r-----   1 oracle   dba      1538129920 Nov 08 23:40 bkp_df638148615_s76_s1
+    -rw-r-----   1 oracle   dba      1656209408 Nov 08 23:40 bkp_df638148615_s74_s1
+    -rw-r-----   1 oracle   dba         1251328 Nov 08 23:40 bkp_df638149252_s77_s1
+
+     We need to find first  sequence from accured after Nov 8 23:40
+     
+     connect to SOURCE via SQL PLUS or DBArtisan and execute following sql:
+
+     select sequence#,completion_time
+         from v$archived_log
+            order by completion_time desc;
+    
+ 		24009	11/09/2007 2:00:50.000 AM
+       		24008	11/08/2007 11:40:49.000 PM
+
+    Also if AUX uses PFILE use  pfile=/u01/app/oracle/product/10.2.0/dbs/initORACLE_SID.ora in script
+         if AUX uses SFILE use  sfile=/u01/app/oracle/product/10.2.0/dbs/xxxSPFILENAME in script
+    
+
+*******************************************************************************************************************
+*** STEP 11 *******************************************************************************************************
+*******************************************************************************************************************
+
+11. FTP or RCP desired backupsets from SOURCE server to AUX server or Create Symbolic Link with same name
+    
+    ***EXAMPLE*if same directory name used***
+
+    on SOURCE sftp dppdev.add.net
+              password: xxxx
+     cd /u10/oraback/DPQA89/rman_backups
+     
+    put bkp_df63814*  
+    put snapcf_dpdevug.f
+
+    ***EXAMPLE with symbolic link*********
+    on AUX server create symbolic link
+    ln -s /u10/oraback/DPQA89/backup_temp /u10/oraback/DPQA89/rman_backups
+
+        on SOURCE sftp dppdev.add.net
+              password: xxxx
+     cd /u10/oraback/DPQA89/backup_temp
+     
+    put bkp_df63814*  
+    put snapcf_dpdevug.f
+
+*******************************************************************************************************************
+*** STEP 12 *******************************************************************************************************
+*******************************************************************************************************************
+
+12. AUX database
+
+   sqlplus / as sysdba
+   shutdown immediate; 
+
+*******************************************************************************************************************
+*** STEP 13 *******************************************************************************************************
+*******************************************************************************************************************
+   
+13. Delete all datafiles,redo logs and control files in AUX database
+   
+    Confirm
+    ls /u*/oradata/DPDEVUG/*
+ 
+    Remove
+    rm /u*/oradata/DPDEVUG/*
+  	
+*******************************************************************************************************************
+*** STEP 14 *******************************************************************************************************
+*******************************************************************************************************************
+	
+14. AUX database
+
+    sqlplus / as sysdba
+    startup force nomount;
+
+*******************************************************************************************************************
+*** STEP 15 *******************************************************************************************************
+*******************************************************************************************************************
+
+
+15. AUX: Execute duplicate script
+          cd /u01/app/oracle/aetna/db_mgmt/backup
+         
+
+          ./rman_duplicate_from_aux.ksh DPDEVUG rmanwdev DPQA89 duplicate_database.rman
+
+
+    Monitor Duplicate by looking in log (AUX) database server
+
+    cd /u01/app/oracle/aetna/db_admin/db_DPDEVUG/log  
+
+    ls -altr
+   
+    view rman_duplicate.DPDEVUG.110907.125451.log       
+
+*******************************************************************************************************************
+*** STEP 16 *******************************************************************************************************
+*******************************************************************************************************************
+
+16.  Run the following in a mounted state from SQLPLUS on AUX database to fixe TEMP tablespace RMAN bug
+
+     shutdown immediate;
+     startup mount;
+     alter database tempfile '/u09/oradata/DPDEVUG/temp01.dbf' drop;
+     alter database open;
+     ALTER TABLESPACE TEMP ADD TEMPFILE '/u09/oradata/DPDEVUG/temp01.dbf'
+       SIZE 4000M REUSE AUTOEXTEND OFF;
+
+*******************************************************************************************************************
+*** STEP 17 *******************************************************************************************************
+*******************************************************************************************************************
+  
+17. Post Duplicate tasks.
+    
+    A. reapply security
+    B. Register database in DEV catalog and configure see document RMAN_SETUP_DPDEVUG.txt for reference.
+
+      AUX database RMAN Client:
+
+      > rman
+      connect target /
+
+      connect catalog DPDEVUG/DPDEVUGnamr@rmanwdev
+
+      register database;
+
+      #**TO MAKE SURE IT WORKED******
+ 
+      report schema;
+
+      show all;
+
+      RMAN configuration parameters are:
+      CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+      CONFIGURE BACKUP OPTIMIZATION OFF; # default
+      CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+      CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+      CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+      CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+      CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+      CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+      CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+      CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+      CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+      CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+      CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/10.2.0/dbs/snapcf_DPDEVUG.f'; # default
+
+
+      #*******ALL CONFIGURATION ABOVE are DEFAULT *********
+      #********WE will need to change some of them*********
+
+      CONFIGURE RETENTION POLICY TO REDUNDANCY 2; 
+      CONFIGURE CONTROLFILE AUTOBACKUP ON;
+      CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u10/oraback/DPDEVUG/rman_backups/%F';
+      CONFIGURE DEVICE TYPE DISK PARALLELISM 4 BACKUP TYPE TO COMPRESSED BACKUPSET;
+      CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/u10/oraback/DPDEVUG/rman_backups/bkp_df%t_s%s_s%p';
+      CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u10/oraback/DPDEVUG/rman_backups/snapcf_dpdevug.f';
+
+
+
+    C. Run Level0 Backup
+
+      cd /u01/app/oracle/aetna/db_mgmt/backup
+      
+      ./rman_general_purpose.ksh DPDEVUG rmanwdev full_level0_backup.rman

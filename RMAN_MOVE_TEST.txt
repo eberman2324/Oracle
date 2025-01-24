@@ -1,0 +1,374 @@
+***********TEST CATALOG RMANWPRD************************
+CREATE TABLESPACE WKABDEV1
+    DATAFILE '/ivpr01/oracle/oradata/rmanwprd/wkabdev1.dbf' SIZE 100M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO
+/
+
+
+***
+
+
+DROP USER WKABDEV1_RMAN CASCADE;
+
+DROP USER DPDEVUG_rmAN;
+
+CREATE USER WKABDEV1_RMAN IDENTIFIED BY SQL
+    DEFAULT TABLESPACE WKABDEV1
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON WKABDEV1
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK;
+
+GRANT RECOVERY_CATALOG_OWNER TO WKABDEV1_RMAN;
+
+GRANT "CONNECT" TO WKABDEV1_RMAN;
+
+ALTER USER WKABDEV1_RMAN DEFAULT ROLE RECOVERY_CATALOG_OWNER,
+                                      "CONNECT";
+
+
+
+
+
+*******************PRODUCTION CATALOG PRODUCTION*************************************************
+#CREATE TABLESPACE IVPR01
+#    DATAFILE '/ivpr01/oracle/oradata/rmanwprd/IVPR01.dbf' SIZE 100M AUTOEXTEND OFF
+#    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+#    LOGGING
+#    ONLINE
+#    SEGMENT SPACE MANAGEMENT AUTO
+#/
+
+DROP USER IVPR01 CASCADE;
+
+
+CREATE USER IVPR01 IDENTIFIED BY IVPR01namr
+    DEFAULT TABLESPACE IVPR01
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON IVPR01
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK;
+
+GRANT RECOVERY_CATALOG_OWNER TO IVPR01;
+
+GRANT "CONNECT" TO IVPR01;
+
+ALTER USER IVPR01 DEFAULT ROLE RECOVERY_CATALOG_OWNER,
+                                      "CONNECT";
+
+
+--------------------------------------------------------------
+CREATE TABLESPACE DM02
+    DATAFILE '/ivpr01/oracle/oradata/rmanwprd/DM02.dbf' SIZE 150M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO;
+
+
+CREATE USER DM02 IDENTIFIED BY DM02namr
+    DEFAULT TABLESPACE DM02
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON DM02
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK;
+
+GRANT RECOVERY_CATALOG_OWNER TO DM02;
+
+GRANT "CONNECT" TO DM02;
+
+ALTER USER DM02 DEFAULT ROLE RECOVERY_CATALOG_OWNER,
+                                     "CONNECT";
+
+
+CREATE TABLESPACE DR02
+    DATAFILE '/ivpr01/oracle/oradata/rmanwprd/DR02.dbf' SIZE 150M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO;
+
+
+CREATE USER DR02 IDENTIFIED BY DR02namr
+    DEFAULT TABLESPACE DR02
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON DR02
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK;
+
+GRANT RECOVERY_CATALOG_OWNER TO DR02;
+
+GRANT "CONNECT" TO DR02;
+
+ALTER USER DR02 DEFAULT ROLE RECOVERY_CATALOG_OWNER,
+                                     "CONNECT";
+
+
+CREATE TABLESPACE MTPR01
+    DATAFILE '/ivpr01/oracle/oradata/rmanwprd/MTPR01.dbf' SIZE 100M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO;
+
+
+CREATE USER MTPR01 IDENTIFIED BY MTPR01namr
+    DEFAULT TABLESPACE MTPR01
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON MTPR01
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK;
+
+GRANT RECOVERY_CATALOG_OWNER TO MTPR01;
+
+GRANT "CONNECT" TO MTPR01;
+
+ALTER USER MTPR01 DEFAULT ROLE RECOVERY_CATALOG_OWNER,
+                                     "CONNECT";
+
+
+
+
+
+
+
+
+exp system/no734s OWNER=IVPR01 FILE=ivpr01.dmp
+
+imp system/ora10gsys FILE=ivpr01.dmp FROMUSER=IVPR01  TOUSER=IVPR01
+
+
+
+****TEST*****
+imp system/ora10gsys FILE=wkabdev1_rman.dmp FROMUSER=WKABDEV1_RMAN TOUSER=WKABDEV1_RMAN
+
+
+
+
+
+
+
+
+
+
+connected to target database: IVPR01 (DBID=2262401889)
+connected to target database: DM02 (DBID=402903349)
+
+connected to target database: DR02 (DBID=2868270024)
+
+connected to target database: MTPR01 (DBID=3385160285)
+
+
+
+
+
+
+
+
+
+
+***********TEST STEPS which not implemented at this time***********
+
+
+
+Create WKABQA3  tablespace in RMANWDEV db
+Create WKABQA3/WKABQA3namr  User in RMANWDEV db
+Create Catalog
+Create WKABQA3_NEW tablespace in RMANWDEV db
+Create WKABQA3_NEW User in RMANWDEV db
+Register WKABQA3 Database in Catalog
+Configure
+Create test dir for backupsets
+Do Cold Backup WKABQA3 within WKABQA3 Catalog
+Export WKABQA3  Schema
+Import WKABQA3 into QA3_NEW schema
+Unregister WKABQA3 Database from QA3_NEW Catalog
+Do Cold Backup WKABQA3 within WKABQA3 Catalog
+
+*************WKABQA3 task****************
+ 
+
+
+Backup Control File and some other datafile? in under QA3 Catlog
+
+*****MOVE RMAN DATABASE TO NOARCHIVELOG MODE*******************
+
+SQL> 
+Database log mode              Archive Mode
+Automatic archival             Enabled
+Archive destination            /ivpr01/oracle/oradata/rmanwprd
+Oldest online log sequence     206
+Next log sequence to archive   208
+Current log sequence           208
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+
+SQL> startup mount;
+ORACLE instance started.
+Total System Global Area  612368384 bytes
+Fixed Size                  2074768 bytes
+Variable Size             390072176 bytes
+Database Buffers          213909504 bytes
+Redo Buffers                6311936 bytes
+Database mounted.
+
+SQL> alter database noarchivelog;
+##SQL> alter database archivelog;
+
+Database altered.
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> archive log list;
+Database log mode              No Archive Mode
+Automatic archival             Disabled
+Archive destination            /ivpr01/oracle/oradata/rmanwprd
+Oldest online log sequence     206
+Current log sequence           208
+SQL>
+
+
+
+connect catalog ivpr01/ivpr01namr@RCVCAT
+
+connect catalog RCAT_USER/rman@RCVCAT
+
+
+connect catalog ivpr01/ivpr01namr@rmanwprd
+
+imp system/ora10gsys FILE=ivpr01 FROMUSER=IVPR01 TOUSER=IVPR01
+
+
+
+
+
+*********** WKAB PeopleSoft RMAN ********************************
+
+****Add this to Target Database tnsnames.ora **********************
+rmanwprd.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = ivrprod)(PORT = 1526))
+    )
+    (CONNECT_DATA =
+      (SID = rmanwprd)
+    )
+  )
+
+************************************************************************
+     ----------Create Catalog-------------------
+
+CREATE TABLESPACE DPDEVUG
+    DATAFILE '/ivpr01/oracle/oradata/rmanwprd/DPDEVUG.dbf' SIZE 100M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO;
+
+
+
+CREATE USER DPDEVUG IDENTIFIED BY DPDEVUGnamr
+    DEFAULT TABLESPACE DPDEVUG
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON DPDEVUG
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK;
+
+GRANT RECOVERY_CATALOG_OWNER TO DPDEVUG;
+
+GRANT "CONNECT" TO DPDEVUG;
+
+ALTER USER DPDEVUG DEFAULT ROLE RECOVERY_CATALOG_OWNER,
+                                     "CONNECT";
+
+----Connect to the database that will contain the catalog as catalog owner-------
+>rman
+
+connect catalog DPDEVUG/DPDEVUGnamr@rmanwprd
+
+create catalog;
+
+
+---------------------------------------------------------------------------------------------------
+
+CREATE TABLESPACE DPQA89
+    DATAFILE '/boraw1du202/oradata/rmanwdev/DPQA89.dbf' SIZE 100M AUTOEXTEND OFF
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+    LOGGING
+    ONLINE
+    SEGMENT SPACE MANAGEMENT AUTO;
+
+
+
+CREATE USER DPQA89 IDENTIFIED BY DPQA89namr
+    DEFAULT TABLESPACE DPQA89
+    TEMPORARY TABLESPACE TEMP
+    QUOTA UNLIMITED ON DPQA89
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK;
+
+GRANT RECOVERY_CATALOG_OWNER TO DPQA89;
+
+GRANT "CONNECT" TO DPQA89;
+
+ALTER USER DPQA89 DEFAULT ROLE RECOVERY_CATALOG_OWNER,
+                                     "CONNECT";
+
+
+----Connect to the database that will contain the catalog as catalog owner-------
+>rman
+
+connect catalog DPQA89/DPQA89namr@rmanwprd
+
+create catalog;
+
+
+--------Connect to the target database and register database ---------------
+
+connect target /
+
+connect catalog DPDEVUG/DPDEVUGnamr@rmanwprd
+
+###connect catalog DPDEVUG/DPDEVUGnamr@rmanwdev
+register database;
+
+
+************************CONFIGURATION**********************************************************
+
+
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/u01/app/oracle/aetna/db_admin/db_DPDEVUG/rman_backups/%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 4 BACKUP TYPE TO COMPRESSED BACKUPSET;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/u01/app/oracle/aetna/db_admin/db_DPDEVUG/rman_backups/bkp_df%t_s%s_s%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/aetna/db_admin/db_DPDEVUG/rman_backups/snapcf_dpdevug.f';
+
+******************************************RUN TEST BACKUP OF CONTROL FILE*********************************************************
+
+BACKUP CURRENT CONTROLFILE;
+
+crosscheck archivelog all; (run this for first time)
+
+---RUN FULL BACKUP----
+
+restore validate database;
+ restore archivelog all validate;
+
+
+
