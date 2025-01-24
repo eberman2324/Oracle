@@ -1,0 +1,124 @@
+Here are more details for our discussions.   New comments are in red.
+
+
+The first process will be the “scheduled” exports from a specific database on a specific database server for a specific DATE.  
+              Server_name:  xmedmdbw07d.aetna.com (..in server list..)
+              Scheduled_date  Jan-15-2025  0300
+EXPORT_FOR_MP_PATHMOVE variables should now ONLY be the source database.
+              Database_name:  MPSBOX01
+
+This would then (in this order):
+	Run “sed” commands to create export commands Reference 1 has source files and sed commands
+	Run 7 export (…expdp…) commands  Reference 2 
+	Report/Email  files are complete and ready for use   
+
+Thx!
+
+
+
+
+Recall the oracle password for xmedmdbw07d and xmedmdbw08d is now:         Smile#1234512345
+
+This export_MP_for_pathmove.sh is the job I thought we would be running daily on all of the SOURCE databases   (PROD, QA, QA2, QA3…).
+Use to run this a couple of years ago… but then…. changed to approach to tell TEAM to plan WHICH DAY THEY WANTED TO EXPORT, and stuck to that date.
+Our new Jenkins job would replace this approach.
+
+###########################################################################################################################################
+#----------------------------------------------------------------------------------------
+#Min    Hour    Day     Month   Day-of-Week         ORACLE CRON
+#0-59   0-23    1-31    1-12    0-6(Sunday=0)
+#----------------------------------------------------------------------------------------
+###########################################################################################################################################
+0 3 * * * /oradb/app/oracle/local/scripts/export_MP_for_pathmove.sh MPSBOX01 1 > /tmp/export_run.out  2>&1
+###########################################################################################################################################
+
+
+
+
+
+Reference 1: 
+
+xmedmdbw07d.aetna.com (oracle) MPSBOX01::/oraexport/u01/datapump
+MPSBOX01>
+
+xmedmdbw07d.aetna.com (oracle) MPSBOX01::/oraexport/u01/datapump
+MPSBOX01> ls -lrt *.tar
+-rw-r--r--. 1 oracle oinstall 20480 Apr  8  2024 source.tar
+
+xmedmdbw07d.aetna.com (oracle) MPSBOX01::/oraexport/u01/datapump
+MPSBOX01> tar -tvf source.tar
+-rw-r--r-- oracle/dba      480 2020-04-06 15:17 SOURCE___EXPORTING_STAFF.par
+-rw-r--r-- oracle/dba      371 2020-04-06 15:17 SOURCE___EXPORTING_CONFIGS.par
+-rw-r--r-- oracle/dba      264 2020-04-06 15:18 SOURCE___EXPORTING_5.par
+-rw-r--r-- oracle/dba      359 2021-04-13 18:24 SOURCE___EXPORTING__AE_CUSTOM__MD_v7.par
+-rw-r--r-- oracle/dba      359 2021-04-13 18:25 SOURCE___EXPORTING__HE_CUSTOM__MD_v7.par
+-rw-r--r-- oracle/dba      353 2021-04-13 18:25 SOURCE___EXPORTING__SC_BASE__MD_v7.par
+-rw-r--r-- oracle/dba      401 2022-02-03 09:37 SOURCE____EXPORTING__AE_CUSTOM__CONFIGS.par
+-rw-r--r-- oracle/dba      401 2022-02-03 09:37 SOURCE____EXPORTING__HE_CUSTOM__CONFIGS.par
+-rw-r--r-- oracle/dba      207 2022-06-22 13:46 SOURCE____IMPORTING__AE_CUSTOM__CONFIGS.par
+-rw-r--r-- oracle/dba      207 2022-06-22 13:47 SOURCE____IMPORTING__HE_CUSTOM__CONFIGS.par
+-rw-r--r-- oracle/dba     1888 2024-04-03 13:07 SOURCE_for_transfer.inn
+
+xmedmdbw07d.aetna.com (oracle) MPSBOX01::/oraexport/u01/datapump
+MPSBOX01>
+
+xmedmdbw07d.aetna.com (oracle) MPSBOX01::/oraexport/u01/datapump
+MPSBOX01> cat SOURCE___EXPORTING__AE_CUSTOM__MD_v7.par
+SCHEMAS=AE_CUSTOM
+DIRECTORY=DATA_PUMP_DIR
+CONTENT=METADATA_ONLY
+INCLUDE=GRANT
+INCLUDE=PROCEDURE
+INCLUDE=FUNCTION
+INCLUDE=PACKAGE
+INCLUDE=TYPE
+INCLUDE=TRIGGER
+INCLUDE=PROCOBJ
+INCLUDE=SYNONYM
+INCLUDE=VIEW
+DUMPFILE=EXPORT___AE_CUSTOM___md_v7_Jan1-2020_${ORACLE_SID}.dmp
+LOGFILE=EXPORT___AE_CUSTOM___md_v7_Jan1-2020_${ORACLE_SID}.log
+METRICS=Y
+LOGTIME=ALL
+
+
+
+echo
+echo "Step ${STEPNO} - Creating DataPump Parameter Files at "`date '+%Y-%m-%d %H:%M:%S'`
+
+touch EXPORT_marker8888888888888888888888888888888888888888888888888__${RD}__Creating_PARs
+
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"   SOURCE___EXPORTING__AE_CUSTOM__MD_v7.par > EXPORTING__AE_CUSTOM__MD_v7__$(date '+%b-%d-%Y').par
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"   SOURCE___EXPORTING__HE_CUSTOM__MD_v7.par > EXPORTING__HE_CUSTOM__MD_v7__$(date '+%b-%d-%Y').par
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"   SOURCE___EXPORTING__SC_BASE__MD_v7.par   > EXPORTING__SC_BASE__MD_v7__$(date '+%b-%d-%Y').par
+#
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"  SOURCE____EXPORTING__AE_CUSTOM__CONFIGS.par   > EXPORTING__AE_CUSTOM__CONFIGS__$(date '+%b-%d-%Y').par
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"  SOURCE____EXPORTING__HE_CUSTOM__CONFIGS.par   > EXPORTING__HE_CUSTOM__CONFIGS__$(date '+%b-%d-%Y').par
+#
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"  SOURCE___EXPORTING_5.par  > EXPORTING_5__$(date '+%b-%d-%Y').par
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"  SOURCE___EXPORTING_CONFIGS.par > EXPORTING_CONFIGS__$(date '+%b-%d-%Y').par
+#
+sed "s/Jan1-2020/$(date '+%b-%d-%Y')/g"  SOURCE___EXPORTING_STAFF.par > EXPORTING_STAFF__$(date '+%b-%d-%Y').par
+#
+
+touch EXPORT_marker8888888888888888888888888888888888888888888888888__${RD}__Created_PARs
+
+
+
+
+
+
+
+Reference 2: 
+
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING__AE_CUSTOM__MD_v7__$(date '+%b-%d-%Y').par
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING__HE_CUSTOM__MD_v7__$(date '+%b-%d-%Y').par
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING__SC_BASE__MD_v7__$(date '+%b-%d-%Y').par
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING__AE_CUSTOM__CONFIGS__$(date '+%b-%d-%Y').par
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING__HE_CUSTOM__CONFIGS__$(date '+%b-%d-%Y').par
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING_5__$(date '+%b-%d-%Y').par
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING_CONFIGS__$(date '+%b-%d-%Y').par
+echodo expdp  \"/ as sysdba\"  parfile=EXPORTING_STAFF__$(date '+%b-%d-%Y').par
+
+This used to always be my DBA account…… since I scheduled it…   
+Recently changed to sys as per discussion with Sudhakar
