@@ -1,0 +1,37 @@
+rcatdev_DNTMQ001,rcatdev_DNTMQRP1 =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldw1d)(PORT = 1524))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xoracldm1d)(PORT = 1524))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = RCAT_DEV)
+      (SERVER = DEDICATED)
+    )
+  )
+
+DNTMQ001_sys=
+  (DESCRIPTION=
+    (ADDRESS=
+      (PROTOCOL=TCP)
+      (HOST=aphmm1q)
+      (PORT=1521)
+    )
+    (CONNECT_DATA=
+      (SERVICE_NAME=DNTMQ001)
+    )
+  )
+
+DNTMQRP1_sys=
+  (DESCRIPTION=
+    (ADDRESS=
+      (PROTOCOL=TCP)
+      (HOST=floradev)
+      (PORT=1596)
+    )
+    (CONNECT_DATA=
+      (SERVICE_NAME=DNTMQRP1.WORLD)
+    )
+  )
+
+ifile=/u27/app/oracle/product/11.2.0/db_4/network/admin/tnsnames.ora

@@ -1,0 +1,8 @@
+WALLET_LOCATION =(SOURCE =
+                    (METHOD = FILE)
+                    (METHOD_DATA = (DIRECTORY = /u27/app/oracle/oracle_wallet)
+                    )
+                 )
+SQLNET.WALLET_OVERRIDE = TRUE
+#ifile=/orahome/allu01/app/oracle/product/11.2.0/db_1/network/admin/sqlnet.ora
+
