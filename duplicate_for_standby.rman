@@ -1,0 +1,4 @@
+list backup summary;
+DUPLICATE TARGET DATABASE to &1 FOR STANDBY FROM ACTIVE DATABASE nofilenamecheck;
+
+
