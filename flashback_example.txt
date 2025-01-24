@@ -1,0 +1,224 @@
+dpadmin/C4MqlG_dpprd01
+
+dpadmin/a2UvC9_dpprd02
+
+
+
+cd /u01/app/oracle/aetna/db_admin/db_DPPRD02/autoimp
+
+
+50 05 * * 6 /u01/app/oracle/admin/DPPRD02/autoimp/export_security_tables_b4_dbrefresh.ksh
+
+
+export_DPPRD02_tables_b4_dbrefresh.par
+
+
+
+/u01/app/oracle/admin/DPPRD02/autoimp
+log=/u01/app/oracle/admin/DPPRD02/autoimp/export_fromDPPRD01.log
+
+EXPORT PSQRYDEFN WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYFIELD WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYRECORD WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYCRITERIA WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYBIND WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYEXPR WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYSELECT WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYBINDLANG WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYDEFNLANG WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYFIELDLANG WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYDEL WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYEXECLOG WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYFAVORITES WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYPREFS WHERE OPRID=’TERRESA_ID’;
+EXPORT PSQRYSTATS WHERE OPRID=’TERRESA_ID’;
+
+EXPORT PSQRYTRANS WHERE OPRID=’TERRESA_ID’;  
+
+
+
+tables=(
+SYSADM.PSQRYDEFN,
+SYSADM.PSQRYFIELD,
+SYSADM.PSQRYRECORD,
+SYSADM.PSQRYCRITERIA,
+SYSADM.PSQRYBIND,
+SYSADM.PSQRYEXPR,
+SYSADM.PSQRYSELECT,
+SYSADM.PSQRYBINDLANG,
+SYSADM.PSQRYDEFNLANG,
+SYSADM.PSQRYFIELDLANG,
+SYSADM.PSQRYDEL,
+SYSADM.PSQRYEXECLOG,
+SYSADM.PSQRYFAVORITES,
+SYSADM.PSQRYPREFS,
+SYSADM.PSQRYSTATS,
+SYSADM.PSQRYTRANS
+)
+
+
+
+
+expdp dpadmin/C4MqlG_dpprd01 parfile=exp_20180124.par logfile=export_fromDPPRD01.log
+
+
+. ~/.profile
+
+But, there was an afterthought,   instead of ”as of timestamp sysdate -1.2 “, we should have used “as of timestamp to_date(‘01/23/17 20:00’,’mm/dd/yy hh23:mi’) . So that data for all tables remains consistent)
+
+select count(*) from PSQRYDEFN as of timestamp sysdate -1;
+select count(*) from PSQRYFIELD as of timestamp sysdate -1;
+select count(*) from PSQRYRECORD as of timestamp sysdate -1;
+select count(*) from PSQRYCRITERIA as of timestamp sysdate -1;
+select count(*) from PSQRYBIND as of timestamp sysdate -1;
+select count(*) from PSQRYEXPR as of timestamp sysdate -1;
+select count(*) from PSQRYSELECT as of timestamp sysdate -1;
+select count(*) from PSQRYBINDLANG as of timestamp sysdate -1;
+select count(*) from PSQRYDEFNLANG as of timestamp sysdate -1;
+select count(*) from PSQRYFIELDLANG as of timestamp sysdate -1;
+select count(*) from PSQRYDEL as of timestamp sysdate -1;
+select count(*) from PSQRYEXECLOG as of timestamp sysdate -1;
+select count(*) from PSQRYFAVORITES as of timestamp sysdate -1;
+select count(*) from PSQRYPREFS as of timestamp sysdate -1;
+select count(*) from PSQRYSTATS as of timestamp sysdate -1;
+select count(*) from PSQRYTRANS as of timestamp sysdate -1;
+
+
+
+
+
+SQL> BINDLANG as of timestamp sysdate -1;
+select coun
+  COUNT(*)
+----------
+         0
+
+SQL> t(*) from PSQRYDEFNLANG as of timestamp sysdate -1;
+select count
+  COUNT(*)
+----------
+         0
+
+SQL> (*) from PSQRYFIELDLANG as of timestamp sysdate -1;
+select count(*) from PSQRYDE
+  COUNT(*)
+----------
+         0
+
+
+SQL> lect count(*) from PSQRYEXECLOG as of timestamp sysdate -1;
+select count(*) from
+  COUNT(*)
+----------
+         0
+
+
+
+SQL> ct count(*) from PSQRYPREFS as of timestamp sysdate -1;
+select c
+  COUNT(*)
+----------
+         0
+
+
+
+SQL> (*) from PSQRYTRANS as of timestamp sysdate -1;
+
+  COUNT(*)
+----------
+         0
+
+
+
+
+
+. . exported "SYSADM"."PSQRYEXECLOG"                         0 KB       0 rows
+. . exported "SYSADM"."PSQRYPREFS"                           0 KB       0 rows
+. . exported "SYSADM"."PSQRYTRANS"                           0 KB       0 rows
+. . exported "SYSADM"."PSQRYBINDLANG"                        0 KB       0 rows
+. . exported "SYSADM"."PSQRYDEFNLANG"                        0 KB       0 rows
+. . exported "SYSADM"."PSQRYFIELDLANG"                       0 KB       0 rows
+
+
+
+Create table temp1 tablespace PYLARGE nologging as select  *  from SYSADM.PSQRYDEFN as of timestamp sysdate -1;
+Delete from SYSADM.PSQRYDEFN;
+commit;
+
+Insert into SYSADM.PSQRYDEFN select * from temp1;
+commit;
+truncate table temp1;
+
+
+Create table temp2 tablespace PYLARGE nologging as select  *  from SYSADM.PSQRYFIELD as of timestamp sysdate -1;
+Delete from SYSADM.PSQRYFIELD;
+commit;
+
+Insert into SYSADM.PSQRYFIELD select * from temp2;
+commit;
+truncate table temp2;
+
+
+
+
+
+tables=(
+SYSADM.PSQRYDEFN,
+SYSADM.PSQRYFIELD,
+SYSADM.PSQRYRECORD,
+SYSADM.PSQRYCRITERIA,
+
+SYSADM.PSQRYBIND,
+SYSADM.PSQRYEXPR,
+SYSADM.PSQRYSELECT,
+SYSADM.PSQRYBINDLANG,
+SYSADM.PSQRYDEFNLANG,
+SYSADM.PSQRYFIELDLANG,
+SYSADM.PSQRYDEL,
+SYSADM.PSQRYEXECLOG,
+SYSADM.PSQRYFAVORITES,
+SYSADM.PSQRYPREFS,
+SYSADM.PSQRYSTATS,
+SYSADM.PSQRYTRANS
+)
+
+DROP TABLE SYS.TEMP1
+/
+DROP TABLE SYS.TEMP10
+/
+DROP TABLE SYS.TEMP11
+/
+DROP TABLE SYS.TEMP12
+/
+DROP TABLE SYS.TEMP13
+/
+DROP TABLE SYS.TEMP14
+/
+DROP TABLE SYS.TEMP15
+/
+DROP TABLE SYS.TEMP16
+/
+DROP TABLE SYS.TEMP17
+/
+DROP TABLE SYS.TEMP18
+/
+DROP TABLE SYS.TEMP19
+/
+DROP TABLE SYS.TEMP2
+/
+DROP TABLE SYS.TEMP3
+/
+DROP TABLE SYS.TEMP4
+/
+DROP TABLE SYS.TEMP5
+/
+DROP TABLE SYS.TEMP6
+/
+DROP TABLE SYS.TEMP7
+/
+DROP TABLE SYS.TEMP8
+/
+DROP TABLE SYS.TEMP9
+/
+
+
