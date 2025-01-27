@@ -1,0 +1,132 @@
+
+!! Nornally this parameter shouble set to  db_create_file_dest='+DATA_01' in both Primary and StandBy
+
+!! However always double check db_create_file_dest value before adding new file and change base on what file needs to be added.
+
+*************Example for adding DATA file   
+
+
+
+
+
+--- xhepydbw1p (Standby) ---
+
+
+sqlplus / as sysdba
+
+
+SQL> show parameter db_create_file_dest
+
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+db_create_file_dest                  string      +DATA_01
+
+
+
+
+
+
+
+--- xhepydbm1p (Primary) ---
+
+--Check if we have space on disks first
+
+. oraenv
+
++ASM
+
+--Lists all disk groups and their attributes.
++ASM> asmcmd lsdg 
+State    Type    Rebal  Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   483860                0          483860              0             N  DATA_01/
+MOUNTED  EXTERN  N         512   4096  4194304    614400   610296                0          610296              0             N  FLASH_01/
+MOUNTED  EXTERN  N         512   4096  4194304   3686400   514880                0          514880              0             N  IND_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOA_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOB_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOC_01/
+
+
+or
+
+--Login to HEPYPRD via DBAartisan
+
+select
+  MOUNT_STATUS     ,
+  HEADER_STATUS ,
+  TOTAL_MB ,
+  FREE_MB  ,
+  substr(NAME,1,20) "Name",
+  substr(LABEL,1,10) "Label",
+  substr(PATH,1,50) "Path"
+from
+        v$asm_disk
+order by
+        path,
+        name
+;
+
+
+
+
+MOUNT_STATUS	HEADER_STATUS	TOTAL_MB	FREE_MB	Name	Label	Path
+
+CACHED	MEMBER	409600	60468	DATA_01_0000	[NULL]	/dev/oracleasm/disks/VOLDATA01
+CACHED	MEMBER	409600	60476	DATA_01_0001	[NULL]	/dev/oracleasm/disks/VOLDATA02
+CACHED	MEMBER	409600	60484	DATA_01_0002	[NULL]	/dev/oracleasm/disks/VOLDATA03
+CACHED	MEMBER	409600	60476	DATA_01_0003	[NULL]	/dev/oracleasm/disks/VOLDATA04
+CACHED	MEMBER	409600	60488	DATA_01_0004	[NULL]	/dev/oracleasm/disks/VOLDATA05
+CACHED	MEMBER	409600	60468	DATA_01_0005	[NULL]	/dev/oracleasm/disks/VOLDATA06
+CACHED	MEMBER	409600	60472	DATA_01_0006	[NULL]	/dev/oracleasm/disks/VOLDATA07
+CACHED	MEMBER	409600	60488	DATA_01_0007	[NULL]	/dev/oracleasm/disks/VOLDATA08
+CACHED	MEMBER	204800	204272	FLASH_01_0000	[NULL]	/dev/oracleasm/disks/VOLFLSH1
+CACHED	MEMBER	204800	204280	FLASH_01_0001	[NULL]	/dev/oracleasm/disks/VOLFLSH2
+CACHED	MEMBER	204800	204264	FLASH_01_0002	[NULL]	/dev/oracleasm/disks/VOLFLSH3
+CACHED	MEMBER	204800	204276	FLASH_01_0003	[NULL]	/dev/oracleasm/disks/VOLFLSH4
+CACHED	MEMBER	409600	21148	IND_01_0000	[NULL]	/dev/oracleasm/disks/VOLIND01
+CACHED	MEMBER	409600	21156	IND_01_0001	[NULL]	/dev/oracleasm/disks/VOLIND02
+CACHED	MEMBER	409600	21148	IND_01_0002	[NULL]	/dev/oracleasm/disks/VOLIND03
+CACHED	MEMBER	409600	21156	IND_01_0003	[NULL]	/dev/oracleasm/disks/VOLIND04
+CACHED	MEMBER	409600	21156	IND_01_0004	[NULL]	/dev/oracleasm/disks/VOLIND05
+CACHED	MEMBER	409600	21148	IND_01_0005	[NULL]	/dev/oracleasm/disks/VOLIND06
+CACHED	MEMBER	409600	21164	IND_01_0006	[NULL]	/dev/oracleasm/disks/VOLIND07
+CACHED	MEMBER	409600	21140	IND_01_0007	[NULL]	/dev/oracleasm/disks/VOLIND08
+CACHED	MEMBER	409600	21160	IND_01_0008	[NULL]	/dev/oracleasm/disks/VOLIND09
+CACHED	MEMBER	409600	21156	IND_01_0009	[NULL]	/dev/oracleasm/disks/VOLIND10
+CACHED	MEMBER	8192	2593	REDOA_01_0000	[NULL]	/dev/oracleasm/disks/VOLREDOA
+CACHED	MEMBER	8192	3195	REDOB_01_0000	[NULL]	/dev/oracleasm/disks/VOLREDOB
+CACHED	MEMBER	8192	2593	REDOC_01_0000	[NULL]	/dev/oracleasm/disks/VOLREDOC
+
+
+
+
+!!! Contact BOB GURA for additional storage if needed before moving to the next step
+
+
+
+
+cd /home/oracle/MCL
+
+
+--Modify based on how many files being added and size
+vi NEW_DATA.sql
+
+
+sqlplus / as sysdba
+
+@NEW_DATA.sql
+
+or
+
+sqlplus / as sysdba
+
+alter tablespace DATA add datafile '+DATA_01' SIZE 24576m;
+alter tablespace DATA add datafile '+DATA_01' SIZE 24576m;
+--alter tablespace DATA add datafile '+DATA_01' SIZE 24576m;
+--alter tablespace DATA add datafile '+DATA_01' SIZE 24576m;
+
+
+
+
+
+

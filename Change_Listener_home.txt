@@ -1,0 +1,9 @@
+!! Change Listener Oracle Home
+
+srvctl stop listener -l JUPITER
+srvctl setenv listener -l JUPITER -env "TNS_ADMIN=/orahome/u01/app/oracle/product/19.22.0/db_1/network/admin"
+srvctl modify listener -l JUPITER -o /orahome/u01/app/oracle/product/19.22.0/db_1
+srvctl start listener -l JUPITER
+ps -ef | grep tns
+
+

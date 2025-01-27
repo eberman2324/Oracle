@@ -1,0 +1,410 @@
+
+
+**************************************************************************
+select
+  MOUNT_STATUS     ,
+  HEADER_STATUS ,
+  TOTAL_MB ,
+  FREE_MB  ,
+  substr(NAME,1,20) "Name",
+  substr(LABEL,1,10) "Label",
+  substr(PATH,1,50) "Path"
+from
+        v$asm_disk
+order by
+        path,
+        name
+;
+
+
+select 
+  substr(a.group_number,1,3) "Group Num", 
+  a.name "Group Name",
+  substr(b.disk_number,1,3) "Disk Num", 
+  b.name "Disk Name", 
+  b.MOUNT_STATUS "Disk Mount Status",
+  b.HEADER_STATUS "Disk Header Status",
+  b.TOTAL_MB, 
+  b.FREE_MB, 
+  substr(b.PATH,1,50) "Path"
+from v$asm_diskgroup a, v$asm_disk b
+    where a.group_number = b.group_number
+    order by a.group_number,b.disk_number;
+
+***************************************************************************
+
+
+First on standby  to_add_NEW_INDEX.sql
+
+SQL> @to_add_NEW_INDEX.sql
+SQL>
+SQL> spool to_add_NEW_INDEX.out
+SQL>
+SQL> show parameter db_create_file_dest
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+db_create_file_dest                  string      +IND_01
+SQL>
+SQL> --alter system set db_create_file_dest='+DATA_01' scope=MEMORY;
+SQL> alter system set db_create_file_dest='+IND_01' scope=MEMORY;
+
+System altered.
+
+SQL>
+SQL> show parameter db_create_file_dest
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+db_create_file_dest                  string      +IND_01
+SQL>
+SQL> spool off;
+SQL> exit;
+Disconnected from Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+With the Partitioning, Automatic Storage Management, OLAP, Advanced Analytics
+and Real Application Testing options
+
+xhepydbw1p.aetna.com (oracle) HEPYPRD::/home/oracle/MCL
+HEPYPRD>
+
+
+
+
+2nd  on PRIMARY 
+
+@space_ts_calc….  will give you ball park… for what is needed……to make it say.. 90% free
+
+(add 200 gig to make 90% free  our example)
+
+
+
+3rd check ASM
+xhepydbm1p.aetna.com (oracle) +ASM::/home/oracle/MCL
+
+--Lists all disk groups and their attributes.
++ASM> asmcmd lsdg 
+State    Type    Rebal  Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   483860                0          483860              0             N  DATA_01/
+MOUNTED  EXTERN  N         512   4096  4194304    614400   610296                0          610296              0             N  FLASH_01/
+MOUNTED  EXTERN  N         512   4096  4194304   3686400   514880                0          514880              0             N  IND_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOA_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOB_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOC_01/
+
+xhepydbm1p.aetna.com (oracle) +ASM::/home/oracle/MCL
++ASM>
+
+Contact BOB GURA for additional storage….  Here is map
+
+
+
+SQL> @showasm
+SQL>
+SQL> set termout off
+SQL>
+SQL> column HEADER_STATUS       format a14
+SQL> column MOUNT_STATUS        format a12
+SQL> column NAME             format a18
+SQL> column LABEL            format a12
+SQL> column PATH             format a45
+SQL>
+SQL> spool /orahome/u01/app/oracle/local/logs/showasm__&&hostname&&timestamp&&suffix
+SQL>
+SQL> select
+  2    MOUNT_STATUS     ,
+  3    HEADER_STATUS ,
+  4    TOTAL_MB ,
+  5    FREE_MB  ,
+  6    substr(NAME,1,20) "Name",
+  7    substr(LABEL,1,10) "Label",
+  8    substr(PATH,1,50) "Path"
+  9  from
+10          v$asm_disk
+11  order by
+12          path,
+13          name
+14  ;
+
+MOUNT_STATUS HEADER_STATUS    TOTAL_MB    FREE_MB Name               Label        Path
+------------ -------------- ---------- ---------- ------------------ ------------ ---------------------------------------------
+CACHED       MEMBER             409600      60476 DATA_01_0000                    /dev/oracleasm/disks/VOLDATA01
+CACHED       MEMBER             409600      60480 DATA_01_0001                    /dev/oracleasm/disks/VOLDATA02
+CACHED       MEMBER             409600      60492 DATA_01_0002                    /dev/oracleasm/disks/VOLDATA03
+CACHED       MEMBER             409600      60480 DATA_01_0003                    /dev/oracleasm/disks/VOLDATA04
+CACHED       MEMBER             409600      60492 DATA_01_0004                    /dev/oracleasm/disks/VOLDATA05
+CACHED       MEMBER             409600      60472 DATA_01_0005                    /dev/oracleasm/disks/VOLDATA06
+CACHED       MEMBER             409600      60476 DATA_01_0006                    /dev/oracleasm/disks/VOLDATA07
+CACHED       MEMBER             409600      60492 DATA_01_0007                    /dev/oracleasm/disks/VOLDATA08
+CACHED       MEMBER             204800     203448 FLASH_01_0000                   /dev/oracleasm/disks/VOLFLSH1
+CACHED       MEMBER             204800     203436 FLASH_01_0001                   /dev/oracleasm/disks/VOLFLSH2
+CACHED       MEMBER             204800     203412 FLASH_01_0002                   /dev/oracleasm/disks/VOLFLSH3
+CLOSED       PROVISIONED             0          0                                 /dev/oracleasm/disks/VOLFLSH4
+CACHED       MEMBER             409600      57212 IND_01_0000                     /dev/oracleasm/disks/VOLIND01
+CACHED       MEMBER             409600      57196 IND_01_0001                     /dev/oracleasm/disks/VOLIND02
+CACHED       MEMBER             409600      57212 IND_01_0002                     /dev/oracleasm/disks/VOLIND03
+CACHED       MEMBER             409600      57200 IND_01_0003                     /dev/oracleasm/disks/VOLIND04
+CACHED       MEMBER             409600      57212 IND_01_0004                     /dev/oracleasm/disks/VOLIND05
+CACHED       MEMBER             409600      57196 IND_01_0005                     /dev/oracleasm/disks/VOLIND06
+CACHED       MEMBER             409600      57208 IND_01_0006                     /dev/oracleasm/disks/VOLIND07
+CACHED       MEMBER             409600      57216 IND_01_0007                     /dev/oracleasm/disks/VOLIND08
+CACHED       MEMBER             409600      57228 IND_01_0008                     /dev/oracleasm/disks/VOLIND09
+CACHED       MEMBER               4096       2299 REDOA_01_0000                   /dev/oracleasm/disks/VOLREDOA
+CACHED       MEMBER               4096       2299 REDOB_01_0000                   /dev/oracleasm/disks/VOLREDOB
+CACHED       MEMBER               4096       2299 REDOC_01_0000                   /dev/oracleasm/disks/VOLREDOC
+
+24 rows selected.
+
+SQL> spool off;
+
+
+
+
+
+-rw-r--r--  1 oracle dba   1020 Jul  6 13:59 HEPYPRD_jul06_1359.ts
+-rw-r--r--  1 oracle dba   1278 Jul  6 14:03 NEW_INDEX.sql
+drwx------ 22 oracle dba   4096 Jul  6 14:03 ../
+drwxr-xr-x  3 oracle dba  53248 Jul  6 14:03 ./
+
+xhepydbm1p.aetna.com (oracle) HEPYPRD::/home/oracle/MCL
+HEPYPRD> sp
+
+SQL*Plus: Release 12.1.0.2.0 Production on Thu Jul 6 14:04:01 2017
+
+Copyright (c) 1982, 2014, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+With the Partitioning, Automatic Storage Management, OLAP, Advanced Analytics
+and Real Application Testing options
+
+SQL> @NEW_INDEX.sql
+SQL> set timing on
+SQL>
+SQL>
+SQL> /*
+SQL> --alter system set db_create_file_dest='+DATA_01' scope=MEMORY;
+SQL> alter system set db_create_file_dest='+IND_01' scope=MEMORY;
+SQL> */
+SQL>
+SQL>
+SQL>
+SQL> -- ------------------------------------------------------------------------------------------------
+SQL> Rem ----- V ----- cut ----- V ----- cut ----- V ----- cut ----- V ----- cut ----- V
+SQL> set termout off
+SQL> Rem ----- ^ ----- cut ----- ^ ----- cut ----- ^ ----- cut ----- ^ ----- cut ----- ^
+SQL>
+SQL> spool New_INDEX___&&dbname&&timestamp&&suffix
+SQL>
+SQL> alter tablespace INDX add datafile '+IND_01' SIZE 24576m;
+
+
+
+
+See attached… (output from the job) 
+
+
+Check space report with 
+@space_ts
+
+
+
+-rw-r--r--  1 oracle dba   2656 Jul  6 14:24 HEPYPRD_jul06_1424.ts1
+-rw-r--r--  1 oracle dba    718 Jul  6 14:27 New_INDEX___HEPYPRD_06-07-2017__142502.outt
+-rw-r--r--  1 oracle dba   2656 Jul  6 14:31 HEPYPRD_jul06_1430.ts1
+drwxr-xr-x  3 oracle dba  53248 Jul  6 14:31 ./
+
+xhepydbm1p.aetna.com (oracle) HEPYPRD::/home/oracle/MCL
+HEPYPRD> Send HEPYPRD_jul06_1430.ts1 luddym@aetna.com
+
+
+
+
+
+
+
+Change default detination on standby to +DATA_01
+
+SQL> @to_add_NEW_DATA.sql
+SQL>
+SQL> spool to_add_NEW_DATA.out
+SQL>
+SQL> show parameter db_create_file_dest
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+db_create_file_dest                  string      +IND_01
+SQL>
+SQL> alter system set db_create_file_dest='+DATA_01' scope=MEMORY;
+
+System altered.
+
+SQL> --alter system set db_create_file_dest='+IND_01' scope=MEMORY;
+SQL>
+SQL> show parameter db_create_file_dest
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+db_create_file_dest                  string      +DATA_01
+SQL>
+SQL> spool off;
+SQL> exit;
+Disconnected from Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production
+With the Partitioning, Automatic Storage Management, OLAP, Advanced Analytics
+and Real Application Testing options
+
+xhepydbw1p.aetna.com (oracle) HEPYPRD::/home/oracle/MCL
+HEPYPRD>
+
+
+
+
+********There seems to be a DB Indexing issue in Payor DB : ORA-01654
+
+Login xhepydbw3q
+
+. oraenv
+
+HEPYQA3
+
+
+
+Manually
+
+
+SQL> 
+SQL>
+SQL> select instance from v$thread;
+
+INSTANCE
+--------------------------------------------------------------------------------
+HEPYQA3
+
+SQL>
+SQL>
+SQL> alter tablespace INDX add datafile '+IND_01' SIZE 24576m;
+
+Tablespace altered.
+
+SQL> alter tablespace INDX add datafile '+IND_01' SIZE 24576m;
+
+Tablespace altered.
+
+SQL> alter tablespace INDX add datafile '+IND_01' SIZE 24576m;
+
+Tablespace altered.
+
+SQL> exit
+
+
+
+
+**********************Storage request on machine xhepydbw3q
+
+Mr. Gura:
+
+Please add 1 200 gig device to IND_01 on machine xhepydbw3q
+Please make that  /dev/oracleasm/disks/VOLIND09
+
+Mark,
+
+This is all set
+
+
+cd $SQLPATH
+
+sqlplus / as sysdba
+
+@showasm
+
+
+
+
+MOUNT_STATUS HEADER_STATUS    TOTAL_MB    FREE_MB Name               Label        Path
+------------ -------------- ---------- ---------- ------------------ ------------ ---------------------------------------------
+CLOSED       PROVISIONED             0          0 				/dev/oracleasm/disks/VOLIND09
+ 
+
+!!!!When they add new device it shows as CLOSED mount status and with PROVISIONED header status
+
+
+
+. oraenv
+
++ASM
+
+sqlplus / as sysdba
+
+
+ALTER DISKGROUP IND_01 ADD DISK '/dev/oracleasm/disks/VOLIND09' SIZE 204800 M REBALANCE POWER 500
+
+
+
+Next day got this email
+
+Hi Eugene,
+
+We are noticing lot of exceptions like the below in the HRP QA3 splunk logs since (7/10/17 4:39:18.000 AM). Can you please verify if there are any data base issue in HRP QA3 OLTP database (HEPYQA3_APP).
+
+{Failed to insert blob for fast read into blob_practitioner_role > ORA-01654: unable to extend index PROD.BLOB_PRACT_ROLE by 8 in tablespace INDX }>
+{Failed to insert blob for fast read into blob_practitioner_role > ORA-01654: unable to extend index PROD.BLOB_PRACT_ROLE by 8 in tablespace INDX }
+{Error in updating enrollment > EJB Exception: ; nested exception is: com.healthedge.util.WebServiceException: ORA-01654: unable to extend index PROD.FK_MBRSHP_CD_ENTRY_INFO_SRC by 8 in tablespace INDX }
+ORA-01654: unable to extend index PROD.FK_PAYMNT_RUN_DEF_PAYMNT_CYCLE by 128 in tablespace INDX }
+
+
+
+Mark suggested to add more space
+
+
+alter tablespace INDX add datafile '+IND_01' SIZE 24576m; 
+
+alter tablespace INDX add datafile '+IND_01' SIZE 24576m; 
+
+alter tablespace INDX add datafile '+IND_01' SIZE 24576m; 
+
+
+
+select
+  MOUNT_STATUS     ,
+  HEADER_STATUS ,
+  TOTAL_MB ,
+  FREE_MB  ,
+  substr(NAME,1,20) "Name",
+  substr(LABEL,1,10) "Label",
+  substr(PATH,1,50) "Path"
+from
+        v$asm_disk
+order by
+        path,
+        name
+;
+
+
+select 
+  substr(a.group_number,1,3) "Group Num", 
+  a.name "Group Name",
+  substr(b.disk_number,1,3) "Disk Num", 
+  b.name "Disk Name", 
+  b.MOUNT_STATUS "Disk Mount Status",
+  b.HEADER_STATUS "Disk Header Status",
+  b.TOTAL_MB, 
+  b.FREE_MB, 
+  substr(b.PATH,1,50) "Path"
+from v$asm_diskgroup a, v$asm_disk b
+    where a.group_number = b.group_number
+    order by a.group_number,b.disk_number;
+
+
+
+
+*********HEDWUAT************
+
+
+
+alter tablespace DATA add datafile '+DATA_01' SIZE 24576m; 
+
+##########after that find data file which is 16 GB and resize to 24 GB
+
+ alter database datafile '+DATA_01/HEDWUAT_XHEDWDBWU1Q/DATAFILE/data.329.948550133' resize 24576M;
+
+

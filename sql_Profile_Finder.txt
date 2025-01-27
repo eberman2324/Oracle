@@ -1,0 +1,62 @@
+select * from dba_sql_profiles
+
+select
+a.name,
+a.status,
+a.CREATED,
+a.LAST_MODIFIED,
+a.CATEGORY,
+b.sql_id
+from
+DBA_SQL_PROFILES a,
+(select distinct sql_id,sql_profile from (select sql_id,sql_profile from DBA_HIST_SQLSTAT where sql_id ='7c0srgpsvrhtn'
+union
+select sql_id,sql_profile from v$sql where sql_id ='7c0srgpsvrhtn')) b
+where a.name=b.sql_profile;
+
+select distinct 
+   p.name      profile_name,
+   s.sql_id    sql_id,
+   p.created   created
+from 
+   dba_sql_profiles p,
+   dba_hist_sqlstat s
+where
+   p.name=s.sql_profile
+   order by created;
+
+or
+
+select distinct 
+   p.name      profile_name,
+   s.sql_id    sql_id,
+   p.created   created
+from 
+   dba_sql_profiles p,
+   dba_hist_sqlstat s
+where
+   p.name=s.sql_profile and p.status = 'ENABLED'
+   order by created;
+
+or
+
+  select distinct a.sql_id,a.sql_profile, b.created from dba_hist_sqlstat a, dba_sql_profiles b
+  where a.sql_profile = b.name and a.sql_profile is not null
+  order by b.created
+
+select sql_id,sql_profile from dba_hist_sqlstat where sql_profile is not null
+
+
+
+
+select
+a.name,
+a.status,
+a.CREATED,
+a.LAST_MODIFIED,
+a.CATEGORY,
+b.sql_id
+from
+DBA_SQL_PROFILES a,
+(select distinct sql_id,sql_profile from (select sql_id,sql_profile from DBA_HIST_SQLSTAT)
+where a.name=b.sql_profile;

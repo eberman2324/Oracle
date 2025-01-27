@@ -1,0 +1,183 @@
+!!!!The fix for standby database only when index files… were in the DATA_01 diskgroup
+
+
+
+
+
+Here is primary
+xhepydbm1p.aetna.com (oracle) +ASM::/orahome/u01/app/oracle/local/sql
++ASM> asmcmd lsdg
+State    Type    Rebal  Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   483860                0          483860              0             N  DATA_01/
+MOUNTED  EXTERN  N         512   4096  4194304    614400   611128                0          611128              0             N  FLASH_01/
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   105292                0          105292              0             N  IND_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOA_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOB_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096     2299                0            2299              0             N  REDOC_01/
+
+xhepydbm1p.aetna.com (oracle) +ASM::/orahome/u01/app/oracle/local/sql
++ASM>
+
+
+
+
+Here is standby
+xhepydbw1p.aetna.com (oracle) +ASM::/home/oracle/MCL
++ASM> asmcmd lsdg
+State    Type    Rebal  Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   135772                0          135772              0             N  DATA_01/
+MOUNTED  EXTERN  N         512   4096  4194304    614400   613868                0          613868              0             N  FLASH_01/
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   523220                0          523220              0             N  IND_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096      739                0             739              0             N  REDOA_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096      739                0             739              0             N  REDOB_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096      739                0             739              0             N  REDOC_01/
+
+xhepydbw1p.aetna.com (oracle) +ASM::/home/oracle/MCL
++ASM>
+
+
+Both primary and standby ….. should be a lot closer in terms of free space…..
+So…what is going on…
+
+
+
+The beauty of standby_file_managment is that as you add a new datafile to the primary…. it is automatically added to the standby.
+However…….(and this is expected behavior)….  The standby will add datafiles according the value in db_create_file_dest regardless of the original “source” location.   BART!!!!!!!
+
+So…  For those installations using Data Guard that have a DATA_01 diskgroup and an IND_01 diskgroup  and  when adding “index” files… 
+You must change the db_create_file_dest on the standby to “+IND_01” before adding index files on the primary!!!  
+               We’ll show an example …. AFTER fixing the current issue at hand!
+If you do set db_create_file_dest on standby…..  you find yourself in the situation we currently are in!
+
+
+
+
+Back to our situation….   
+In the below query, we realize that there are files were added….. to the INDX (or index) tablespace  ….but are located in the DATA_01 diskgroup. 
+
+SQL> @show_X_files
+SQL> set lines 120
+SQL>
+SQL> column name format a80
+SQL>
+SQL> spool show_x_files.out
+SQL>
+SQL> show parameter standby_file
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+standby_file_management              string      AUTO
+SQL> SHOW PARAMETER DB_CREATE_FILE
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+db_create_file_dest                  string      +DATA_01
+SQL>
+SQL> select open_mode, database_role from v$database;
+
+OPEN_MODE            DATABASE_ROLE
+-------------------- ----------------
+MOUNTED              PHYSICAL STANDBY
+
+SQL>
+SQL> select name, bytes/1024/1024 from v$datafile where name like '+DATA_01%indx%';
+
+NAME                                                                             BYTES/1024/1024
+-------------------------------------------------------------------------------- ---------------
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.375.941945899                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.376.941945985                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.377.941946059                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.378.941946161                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.379.941946215                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.380.941946259                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.381.941946301                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.382.941946365                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.383.941946415                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.384.941946453                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.385.941946493                                    24576
+
+NAME                                                                             BYTES/1024/1024
+-------------------------------------------------------------------------------- ---------------
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.386.941946545                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.387.941946615                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.388.941946687                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.389.941946761                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.390.941946945                                    24576
++DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.391.941947049                                    24576
+
+17 rows selected.
+
+SQL>
+
+
+How do we fix….  
+
+
+
+
+
+
+Here is the fix:
+
+
+!!! Following steps should be executed on Standby side only...
+
+set echo on
+set timing on
+
+spool MOVE_X_FILES.out
+
+--      Stop log apply
+--      Set standby_file_managment to manual
+--      Set db_create_file_dest to +IND_01
+
+--alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.375.941945899'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.376.941945985'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.377.941946059'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.378.941946161'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.379.941946215'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.380.941946259'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.381.941946301'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.382.941946365'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.383.941946415'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.384.941946453'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.385.941946493'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.386.941946545'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.387.941946615'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.388.941946687'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.389.941946761'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.390.941946945'  ;
+alter database move datafile  '+DATA_01/HEPYPRD_XHEPYDBW1P/DATAFILE/indx.391.941947049'  ;
+
+--      Set db_create_file_dest to +DATA_01
+--      Set standby_file_managment to AUTO
+--      re-enable log apply
+
+spool off;
+exit;
+
+--
+
+
+
+
+
+
+
+MUCH BETTER!!!
+
+
+Here is standby after the “moves” 
+
+xhepydbw1p.aetna.com (oracle) +ASM::/home/oracle/MCL
++ASM> asmcmd lsdg
+State    Type    Rebal  Sector  Block       AU  Total_MB  Free_MB  Req_mir_free_MB  Usable_file_MB  Offline_disks  Voting_files  Name
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   553700                0          553700              0             N  DATA_01/
+MOUNTED  EXTERN  N         512   4096  4194304    614400   613256                0          613256              0             N  FLASH_01/
+MOUNTED  EXTERN  N         512   4096  4194304   3276800   105292                0          105292              0             N  IND_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096      739                0             739              0             N  REDOA_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096      739                0             739              0             N  REDOB_01/
+MOUNTED  EXTERN  N         512   4096  1048576      4096      739                0             739              0             N  REDOC_01/
+
+xhepydbw1p.aetna.com (oracle) +ASM::/home/oracle/MCL
++ASM>

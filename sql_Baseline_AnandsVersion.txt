@@ -1,0 +1,145 @@
+
+“C” below are for porting of existing STS.
+
+Step-6:  I used database link to port staging table for STS from source DB to destination DB. You may use export/import.
+
+Thanks.
+Anand Prakash
+
+
+_____________________________________________
+From: Prakash, Anand 
+Sent: Thursday, August 20, 2015 10:13 AM
+To: Lantsberger, Mark; Banks, Delana; Berman, Eugene; Cai, Peter Z; Codjoe, Anthony; Dawson, John; Deardorff, James; DeMichele III, Anthony; Dwyer, Peter T; Ginepro, Raymond C; Gleason, Robert; Gomez, Elvia; Johnson, Mary Ellen; Khan, Muhammad A (Asim); Khersonsky, Rafail; Komoravolu, Pratima; Krawetzky, Peter J; Long, Timothy; Luddy, Mark C; Mariappan, Ravi; Mei, John (Jian); Mishra, Shailesh; Najarro, Carlos; Nance, Stephanie; Nevico, Jane M; Pagan, Oscar H; Pastore, Peter; Ryan, Richard T; Samuels, David; Schloendorn, Thomas; Semencar, John R; Shen, Leon; Silins, Neal; Skinner, Timothy F; Swafford, Mike; Tian, Miao; Vaidya, Ashish; Wadlow, James; Wen, Jinru; Yang, Betty; Yorgey, Kenneth P; Yuan, John (Qiang)
+Subject: SQL Plan Baseline - Sample scripts for manual creation
+
+
+Here are the sample scripts for manual creation of SQL Plan Baseline. Please feel free to contact me for any clarification/questions.
+
+Thanks.
+Anand Prakash
+
+A.	Identify SQL statements with multiple plan and plans having significant difference in elapsed time (Please customize as appropriate):
+
+WITH plan_exec_vw
+     AS (  SELECT sql_id,
+                  plan_hash_value,
+                  SUM (executions_delta) num_exec,
+                  ROUND (
+                     SUM (elapsed_time_delta) / (SUM (executions_delta) * 1000))
+                     elapsed_per_exec_ms
+             FROM dba_hist_sqlstat
+            WHERE snap_id >= (SELECT MIN (snap_id)
+                                FROM dba_hist_snapshot
+                               WHERE begin_interval_time > SYSDATE - 14)
+         GROUP BY sql_id, plan_hash_value
+           HAVING SUM (executions_delta) > 0)
+SELECT a.sql_id,
+       a.plan_hash_value,
+       a.num_exec,
+       a.elapsed_per_exec_ms,
+       b.plan_hash_value,
+       b.num_exec,
+       b.elapsed_per_exec_ms
+  FROM plan_exec_vw a, plan_exec_vw b
+WHERE     a.sql_id = b.sql_id
+       AND a.plan_hash_value != b.plan_hash_value
+       AND a.elapsed_per_exec_ms > 2 * b.elapsed_per_exec_ms
+       AND a.num_exec * b.elapsed_per_exec_ms > 3600 * 1000
+
+
+B.	Create/load SQL Tuning Set for the identified SQLID: Once SQLID and good plan_hash_value have been identified next steps it to create SQL Tuning Set.
+
+-- Step-1   CPN database: Create empty STS (sql tuning set)
+
+exec DBMS_SQLTUNE.CREATE_SQLSET('CRQ50411_STS','STS for SQLID  6khy6w50bj6ba', 'APRAKASH');
+
+--EB
+exec DBMS_SQLTUNE.CREATE_SQLSET('STS_9zbxx31cbahbg_Mar16_1','9zbxx31cbahbg', 'A236120');
+
+-- Step-2   CPN  database: Populate STS 
+--          Note: I used filter to populate STS for desired sqlid only.
+
+DECLARE
+   l_cursor   DBMS_SQLTUNE.sqlset_cursor;
+BEGIN
+   OPEN l_cursor FOR
+      SELECT VALUE (p)
+        FROM TABLE (DBMS_SQLTUNE.
+                     select_workload_repository (12699,          -- begin_snap
+                                                 16747,            -- end_snap
+                                                 'sql_id=''6khy6w50bj6ba''', -- basic_filter
+                                                 NULL,        -- object_filter
+                                                 NULL,     -- ranking_measure1
+                                                 NULL,     -- ranking_measure2
+                                                 NULL,     -- ranking_measure3
+                                                 NULL,    -- result_percentage
+                                                 10)           -- result_limit
+                                                    ) p;
+   DBMS_SQLTUNE.
+    load_sqlset (sqlset_name => 'CRQ50411_STS', populate_cursor => l_cursor);
+END;
+/
+
+C.	Port SQL Tuning Set from one database to another 
+(optional -  required only if porting is required from one database to another database like in following case from souce database is CPN  and target database is CPNUAT)
+
+-- Step3 :  CPN DATABASE: Create empty staging table for STS
+
+exec DBMS_SQLTUNE.CREATE_STGTAB_SQLSET('CRQ50411_STS_TBL', 'APRAKASH')
+
+
+-- Step4 : CPN database: Pack STS into staging table
+
+exec DBMS_SQLTUNE.PACK_STGTAB_SQLSET ('CRQ50411_STS','APRAKASH','CRQ50411_STS_TBL', 'APRAKASH');
+
+
+-- Step5 : CPN database: Check staging table
+
+SELECT * FROM CRQ50411_STS_TBL;
+
+
+-- Step6: Port STS from source to destination
+--           (for testing it will be ported from CPN to CPNUAT)
+-- In CPNUAT database
+
+CREATE DATABASE LINK CPN USING 'CPN.WORLD';
+CREATE TABLE CRQ50411_STS_TBL
+AS
+   SELECT * FROM CRQ50411_STS_TBL@cpn;
+DROP DATABASE LINK CPN.WORLD;
+
+
+
+-- Step7  CPNUAT database:  Unpack staging table to create STS
+
+exec DBMS_SQLTUNE.UNPACK_STGTAB_SQLSET ('CRQ50411_STS', 'APRAKASH', TRUE, 'CRQ50411_STS_TBL','APRAKASH');
+
+
+D.	Create SQL Plan Baseline at target location
+
+-- Step8: CPN database: Check STS CRQ50411_STS should exist.
+
+SELECT * FROM DBA_SQLSET;
+
+
+-- Step9  CPNUAT database:  Create SQL Plan baseline for the desired plan:
+
+variable pls number;
+exec :pls := dbms_spm.load_plans_from_sqlset(sqlset_name => 'CRQ50411_STS' , basic_filter=>'plan_hash_value=3807151142');
+
+E.	Check
+
+-- CPNUAT database: Check view dba_sql_plan_baselines
+
+select * from dba_sql_plan_baselines;
+
+select * from table(dbms_xplan.DISPLAY_SQL_PLAN_BASELINE('SQL_83960a2aa95517d2'))
+
+
+-- CPNUAT database:  After load from user, to check if desired plan is being used.
+
+SELECT  sql_id,  plan_hash_value,  plan_hash_value, executions, 
+        elapsed_time, round(elapsed_time/executions) et_per_exec
+  FROM v$sql
+WHERE sql_id = '6khy6w50bj6ba'; 

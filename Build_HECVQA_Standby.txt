@@ -1,0 +1,120 @@
+
+
+
+
+
+Login to +ASM xhecvdbm21q (QA StandBy Server)
+
+
+
+cd $SCRIPTS
+
+ps -ef |grep -i create_standby_db
+
+!! Get HEPYQA sys P from TPAM
+nohup ./create_standby_db.sh HECVQA 1567 xhecvdbw21q <<< $'2\nLocked#99999\n' & 
+
+
+cd /orahome/u01/app/oracle/local/logs
+
+tail -f create_standby_db_*
+
+
+cd /orahome/u01/app/oracle/admin/HECVQA/rman
+view create_standby_db_*
+
+
+
+****** small issue ****
+Everything was good except OEM status for Standby was in Red
+
+Rich Ryan recommend and it fixed the issue
+
+ALTER USER SYS
+ACCOUNT UNLOCK
+/
+
+
+change_sys_pwd.sh HEPYQA
+
+on the primary server.
+
+*** smal issue ****
+
+I re created HEPYQA Standby and noticed that no sys P job on primary
+
+Eugene,
+
+The job was not created because it already existed.
+
+
+Scheduling Purge and Trim, Standby Log Purge and SYS P change Job in OEM
+Logout successful
+Login successful
+Creation of job "PURGE_AND_TRIM_LOGS_hepyqa_xhepydbm21q" was successful.
+Purge and Trim job has been scheduled for hepyqa_xhepydbm21q with default retentions and log size set in OEM library JOB PURGE_AND_TRIM_LOGS
+The Job will start from today based on the default schedule set in OEM library JOB PURGE_AND_TRIM_LOGS
+Reschedule JOB PURGE_AND_TRIM_LOGS_hepyqa_xhepydbm21q to update the default values.
+
+Attempting to add job HEPYQA_STDBY1_ARCHIVE_LOG_PURGE
+Creation of job "HEPYQA_STDBY1_ARCHIVE_LOG_PURGE" was successful.
+STDBY ARCHIVE LOG PURGE job has been scheduled for hepyqa_xhepydbm21q
+The Job will start from today based on the default schedule set in OEM library JOB STDBY_ARCHIVE_LOG_PURGE
+Reschedule HEPYQA_STDBY1_ARCHIVE_LOG_PURGE to update the default values.
+
+Job HEPYQA_CHANGE_DATAGUARD_SYS_PWD already exists, no action to take
+Logout successful
+Login successful
+
+
+The job was suspended by user in OEM,  I resumed the job and it is now scheduled.
+
+
+To answer your question,   in order for %SID% to be a valid parameter,  the target type for the OS job must be oracle database.   Target Type is chosen on the General tab.
+
+
+
+
+***** in case error in create standby log *****
+
+
+
+alter database add standby logfile thread 1 group 16 ('+REDOA_01', '+REDOB_01') size            6144m
+*
+ERROR at line 1:
+ORA-00301: error in adding log file '+REDOA_01' - file cannot be created
+ORA-17502: ksfdcre:4 Failed to create file +REDOA_01
+ORA-15041: diskgroup "REDOA_01" space exhausted
+
+-- Rich
+so space was exhausted on the primary trying to add standby logs
+it adds one more than redo logs so needs space for 2 more
+
+you have two options, add more space or reduce the number/size of the redo logs
+
+--Me
+So can I drop 2 Redo logs for example on Primary ?
+and do I need to drop standby logs that already there ?
+
+--Rich
+
+yes you can do that.  go from 6 to 4, you already have 5 standby logs so no change will be done there.
+
+
+Action taken: Dropped 2 inactive redo logs on Primary (via DBArtisan)
+
+
+Steps in case clone failed and needs to be restarted
+
+-- On Standby box
+
+. oraenv
+
+HEPYQA
+
+1.Shutdown the instance (shutdown abort)
+2.Remove instance files from $DBS   (rm *HEPYQA*) (check first nothing to remove in this case)
+3.Remove the database entry from the oratab
+4.Remove the database directories from asm.    In asmcmd     rm -r */HEPYQA_XHEPYDBM21Q (ASMCMD-8002: entry '*/HEPYQA_XHEPYDBM21Q' does not exist in directory '+')
+
+

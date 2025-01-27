@@ -1,0 +1,5 @@
+Run this if database in open mode 
+
+     $ORACLE_HOME/bin/dbca -silent -deleteDatabase -sourceDB $ORACLE_SID | tee -a drop_database_${ORACLE_SID}.out
+
+   End open mode instructions

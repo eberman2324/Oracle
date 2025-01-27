@@ -1,0 +1,79 @@
+
+
+--Login
+
+dgmgrl /
+
+DGMGRL for Linux: Version 12.1.0.2.0 - 64bit Production
+Copyright (c) 2000, 2013, Oracle. All rights reserved.
+Welcome to DGMGRL, type "help" for information.
+Connected as SYSDG.
+DGMGRL>
+
+
+ show configuration verbose
+
+
+Configuration - HEPYQA
+
+  Protection Mode: MaxPerformance
+  Members:
+  HEPYQA_xhepydbw1q - Primary database
+    HEPYQA_xhepydbm1q - Physical standby database
+
+Fast-Start Failover: DISABLED
+
+Configuration Status:
+SUCCESS   (status updated 48 seconds ago)
+
+
+***************************************************
+
+Failover to standby database from standby server EXAMPLE
+
+   From Standby server xhepydbw42d
+
+   dgmgrl => connect sys/locked99999@GROOT_xhepydbw42d
+
+   dgmgrl => FAILOVER TO 'GROOT_xhepydbw42d';
+
+   dgmgrl => show configuration;
+
+
+**********************************************************
+
+Stop the Broker and remove Broker Config Files on the new Primary server
+
+   From server xhepydbw42d
+
+   sqlplus / as sysdba
+
+   alter system set dg_broker_start=FALSE;
+
+   exit
+
+   cd $DBS
+
+   rm dr1${ORACLE_SID}_`hostname -s`.dat
+
+   rm dr2${ORACLE_SID}_`hostname -s`.dat
+
+*********************************************************************
+
+dgmgrl -echo sys/$password@${SOURCE} "create configuration '${ORACLE_SID}' as primary database is '${ORACLE_SID}_${PRIMARY_HOST}' connect identifier is ${SOURCE}" | tee -a $LOGFILE
+
+
+
+dgmgrl -echo sys/$password@${SOURCE} "edit database '${ORACLE_SID}_${PRIMARY_HOST}' set property StaticConnectIdentifier=${SOURCE}" | tee -a $LOGFILE
+
+
+dgmgrl -echo sys/$password@${SOURCE} "add database '${ORACLE_SID}_${SERVER_NAME}' as  connect identifier is ${DEST} maintained as physical" | tee -a $LOGFILE
+
+
+dgmgrl -echo sys/$password@${SOURCE} "edit database '${ORACLE_SID}_${SERVER_NAME}' set property StaticConnectIdentifier=${DEST}" | tee -a $LOGFILE
+
+
+dgmgrl -echo sys/$password@${SOURCE} "enable configuration" | tee -a $LOGFILE
+
+dgmgrl -echo sys/$password@${SOURCE} "EDIT CONFIGURATION SET PROPERTY OperationTimeout=120;" | tee -a $LOGFILE
+

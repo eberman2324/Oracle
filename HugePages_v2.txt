@@ -1,0 +1,142 @@
+
+Noted old value
+
+size=16388
+
+vi /orastage/u177/number.hugepages
+size=32772
+size=8808
+
+size=36500
+
+size=32264
+
+run puppet which updates following files with new hugepages number
+
+cat /proc/meminfo 
+cat /etc/sysctl.d/oracle.conf
+
+
+cd SCRIPTS
+
+BOX.sh
+
+will show
+
+HUGE PAGES:
+HugePages_Total:   18126
+HugePages_Free:     1740 
+total should match value in /orastage/u177/number.hugepages 
+
+
+Yes, once the memory has been added, we will need to double the huge page specification in /orastage/u177/number.hugepages.   Once that update is made, puppet will apply the change within the hour of the update.
+You can bounce the database to increase the SGA after the huge page allocation is made.
+
+
+If we increasing SGA we also need to adjust (increase) huge pages. Not always box will needs to be bounced. It all depends on (if linux has the available contiguous space to allocate the pages, you will not need to bounce)
+
+So in that case just make sga related paramter changes and bounce DB
+
+
+**** Formula from google ******
+
+ X = grep Hugepagesize /proc/meminfo. 
+ Y = Largest (MB of all client SGA's) * 1024
+ Z = # Huge Pages needed = Y / X (or divide by 2 as Rich does)
+
+One more thing,  I always add 8 pages as a “fudge” factor so in this case   ((140g * 1024)/2) +8 = 71688
+
+
+
+X = grep Hugepagesize /proc/meminfo 
+
+2048 kB
+
+Y = Largest (MB of all client SGA's) * 1024  
+
+## in our case we increasing SGA_target to 900 G
+900000 MB x 1024  = 921,600,000
+## in our case we increasing SGA_target to 64 G
+
+64000 MB x 1024 = 65,536,000
+
+Z = # Huge Pages needed
+
+ 921,600,000 / 2048 = 450000
+ 65,536,000/ 2048 = 32000
+Always add 2.5% to that so 450000 + 10812 = 460812
+Always add 2.5% to that so 32000 + 800 = 32800
+huge pages Rich recommended: 460812
+
+
+
+huge_page_settings.sh
+
+
+*** Instruction to Linux Admin ****
+
+Linux changes as follows:
+
+Please modify the oracle.conf file and increase the parameters   vm.nr_hugepages  to 32800.
+
+Then activate this change with the command    sysctl -p /etc/sysctl.d/oracle.conf
+
+IF these changes do not take immediately, we will need to bounce the VM.  (this is 50/50 )
+
+
+xmedmdbm21p.aetna.com (oracle) HEMPPRD::/home/oracle/MCL
+HEMPPRD> cat /etc/sysctl.d/oracle.conf
+# Standard configuration for Oracle
+# Managed by Puppet - changes made will be overwritten
+kernel.sem = 250        32000   100      128
+fs.file-max = 6815744
+net.core.rmem_default = 262144
+net.core.rmem_max = 4194304
+net.core.wmem_default = 262144
+net.core.wmem_max = 1048576
+fs.aio-max-nr = 2097152
+vm.nr_hugepages=16400
+
+
+
+Thx!
+
+
+
+
+8000 + x 1024 = 8,192,000
+8,192,000/2048 = 4008
+
+
+***** Latest ******
+
+--> Rich
+
+Eugene,
+
+Changes to huge page allocations can be made via ansible.
+
+Alan,
+
+We historically have made changes to huge pages allocations by updating   /etc/sysctl.d/oracle.conf.     It appears /etc/sysctl.d/oracle.conf does not match the current allocation.   How were your changes implemented? Should we be following a different procedure for making huge page allocation changes?
+
+
+--> Alan Jacob
+
+Hi Richard,
+
+I have made the changes in the sysctl.conf file.
+
+If the requirement is to add the configuration in /etc/sysctl.d/oracle.conf, I can do that.
+
+If this is the practice, we can follow this. I was not aware on the method which is followed.
+
+let me know the action to be taken.
+
+--> Rich
+
+Thanks Alan.
+
+Yes, please remove the specification from sysctl.conf and update oracle.conf.
+
+

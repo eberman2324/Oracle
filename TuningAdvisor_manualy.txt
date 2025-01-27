@@ -1,0 +1,45 @@
+Login to database via sqlplus under your AID
+
+## time_limit => 5
+STEP 1: Create tuning task for the specific SQL_ID:
+declare
+ task_nm varchar2(100);
+ begin
+ task_nm := dbms_sqltune.create_tuning_task(SQL_ID=> '4q5qf56zmwzyp',TASK_NAME => 'SQL_TUNNING_TASK_4q5qf56zmwzyp');
+ end;
+ /
+
+STEP 2: Check the status of newly created task:
+
+SQL> SELECT task_name, status FROM dba_advisor_log WHERE task_name = 'SQL_TUNNING_TASK_4q5qf56zmwzyp';
+
+
+STEP 3: Execute the newly created task:
+
+exec dbms_sqltune.execute_tuning_task (TASK_NAME => 'SQL_TUNNING_TASK_4q5qf56zmwzyp');
+
+Note: Please replace the task name as mentioned in step 1
+
+
+STEP 4: Check the status after executing the task:
+
+SQL> SELECT task_name, status FROM dba_advisor_log WHERE task_name = 'SQL_TUNNING_TASK_4q5qf56zmwzyp';
+
+or
+
+You can go to OEM and monitor status under Advisor Home as normal
+
+
+STEP 5: Execute the Below Query to get the Advisory Report:
+
+ SQL>SET LONG 10000;
+ SQL>SET PAGESIZE 1000
+ SQL>SET LINESIZE 200SQL> SQL>
+ SQL> SELECT DBMS_SQLTUNE.report_tuning_task('SQL_TUNNING_TASK_4q5qf56zmwzyp') AS recommendations FROM dual;
+ SQL>SET PAGESIZE 24
+
+
+or 
+
+You can view recommendation via OEM under Advisor Home as normal
+

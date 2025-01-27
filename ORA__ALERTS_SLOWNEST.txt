@@ -1,0 +1,1355 @@
+
+************************** Start OEM Alerts*******************
+
+--> Short Description: HEPYPRD_xhepydbm1p: The Data Guard status of HEPYPRD_xhepydbm1p is Error ORA-16778: redo transport error for one or more databases.
+
+
+
+Nothing we can really do with this…..    it retried and succeeded on its own………….
+
+
+06/06/2017 14:13:32
+Redo transport problem detected: redo transport to database HEPYPRD_xhepydbw1p has the following error:
+  ORA-12151: TNS:received bad packet type from network layer
+Data Guard Broker Status Summary:
+  Type                        Name                             Severity  Status
+  Configuration               HEPYPRD                           Warning  ORA-16607
+  Primary Database            HEPYPRD_xhepydbm1p                  Error  ORA-16778
+  Physical Standby Database   HEPYPRD_xhepydbw1p                Warning  ORA-16857
+
+
+---> Short Description: HEDWPRD_xhedwdbm1p: The Data Guard status of HEDWPRD_xhedwdbw1p is Error ORA-16665: timeout waiting for the result from a database.
+
+
+Mark said this due to some kind Network issues. No fixes or changes just close 
+
+
+
+----> Warning:HEDWPRD_xhedwdbm1p - The value of BLOCKS for A235687,1175,423 is 687360
+
+
+Rich: It is a custom metric showing the number of TEMP blocks a user is holding.  User A235687 SID 1175 Serial 423 is consuming 687360 blocks of temp.
+Rich: It is only in place on hrp databases.         We set this up early on. No , I do not take any action based solely on the alert.
+
+------> Warning:HEDWPRD_xhedwdbm1p - The value of MIN for 1209,35056,8qkx2k05w4uz4,osh@xdspxm20p.aetna. is 181
+
+Tells that session SID 1209 for example running for over 5 min.
+
+
+------> EM Event: Clear:HEDWSTS_xhedwdbw1s - 95% of core dump area is used.
+
+
+Login to the box
+
+cd $ORACLE_BASE/diag/tnslsnr/xhedwdbw1s/hedwsts/trace
+
+tail -200 hedwsts.log
+
+If above  log is being flooded with new connections.
+
+Run following if count(*) too big notify ADA
+
+ SELECT
+         TRUNC(TIMESTAMP, 'HH24') HOUR
+          ,A.USERNAME
+          ,COUNT(*)
+    FROM SYS.DBA_AUDIT_TRAIL A
+    WHERE A.ACTION_NAME = 'LOGON'
+    and a.username in ('PROD','PROD_DW')
+    GROUP BY A.USERNAME
+            ,TRUNC(TIMESTAMP, 'HH24')
+   ORDER BY 1, 2
+
+
+----->HEDWPRD_xhedwdbm1p - 0 distinct types of ORA- errors have been found in the alert log.
+
+ORA-10173: Dynamic Sampling time-out error
+
+Ignoreable 
+
+
+
+************************** End OEM Alerts*******************
+
+
+
+************************* Start ORA-***********************************
+
+********************HEDWPRD *************************************************
+*** 2017-09-27 04:43:46.547
+Incident 240409 created, dump file: /orahome/u01/app/oracle/diag/rdbms/hedwprd_xhedwdbm1p/HEDWPRD/incident/incdir_240409/HEDWPRD_ctwr_20370_i240409.trc
+
+ORA-04031: unable to allocate 30683176 bytes of shared memory ("large pool","unknown object","large pool","CTWR dba buffer")
+
+(Doc ID 22809871.8)
+
+
+
+
+
+
+*********************>HEDWUAT
+
+Errors in file /orahome/u01/app/oracle/diag/rdbms/hedwuat_xhedwdbwu1q/HEDWUAT/trace/HEDWUAT_m003_29444.trc  (incident=84879):
+
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2145], [], [], [], [], [], [], [], [], [], []
+
+Incident details in: /orahome/u01/app/oracle/diag/rdbms/hedwuat_xhedwdbwu1q/HEDWUAT/incident/incdir_84879/HEDWUAT_m003_29444_i84879.trc
+
+Use ADRCI or Support Workbench to package the incident.
+See Note 411.1 at My Oracle Support for error and packaging details.
+
+
+view  /orahome/u01/app/oracle/diag/rdbms/hedwuat_xhedwdbwu1q/HEDWUAT/trace/HEDWUAT_m003_29444.trc
+
+ *** 2017-10-10 20:27:31.266
+*** SESSION ID:(1435.49010) 2017-10-10 20:27:31.266
+*** CLIENT ID:() 2017-10-10 20:27:31.266
+*** SERVICE NAME:(SYS$BACKGROUND) 2017-10-10 20:27:31.266
+*** MODULE NAME:(MMON_SLAVE) 2017-10-10 20:27:31.266
+*** CLIENT DRIVER:() 2017-10-10 20:27:31.266
+*** ACTION NAME:(Auto-Purge Slave Action) 2017-10-10 20:27:31.266
+
+Incident 84879 created, dump file: /orahome/u01/app/oracle/diag/rdbms/hedwuat_xhedwdbwu1q/HEDWUAT/incident/incdir_84879/HEDWUAT_m003_29444_i84879.trc
+
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2145], [], [], [], [], [], [], [], [], [], []
+
+
+*** KEWRAPS: Error=600 encountered by Auto Purge slave.
+KEBM: MMON slave action policy violation. kewrmapsa_; viol=0; err=600
+
+*** 2017-10-10 20:27:38.871
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2145], [], [], [], [], [], [], [], [], [], []
+
+OPIRIP: Uncaught error 447. Error stack:
+ORA-00447: fatal error in background process
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2145], [], [], [], [], [], [], [], [], [], []
+
+
+
+***********************>HEPYUAT
+
+Errors in file /orahome/u01/app/oracle/diag/rdbms/hepyuat_xhepydbwu1q/HEPYUAT/trace/HEPYUAT_m003_78340.trc  (incident=72993):
+
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2142], [], [], [], [], [], [], [], [], [], []
+
+Incident details in: /orahome/u01/app/oracle/diag/rdbms/hepyuat_xhepydbwu1q/HEPYUAT/incident/incdir_72993/HEPYUAT_m003_78340_i72993.trc
+
+Use ADRCI or Support Workbench to package the incident.
+See Note 411.1 at My Oracle Support for error and packaging details.
+Tue Oct 10 20:22:07 2017
+Suspending MMON slave action kewrmapsa_ for 82800 seconds
+
+
+Incident 72993 created, dump file: /orahome/u01/app/oracle/diag/rdbms/hepyuat_xhepydbwu1q/HEPYUAT/incident/incdir_72993/HEPYUAT_m003_78340_i72993.trc
+
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2142], [], [], [], [], [], [], [], [], [], []
+
+
+*** KEWRAPS: Error=600 encountered by Auto Purge slave.
+KEBM: MMON slave action policy violation. kewrmapsa_; viol=0; err=600
+
+*** 2017-10-10 20:22:07.875
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2142], [], [], [], [], [], [], [], [], [], []
+
+OPIRIP: Uncaught error 447. Error stack:
+ORA-00447: fatal error in background process
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [2142], [], [], [], [], [], [], [], [], [], []
+
+
+
+****************>HEDWTST
+
+Suspending MMON slave action kewrmapsa_ for 82800 seconds
+Tue Oct 10 22:09:40 2017
+Errors in file /orahome/u01/app/oracle/diag/rdbms/hedwtst_xhedwdbw1d/HEDWTST/trace/HEDWTST_m000_28730.trc:
+
+ORA-00600: internal error code, arguments: [kewrspbr_2: wrong last partition], [4177], [], [], [], [], [], [], [], [], [], []
+
+Tue Oct 10 22:09:41 2017
+Dumping diagnostic data in directory=[cdmp_20171010220941], requested by (instance=1, osid=28730 (M000)), summary=[incident=96595].
+
+Tue Oct 10 22:10:01 2017
+Sweep [inc2][96595]: completed
+Tue Oct 10 22:30:20 2017
+
+
+
+
+Tom: Before I look into this, is this something you have investigated in the past?
+
+Rich: I’ve been looking at this.   I believe this due to the fact we have several DBID in the AWR tables due to cloning.   I have a procedure to remove the old DBIDs but it fails pre 12.1.0.2.170718.
+
+Tom: When removing the old dbid,  is the error ORA-13553  ?
+
+
+
+********************HEDWPRD_xhedwdbm1p - 0 distinct types of ORA- errors have been found in the alert log.
+
+ORA-10173: Dynamic Sampling time-out error
+
+Rich:
+
+Only ora errors that we are specifically monitoring for are reported by OEM.
+
+It also tells  us when alert log message that we are not specifically monitoring for is written.  We can disable this.
+
+
+Tom:
+
+I don’t think we want to disable it.  However, can an exclusion list (no_worries) somehow be
+
+ incorporated to filter out certian errors we are not specifically
+monitoring for?
+
+Rich:
+
+So no,  that is the purpose of having the  generic error filter on the specific errors.
+
+I see the original alert Eugene was referencing was for hedwprd
+
+Here is why the alert fired there
+
+ORA-10173: Dynamic Sampling time-out error
+
+************************** ORA-00235 *******************
+Tom:
+
+Rich, looks like due to
+
+Error ORA-235 occurred during an un-locked control file transaction
+
+Which can safely be ignored.  How can we turn these notifications off?
+
+
+Rich:
+
+So this alert is telling you an error was written to the alert log, any error.     We cannot filter this by ora- error.
+We can only disable the alert or raise the number of errors threshold.
+
+
+Tom:Oracle says we can ignore so could we disable the alert?  
+
+Rich: Should be all set.  I added ORA 600 [kewrspbr_2: wrong last partition]  to the alert log filter  (ignore this error).
+
+
+
+**************ORA-00600: internal error code, arguments: [kkqtutlMoveSQToView: lost subquery]********
+
+HEDWQA
+
+Metric value=Dumping diagnostic data in directory=[cdmp_20171003061712], requested by (instance=1, osid=14645), summary=[incident=332893].
+~Errors in file /orahome/u01/app/oracle/diag/rdbms/hedwqa_xhedwdbw1q/HEDWQA/trace/HEDWQA_ora_14645.trc (incident=332894):
+~ORA-00600: internal error code, arguments: [kkqtutlMoveSQToView: lost subquery], [], [], [], [], [], [], [], [], [], [], []
+~Incident details in: /orahome/u01/app/oracle/diag/rdbms/hedwqa_xhedwdbw1q/HEDWQA/incident/incdir_332894/HEDWQA_ora_14645_i332894.trc
+~Use ADRCI or Support Workbench to package the incident.~See Note 411.1 at My Oracle Support for error and packaging details.
+
+Tom:
+
+Looks like a bug.  Couple of workarounds if this has been an ongoing problem.
+
+
+Query Using Star Transformation Raised "ORA-00600: internal error code, arguments: [kkqtutlMoveSQToView: lost subquery],..." Error (Doc ID 2045401.1)
+
+****************** HEDWPRD Bad slow queries**********************
+
+8qkx2k05w4uz4
+
+1zf955vuk2rqb 
+
+
+SQL Profiles vs SQL Plan Baseline
+
+how do you flush old plans?
+
+select address, hash_value, executions, loads, version_count, invalidations, parse_calls,sql_plan_baseline
+from v$sqlarea 
+where sql_id = '123';
+
+###exec dbms_shared_pool.purge ('000000016B90CCB0,178359837','C'); 
+plug in your address and hash_value
+for the purge
+as sysdba
+
+exec dbms_shared_pool.purge ('000000079CC3AD38,197290980','C'); 
+assuming the sql is not active
+
+Oracle feature Adaptive Query Plan preventing utilizing SQl Baseline.
+
+Rich suggested adding hint to sql to use sql baseline wiht hash.
+
+SELECT  /*+ opt_param('_optimizer_adaptive_plans','false') */ 
+
+[?10/?05/?2017 3:27 PM] Schloendorn, Thomas: 
+so you'll be creating a new baseline after you add the hint, correct ?   
+[?10/?05/?2017 3:28 PM] Ryan, Richard T: 
+right
+
+
+var res number ;
+exec :res := dbms_spm.load_plans_from_cursor_cache(sql_id => 'xyz', plan_hash_value => 123, fixed=>'NO', enabled=>'YES' );
+commit;
+print res 
+so in my situation
+accepted values
+gave it a small date range
+to finish quickly
+
+
+
+Tom:
+
+Was able to run in HEDWUAT in 38 minutes with the following two indexes in place.
+
+CREATE INDEX PROD_DW.SH_SUBSCRIPTION_KEY_TOMTEST
+    ON PROD_DW.SUBSCRIPTION_HISTORY_FACT(SUBSCRIPTION_KEY,VERSION_EFF_DATE_KEY,VERSION_EXP_DATE_KEY)
+
+CREATE INDEX PROD_DW.MEMBER_HISTORY_FACT_TOMTEST
+    ON PROD_DW.MEMBER_HISTORY_FACT(MEMBER_HISTORY_FACT_KEY,SUBSCRIPTION_KEY,VERSION_EFF_DATE_KEY)
+
+
+
+On Mon 10/16/17  
+9my4hqzvhgs88 Robert Schleef was running and it was CPU intensive
+a1h8wkdsxav93 Mary Long was running this and was takin long time
+
+I asked them to cancel them 
+
+
+
+
+******************ORA-00020*****************
+
+HEPYPRD
+
+Wed Oct 11 21:45:44 2017
+ORA-00020: maximum number of processes (1500) exceeded
+ ORA-20 errors will not be written to the alert log for
+ the next minute. Please look at trace files to see all
+ the ORA-20 errors.
+Process W008 submission failed with error = 20
+
+
+*** 2017-10-11 21:45:58.301
+ORA-00020: maximum number of processes (1500) exceeded
+
+
+SQL ID:  cvyvwsrwn7rr1
+
+INSERT INTO CVC_ACQUIRED_MUTEX (MUTEX_KEY_TXT, TX_CNT, LAST_TX_DT, LAST_TX_USER_TXT) VALUES (:B1 , 1, SYSDATE, :B2 )
+
+PROD.ACQUIRELOCKS
+
+
+From: Sundaravadivel Kandaswamy
+I understood the issue happened on Oct 11, if that’s true then provider egress MNPG transactions were running during that time..
+
+
+
+--Query to help find session count history
+
+select sql_id, count(*) from dba_hist_active_sess_history where 
+sample_time
+BETWEEN
+      to_date ('2017-10-11T21:30:00', 'YYYY-MM-DD"T"HH24:MI:SS')
+           AND
+             to_date ('2017-10-11T21:50:00', 'YYYY-MM-DD"T"HH24:MI:SS')
+             group by sql_id order by 1
+
+******** 2017 ORA-1652: unable to extend temp segment by 128 in tablespace TEMP ****
+
+HEDWPRD
+
+1cd3g3180tgfk	61.GB
+
+DBMS_SCHEDULER
+
+Executed over 2.5 Million times
+
+SELECT NVL(ADDRESS_LINE, '') || CASE WHEN NVL(ADDRESS_LINE_2, 'n/a') <> 'n/a' THEN ' ' || ADDRESS_LINE_2 END || CASE WHEN 
+NVL(ADDRESS_LINE_3, 'n/a') <> 'n/a' THEN ' ' || ADDRESS_LINE_3 END || ' ' || NVL(CITY_NAME, '') || ' ' || NVL(STATE_CODE, '') || ' ' || NVL(ZIP_CODE, '') ||
+CASE WHEN NVL(ZIP_4_CODE, 'n/a') <> 'n/a' THEN '-' || ZIP_4_CODE END || CASE WHEN NVL(COUNTRY_CODE, '') <> 'US' 
+THEN ' ' || NVL(COUNTRY_NAME, '') END FROM POSTAL_ADDRESS WHERE POSTAL_ADDRESS_KEY = :B1 
+
+
+c6xdxnq938vbc	61.GB
+
+Analytics.Services.exe
+CREATE TABLE TMPCSTM
+
+
+
+fd0sbascj720r comsumed 81 GB
+
+SELECT "ahDataLayer"."C9858", "ahDataLayer"."C9861", "ahDataLayer"."C9863", "ahDataLayer"."C9864", "ahDataLayer"."C9865", "ahDataLayer"."C9866", "ahDataLayer"."C9867", "ahDataLayer"."C9868", "ahDataLayer"."C9869", "ahDataLayer"."C9870", "ahDataLayer"."C8166", "ahDataLayer"."C8167", "ahDataLayer"."C8424" FROM (SELECT "O205"."SUPPLIER_LOCATION_HCC_ID" AS "C9858", "O205"."USER_ID" AS "C9861", "O205"."ACTION" AS "C9863", "O205"."ENTRY_DATE" AS "C9864", "O205"."ENTRY_TIME" AS "C9865", "O205"."REASON_CODE" AS "C9866", "O205 "."REASON_DESC" AS "C9867", "O205"."LOG_NOTE" AS "C9868", "O205"."SUBTYPE_NM" AS "C9869", "O205"."MESSAGE_DOMAIN_NAME" AS "C9870", "O154"."SUPPLIER_LOCATION_NAME" AS "C8166", "O154"."SUPPLIER_LOCATION_NPI" AS "C8167", "O167"."SUPPLIER_NAME" AS "C8424" FROM (SELECT DISTINCT SLHF.SUPPLIER_LOCATION_HCC_ID, MAX(SLHF.SUPPLIER_LOC_HIST_FACT_KEY) MAX_SLHF_KEY, ALEF.AUDIT_LOG_KEY, UA.USER_NAME AS USER_ID, ALEF.ENTITY_TYPE, ATC.ACTION_TYPE_DESC AS ACTION, DD.DATE_VALUE AS ENTRY_DATE, to_char(cast(ALEF.ENTRY_TIME as date), 'hh24:mi:ss') AS ENTRY_TIME, ALEF.MESSAGE_CODE AS REASON_CODE, ALEF.MESSAGE_DESC AS REASON_DESC, ALEF.LOG_NOTE, ALEF.SUBTYPE_NM, ALEF.MESSAGE_DOMAIN_NAME FROM AUDIT_LOG_ENTRY_FACT ALEF LEFT JOIN DATE_DIMENSION DD ON ALEF.ENTRY_DATE_KEY = DD.DA TE_KEY LEFT JOIN ACTION_TYPE_CODE ATC ON ALEF.ACTION_TYPE_CODE = ATC.ACTION_TYPE_CODE LEFT JOIN USER_ACCOUNT UA ON ALEF.HCC_USER_ID = UA.USER_ACCOUNT_KEY LEFT JOIN SUPPLIER_LOCATION_HIST_FACT SLHF ON ALEF.AUDIT_LOG_KEY = SLHF.AUDIT_LOG_KEY GROUP BY SLHF.SUPPLIER_LOCATION_HCC_ID, ALEF.AUDIT_LOG_KEY, UA.USER_NAME, ALEF.ENTITY_TYPE, ATC.ACTION_TYPE_DESC, DD.DATE_VALUE, ALEF.ENTRY_TIME, ALEF.MESSAGE_CODE, ALEF.MESSAGE_DESC, ALEF.LOG_NOTE, ALEF.SUBTYPE_NM, ALEF.MESSAGE_DOMAIN_NAME) "O205" , (SELECT csl.AUDIT_LOG_KEY, csl.CORRESPONDENCE_ADDRESS_KEY, csl.FAX_NUMBER, csl.IS_HOSPITAL, csl.IS_PRIMARY_LOCATION, csl.PAYMENT_TYPE_KEY, csl.PRACTICE_ADDRESS_KEY, pa.address_line as PRACTICE_ADDRESS_LINE, PA.ADDRESS_LINE_2 AS PRACTICE_ADDRESS_LINE_2, PA.ADDRESS_LINE_3 AS PRACTICE_ADDRESS_LINE_3, PA.CITY_NAME AS PRACTICE_CITY_NAME, PA.COUNTRY_CODE AS PRACTICE_COUNTRY_CODE, PA.COUNTRY_NAME AS PRACTICE_COUNTRY_NAME, PA.COUNTY_CODE AS PRACTICE_COUNTY_CODE, PA.STATE_CODE AS PRACTICE_STATE_CODE, PA.ZIP_CODE AS PRACTICE_ZIP_CODE, csl.PRIMARY_CLASSIFICATION_KEY, csl.REMITTANCE_TYPE_KEY, csl.SUPPLIER_KEY, csl.SUPPLIER_LOC_CONTACT_NAME, csl.SUPPLIER_LOC_CONTACT_TITLE, dsleff.date_value SUPPLIER_LOC_EFF_DATE, csl.SUPPLIER_LOC_EFF_DATE_KEY, csl.SUPPLIER_LOC_HIST_FACT_COUNT, csl.SUPPLIER_LOC_HIST_FACT_KEY, dslterm.date_value SUPPLIER_LOC_TERM_DATE, csl.SUPPLIER_LOC_TERM_DATE_KEY, csl.SUPPLIER_LOCATION_HCC_ID, csl.SUPPLIER_LOCATION_KEY, csl.SUPPLIER_LOCATION_NAME, csl.SUPPLIER_LOCATION_NPI, csl.SUPPLIER_LOCATION_STATUS, csl.TELEPHONE_EXTENSION, csl.TELEPHONE_NUMBER, dveff.date_value VERSION_EFF_DATE, csl.VERSION_EFF_DATE_KEY, dvexp.date_value VERSION_EXP_DATE, csl.VERSION_EXP_DATE_KEY FROM SUPPLIER_LOCATIO N_HIST_FACT CSL INNER JOIN DATE_DIMENSION DSLEff ON CSL.SUPPLIER_LOC_EFF_DATE_KEY = DSLEff.DATE_KEY INNER JOIN DATE_DIMENSION DSLTerm ON CSL.SUPPLIER_LOC_TERM_DATE_KEY = DSLTerm.DATE_KEY INNER JOIN DATE_DIMENSION DVEff ON CSL.VERSION_EFF_DATE_KEY = DVEff.DATE_KEY INNER JOIN DATE_DIMENSION DVExp ON CSL.VERSION_EXP_DATE_KEY =DVExp.DATE_KEY inner join postal_address pa on csl.practice_address_key = pa.postal_address_key) "O154" , (select csup.AUDIT_LOG_KEY, csup.address_type, csup.address_line, csup.address_line_2, csup.address_line_3, csup.city_name, csup.state_code, csup.zip_code, dvexp.DATE_VALUE , csup.EXCLUDE_FROM_PROVIDER_DIR, csup.FAX_NUMBER, csup.FIRST_EFFECTIVE_DATE, csup.FIRST_EFFECTIVE_DATE_KEY, csup.IS_AUTO_ASSIGNED_AS_PCP_IND, csup.IS_PCP, csup.Payment_Type_Key, ptc.PAYMENT_TYPE_DESC, csup.PRIMARY_CLASSIFICATION_KEY, cs up.Remittance_Type_Key, rtc.REMITTANCE_TYPE_DESC, csup.SUPPLIER_CONTACT_NAME, csup.SUPPLIER_CONTACT_TITLE, csup.SUPPLIER_CORR_ADDRESS_KEY, csup.SUPPLIER_EFFECTIVE_DATE, csup.SUPPLIER_EFFECTIVE_DATE_KEY, csup.SUPPLIER_HCC_ID, csup.SUPPLIER_HISTORY_FACT_COUNT, csup.SUPPLIER_HISTORY_FACT_KEY, csup.SUPPLIER_KEY, csup.SUPPLIER_NAME, csup.SUPPLIER_NETWORK_NAME, csup.SUPPLIER_NETWORK_STATUS, csup.SUPPLIER_NPI, csup.SUPPLIER_STATUS, csup.SUPPLIER_TERMINATION_DATE, csup.SUPPLIER_TERMINATION_DATE_KEY, csup.TAX_ADDRESS_KEY, csup.TAX_ENTITY_KEY, csup.TAX_ID, csup.TAX_NAME, csup.TELEPHONE_EXTENSION, csup.TELEPHONE_NUMBER, csup.VERSION_EFF_DATE, csup.VERSION_EFF_DATE_KEY, csup.VERSION_EXP_DATE, csup.VERSION_EXP_DATE_KEY from prod_dw.cstmcached_supplier_ext csup left join REMITTANCE_TYPE_CODE RTC on csup.rem ittance_type_key = RTC.REMITTANCE_TYPE_KEY left join PAYMENT_TYPE_CODE PTC ON csup.payment_type_key = PTC.PAYMENT_TYPE_KEY left join DATE_DIMENSION DVExp ON csup.VERSION_EXP_DATE_KEY =DVExp.DATE_KEY) "O167" WHERE ( ( ( "O205"."USER_ID" LIKE 'A%' ) And ( "O154"."VERSION_EFF_DATE" <= TO_DATE(REPLACE(SUBSTR('2017-10-18', 1, 19), 'T', ' '), 'YYYY-MM-DD HH24:MI:SS') ) And ( "O154"."VERSION_EXP_DATE" > TO_DATE(REPLACE(SUBSTR('2017-10-18', 1, 19), 'T', ' '), 'YYYY-MM-DD HH24:MI:SS') ) And ( "O205"."REASON_DESC" = 'Supplier location create' ) ) ) AND ( "O205"."AUDIT_LOG_KEY"="O154"."AUDIT_LOG_KEY"(+) AND "O205"."MAX_SLHF_KEY"="O154"."SUPPLIER_LOC_HIST_FACT_KEY"(+) AND "O154"."SUPPLIER_KEY"(+)="O167"."SUPPLIER_KEY" )) "ahDataLayer" 
+
+2syk8jks36nr7 81 GB
+
+
+SELECT "ahDataLayer"."C9858", "ahDataLayer"."C9861", "ahDataLayer"."C9863", "ahDataLayer"."C9864", "ahDataLayer"."C9865", "ahDataLayer"."C9866", "ahDataLayer"."C9867", "ahDataLayer"."C9868", "ahDataLayer"."C9869", "ahDataLayer"."C9870", "ahDataLayer"."C8166", "ahDataLayer"."C8167", "ahDataLayer"."C8424" FROM (SELECT "O205"."SUPPLIER_LOCATION_HCC_ID" AS "C9858", "O205"."USER_ID" AS "C9861", "O205"."ACTION" AS "C9863", "O205"."ENTRY_DATE" AS "C9864", "O205"."ENTRY_TIME" AS "C9865", "O205"."REASON_CODE" AS "C9866", "O205 "."REASON_DESC" AS "C9867", "O205"."LOG_NOTE" AS "C9868", "O205"."SUBTYPE_NM" AS "C9869", "O205"."MESSAGE_DOMAIN_NAME" AS "C9870", "O154"."SUPPLIER_LOCATION_NAME" AS "C8166", "O154"."SUPPLIER_LOCATION_NPI" AS "C8167", "O167"."SUPPLIER_NAME" AS "C8424" FROM (SELECT DISTINCT SLHF.SUPPLIER_LOCATION_HCC_ID, MAX(SLHF.SUPPLIER_LOC_HIST_FACT_KEY) MAX_SLHF_KEY, ALEF.AUDIT_LOG_KEY, UA.USER_NAME AS USER_ID, ALEF.ENTITY_TYPE, ATC.ACTION_TYPE_DESC AS ACTION, DD.DATE_VALUE AS ENTRY_DATE, to_char(cast(ALEF.ENTRY_TIME as date), 'hh24:mi:ss') AS ENTRY_TIME, ALEF.MESSAGE_CODE AS REASON_CODE, ALEF.MESSAGE_DESC AS REASON_DESC, ALEF.LOG_NOTE, ALEF.SUBTYPE_NM, ALEF.MESSAGE_DOMAIN_NAME FROM AUDIT_LOG_ENTRY_FACT ALEF LEFT JOIN DATE_DIMENSION DD ON ALEF.ENTRY_DATE_KEY = DD.DA TE_KEY LEFT JOIN ACTION_TYPE_CODE ATC ON ALEF.ACTION_TYPE_CODE = ATC.ACTION_TYPE_CODE LEFT JOIN USER_ACCOUNT UA ON ALEF.HCC_USER_ID = UA.USER_ACCOUNT_KEY LEFT JOIN SUPPLIER_LOCATION_HIST_FACT SLHF ON ALEF.AUDIT_LOG_KEY = SLHF.AUDIT_LOG_KEY GROUP BY SLHF.SUPPLIER_LOCATION_HCC_ID, ALEF.AUDIT_LOG_KEY, UA.USER_NAME, ALEF.ENTITY_TYPE, ATC.ACTION_TYPE_DESC, DD.DATE_VALUE, ALEF.ENTRY_TIME, ALEF.MESSAGE_CODE, ALEF.MESSAGE_DESC, ALEF.LOG_NOTE, ALEF.SUBTYPE_NM, ALEF.MESSAGE_DOMAIN_NAME) "O205" , (SELECT csl.AUDIT_LOG_KEY, csl.CORRESPONDENCE_ADDRESS_KEY, csl.FAX_NUMBER, csl.IS_HOSPITAL, csl.IS_PRIMARY_LOCATION, csl.PAYMENT_TYPE_KEY, csl.PRACTICE_ADDRESS_KEY, pa.address_line as PRACTICE_ADDRESS_LINE, PA.ADDRESS_LINE_2 AS PRACTICE_ADDRESS_LINE_2, PA.ADDRESS_LINE_3 AS PRACTICE_ADDRESS_LINE_3, PA.CITY_NAME AS PRACTICE_CITY_NAME, PA.COUNTRY_CODE AS PRACTICE_COUNTRY_CODE, PA.COUNTRY_NAME AS PRACTICE_COUNTRY_NAME, PA.COUNTY_CODE AS PRACTICE_COUNTY_CODE, PA.STATE_CODE AS PRACTICE_STATE_CODE, PA.ZIP_CODE AS PRACTICE_ZIP_CODE, csl.PRIMARY_CLASSIFICATION_KEY, csl.REMITTANCE_TYPE_KEY, csl.SUPPLIER_KEY, csl.SUPPLIER_LOC_CONTACT_NAME, csl.SUPPLIER_LOC_CONTACT_TITLE, dsleff.date_value SUPPLIER_LOC_EFF_DATE, csl.SUPPLIER_LOC_EFF_DATE_KEY, csl.SUPPLIER_LOC_HIST_FACT_COUNT, csl.SUPPLIER_LOC_HIST_FACT_KEY, dslterm.date_value SUPPLIER_LOC_TERM_DATE, csl.SUPPLIER_LOC_TERM_DATE_KEY, csl.SUPPLIER_LOCATION_HCC_ID, csl.SUPPLIER_LOCATION_KEY, csl.SUPPLIER_LOCATION_NAME, csl.SUPPLIER_LOCATION_NPI, csl.SUPPLIER_LOCATION_STATUS, csl.TELEPHONE_EXTENSION, csl.TELEPHONE_NUMBER, dveff.date_value VERSION_EFF_DATE, csl.VERSION_EFF_DATE_KEY, dvexp.date_value VERSION_EXP_DATE, csl.VERSION_EXP_DATE_KEY FROM SUPPLIER_LOCATIO N_HIST_FACT CSL INNER JOIN DATE_DIMENSION DSLEff ON CSL.SUPPLIER_LOC_EFF_DATE_KEY = DSLEff.DATE_KEY INNER JOIN DATE_DIMENSION DSLTerm ON CSL.SUPPLIER_LOC_TERM_DATE_KEY = DSLTerm.DATE_KEY INNER JOIN DATE_DIMENSION DVEff ON CSL.VERSION_EFF_DATE_KEY = DVEff.DATE_KEY INNER JOIN DATE_DIMENSION DVExp ON CSL.VERSION_EXP_DATE_KEY =DVExp.DATE_KEY inner join postal_address pa on csl.practice_address_key = pa.postal_address_key) "O154" , (select csup.AUDIT_LOG_KEY, csup.address_type, csup.address_line, csup.address_line_2, csup.address_line_3, csup.city_name, csup.state_code, csup.zip_code, dvexp.DATE_VALUE , csup.EXCLUDE_FROM_PROVIDER_DIR, csup.FAX_NUMBER, csup.FIRST_EFFECTIVE_DATE, csup.FIRST_EFFECTIVE_DATE_KEY, csup.IS_AUTO_ASSIGNED_AS_PCP_IND, csup.IS_PCP, csup.Payment_Type_Key, ptc.PAYMENT_TYPE_DESC, csup.PRIMARY_CLASSIFICATION_KEY, cs up.Remittance_Type_Key, rtc.REMITTANCE_TYPE_DESC, csup.SUPPLIER_CONTACT_NAME, csup.SUPPLIER_CONTACT_TITLE, csup.SUPPLIER_CORR_ADDRESS_KEY, csup.SUPPLIER_EFFECTIVE_DATE, csup.SUPPLIER_EFFECTIVE_DATE_KEY, csup.SUPPLIER_HCC_ID, csup.SUPPLIER_HISTORY_FACT_COUNT, csup.SUPPLIER_HISTORY_FACT_KEY, csup.SUPPLIER_KEY, csup.SUPPLIER_NAME, csup.SUPPLIER_NETWORK_NAME, csup.SUPPLIER_NETWORK_STATUS, csup.SUPPLIER_NPI, csup.SUPPLIER_STATUS, csup.SUPPLIER_TERMINATION_DATE, csup.SUPPLIER_TERMINATION_DATE_KEY, csup.TAX_ADDRESS_KEY, csup.TAX_ENTITY_KEY, csup.TAX_ID, csup.TAX_NAME, csup.TELEPHONE_EXTENSION, csup.TELEPHONE_NUMBER, csup.VERSION_EFF_DATE, csup.VERSION_EFF_DATE_KEY, csup.VERSION_EXP_DATE, csup.VERSION_EXP_DATE_KEY from prod_dw.cstmcached_supplier_ext csup left join REMITTANCE_TYPE_CODE RTC on csup.rem ittance_type_key = RTC.REMITTANCE_TYPE_KEY left join PAYMENT_TYPE_CODE PTC ON csup.payment_type_key = PTC.PAYMENT_TYPE_KEY left join DATE_DIMENSION DVExp ON csup.VERSION_EXP_DATE_KEY =DVExp.DATE_KEY) "O167" WHERE ( ( ( "O205"."USER_ID" LIKE 'A%' ) And ( "O154"."VERSION_EFF_DATE" <= TO_DATE(REPLACE(SUBSTR('2017-10-24', 1, 19), 'T', ' '), 'YYYY-MM-DD HH24:MI:SS') ) And ( "O154"."VERSION_EXP_DATE" > TO_DATE(REPLACE(SUBSTR('2017-10-24', 1, 19), 'T', ' '), 'YYYY-MM-DD HH24:MI:SS') ) And ( "O205"."REASON_DESC" = 'Supplier location create' ) ) ) AND ( "O205"."AUDIT_LOG_KEY"="O154"."AUDIT_LOG_KEY"(+) AND "O205"."MAX_SLHF_KEY"="O154"."SUPPLIER_LOC_HIST_FACT_KEY"(+) AND "O154"."SUPPLIER_KEY"(+)="O167"."SUPPLIER_KEY" )) "ahDataLayer" 
+
+
+ba5t9fcjwd5nq
+
+select * from (SELECT "ahDataLayer"."C8420", "ahDataLayer"."C8424", "ahDataLayer"."C8426", "ahDataLayer"."C10449", "ahDataLayer"."C8164", "ahDataLayer"."C8449", "ahDataLayer"."C8450", "ahDataLayer"."C8451", ROW_NUMBER() OVER (ORDER BY (SELECT null FROM DUAL)) as "lgxLogiRowNumber" FROM (SELECT DISTINCT 
+"O167"."SUPPLIER_HCC_ID" AS "C8420", 
+"O167"."SUPPLIER_NAME" AS "C8424", 
+"O167"."SUPPLIER_STATUS" AS "C8426", 
+"O235"."EPDB_PIN" AS "C10449", 
+"O154"."SUPPLIER_LOCATION_HCC_ID" AS "C8164", 
+"O169"."ID_TYPE_CODE" AS "C8449", 
+"O169"."ID_TYPE_NAME" AS "C8450", 
+"O169"."IDENTIFICATION_NUMBER" AS "C8451"
+ FROM (select 
+      csup.AUDIT_LOG_KEY,
+      csup.address_type,
+      csup.address_line,
+      csup.address_line_2,
+      csup.address_line_3, 
+      csup.city_name,
+      csup.state_code,
+      csup.zip_code,
+      dvexp.DATE_VALUE ,
+      csup.EXCLUDE_FROM_PROVIDER_DIR,
+      csup.FAX_NUMBER,
+      csup.FIRST_EFFECTIVE_DATE,
+      csup.FIRST_EFFECTIVE_DATE_KEY,
+      csup.IS_AUTO_ASSIGNED_AS_PCP_IND,
+      csup.IS_PCP,
+      csup.Payment_Type_Key,
+      ptc.PAYMENT_TYPE_DESC,
+      csup.PRIMARY_CLASSIFICATION_KEY,
+      csup.Remittance_Type_Key,
+      rtc.REMITTANCE_TYPE_DESC,
+      csup.SUPPLIER_CONTACT_NAME,
+      csup.SUPPLIER_CONTACT_TITLE,
+      csup.SUPPLIER_CORR_ADDRESS_KEY,
+      csup.SUPPLIER_EFFECTIVE_DATE,
+      csup.SUPPLIER_EFFECTIVE_DATE_KEY,
+      csup.SUPPLIER_HCC_ID,
+      csup.SUPPLIER_HISTORY_FACT_COUNT,
+      csup.SUPPLIER_HISTORY_FACT_KEY,
+      csup.SUPPLIER_KEY,
+      csup.SUPPLIER_NAME,
+      csup.SUPPLIER_NETWORK_NAME,
+      csup.SUPPLIER_NETWORK_STATUS,
+      csup.SUPPLIER_NPI,
+      csup.SUPPLIER_STATUS,
+      csup.SUPPLIER_TERMINATION_DATE,
+      csup.SUPPLIER_TERMINATION_DATE_KEY,
+      csup.TAX_ADDRESS_KEY,
+      csup.TAX_ENTITY_KEY,
+      csup.TAX_ID,
+      csup.TAX_NAME,
+      csup.TELEPHONE_EXTENSION,
+      csup.TELEPHONE_NUMBER,
+      csup.VERSION_EFF_DATE,
+      csup.VERSION_EFF_DATE_KEY,
+      csup.VERSION_EXP_DATE,
+      csup.VERSION_EXP_DATE_KEY
+      
+from prod_dw.cstmcached_supplier_ext csup
+left join REMITTANCE_TYPE_CODE RTC on csup.remittance_type_key = RTC.REMITTANCE_TYPE_KEY
+left join PAYMENT_TYPE_CODE PTC ON csup.payment_type_key = PTC.PAYMENT_TYPE_KEY
+left join DATE_DIMENSION DVExp ON csup.VERSION_EXP_DATE_KEY =DVExp.DATE_KEY) "O167"
+,(select soi.supplier_history_fact_key, soi.identification_number as EPDB_PIN
+from supplier_other_id soi 
+     inner join id_type_code itc on soi.id_type_key = itc.id_type_key
+where itc.id_type_code = 'IDT33') "O235" 
+,(/***********************************************************************************************
+Answers Supplier Location Ext Virtual View
+
+Modified: 10-25-2017 by RDS
+Modification: Added CSL.CLAIM_PAYMENT_PAYEE_SEL_CODE
+
+************************************************************************************************/
+SELECT CSL.AUDIT_LOG_KEY,
+       CSL.CORRESPONDENCE_ADDRESS_KEY,
+       CSL.FAX_NUMBER,
+       CSL.IS_HOSPITAL,
+       CSL.IS_PRIMARY_LOCATION,
+       CSL.PAYMENT_TYPE_KEY,
+       CSL.PRACTICE_ADDRESS_KEY,
+       PA.ADDRESS_LINE                     AS PRACTICE_ADDRESS_LINE,
+       PA.ADDRESS_LINE_2                   AS PRACTICE_ADDRESS_LINE_2,
+       PA.ADDRESS_LINE_3                   AS PRACTICE_ADDRESS_LINE_3,
+       PA.CITY_NAME                        AS PRACTICE_CITY_NAME,
+       PA.COUNTRY_CODE                     AS PRACTICE_COUNTRY_CODE,
+       PA.COUNTRY_NAME                     AS PRACTICE_COUNTRY_NAME,
+       PA.COUNTY_CODE                      AS PRACTICE_COUNTY_CODE,
+       PA.STATE_CODE                       AS PRACTICE_STATE_CODE,
+       PA.ZIP_CODE                         AS PRACTICE_ZIP_CODE,
+       CSL.PRIMARY_CLASSIFICATION_KEY,
+       CSL.REMITTANCE_TYPE_KEY,
+       CSL.SUPPLIER_KEY,
+       CSL.SUPPLIER_LOC_CONTACT_NAME,
+       CSL.SUPPLIER_LOC_CONTACT_TITLE,
+       DSLEFF.DATE_VALUE                   AS SUPPLIER_LOC_EFF_DATE,
+       CSL.SUPPLIER_LOC_EFF_DATE_KEY,
+       CSL.SUPPLIER_LOC_HIST_FACT_COUNT,
+       CSL.SUPPLIER_LOC_HIST_FACT_KEY,
+       DSLTERM.DATE_VALUE                  AS SUPPLIER_LOC_TERM_DATE,
+       CSL.SUPPLIER_LOC_TERM_DATE_KEY,
+       CSL.SUPPLIER_LOCATION_HCC_ID,
+       CSL.SUPPLIER_LOCATION_KEY,
+       CSL.SUPPLIER_LOCATION_NAME,
+       CSL.SUPPLIER_LOCATION_NPI,
+       CSL.SUPPLIER_LOCATION_STATUS,
+       CSL.TELEPHONE_EXTENSION,
+       CSL.TELEPHONE_NUMBER,
+       DVEFF.DATE_VALUE                    AS VERSION_EFF_DATE,
+       CSL.VERSION_EFF_DATE_KEY,
+       DVEXP.DATE_VALUE                    AS VERSION_EXP_DATE,
+       CSL.VERSION_EXP_DATE_KEY,
+       CSL.CLAIM_PAYMENT_PAYEE_SEL_CODE
+       
+  FROM SUPPLIER_LOCATION_HIST_FACT CSL
+   
+   INNER JOIN DATE_DIMENSION DSLEFF   ON CSL.SUPPLIER_LOC_EFF_DATE_KEY  = DSLEFF.DATE_KEY
+   INNER JOIN DATE_DIMENSION DSLTERM  ON CSL.SUPPLIER_LOC_TERM_DATE_KEY = DSLTERM.DATE_KEY
+   INNER JOIN DATE_DIMENSION DVEFF    ON CSL.VERSION_EFF_DATE_KEY       = DVEFF.DATE_KEY
+   INNER JOIN DATE_DIMENSION DVEXP    ON CSL.VERSION_EXP_DATE_KEY       = DVEXP.DATE_KEY
+   INNER JOIN POSTAL_ADDRESS PA       ON CSL.PRACTICE_ADDRESS_KEY       = PA.POSTAL_ADDRESS_KEY) "O154" 
+,(Select sloi.supplier_loc_hist_fact_key, itc.id_type_code, itc.id_type_name, sloi.identification_number
+from supplier_loc_other_id sloi
+     inner join id_type_code itc on sloi.id_type_key = itc.id_type_key) "O169"  WHERE 
+ ( (  ( "O235"."EPDB_PIN" IN ('4000025','4000181','4000315','4000320','4000391','4000476','4000858','4001158','4001230','4001317','4001426','4001716','4001751','4001776','')  ) Or  ( "O169"."IDENTIFICATION_NUMBER" IN ('4000025','4000181','4000315','4000320','4000391','4000476','4000858','4001158','4001230','4001317','4001426','4001716','4001751','4001776','')  )  ) ) 
+ AND (
+"O167"."SUPPLIER_HISTORY_FACT_KEY"="O235"."SUPPLIER_HISTORY_FACT_KEY"(+) 
+AND "O167"."SUPPLIER_KEY"="O154"."SUPPLIER_KEY"(+) 
+AND "O154"."SUPPLIER_LOC_HIST_FACT_KEY"="O169"."SUPPLIER_LOC_HIST_FACT_KEY"(+) )) "ahDataLayer") "lgxPagingQuery" where "lgxPagingQuery"."lgxLogiRowNumber" between 1 and 5000
+
+
+
+Anton Perry 
+
+c8tfk4b0bucwu (adhoc query by A804545)
+
+dru2nag1z2p8n (adhoc query by A804545)
+c8tfk4b0bucwu (adhoc query by A804545)
+
+c8tfk4b0bucwu
+
+SELECT DISTINCT NVL (MHIF.HICN, MHIF.MBI)        AS HICN_OR_MBI      ,
+
+        MHF.MEMBER_HCC_ID                        AS MEMBER_ID        ,
+
+        MHF.MEMBER_LAST_NAME                     AS MEMBER_LAST_NAME ,
+
+        MHF.MEMBER_FIRST_NAME                    AS MEMBER_FIRST_NAME,
+
+        DDDOB.DATE_VALUE                         AS MEMBER_BIRTH_DATE,
+
+        SUBSTR (BPOI.IDENTIFICATION_NUMBER,1,5)  AS CONTRACT_#       ,
+
+        SUBSTR (BPOI.IDENTIFICATION_NUMBER,-3,3) AS PBP              ,
+
+        DD5.DATE_VALUE                           AS EFFECTIVE_DATE   ,
+
+        PHF.PRACTITIONER_LAST_NAME
+
+        ||
+
+        ', '
+
+        ||
+
+        PHF.PRACTITIONER_FIRST_NAME AS PCP_NAME     ,
+
+        PHF.PRACTITIONER_HCC_ID     AS PCP_ID       ,
+
+        PRHF.PRACTITIONER_ROLE_NAME AS PRACT_ROLE_ID,
+
+        SHF.Supplier_Hcc_Id         AS SUPPLIER_ID  ,
+
+        shf.supplier_name           AS supplier_name,
+
+        TEHF.TIN                    AS TIN
+
+FROM    member_hist_fact_to_practitnr mhftp
+
+        -- member --
+
+        LEFT JOIN
+
+                (
+
+                        SELECT *
+
+                        FROM    Member_History_Fact mhf1
+
+                                INNER JOIN
+
+                                        (
+
+                                                SELECT DISTINCT mhf3.member_hcc_id     AS member_hcc_id_03,
+
+                                                        MAX(mhf3.VERSION_EXP_DATE_KEY) AS VERSION_EXP_DATE_KEY_03
+
+                                                FROM    member_history_fact mhf3
+
+                                                GROUP BY mhf3.member_hcc_id
+
+                                        )
+
+                                        mhf4
+
+                                ON      mhf1.member_hcc_id            = mhf4.member_hcc_id_03
+
+                                        AND mhf1.VERSION_EXP_DATE_KEY = mhf4.VERSION_EXP_DATE_KEY_03
+
+                )
+
+                mhf2 ON mhftp.member_history_fact_key = mhf2.member_history_fact_key
+
+                LEFT JOIN member_history_fact mhf
+
+                ON      mhf2.member_history_fact_key = mhf.member_history_fact_key
+
+                LEFT JOIN member_hist_fact_to_bnft_plan MHFTBP
+
+                ON      MHF.MEMBER_HISTORY_FACT_KEY = MHFTBP.MEMBER_HISTORY_FACT_KEY
+
+                -- practitioner --
+
+                LEFT JOIN practitioner_history_fact phf
+
+                ON      mhftp.practitioner_key = phf.practitioner_key
+
+                LEFT JOIN pract_hist_to_benefit_network phtbn
+
+                ON      phf.practitioner_hist_fact_key = phtbn.practitioner_history_fact_key
+
+                LEFT JOIN practitioner_role_history_fact prhf
+
+                ON      mhftp.practitioner_role_key = prhf.practitioner_role_key
+
+                LEFT JOIN pract_role_hist_to_bn prhtb
+
+                ON      prhf.practitioner_role_hist_fct_key = prhtb.practitioner_role_hist_fct_key
+
+                -- supplier --
+
+                LEFT JOIN supplier_history_fact shf
+
+                ON      prhf.supplier_key = shf.supplier_key
+
+                LEFT JOIN supplier_hist_to_bnft_network shtbn
+
+                ON      shf.supplier_history_fact_key = shtbn.supplier_history_fact_key
+
+                LEFT JOIN supplier_location_hist_fact slhf
+
+                ON      shf.supplier_key = slhf.supplier_key
+
+                LEFT JOIN supp_loc_hist_to_bn slhtb
+
+                ON      slhf.supplier_loc_hist_fact_key = slhtb.supp_loc_history_fact_key
+
+                -- benefit plan --
+
+                INNER JOIN BENEFIT_PLAN_HISTORY_FACT BPHF
+
+                ON      MHFTBP.BENEFIT_PLAN_KEY = BPHF.BENEFIT_PLAN_KEY
+
+                INNER JOIN BENEFIT_PLAN_OTHER_ID BPOI
+
+                ON      BPHF.BENEFIT_PLAN_HISTORY_FACT_KEY = BPOI.BENEFIT_PLAN_HISTORY_FACT_KEY
+
+                -- tax --
+
+                LEFT JOIN TAX_ENTITY_HISTORY_FACT TEHF
+
+                ON      SHF.TAX_ENTITY_KEY = TEHF.TAX_ENTITY_KEY
+
+                -- hicn --
+
+                LEFT JOIN
+
+                        (
+
+                                SELECT *
+
+                                FROM    medicare_hicn_info_fact mhif01
+
+                                        INNER JOIN
+
+                                                (
+
+                                                        SELECT DISTINCT mhif02.member_key               AS member_key_01,
+
+                                                                MAX(mhif02.medicare_hicn_info_fact_key) AS medicare_hicn_info_fact_key_01
+
+                                                        FROM    medicare_hicn_info_fact mhif02
+
+                                                        GROUP BY mhif02.member_key
+
+                                                )
+
+                                                MHIF03
+
+                                        ON      mhif01.member_key                      = mhif03.member_key_01
+
+                                                AND mhif01.medicare_hicn_info_fact_key = mhif03.medicare_hicn_info_fact_key_01
+
+                        )
+
+                        MHIF ON MHF.MEMBER_KEY = MHIF.MEMBER_KEY
+
+                        -- date --
+
+                        --LEFT JOIN DATE_DIMENSION DD3 ON MHF.MEMBER_RECEIPT_DATE_KEY = DD3.DATE_KEY
+
+                        --LEFT JOIN DATE_DIMENSION DD4 ON MHF.VERSION_EXP_DATE_KEY = DD4.DATE_KEY
+
+                        LEFT JOIN DATE_DIMENSION DD5
+
+                        ON      MHF.MEMBER_EFFECTIVE_DATE_KEY = DD5.DATE_KEY
+
+                        --LEFT JOIN DATE_DIMENSION DD6 ON MHF.VERSION_EFF_DATE_KEY = DD6.DATE_KEY
+
+                        --LEFT JOIN date_dimension DD7 on alef.entry_date_key = DD7.date_key
+
+                        --left join date_dimension dd8 on mhf.first_effective_date_key = dd8.date_key
+
+                        LEFT JOIN DATE_DIMENSION DDDOB
+
+                        ON      MHF.MEMBER_BIRTH_DATE_KEY            = DDDOB.DATE_KEY
+
+                WHERE   MHFTP.ROLE_NAME                              = 'PCP'     --(PCP ASSIGNED RECORDS ONLY)
+
+                        AND SUBSTR (BPOI.IDENTIFICATION_NUMBER,1,5) IN ('H1100') --(MEDICARE JV CONTRACTS "PPO")
+
+                        AND NVL (MHIF.HICN, MHIF.MBI)               IS NOT NULL
+
+                        AND phf.practitioner_hcc_id NOT             IN
+
+                        (
+
+                                SELECT  phf.practitioner_hcc_id
+
+                                FROM    practitioner_history_fact phf
+
+                                        INNER JOIN pract_hist_to_benefit_network phtbn
+
+                                        ON      phf.practitioner_hist_fact_key = phtbn.practitioner_history_fact_key
+
+                                WHERE   phtbn.benefit_network_key             IN ('30005','30006')
+
+                                GROUP BY phf.practitioner_hcc_id
+
+                        )
+
+                        AND prhf.practitioner_role_name NOT IN
+
+                        (
+
+                                SELECT  prhf.practitioner_role_name
+
+                                FROM    practitioner_role_history_fact prhf
+
+                                        INNER JOIN pract_role_hist_to_bn prhtb
+
+                                        ON      prhf.practitioner_role_hist_fct_key = prhtb.practitioner_role_hist_fct_key
+
+                                WHERE   prhtb.benefit_network_key                  IN ('30005','30006')
+
+                                GROUP BY prhf.practitioner_role_name
+
+                        )
+
+                        AND shf.supplier_hcc_id NOT IN
+
+                        (
+
+                                SELECT  shf.supplier_hcc_id
+
+                                FROM    supplier_history_fact shf
+
+                                        INNER JOIN supplier_hist_to_bnft_network shtbn
+
+                                        ON      shf.supplier_history_fact_key = shtbn.supplier_history_fact_key
+
+                                WHERE   shtbn.benefit_network_key            IN ('30005','30006')
+
+                                GROUP BY shf.supplier_hcc_id
+
+                        )
+
+                        AND slhf.supplier_key NOT IN
+
+                        (
+
+                                SELECT  slhf.supplier_key
+
+                                FROM    supplier_location_hist_fact slhf
+
+                                        INNER JOIN supp_loc_hist_to_bn slhtb
+
+                                        ON      slhf.supplier_loc_hist_fact_key = slhtb.supp_loc_history_fact_key
+
+                                WHERE   slhtb.benefit_network_key              IN ('30005','30006')
+
+                                GROUP BY slhf.supplier_key
+
+                        )
+
+                ------------------------
+
+                UNION
+
+                ------------------------
+
+                SELECT DISTINCT NVL (MHIF.HICN, MHIF.MBI)        AS HICN_OR_MBI      ,
+
+                        MHF.MEMBER_HCC_ID                        AS MEMBER_ID        ,
+
+                        MHF.MEMBER_LAST_NAME                     AS MEMBER_LAST_NAME ,
+
+                        MHF.MEMBER_FIRST_NAME                    AS MEMBER_FIRST_NAME,
+
+                        DDDOB.DATE_VALUE                         AS MEMBER_BIRTH_DATE,
+
+                        SUBSTR (BPOI.IDENTIFICATION_NUMBER,1,5)  AS CONTRACT_#       ,
+
+                        SUBSTR (BPOI.IDENTIFICATION_NUMBER,-3,3) AS PBP              ,
+
+                        DD5.DATE_VALUE                           AS EFFECTIVE_DATE   ,
+
+                        PHF.PRACTITIONER_LAST_NAME
+
+                        ||
+
+                        ', '
+
+                        ||
+
+                        PHF.PRACTITIONER_FIRST_NAME AS PCP_NAME     ,
+
+                        PHF.PRACTITIONER_HCC_ID     AS PCP_ID       ,
+
+                        PRHF.PRACTITIONER_ROLE_NAME AS PRACT_ROLE_ID,
+
+                        SHF.Supplier_Hcc_Id         AS SUPPLIER_ID  ,
+
+                        shf.supplier_name           AS supplier_name,
+
+                        TEHF.TIN                    AS TIN
+
+                FROM    member_hist_fact_to_practitnr mhftp
+
+                        -- member --
+
+                        LEFT JOIN
+
+                                (
+
+                                        SELECT *
+
+                                        FROM    Member_History_Fact mhf1
+
+                                                INNER JOIN
+
+                                                        (
+
+                                                                SELECT DISTINCT mhf3.member_hcc_id     AS member_hcc_id_03,
+
+                                                                        MAX(mhf3.VERSION_EXP_DATE_KEY) AS VERSION_EXP_DATE_KEY_03
+
+                                                                FROM    member_history_fact mhf3
+
+                                                                GROUP BY mhf3.member_hcc_id
+
+                                                        )
+
+                                                        mhf4
+
+                                                ON      mhf1.member_hcc_id            = mhf4.member_hcc_id_03
+
+                                                        AND mhf1.VERSION_EXP_DATE_KEY = mhf4.VERSION_EXP_DATE_KEY_03
+
+                                )
+
+                                mhf2 ON mhftp.member_history_fact_key = mhf2.member_history_fact_key
+
+                                LEFT JOIN member_history_fact mhf
+
+                                ON      mhf2.member_history_fact_key = mhf.member_history_fact_key
+
+                                LEFT JOIN member_hist_fact_to_bnft_plan MHFTBP
+
+                                ON      MHF.MEMBER_HISTORY_FACT_KEY = MHFTBP.MEMBER_HISTORY_FACT_KEY
+
+                                -- practitioner --
+
+                                LEFT JOIN practitioner_history_fact phf
+
+                                ON      mhftp.practitioner_key = phf.practitioner_key
+
+                                LEFT JOIN pract_hist_to_benefit_network phtbn
+
+                                ON      phf.practitioner_hist_fact_key = phtbn.practitioner_history_fact_key
+
+                                LEFT JOIN practitioner_role_history_fact prhf
+
+                                ON      mhftp.practitioner_role_key = prhf.practitioner_role_key
+
+                                LEFT JOIN pract_role_hist_to_bn prhtb
+
+                                ON      prhf.practitioner_role_hist_fct_key = prhtb.practitioner_role_hist_fct_key
+
+                                -- supplier --
+
+                                LEFT JOIN supplier_history_fact shf
+
+                                ON      prhf.supplier_key = shf.supplier_key
+
+                                LEFT JOIN supplier_hist_to_bnft_network shtbn
+
+                                ON      shf.supplier_history_fact_key = shtbn.supplier_history_fact_key
+
+                                LEFT JOIN supplier_location_hist_fact slhf
+
+                                ON      shf.supplier_key = slhf.supplier_key
+
+                                LEFT JOIN supp_loc_hist_to_bn slhtb
+
+                                ON      slhf.supplier_loc_hist_fact_key = slhtb.supp_loc_history_fact_key
+
+                                -- benefit plan --
+
+                                INNER JOIN BENEFIT_PLAN_HISTORY_FACT BPHF
+
+                                ON      MHFTBP.BENEFIT_PLAN_KEY = BPHF.BENEFIT_PLAN_KEY
+
+                                INNER JOIN BENEFIT_PLAN_OTHER_ID BPOI
+
+                                ON      BPHF.BENEFIT_PLAN_HISTORY_FACT_KEY = BPOI.BENEFIT_PLAN_HISTORY_FACT_KEY
+
+                                -- tax --
+
+                                LEFT JOIN TAX_ENTITY_HISTORY_FACT TEHF
+
+                                ON      SHF.TAX_ENTITY_KEY = TEHF.TAX_ENTITY_KEY
+
+                                -- hicn --
+
+                                LEFT JOIN
+
+                                        (
+
+                                                SELECT *
+
+                                                FROM    medicare_hicn_info_fact mhif01
+
+                                                        INNER JOIN
+
+                                                                (
+
+                                                                        SELECT DISTINCT mhif02.member_key               AS member_key_01,
+
+                                                                                MAX(mhif02.medicare_hicn_info_fact_key) AS medicare_hicn_info_fact_key_01
+
+                                                                        FROM    medicare_hicn_info_fact mhif02
+
+                                                                        GROUP BY mhif02.member_key
+
+                                                                )
+
+                                                                MHIF03
+
+                                                        ON      mhif01.member_key                      = mhif03.member_key_01
+
+                                                                AND mhif01.medicare_hicn_info_fact_key = mhif03.medicare_hicn_info_fact_key_01
+
+                                        )
+
+                                        MHIF ON MHF.MEMBER_KEY = MHIF.MEMBER_KEY
+
+                                        -- date --
+
+                                        --LEFT JOIN DATE_DIMENSION DD3 ON MHF.MEMBER_RECEIPT_DATE_KEY = DD3.DATE_KEY
+
+                                        --LEFT JOIN DATE_DIMENSION DD4 ON MHF.VERSION_EXP_DATE_KEY = DD4.DATE_KEY
+
+                                        LEFT JOIN DATE_DIMENSION DD5
+
+                                        ON      MHF.MEMBER_EFFECTIVE_DATE_KEY = DD5.DATE_KEY
+
+                                        --LEFT JOIN DATE_DIMENSION DD6 ON MHF.VERSION_EFF_DATE_KEY = DD6.DATE_KEY
+
+                                        --LEFT JOIN date_dimension DD7 on alef.entry_date_key = DD7.date_key
+
+                                        --left join date_dimension dd8 on mhf.first_effective_date_key = dd8.date_key
+
+                                        LEFT JOIN DATE_DIMENSION DDDOB
+
+                                        ON      MHF.MEMBER_BIRTH_DATE_KEY            = DDDOB.DATE_KEY
+
+                                WHERE   MHFTP.ROLE_NAME                              = 'PCP'     --(PCP ASSIGNED RECORDS ONLY)
+
+                                        AND SUBSTR (BPOI.IDENTIFICATION_NUMBER,1,5) IN ('H2829') --(MEDICARE JV CONTRACTS "HMO")
+
+                                        AND NVL (MHIF.HICN, MHIF.MBI)               IS NOT NULL
+
+                                        AND phf.practitioner_hcc_id NOT             IN
+
+                                        (
+
+                                                SELECT  phf.practitioner_hcc_id
+
+                                                FROM    practitioner_history_fact phf
+
+                                                        INNER JOIN pract_hist_to_benefit_network phtbn
+
+                                                        ON      phf.practitioner_hist_fact_key = phtbn.practitioner_history_fact_key
+
+                                                WHERE   phtbn.benefit_network_key             IN ('30003','30004')
+
+                                                GROUP BY phf.practitioner_hcc_id
+
+                                        )
+
+                                        AND prhf.practitioner_role_name NOT IN
+
+                                        (
+
+                                                SELECT  prhf.practitioner_role_name
+
+                                                FROM    practitioner_role_history_fact prhf
+
+                                                        INNER JOIN pract_role_hist_to_bn prhtb
+
+                                                        ON      prhf.practitioner_role_hist_fct_key = prhtb.practitioner_role_hist_fct_key
+
+                                                WHERE   prhtb.benefit_network_key                  IN ('30003','30004')
+
+                                                GROUP BY prhf.practitioner_role_name
+
+                                        )
+
+                                        AND shf.supplier_hcc_id NOT IN
+
+                                        (
+
+                                                SELECT  shf.supplier_hcc_id
+
+                                                FROM    supplier_history_fact shf
+
+                                                        INNER JOIN supplier_hist_to_bnft_network shtbn
+
+                                                        ON      shf.supplier_history_fact_key = shtbn.supplier_history_fact_key
+
+                                                WHERE   shtbn.benefit_network_key            IN ('30003','30004')
+
+                                                GROUP BY shf.supplier_hcc_id
+
+                                        )
+
+                                        AND slhf.supplier_key NOT IN
+
+                                        (
+
+                                                SELECT  slhf.supplier_key
+
+                                                FROM    supplier_location_hist_fact slhf
+
+                                                        INNER JOIN supp_loc_hist_to_bn slhtb
+
+                                                        ON      slhf.supplier_loc_hist_fact_key = slhtb.supp_loc_history_fact_key
+
+                                                WHERE   slhtb.benefit_network_key              IN ('30003','30004')
+
+                                                GROUP BY slhf.supplier_key
+
+                                        )
+
+
+
+--Query to help find who used Temp Tablespace most during specific time.
+
+select sql_id,max(TEMP_SPACE_ALLOCATED)/(1024*1024*1024) gig 
+from DBA_HIST_ACTIVE_SESS_HISTORY 
+where 
+sample_time
+ BETWEEN
+ to_date ('2017-10-18T04:20:00', 'YYYY-MM-DD"T"HH24:MI:SS')
+   AND
+ 
+  to_date ('2017-10-18T04:37:00', 'YYYY-MM-DD"T"HH24:MI:SS')
+    and 
+
+TEMP_SPACE_ALLOCATED > (50*1024*1024*1024) 
+group by sql_id order by sql_id;
+
+
+
+
+**************** ORA-01555 caused by SQL statement below (SQL ID: ffdg91bfauru3, Query Duration=2469 sec, SCN: 0x0001.e1b0c217):
+
+
+ffdg91bfauru3
+
+
+A236120.SQL_TUNING_1508868696862
+
+Recommend SQL PROFILE  potentially better execution plan was found for this statement.
+
+SELECT
+
+        /* SupplierInquiry */
+
+        node2.spplr_loc_id supplierLocationIdentifier,
+
+        node2.loc_nm locationName                    ,
+
+        node2.hcc_id locationHccIdentifier           ,
+
+        node2.inst_active_cd locationActiveCode      ,
+
+        node2.national_prvdr_id locationNPI          ,
+
+        node2.prmry_loc_ind primaryLocationIndicator
+
+FROM    supplier node1               ,
+
+        supplier_location node2      ,
+
+        spplr_loc_x_othr_id_lst xref1,
+
+        identification_number node3  ,
+
+        spplr_loc_x_othr_names xref2 ,
+
+        other_organization_name_used node4
+
+WHERE
+
+        (
+
+                (
+
+                        node1.concept_fulfilled_cd IN ('f', 't')
+
+                )
+
+                AND
+
+                (
+
+                        (
+
+                                (
+
+                                        node1.ver_eff_dt <= :1
+
+                                )
+
+                                AND
+
+                                (
+
+                                        node1.ver_expire_dt > :2
+
+                                )
+
+                        )
+
+                        AND
+
+                        (
+
+                                (
+
+                                        node1.endor_eff_dt <= :3
+
+                                )
+
+                                AND
+
+                                (
+
+                                        node1.endor_expire_dt > :4
+
+                                )
+
+                        )
+
+                )
+
+                AND
+
+                (
+
+                        (
+
+                                node1.spplr_id = node2.spplr_id
+
+                        )
+
+                        AND
+
+                        (
+
+                                (
+
+                                        (
+
+                                                (
+
+                                                        node2.ver_eff_dt <= :5
+
+                                                )
+
+                                                AND
+
+                                                (
+
+                                                        node2.ver_expire_dt > :6
+
+                                                )
+
+                                        )
+
+                                        AND
+
+                                        (
+
+                                                (
+
+                                                        node2.endor_eff_dt <= :7
+
+                                                )
+
+                                                AND
+
+                                                (
+
+                                                        node2.endor_expire_dt > :8
+
+                                                )
+
+                                        )
+
+                                        AND
+
+                                        (
+
+                                                node2.concept_fulfilled_cd = 'f'
+
+                                        )
+
+                                )
+
+                                AND
+
+                                (
+
+                                        (
+
+                                                node2.spplr_loc_id = xref1.qxj__parent
+
+                                        )
+
+                                        AND
+
+                                        (
+
+                                                node2.ver_id = xref1.ver_id
+
+                                        )
+
+                                        AND
+
+                                        (
+
+                                                node2.spplr_loc_id = xref2.qxj__parent
+
+                                        )
+
+                                        AND
+
+                                        (
+
+                                                node2.ver_id = xref2.ver_id
+
+                                        )
+
+                                        AND
+
+                                        (
+
+                                                (
+
+                                                        xref1.ident_nbr_id = node3.ident_nbr_id
+
+                                                )
+
+                                                AND
+
+                                                (
+
+                                                        xref1.ver_id = node3.ver_id
+
+                                                )
+
+                                                AND
+
+                                                (
+
+                                                        UPPER(node3.ident_nbr) = :9
+
+                                                )
+
+                                        )
+
+                                        AND
+
+                                        (
+
+                                                (
+
+                                                        xref2.othr_organization_nm_used_id = node4.othr_organization_nm_used_id
+
+                                                )
+
+                                                AND
+
+                                                (
+
+                                                        xref2.ver_id = node4.ver_id
+
+                                                )
+
+                                                AND
+
+                                                (
+
+                                                        UPPER(node4.organization_nm) LIKE :10
+
+                                                )
+
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+ORDER BY nlssort(node2.inst_active_cd, 'NLS_SORT=BINARY_CI') NULLS FIRST
+
+
+
+
+***************  xhedwdbm1p High CPU Alert ***********
+
+59z7bfkpny83t
+
+Tom: Using a profile I assume you created with the hint ?
+Rich: I am working on This is a long story.   I am creating a baseline for it.
+Tom: Rich, just circling back.  Are we all set now ?  Have there been favorable subsequent executions of the SQL  ?
+Rich: The last one executed in 30 minutes but there is a lot of funkiness going on here.
+

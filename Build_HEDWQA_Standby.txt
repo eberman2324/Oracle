@@ -1,0 +1,175 @@
+Login to +ASM xhedwdbm21q (QA StandBy Server)
+
+
+
+cd $SCRIPTS
+
+ps -ef |grep -i create_standby_db
+
+
+qyBS?4sf
+
+nohup ./create_standby_db.sh HEDWQA 1560 xhedwdbw21q <<< $'4\nqyBS?4sf\n' & 
+
+
+cd /orahome/u01/app/oracle/local/logs
+
+tail -f create_standby_db_*
+
+
+cd /orahome/u01/app/oracle/admin/HEDWQA/rman
+view create_standby_db_*
+
+
+Everything was good except OEM status for Standby was in Red
+
+Rich Ryan recommend and it fixed the issue
+
+change_sys_pwd.sh HEDWQA
+
+on the primary server.
+
+
+!!! Once Standby Clone completed make Standby READ ONLY
+
+
+2) Add service to primary database
+
+   Note: May already exist
+
+select * from dba_services;
+
+   exec dbms_service.CREATE_SERVICE(SERVICE_NAME=> 'HEDWQA_RPT', NETWORK_NAME=> 'HEDWQA_RPT')
+
+   
+
+
+3) Add trigger to primary database
+
+Note: May already exist
+select * from dba_triggers where trigger_name = 'STARTDGSERVICES'
+
+
+   CREATE OR REPLACE TRIGGER SYS.STARTDGSERVICES
+   AFTER STARTUP
+   ON DATABASE
+   DECLARE
+    db_role VARCHAR(30);
+    db_open_mode VARCHAR(30);
+   BEGIN
+
+    execute immediate ' ALTER SYSTEM SET SERVICE_NAMES='' '' ';
+
+    SELECT DATABASE_ROLE, OPEN_MODE INTO db_role, db_open_mode FROM V$DATABASE;
+
+    IF db_role = 'PRIMARY'
+          THEN DBMS_SERVICE.START_SERVICE('HEDWQA_APP');
+    END IF;
+    IF db_role = 'PHYSICAL STANDBY' AND db_open_mode LIKE 'READ ONLY%'
+       THEN DBMS_SERVICE.START_SERVICE('HEDWQA_RPT');
+    END IF;
+  END;
+/
+
+
+4) Configure Standby DataBase For Active DataGuard
+
+Note: May already exist
+
+
+   Run below on standby database server
+
+
+   sqlplus / as sysdba
+
+   select * from dba_services;
+
+SELECT OPEN_MODE,PROTECTION_MODE,DATABASE_ROLE FROM V$DATABASE;
+
+PROTECTION_MODE
+------------------------------------------------------------
+DATABASE_ROLE
+------------------------------------------------
+READ ONLY WITH APPLY
+MAXIMUM PERFORMANCE
+PHYSICAL STANDBY
+
+
+   srvctl modify database -d HEDWQA_xhedwdbm01q -startoption "READ ONLY"
+   srvctl stop database -d HEDWQA_xhedwdbm01q
+   srvctl start database -d HEDWQA_xhedwdbm01q
+   srvctl config database -d HEDWQA_xhedwdbm01q
+ 
+   sqlplus / as sysdba
+
+   select * from dba_services;
+
+SELECT OPEN_MODE,PROTECTION_MODE,DATABASE_ROLE FROM V$DATABASE;
+
+
+OPEN_MODE
+------------------------------
+PROTECTION_MODE
+------------------------------
+DATABASE_ROLE
+------------------------------
+READ ONLY WITH APPLY
+MAXIMUM PERFORMANCE
+PHYSICAL STANDBY
+
+
+
+
+***** in case error in create standby log *****
+
+
+
+alter database add standby logfile thread 1 group 16 ('+REDOA_01', '+REDOB_01') size            6144m
+*
+ERROR at line 1:
+ORA-00301: error in adding log file '+REDOA_01' - file cannot be created
+ORA-17502: ksfdcre:4 Failed to create file +REDOA_01
+ORA-15041: diskgroup "REDOA_01" space exhausted
+
+-- Rich
+so space was exhausted on the primary trying to add standby logs
+it adds one more than redo logs so needs space for 2 more
+
+you have two options, add more space or reduce the number/size of the redo logs
+
+--Me
+So can I drop 2 Redo logs for example on Primary ?
+and do I need to drop standby logs that already there ?
+
+--Rich
+
+yes you can do that.  go from 6 to 4, you already have 5 standby logs so no change will be done there.
+
+
+Action taken: Dropped 2 inactive redo logs on Primary (via DBArtisan)
+
+
+Steps in case clone failed and needs to be restarted
+
+-- On Standby box
+
+. oraenv
+
+HEDWQA
+
+1.Shutdown the instance (shutdown abort)
+2.Remove instance files from $DBS   (rm *HEDWQA*) (check first nothing to remove in this case)
+3.Remove the database entry from the oratab
+4.Remove the database directories from asm.    In asmcmd     rm -r */HEDWQA_XHEDWDBM21Q (ASMCMD-8002: entry '*/HEDWQA_XHEDWDBM21Q' does not exist in directory '+')
+
+rm -r */2023_06_04
+
+
+rm -r 2022_11_01/
+rm -r 2022_11_22/
+rm -r 2023_01_26/
+rm -r 2023_04_25/
+rm -r 2023_04_26/
+
+
+

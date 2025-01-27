@@ -1,0 +1,168 @@
+!! Make sure no databases running under this home
+!! make sure no oratab entries for this Oracle home
+
+cd $SCRIPTS
+
+
+
+171017:/orahome/u01/app/oracle/product/12.1.0.2.171017/db_1
+
+drop_oracle_home.sh 12.1.0.2.171017
+
+********** Rich Ryan example ***************
+
+a.	A new script named drop_oracle_home.sh has been created. The script will drop a specified ORACLE_HOME if the home is not in use or no databases are defined in oratab with the home spcecified. The script also prompts to confirm you want to drop the specified home.
+
+For Example:
+
++ASM> drop_oracle_home.sh 12.1.0.2.170117
+Start drop oracle home 12.1.0.2.170117 on  Linux xdppdbw1d.aetna.com 3.10.0-514.10.2.el7.x86_64 #1 SMP Mon Feb 20 02:37:52 EST 2017 at Thu Jul 27 13:03:24 EDT 2017 using /orahome/u01/app/oracle/local/scripts/drop_oracle_home.sh
+
+Review log file /orahome/u01/app/oracle/local/logs/patch_db__20170727_1501175003.out for details
+
+Oracle DBMS software version 12.1.0.2.170117 is installed, continuing with oracle home drop.....
+
+Oracle Home /orahome/u01/app/oracle/product/12.1.0.2.170117/db_1 is not is use continuing with home drop......
+
+Destructive Action! Are you sure you want to drop /orahome/u01/app/oracle/product/12.1.0.2.170117/db_1?
+1) Yes
+2) No
+#? 1
+Starting Oracle Universal Installer...
+
+Checking swap space: must be greater than 500 MB.   Actual 14357 MB    Passed
+The inventory pointer is located at /etc/oraInst.loc
+'DetachHome' was successful.
+
+Oracle Home /orahome/u01/app/oracle/product/12.1.0.2.170117/db_1 has been removed.
+
+Drop of ORACLE_HOME /orahome/u01/app/oracle/product/12.1.0.2.170117/db_1  complete on  Linux xdppdbw1d.aetna.com 3.10.0-514.10.2.el7.x86_64 #1 SMP Mon Feb 20 02:37:52 EST 2017 at Thu Jul 27 13:03:51 EDT 2017 using /orahome/u01/app/oracle/local/scripts/drop_oracle_home.sh
+
+xdppdbw1d.aetna.com (oracle) +ASM::/home/oracle
++ASM>
+
+
+
+************07/25/2018******
+
+--HEPYDEV
+
+
+170418:/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+
+
+cd $SCRIPTS
+
+drop_oracle_home.sh 12.1.0.2.170418
+
+drop_oracle_home.sh 12.1.0.2.180417
+
+--HEPYDEV2
+
+
+170418:/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+
+cd $SCRIPTS
+
+drop_oracle_home.sh 12.1.0.2.170418
+
+drop_oracle_home.sh 12.1.0.2.180417
+
+
+--HEPYDEV3
+
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+
+cd $SCRIPTS
+
+
+
+drop_oracle_home.sh 12.1.0.2.180417
+
+
+--HEPYQA, HEPYQA2, HEPYQA3, HEPYSTS
+
+
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+
+--HEPYTST
+
+170418:/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+
+cd $SCRIPTS
+
+
+
+drop_oracle_home.sh 12.1.0.2.170418
+
+--HEPYUAT
+
+all good
+
+
+
+--HEDWDEV
+
+170418:/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+cd $SCRIPTS
+
+drop_oracle_home.sh 12.1.0.2.170418
+
+
+
+--HEDWDEV2
+
+170418:/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+cd $SCRIPTS
+
+drop_oracle_home.sh 12.1.0.2.170418
+
+
+--HEDWDEV3, HEDWQA,HEDWQA2,HEDWQA3
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+
+--HEDWTST
+
+170418:/orahome/u01/app/oracle/product/12.1.0.2.170418/db_1
+
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+cd $SCRIPTS
+
+drop_oracle_home.sh 12.1.0.2.170418
+
+--HEDWSTS, HEDWUAT
+--no actual Oracle home just remove oratab entry manually
+180417:/orahome/u01/app/oracle/product/12.1.0.2.180417/db_1
+
+

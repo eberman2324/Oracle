@@ -1,0 +1,48 @@
+
+**************************************************************************
+
+SET LINESIZE  145
+SET PAGESIZE  200
+SET VERIFY    off
+
+
+select
+  MOUNT_STATUS     ,
+  HEADER_STATUS ,
+  TOTAL_MB ,
+  FREE_MB  ,
+  substr(NAME,1,20) "Name",
+  substr(LABEL,1,10) "Label",
+  substr(PATH,1,50) "Path"
+from
+        v$asm_disk
+order by
+        path,
+        name
+;
+
+
+select 
+  substr(a.group_number,1,3) "Group Num", 
+  a.name "Group Name",
+  substr(b.disk_number,1,3) "Disk Num", 
+  b.name "Disk Name", 
+  b.MOUNT_STATUS "Disk Mount Status",
+  b.HEADER_STATUS "Disk Header Status",
+  b.TOTAL_MB, 
+  b.FREE_MB, 
+  substr(b.PATH,1,50) "Path"
+from v$asm_diskgroup a, v$asm_disk b
+    where a.group_number = b.group_number
+    order by a.group_number,b.disk_number;
+
+***************************************************************************
+
+
+
+--Data
+alter tablespace DATA add datafile '+DATA_01' SIZE 24576m; 
+
+
+--Index
+alter tablespace INDX add datafile '+IND_01' SIZE 24576m;
