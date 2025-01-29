@@ -1,0 +1,24 @@
+1. Stop listener 
+2. Shutdown each database (wkabqa1, wkabqa2, wkabqa3)
+3. Modify oratab to disable autostartup
+4. Disable cron jobs
+----- 15 minutes -----
+5. Once Lpar moved to Aetna domain and Server is rebooted make sure oracle login to Unix Server working.
+
+6. Verify oracle id to make sure it belongs to dba group
+7. Startup each database (wkabqa1, wkabqa2, wkabqa3)
+8. Start Listener
+------ 15 minutes ---------
+9. Change wkab10 and beneng password to schemaname_SID
+10. Modify db_domain parameter to remove world for each database
+11. Remove add.net qualifier from Server tnsnames.ora file
+------ 20 minutes -------------
+12. Test remote/client connection to each database from Laptop/PC
+13. Test any DBlinks from each database pointing to corresponding PeopleSoft Dev database.
+-----10 minutes-----
+14. Modify oratab to add Y for autostartup
+15. Enable cron jobs
+------ 10 minutes -----
+16. Change RMAN backup scripts to start using Catalog
+----20 minutes ------
+

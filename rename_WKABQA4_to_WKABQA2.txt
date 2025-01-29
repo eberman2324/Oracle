@@ -1,0 +1,188 @@
+
+****************************************************************************************************************
+Task is to rename WKABQA4 database to WKABQA2. 
+WKABQA2 is down since it was renaned erlier to WKABQA3.
+
+All WKABQA2 directories and datafile exists
+
+****************************************************************************************************************
+
+1. Shutdown WKABQA4 database
+
+
+2. Copy (for backup) Backup Directory
+
+cd /boraw1qu101
+
+copy existing wkabqa4 to wkabqa4.old
+rename wkabqa4 to wkabqa2
+
+
+3. Rename Admin Directory 
+
+ cd /boraw1qu01/app/oracle/admin
+
+Copy existing wkabqa4 to wkabqa4.old
+rename wkabqa4 to wkabqa2
+
+3. Rename Logs and control file directory
+
+/boraw1qu207/oradata
+rename wkabqa4 to wkabqa2
+cd wkabqa2
+
+rename control files just in case 
+
+control01.ctl.wkabqa4
+control02.ctl.wkabqa4
+control03.ctl.wkabqa4
+
+4. Just rename directory
+
+
+
+5. Rename oradata directories
+
+  /boraw1qu210/oradata
+  rename wkabqa4 to wkabqa2
+
+  cd /boraw1qu211/oradata
+   rename wkabqa4 to wkabqa2
+
+  
+6. Modify initwkabqa2.ora file if necessary
+   create pfile if needed
+   delete spfile if exist
+   modify /boraw1qu01/app/oracle/product/9.2.0a/dbs/initwkabqa2.ora file
+   
+
+7. Create CreateControlfile.sql
+
+
+
+
+----This  worked!!!!!
+STARTUP NOMOUNT pfile=/boraw1qu01/app/oracle/product/9.2.0a/dbs/initwkabqa2.ora
+CREATE CONTROLFILE REUSE SET DATABASE "WKABQA2" RESETLOGS  ARCHIVELOG
+--  SET STANDBY TO MAXIMIZE PERFORMANCE
+    MAXLOGFILES 5
+    MAXLOGMEMBERS 3
+    MAXDATAFILES 100
+    MAXINSTANCES 1
+    MAXLOGHISTORY 907
+LOGFILE
+  GROUP 1 '/boraw1qu207/oradata/wkabqa2/redo01.log'  SIZE 100M,
+  GROUP 2 '/boraw1qu207/oradata/wkabqa2/redo02.log'  SIZE 100M,
+  GROUP 3 '/boraw1qu207/oradata/wkabqa2/redo03.log'  SIZE 100M
+-- STANDBY LOGFILE
+DATAFILE
+  '/boraw1qu207/oradata/wkabqa2/system_01.dbf',
+  '/boraw1qu207/oradata/wkabqa2/undotbs_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/TAEDBA2.dbf',
+  '/boraw1qu210/oradata/wkabqa2/beneng_data_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/beneng_index_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/fineos_data_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/fineos_index_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/wkab_data_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/wkab_index_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/wkab_lob_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/beneng_data_02.dbf',
+  '/boraw1qu211/oradata/wkabqa2/beneng_index_02.dbf',
+  '/boraw1qu211/oradata/wkabqa2/ejsadmin_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/fineos_data_02.dbf',
+  '/boraw1qu211/oradata/wkabqa2/fineos_index_02.dbf',
+  '/boraw1qu211/oradata/wkabqa2/users_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/wkab_data_02.dbf',
+  '/boraw1qu211/oradata/wkabqa2/wkab_index_02.dbf',
+  '/boraw1qu211/oradata/wkabqa2/wkab_lob_02.dbf'
+
+CHARACTER SET WE8ISO8859P1;
+
+
+########## ACTUAL WHICH MIKE USED #############################################
+
+CREATE CONTROLFILE REUSE SET DATABASE "WKABQA2" RESETLOGS  ARCHIVELOG
+--  SET STANDBY TO MAXIMIZE PERFORMANCE
+    MAXLOGFILES 5
+    MAXLOGMEMBERS 3
+    MAXDATAFILES 100
+    MAXINSTANCES 1
+    MAXLOGHISTORY 907
+LOGFILE
+  GROUP 1 '/boraw1qu207/oradata/wkabqa2/redo01.log'  SIZE 100M,
+  GROUP 2 '/boraw1qu207/oradata/wkabqa2/redo02.log'  SIZE 100M,
+  GROUP 3 '/boraw1qu207/oradata/wkabqa2/redo03.log'  SIZE 100M
+-- STANDBY LOGFILE
+DATAFILE
+  '/boraw1qu207/oradata/wkabqa2/system_01.dbf',
+  '/boraw1qu207/oradata/wkabqa2/undotbs_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/beneng_data_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/beneng_data_02.dbf',
+  '/boraw1qu210/oradata/wkabqa2/beneng_index_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/beneng_index_02.dbf',
+  '/boraw1qu210/oradata/wkabqa2/fineos_data_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/fineos_data_02.dbf',
+  '/boraw1qu210/oradata/wkabqa2/fineos_index_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/fineos_index_02.dbf',
+  '/boraw1qu210/oradata/wkabqa2/wkab_data_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/wkab_data_02.dbf',
+  '/boraw1qu210/oradata/wkabqa2/wkab_index_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/wkab_index_02.dbf',
+  '/boraw1qu210/oradata/wkabqa2/wkab_lob_01.dbf',
+  '/boraw1qu211/oradata/wkabqa2/wkab_lob_02.dbf',
+  '/boraw1qu211/oradata/wkabqa2/ejsadmin_01.dbf',
+  '/boraw1qu210/oradata/wkabqa2/TAEDBA2.dbf',
+  '/boraw1qu211/oradata/wkabqa2/users_01.dbf'
+CHARACTER SET WE8ISO8859P1
+
+Thu Jun 19 14:42:28 2008
+Successful mount of redo thread 1, with mount id 175221588
+Thu Jun 19 14:42:28 2008
+Completed: CREATE CONTROLFILE REUSE SET DATABASE "WKABQA2" RE
+Thu Jun 19 14:42:28 2008
+
+ALTER DATABASE OPEN RESETLOGS
+
+RESETLOGS after incomplete recovery UNTIL CHANGE 8213819779561
+Resetting resetlogs activation ID 0 (0x0)
+Thu Jun 19 14:42:31 2008
+LGWR: Primary database is in CLUSTER CONSISTENT mode
+Assigning activation ID 175221588 (0xa71ab54)
+Thread 1 opened at log sequence 1
+  Current log# 3 seq# 1 mem# 0: /boraw1qu207/oradata/wkabqa2/redo03.log
+Successful open of redo thread 1
+Thu Jun 19 14:42:31 2008
+SMON: enabling cache recovery
+Thu Jun 19 14:42:32 2008
+Successfully onlined Undo Tablespace 1.
+Dictionary check beginning
+Tablespace 'TEMP' #2 found in data dictionary,
+but not in the controlfile. Adding to controlfile.
+Dictionary check complete
+Thu Jun 19 14:42:32 2008
+SMON: enabling tx recovery
+Thu Jun 19 14:42:32 2008
+Database Characterset is WE8ISO8859P1
+replication_dependency_tracking turned off (no async multimaster replication fou
+nd)
+Completed: ALTER DATABASE OPEN RESETLOGS
+Thu Jun 19 14:42:33 2008
+
+ALTER TABLESPACE TEMP ADD TEMPFILE '/boraw1qu207/oradata/wkabqa2/temp_01.dbf'
+     SIZE 5000M REUSE AUTOEXTEND OFF
+
+Completed: ALTER TABLESPACE TEMP ADD TEMPFILE '/boraw1qu207/o
+Thu Jun 19 14:45:34 2008
+
+alter database rename global_name to wkabqa2.world
+
+Thu Jun 19 14:45:34 2008
+Completed: alter database rename global_name to wkabqa2.world
+
+
+
+
+8. Add Temp
+
+ALTER TABLESPACE TEMP ADD TEMPFILE '/boraw1qu207/oradata/wkabqa2/temp_01.dbf'
+     SIZE 6000M REUSE AUTOEXTEND OFF

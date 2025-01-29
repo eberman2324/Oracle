@@ -1,0 +1,329 @@
+Pimary Database:       TARGET (WKABQA2)
+Duplicate Database :    AUX    (WKABQA3)
+RMAN Catalog Database: RMAN   (RMANWDEV) 
+
+****TARGET (WKABQA2) and AUX (WKABQA3) reside on same server ********** boraw1q.add.net
+WKABQA3 is existing database. We are in process of refreshing from WKABQA2
+If this is repeat refresh some steps will not needed!!!
+
+
+******************************************************************************************************************
+
+
+
+------>AUX WKABQA3 Directory and datafile location<----------------- 
+------WKABQA3 is existing database, so all directories should exist
+------Just double check
+
+
+   
+   /boraw1qu01/app/oracle/admin/wkabqa3
+   /boraw1qu01/app/oracle/admin/wkabqa3/bdump
+   /boraw1qu01/app/oracle/admin/wkabqa3/udump
+   /boraw1qu01/app/oracle/admin/wkabqa3/cdump
+   /boraw1qu01/app/oracle/admin/wkabqa3/create
+   /boraw1qu01/app/oracle/admin/wkabqa3/scripts
+   /boraw1qu01/app/oracle/admin/wkabqa3/pfile
+
+   /boraw1qu101/wkabqa3/
+   /boraw1qu101/wkabqa3/rman_backups
+   /boraw1qu101/wkabqa3/backups
+   /boraw1qu101/wkabqa3/arch
+
+   /boraw1qu01/aetna/scripts
+
+
+select file_id,file_name from dba_data_files order by 1
+select file_id,file_name  from dba_temp_files order by 1
+select * from v$logfile
+select * from v$controlfile
+
+
+
+
+####################################################################################################################
+2. Move init file from TARGET server to AUX server  However I would get latest in case any changes.
+
+   
+   #rename existing initwkabqa3.ora file
+   cd $ORACLE_HOME/dbs
+   mv initwkabqa3.ora initwkabqa3_old.ora
+  
+   Login in wkabqa2
+   sqlplus
+   
+   create pfile from sfile;
+   exit
+   
+   Modify initwkabqa3.ora
+
+db_file_name_convert='/boraw1qu203/oradata/wkabqa2/','/boraw1qu207/oradata/wkabqa3/','/boraw1qu204/oradata/wkabqa2/','/boraw1qu208/oradata/wkabqa3/','/boraw1qu205/oradata/wkabqa2/','/boraw1qu209/oradata/wkabqa3/' 
+log_file_name_convert='/boraw1qu203/oradata/wkabqa2/','/boraw1qu207/oradata/wkabqa3/'
+####################################################################################################################
+
+3. Make sure both TARGET and AUX databases have entry in tnsnames.ora file. As well as CATALOG Db  (completed !!!)
+   
+wkabqa2 =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(Host = BORAW1Q.add.net)(Port = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabqa2.WORLD))
+ )
+
+wkabqa3 =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(Host = BORAW1Q.add.net)(Port = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabqa3.world))
+ )
+
+wkabqa2.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(Host = BORAW1Q.add.net)(Port = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabqa2.WORLD))
+ )
+
+wkabqa3.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(Host = BORAW1Q.add.net)(Port = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabqa3.WORLD))
+ )
+
+rmanwdev.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(Host = BORAW1D.add.net)(Port = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = rmanwdev.world))
+ )
+
+rmanwdev =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(Host = BORAW1D.add.net)(Port = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = rmanwdev))
+ )
+
+####################################################################################################################
+
+3. Re create password file on AUX server 
+   
+   cd $ORACLE_HOME/dbs
+   rm -f orapwwkabqa3
+   orapwd file=$ORACLE_HOME/dbs/orapwwkabqa3 password=no734s entries=20
+####################################################################################################################
+5. Identify recent backupsets on TARGET database (AUX on same server so no need to move them anywhere)
+   Make sure last backup for wkabqa2 is valid
+
+
+ Validate current/latest backup to make sure we have good backup
+
+
+. $SETUPENV wkabqa2
+
+rman
+   
+connect target /
+
+connect catalog WKABQA2/WKABQA2namr@rmanwdev
+
+restore validate database;
+
+
+restore archivelog all validate;
+
+####################################################################################################################
+6. Test connection from AUX(WKABQA2) server to TARGET (WKABQA3)
+
+   ***This is not important since both reside on the same server**
+
+   rman
+   
+   connect target sys/no734s@WKABQA2
+   
+   #connect catalog wkabqa2/wkabqa2namr@rmanwdev
+   connect AUXILIARY /
+   
+   
+
+
+####################################################################################################################
+7. If this clone repeat process or AUX database exist then
+   delete all datafiles,redo logs and control files in AUX (WKABAQ1) database
+
+   Make sure . $SETUPENV wkabqa3
+
+   AUX database (WKABAQ2)
+
+   sqlplus / as sysdba
+   shutdown immediate; 
+
+
+   
+   #Confirm
+   ls /boraw1qu*/oradata/wkabqa3/*
+ 
+   #Remove
+   rm /boraw1qu*/oradata/wkabqa3/*
+
+   #Confirm again
+   ls /boraw1qu*/oradata/wkabqa3/*
+
+
+   #Optional delete old trace and log files
+   cd /boraw1qu01/app/oracle/admin/wkabqa3/bdump
+   rm -f *.trc
+   
+   cd /boraw1qu01/app/oracle/admin/wkabqa3/udump
+   rm -f *.trc
+ 
+   cd /boraw1qu01/app/oracle/product/9.2.0a/dbs
+   # to have backup in case. If file exist.
+   mv spfilewkabqa3.ora spfilewkabqa3_old.ora
+
+
+####################################################################################################################
+8. AUX (WKABQA3) database
+    Make sure . $SETUPENV wkabqa3
+
+    sqlplus / as sysdba
+    startup pfile=/boraw1qu01/app/oracle/product/9.2.0a/dbs/initwkabqa3.ora force nomount;
+    startup force nomount;
+
+
+   rman
+   
+   connect target sys/no734s@WKABQA2
+   #connect catalog wkabqa3/wkabqa3namr@rmanwdev
+   connect AUXILIARY /
+
+  duplicate target database to wkabqa3
+
+
+ 
+
+####################################################################################################################
+9.  Run the following in a mounted state from SQLPLUS on AUX database to fix TEMP tablespace RMAN bug
+
+     ALTER TABLESPACE TEMP ADD TEMPFILE '/boraw1qu207/oradata/wkabqa3/temp_01.dbf' SIZE 5000M AUTOEXTEND OFF;
+       
+
+
+####################################################################################################################
+12. Change passwords back
+
+
+alter user wkab10 identified by wkab10_wkabqa3
+alter user beneng identified by beneng_wkabqa3; 
+
+####################################################################################################################
+
+13. Move Database to NONEARCHIVELOG
+
+SQL> shutdown immediate;
+
+SQL> alter database noarchivelog;
+##SQL> alter database archivelog;
+
+Database altered.
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> archive log list;
+exit
+change LOG_ARCHIVE_START=FALSE in init.ora file
+
+restart DB
+####################################################################################################################
+
+14. --this step need to be complete to avoid sending emails to actual customers
+
+
+
+--Updates may take long time since a lot of records
+
+select count(*) from S_COMMUNICATION where COMM_MODE_ID in (3,6,10)
+and LOCATOR <> 'WKAB3.0@coreinc.com';
+
+
+update S_COMMUNICATION set LOCATOR = 'WKAB3.0@coreinc.com'
+where COMM_MODE_ID in (3,6,10)
+and LOCATOR <> 'WKAB3.0@coreinc.com';
+commit;
+
+select count(*) from s_report_recipient where email_address like '%@%'
+        and email_address <> 'WKAB3.0@coreinc.com'; 
+
+update s_report_recipient
+set email_address = 'WKAB3.0@coreinc.com'
+where email_address like '%@%'
+and email_address <> 'WKAB3.0@coreinc.com' ;
+commit;
+        
+*** Will take long time look in *** (Select * from V$SESSION_LONGOPS) for monitor
+
+############################################################################################################################
+
+15. Move Database to ARCHIVELOG
+
+SQL> shutdown immediate;
+
+#SQL> alter database noarchivelog;
+SQL> alter database archivelog;
+
+Database altered.
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> archive log list;
+exit
+
+
+change LOG_ARCHIVE_START=START in init.ora file
+restart DB
+
+
+############################################################################################################################
+
+16. Create sfile
+ 
+      cd $ORACLE_HOME/dbs
+       sqlplus
+ 
+       create spfile FROM pfile='/boraw1qu01/app/oracle/product/9.2.0a/dbs/initwkabqa3.ora';
+
+       shutdown immediate
+       startup
+    
+       Show parameter pfile;
+
+############################################################################################################################
+
+17. Check if global name needs to be changed
+
+select * from global_name;
+    alter database rename global_name to WKABQA3;
+
+
+############################################################################################################################
+
+18. Run WKABQA3 backup
+    Setup Cron Job
+    Register to catalog (could be done after move to AETH)
+
+############################################################################################################################
+19. Stop WKABQA2 database
+
+    . $SETUPENV wkabqa2
+     
+      Login sqlplus
+     
+      shutdown immediate;
+
+
+    
+    
+
+
+
+
+

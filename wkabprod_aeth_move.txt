@@ -1,0 +1,138 @@
+------BEFORE--------------------------------
+
+1. ***Stop listeners
+   
+   lsnrctl stop  wkabprod
+   lsnrctl stop  wkabprod2
+   lsnrctl stop  wkabprod3
+   lsnrctl stop  wkabprod4
+   
+   ## Verify
+   ps -ef | grep tns
+   
+2. *** Shutdown database
+   
+      sqlplus
+      shutdown immediate;
+      
+      ## Verify
+      ps -ef | grep ora_
+
+3. *** Disable autostart
+
+       cd /etc
+       vi oratab
+       oratab file change to N
+
+4. *** Disable cron jobs 
+
+     cd $ORACLE_BASE
+     crontab -l > crontab.current
+     ---make sure all entries in crontab.current file. view crontab.current
+     crontab -r
+
+
+5.   Wkabuat Server
+
+     comment out this job in crontab
+     0 23 * * 1-5 /workability/home/oracle/Refresh/Plans/run_uat.ksh
+
+-----AFTER------------------------------------
+
+1. Verify ssh login under aId user
+2. Verify su - oracle
+3. Veify oracle defualt group make sure it belong to dba 
+   id
+   uid=202(oracle) gid=202(dba) groups=201(sshd),1(staff)
+   cd $ORACLE_HOME
+   ls -altr
+
+   Verify the rc.net file has been updated with the correct host name
+   Run hostname
+   Should say wkabprod.aetna.com
+
+   
+ 
+
+4. *** Startup database
+
+    
+      sqlplus
+      startup
+
+     
+
+
+5.    cd $ORACLE_HOME/network/admin
+      
+      ***Looks like we good there just double check****
+      listener.ora and tnsnames.ora
+      remove any add.net references
+
+
+6. *** Startup each  Listener
+     
+         lsnrctl stop  wkabprod
+         lsnrctl stop  wkabprod2
+         lsnrctl stop  wkabprod3
+         lsnrctl stop  wkabprod4
+
+
+7. ## Change wkab10 and beneng password to new ones
+
+      
+      sqlplus
+      alter user wkab10 identified by xxx;
+      alter user beneng identified by zzz;
+     
+
+8. ## Test remote/client connection to each database from Laptop/PC
+
+
+9. ## Test any DBlink  pointing to corresponding PeopleSoft  database
+
+     Login to WKABPROD
+     select 1 from dual@DPPRD01.WORLD;
+
+
+10. ## Modify oratab to add Y for autostartup
+
+11. ## Enable cron jobs
+       
+       cd $ORACLE_BASE
+       crontab crontab.current 
+
+12. startup WKABTRG1 database on WKABUAT Server (THIS COULD BE COMPLETED BY THAT TIME !!!)
+    start listener
+    Add entry to backup control files (if not already there)
+
+    Shutdown wkabtrn database on floradev Server
+    stop listener
+    Disable backup job
+
+13. AETNAPROD Server crontab changes
+    
+    a. Uncomment: #0 23 * * 1-5 /workability/home/oracle/Refresh/Plans/run_uat.ksh
+    b. Execute /workability/home/oracle/Refresh/Plans/run_uat.ksh
+    c. Remove: 00,10,20,30,40,50 6-20 * * 1-5 /workability/home/oracle/Monitor/Scripts/monitor_dr02_lnk_user.ksh
+    d. Comment out:
+       02 20 * * * /workability/home/oracle/Old/pk_coreutility.sh > /tmp/pk_coreuti_$$.log 2>&1
+       0 20 * * *  /workability/home/oracle/Old/pk_feeds.sh > /tmp/pk_feeds_$$.log 2>&1
+
+14. WKABUAT Server crontab changes
+    a. Comment out: 0 23 * * 1-5 /workability/home/oracle/Refresh/Plans/run_uat.ksh    
+
+15. Datarep (DR02) change archive dest
+
+    Login to datarep Server
+    sqlplus
+    ALTER SYSTEM SET log_archive_dest='/u37/oracle/DR02/archive';
+    exit
+
+    Change monitor cronjob from monitoring /u23 to /u37
+     
+
+   cd  /usr/local/oracle/bin/dr02_arch_warn.ksh
+   vi  dr02_arch_warn.ksh
+
+  

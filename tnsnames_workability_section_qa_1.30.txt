@@ -1,0 +1,277 @@
+#
+# The following entries are for Workability databases 
+#
+
+DR02.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = datarep)(Port = 1521))
+    )
+    (CONNECT_DATA = (SID = DR02)
+    )
+  )
+
+DM02.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = datamart)(Port = 1521))
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = datamart)(Port = 1526))
+    )
+    (CONNECT_DATA = (SID = DM02)
+    )
+  )
+
+DRQA01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = floradev)(Port = 1524))
+    )
+    (CONNECT_DATA = (SID = DRQA01)
+    )
+  )
+
+DRDV01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = floradev)(Port = 1521))
+    )
+    (CONNECT_DATA = (SID = DRDV01)
+    )
+  )
+
+DPPRD01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = spnode45)(Port = 1521))
+    )
+    (CONNECT_DATA = (SID = DPPRD01)
+    )
+  )
+
+DPDEV01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPDEV)(Port = 1525))
+    )
+    (CONNECT_DATA = (SID = DPDEV01)
+    )
+  )
+
+DPDMO01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPDEV)(Port = 1522))
+    )
+    (CONNECT_DATA = (SID = DPDMO01)
+    )
+  )
+
+DPUPG01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPDEV)(Port = 1521))
+    )
+    (CONNECT_DATA = (SID = DPUPG01)
+    )
+  )
+
+DPDEV89.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPDEV)(Port = 1527))
+    )
+    (CONNECT_DATA = (SID = DPDEV89)
+    )
+  )
+
+DPDEVUG.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPDEV)(Port = 1529))
+    )
+    (CONNECT_DATA = (SID = DPDEVUG)
+    )
+  )
+
+DPD3.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS =
+          (COMMUNITY = tcp.world)
+          (PROTOCOL = TCP)
+          (Host = dppdev)
+          (Port = 1531)
+        )
+    )
+    (CONNECT_DATA = (SID = DPD3)
+    )
+  )
+
+DPQA89.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPQA)(Port = 1528))
+    )
+    (CONNECT_DATA = (SID = DPQA89)
+    )
+  )
+
+DPUGTST.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = DPPQA)(Port = 1529))
+    )
+    (CONNECT_DATA = (SID = DPUGTST)
+    )
+  )
+
+DMQA01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = floradev)(Port = 1521))
+    )
+    (CONNECT_DATA = (SID = DMQA01)
+    )
+  )
+
+DMDV01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = floradev)(Port = 1521))
+    )
+    (CONNECT_DATA = (SID = DMDV01)
+    )
+  )
+
+DPPRD02.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = spnode45)(Port = 1522))
+    )
+    (CONNECT_DATA = (SID = DPPRD02)
+    )
+  )
+
+IVQA01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = FLORADEV)(PORT = 1540))
+    )
+    (CONNECT_DATA =
+      (SID = IVQA01)
+    )
+  )
+
+IVDV01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = FLORADEV)(PORT = 1541))
+    )
+    (CONNECT_DATA =
+      (SID = IVDV01)
+    )
+  )
+
+MTQA01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = FLORADEV)(PORT = 1542))
+    )
+    (CONNECT_DATA =
+      (SID = MTQA01)
+    )
+  )
+
+MTDV01.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = FLORADEV)(PORT = 1543))
+    )
+    (CONNECT_DATA =
+      (SID = MTDV01)
+    )
+  )
+
+WKABUAT.WORLD =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = wkabuat)(PORT = 1565))
+  (CONNECT_DATA = (SERVICE_NAME = wkabuat))
+ )
+
+WKABTRG2.WORLD =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = wkabuat)(PORT = 1585))
+  (CONNECT_DATA = (SERVICE_NAME = wkabtrg2))
+ )
+
+WKABSTG2.WORLD =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = wkabuat)(PORT = 1595))
+  (CONNECT_DATA = (SERVICE_NAME = wkabstg2))
+ )
+
+WKABTRN.WORLD =
+ (description =
+  (address = (protocol = tcp)(host = floradev)(port = 1568))
+  (connect_data = (service_name = wkabtrn))
+ )
+
+WKABPROD.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = aetnaprod)(PORT = 1560))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = wkabprod)
+    )
+  )
+
+wkabdev1.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = boraw1d)(PORT = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabdev1))
+ )
+
+wkabdev2.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = boraw1d)(PORT = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabdev2))
+ )
+
+WKABDEV3.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+        (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = boraw1d)(Port = 1521))
+    )
+    (CONNECT_DATA = (SID = WKABDEV3)
+    )
+  )
+
+wkabqa1.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = boraw1q)(PORT = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabqa1))
+ )
+
+wkabqa2.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = boraw1q)(PORT = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabqa2))
+ )
+ 
+wkabqa3.world =
+ (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = boraw1q)(PORT = 1521))
+  (CONNECT_DATA = (SERVICE_NAME = wkabqa3))
+ )
+ 
+wkabstrs.world =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (COMMUNITY = tcp.world)(PROTOCOL = TCP)(Host = boraw1s)(Port = 1521))
+    )
+    (CONNECT_DATA =
+      (SID = wkabstrs)
+    )
+  )
+

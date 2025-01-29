@@ -1,0 +1,252 @@
+############################################################
+Server: boraw1q move from add.net to aetna.com domain (860) 273-2530
+############################################################
+
+Steps to complete prior to UNIX network domain switch
+
+1. ssh to boraw1q
+
+2. ## Stop listener
+   lsnrctl
+   stop
+
+3. ## Shutdown each database
+   
+      . $SETUPENV wkabqa1
+      sqlplus
+      shutdown immediate;
+
+      . $SETUPENV wkabqa2
+      sqlplus
+      shutdown immediate;
+
+      . $SETUPENV wkabqa3
+      sqlplus
+      shutdown immediate;
+
+4. ## Disable autostart
+
+      oratab file change to N
+
+5. Disable cron jobs
+
+############################################################
+Steps to complete after to UNIX network domain switch
+
+1. Verify ssh under oracle user
+
+2. Veify oracle defualt group make sure it belong to dba
+   
+   id and cd $ORACLE_HOME ls -altr
+
+3. ## Startup each database
+
+     . $SETUPENV wkabqa1
+      sqlplus
+      startup
+
+      . $SETUPENV wkabqa2
+      sqlplus
+      startup
+
+      . $SETUPENV wkabqa3
+      sqlplus
+      startup
+
+4. ## Startup Listener
+      lsnrctl
+      start
+
+5. ## Change wkab10 and beneng password to schemaname_SID
+
+      . $SETUPENV wkabqa1
+      sqlplus
+      alter user wkab10 identified by wkab10_wkabqa1;
+      alter user beneng identified by beneng_wkabqa1;
+
+      . $SETUPENV wkabqa2
+      sqlplus
+      alter user wkab10 identified by wkab10_wkabqa2;
+      alter user beneng identified by beneng_wkabqa2;
+
+      . $SETUPENV wkabqa3
+      sqlplus
+      alter user wkab10 identified by wkab10_wkabqa3;
+      alter user beneng identified by beneng_wkabqa3;
+
+6. ## Change db_domain parameter to remove world
+
+
+      . $SETUPENV wkabqa3
+      sqlplus
+      ALTER SYSTEM SET db_domain='' SCOPE=SPFILE;
+      shutdown immediate;
+      startup;
+      Change local tnsname entry get rid off .world from SERVICE_NAME
+      Test connection from my PC
+      If any issues try next
+
+
+      ALTER SYSTEM SET SERVICE_NAME='' SCOPE=SPFILE;
+      or
+      ALTER SYSTEM SET SERVICE_NAME='wkabqa3' SCOPE=SPFILE;
+      shutdown immediate;
+      startup;     
+
+
+
+
+
+      . $SETUPENV wkabqa1
+      sqlplus
+      ALTER SYSTEM SET db_domain='' SCOPE=SPFILE;
+      shutdown immediate;
+      startup;
+
+      Change local tnsname entry get rid off .world from SERVICE_NAME
+      Test connection from my PC
+      If any issues try next
+
+
+      ALTER SYSTEM SET SERVICE_NAME='' SCOPE=SPFILE;
+      or
+      ALTER SYSTEM SET SERVICE_NAME='wkabqa1' SCOPE=SPFILE;
+      shutdown immediate;
+      startup; 
+
+
+
+      . $SETUPENV wkabqa2
+      sqlplus
+      ALTER SYSTEM SET db_domain='' SCOPE=SPFILE;
+      shutdown immediate;
+      startup;
+      
+      Change local tnsname entry get rid off .world from SERVICE_NAME
+      Test connection from my PC
+      If any issues try next
+
+
+      ALTER SYSTEM SET SERVICE_NAME='' SCOPE=SPFILE;
+      or
+      ALTER SYSTEM SET SERVICE_NAME='wkabqa2' SCOPE=SPFILE;
+      shutdown immediate;
+      startup; 
+     
+7. ## Remove add.net references from Boraw1q and Boraw1d Server tnsnames.ora file
+
+    remove SERVICE_NAME = sid.world from (mvmqwkis10 and wvmqwkis10)
+    ZZ236120
+    #241823zz
+8. ## Test remote/client connection to each database from Laptop/PC
+
+9. ## Test any DBlinks from each database pointing to corresponding PeopleSoft QA database
+
+     Login to WKABQA1, WKABQA2 and WKABQA3
+     select 1 from dual@DPDEV89.WORLD;
+
+10. ## Modify oratab to add Y for autostartup
+
+11. ## Enable cron jobs
+
+12. Send tnsnames.ora entry to Peter Doyle
+
+############################################################
+Post migration steps
+
+1. Change RMAN scripts to start using Catalog
+
+   cd /boraw1qu01/aetna/scripts/backup
+
+   Rename rman_general_purpose.ksh to rman_general_purpose_nocatalog.ksh
+   Rename rman_general_purpose.ksh.using_catalog to rman_general_purpose.ksh
+
+
+
+#00 03 * * * /boraw1qu01/aetna/scripts/backup/
+./rman_general_purpose.ksh wkabqa3 rmanwdev full_level0_backup.rman
+
+
+
+2. REGISTER WKABQA3 into catalog
+
+   #### (Execute this from target (WKABQA3) rman executable!! #####################
+
+### CREATE CATALOG #############################################################
+
+>rman
+
+connect catalog WKABQA3/WKABQA3namr@rmanwdev
+connect catalog WKABQA2/WKABQA2namr@rmanwdev
+
+create catalog;
+
+exit
+
+### REGISTER DATABASE ##########################################################
+
+>rman
+
+
+connect target /
+
+connect catalog WKABQA3/WKABQA3namr@rmanwdev
+
+
+register database;
+
+### TO MAKE SURE IT WORKED ######################################################
+
+report schema;
+
+exit
+
+
+### CONFIGURATION ###############################################################
+
+>rman
+
+connect target /
+
+connect catalog WKABQA3/WKABQA3namr@rmanwdev
+
+
+RMAN> show all;
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP OFF; # default
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1qu01/app/oracle/product/9.2.0a/dbs/snapcf_wkabqa3.f'; # default
+
+
+
+
+change to ---->
+
+
+RMAN configuration parameters are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 1; # default
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '/boraw1qu101/wkabqa3/rman_backups/%F';
+CONFIGURE DEVICE TYPE DISK PARALLELISM 2;
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/boraw1qu101/wkabqa3/rman_backups/bkp_df%t_s%s_s%p';
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/boraw1qu101/wkabqa3/rman_backups/snapcf_wkabqa1.f';
+
+
+
+
+exit
+
+

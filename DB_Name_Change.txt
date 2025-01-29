@@ -1,0 +1,121 @@
+Database Re Name
+
+1. Rebulit control file
+   backup control file to trace and modified.
+
+2. Make changes in init.ora file
+
+3. Open Resetlogs
+
+4. Make changes in oratab file. Env .$SETUPENNV
+
+5. Cron Job entries change
+
+6. Listenter and Tnsnames.ora changtes. on Server
+
+7. Distribution of new tnsnames.ora entries.
+
+8. Alter system change global name
+
+
+*****************************************************
+
+Metalink: 15390.1
+
+9i
+http://download.oracle.com/docs/cd/B10501_01/server.920/a96652/ch14.htm#1004735
+
+
+
+10g
+http://download.oracle.com/docs/cd/B19306_01/server.102/b14215/dbnewid.htm#sthref1850
+
+*****************************************************************************************
+
+9iR2 and up 
+
+http://www.oracle.com/technology/obe/paa/obe-mdb/html/Chg_DB_Name.htm
+
+
+***********My forum thread********
+http://forums.oracle.com/forums/thread.jspa?threadID=625722&tstart=0
+
+
+**********************************************************************************************************
+
+wkabdev1 (no changes)
+wkabdev2 (no changes)
+
+Clone wkabdev2 into new wkabdev3 (get rid off Pilot dev3 first, remove and re add DASD ???)
+
+
+wkabqa1 (no changes)
+
+-------------------------------------------------------------
+wkabqa3 --> re name to wkabstg2 (wkabuat)
+
+1. Run Full RMAN Backup wkabqa3
+2. Create new directory structure fow wkabstage2
+3. Rman duplicate from wkabqa3 to wkabstage2
+4. Add wkabstage2 to Catalog for daily RMAN Backup
+5. tnsnames, listener, oratab changes
+
+-------------------------------------------------------------
+wkabqa2 --> re name to wkabqa3
+
+1. Drop wkabqa3 from Rman catalog
+2. shutdown wkabqa3
+3. Delete datafiles, control and redo from wkabqa3 directories 
+4. Run Full RMAN Backup wkabqa2
+5. Rman duplicate from wkabqa2 to wkabqa3
+6. Add wkabqa3 to Catalog for daily RMAN Backup
+
+--------------------------------------------------------------
+wkabqa4 --> re name to wkabqa2
+
+1. Drop wkabqa2 from Rman catalog
+2. shutdown wkabqa2
+3. Delete datafiles, control and redo files from wkabqa2 directories 
+4. Run Full RMAN Backup wkabqa4
+5. Rman duplicate from wkabqa4 to wkabqa2
+6. Add wkabqa2 to Catalog for daily RMAN Backup
+7. Drop wkabqa4 from RMAN Catalog
+8. Shutdown wkabqa4 database and delete all files
+
+
+
+---------------------------------------------------------------
+wkabuat --> re name to  wkabstg1
+
+1. Create new directory /workability/wkabstg1/
+2. On wkabuat backup control file to trace and modify to point datafile and redo to new location
+3. Make changes in init.ora file
+4. Shutdown wkabuat and move all files to new location
+4. Open Resetlogs
+5. Make changes in oratab file. Env .$SETUPENNV
+6. Cron Job entries change
+7. Listenter and Tnsnames.ora changes. on Server
+8. Distribution of new tnsnames.ora entries.
+9. Alter system change global name
+
+---------------------------------------------------------------
+wkabtrn -- re name to wkabtrg1 
+
+1. Create new directory /workability/wkabtrg1/
+2. On floradev login to wkabdemo backup control file to trace and modify to point datafile and redo to new location
+3. Make changes in init.ora file
+4. Shutdown wkabtrn and move all files to new location
+4. Open Resetlogs
+5. Make changes in oratab file. Env .$SETUPENNV
+6. Cron Job entries change
+7. Listenter and Tnsnames.ora changes. on Server
+8. Distribution of new tnsnames.ora entries.
+9. Alter system change global name
+
+
+Existing wkabuat DB:   3.5 G
+Proposed wkabtrg2 DB:  3.5 G
+Proposed wkabtrg1 DB:  1 G  
+Proposed wkabstg2 DB:  3.1 G
+
+

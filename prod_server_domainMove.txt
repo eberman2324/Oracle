@@ -1,0 +1,605 @@
+############################################################
+Server: aetnaprod move from add.net to aetna.com domain
+        boraw1s   move from add.net to aetna.com domain
+        spnode45  move from add.net to aetna.com domain
+############################################################
+
+Steps to complete prior to UNIX network domain switch
+
+
+----------------AETNAPROD------------------------------------
+1. *** ssh to aetnaprod
+
+2. ***Stop listeners
+   
+   lsnrctl stop  wkabprod
+   lsnrctl stop  wkabprod2
+   lsnrctl stop  wkabprod3
+   lsnrctl stop  wkabprod4
+
+   
+3. *** Shutdown database
+   
+      sqlplus
+      shutdown immediate;
+
+
+4. *** Disable autostart
+
+       cd /etc
+       vi oratab
+       oratab file change to N
+
+5. *** Disable cron jobs (see job list below)
+
+     cd /tmp
+     crontab -l > crontab.current
+     ---make sure all entries in crontab.current file. view crontab.current
+     crontab -r
+
+
+##############################################################################
+###############################################################################
+# WORKABILITY
+###################
+# Nightly Plan Refresh of UAT from Prod
+###---0 23 * * 1-5 /workability/home/oracle/Refresh/Plans/run_uat.ksh
+###################
+# Nightly Database Backup
+###---0 1 * * * /workability/wkabprod_oracle_home/Scripts/nightly_jobs.ksh
+###################
+# New Fineos Monitoring Job
+#  Robert Holden - 01/20/2005
+# 00,30 * * * * /workability/home/oracle/Jobs/Fineos_Prod_App/Scripts/fineos_down.ksh
+
+###################
+# Temporary monitoring job.  May be removed after 7/31/07
+###---0,15,30,45 * * * * /workability/home/oracle/Scripts/who.ksh -i wkabprod > /dev/null 2>&1
+
+###################
+# Check for any blocking locks
+###---00,15,30,45 6-22 * * * /workability/home/oracle/Monitor/Scripts/monitor_blocking_locks.ksh
+
+# Check the oracle connections status every hour
+###---00 4-23 * * * /workability/home/oracle/Monitor/Scripts/monitor_inactive_conns.ksh
+
+#00 2 * * * /workability/home/oracle/Monitor/Scripts/send_audit_email.ksh
+###---00 2 * * 0 /workability/home/oracle/Monitor/Scripts/send_audit_email.ksh
+# Gather Spaceinfo
+###---0 5 * * * /workability/home/oracle/Monitor/Scripts/space/gather_spaceinfo.sh wkabprod > /workability/home/oracle/Monitor/Scripts/space/logs/gather_spacinfo.stdout 2>&1
+
+
+# 05,10,15,20,25,30,35,40,45,50,55 10-14 16 05 * /workability/home/oracle/Monitor/Scripts/monitor_inactive_conns.ksh
+
+###################
+#   clean up jobs
+###---0 3 * * * /workability/home/oracle/Jobs/Wkab10/Scripts/truncate_error_log.ksh
+###---02 20 * * * /workability/home/oracle/Old/pk_coreutility.sh > /tmp/pk_coreuti_$$.log 2>&1
+
+###---0 20 * * *  /workability/home/oracle/Old/pk_feeds.sh > /tmp/pk_feeds_$$.log 2>&1
+###---0 02 * * 1-6 /workability/home/oracle/scripts/go_truncate_tlock.sh > /tmp/go_truncate_tlock.log.$$ 2>&1
+
+###---0 0 * * * /workability/home/oracle/scripts/truncate_session.ksh wkabprod > /tmp/truncate_session.log.$$ 2>&1
+
+###################
+# WKABPROD Perfstat
+# 0 7-19 * * 1-5 /workability/home/oracle/Perfstat/Scripts/run_snapshot.ksh
+###---0 * * * * /workability/home/oracle/Perfstat/Scripts/run_snapshot.ksh
+#0,15,30,45 7-19 * * 1-5 /workability/home/oracle/Perfstat/Scripts/run_snapshot.ksh
+
+###################
+# RESTART PRODUCTION DATABASE
+# 30 3 3 9 * /home/oracle/Scripts/restart_database.ksh wkabprod
+###################
+# Gather Database Stats
+# 0 18 15 5 * /home/oracle/Scripts/gather_database_stats.ksh wkabprod
+###################
+#  END WORKABILITY
+###############################################################################
+### This can be removed after Sep 12 2008
+###---00,10,20,30,40,50 6-20 * * 1-5 /workability/home/oracle/Monitor/Scripts/monitor_dr02_lnk_user.ksh
+
+###############################################################################
+
+
+
+
+
+
+
+----------------BORAW1S------------------------------------
+
+6. *** ssh to boraw1s
+
+7. *** Stop listener
+   
+   lsnrctl 
+   stop
+
+   
+8. *** Shutdown database
+   
+      sqlplus
+      shutdown immediate;
+
+
+9. *** Disable autostart
+      cd /etc
+      oratab file change to N
+
+10. *** Disable cron jobs (see job list below)
+
+
+
+
+#00 22 * * 5,6,0 /boraw1su01/app/oracle/inventa/restore_november_release.sh > /boraw1su01/app/oracle/inventa/restore_november_release.out 2>&1
+
+###-----------------------------------------------------------------------------
+-###
+###----------   B A C K U P  S C R I P T S                          ------------
+-###
+###-----------------------------------------------------------------------------
+-###
+#00 02 * * 0 /boraw1su01/aetna/scripts/backup/rman_general_purpose.ksh wkabstrs rmanwdev full_level0_backup.rman
+
+###-----------------------------------------------------------------------------
+-###
+###-------------   M O N I T O R I N G S C R I P T S              -------------#
+##
+###-----------------------------------------------------------------------------
+-###
+###---00,15,30,45 * * * * /boraw1su01/aetna/scripts/utility/statspack.ksh > /boraw1su01/aetna/scripts/utility/statspack_output.log
+
+###---05 12 * * 0 /boraw1su01/aetna/scripts/monitor/spacecheck.sh wkabstrs all > /dev/null 2>&1
+
+###-----------------------------------------------------------------------------
+-###
+###-------------   M A I N T E N A N C E S C R I P T S              ------------
+-###
+###-----------------------------------------------------------------------------
+-###
+###---00 00 * * * /boraw1su01/aetna/scripts/batch/truncate_session.ksh wkabstrs > /tmp/wkabstrs.truncate_session.stdout 2>&1
+
+###-----------------------------------------------------------------------------
+-###
+
+
+----------------SPNODE45------------------------------------
+
+(get instructions from Tom)
+
+11. *** ssh to spnode45
+        su - oracle
+             Weluv10g 
+
+        DPPRD01
+
+12. Confirm backup copy of cron in $ORACLE_BASE directory
+
+
+12. *** Stop listener
+   
+   lsnrctl 
+   set current_listener DPPRD01
+   stop
+   set password D513FF043A19B894
+   stop
+
+   
+13. *** Shutdown database
+   
+      sqlplus
+      shutdown immediate;
+
+
+14. *** Disable autostart
+      cd /etc
+      
+      Copy /etc/oratab to $ORACLE_BASE/oratab_20080912
+      vi oratab
+      oratab file change to N
+    
+
+15. *** Stop dbconsole
+        emctl status dbconsole
+        emctl stop dbconsole 
+
+
+    *** ssh to spnode45
+        su - oracle
+             Weluv10g 
+
+        DPPRD02
+
+
+16. *** Stop listener
+   
+   lsnrctl 
+   set current_listener DPPRD02
+   stop
+   set password A30308A2F41A666F
+   stop
+
+   
+17. *** Shutdown database
+   
+      sqlplus
+      shutdown immediate;
+
+
+18. *** Disable autostart
+ 
+      cd /etc
+      vi oratab
+      oratab file change to N
+
+19. *** Stop dbconsole
+        emctl status dbconsole
+        emctl stop dbconsole 
+
+
+
+
+20. *** Disable cron jobs (see job list below)
+
+#############################################################################
+#Move $BDUMP/filtered_err file to prevent errors from occurring
+#+---------------- minute (0-59),
+#|  +------------- hour (0-23),
+#|  |  +---------- day of the month (1-31),
+#|  |  |  +------- month of the year (1-12),
+#|  |  |  |  +---- day of the week (0-6 with 0=Sunday, ...).
+#|  |  |  |  |
+#v  v  v  v  v
+#############################################################################
+#DAILY DATAPUMP EXPORT
+###---00 19 * * * /u01/app/oracle/aetna/db_mgmt/backup/expdp_full.ksh DPPRD01
+###---20 00 * * * /u01/app/oracle/aetna/db_mgmt/backup/expdp_full.ksh DPPRD02
+#############################################################################
+#ALERT LOG MONITORING
+###---0,15,30,45 0-23 * * * /usr/local/oracle/aetna/db_mgmt/monitor/scan_oracle.ksh DP
+PRD01
+###---0,15,30,45 0-23 * * * /usr/local/oracle/aetna/db_mgmt/monitor/scan_oracle.ksh DP
+PRD02
+#############################################################################
+#Archive Log Mount Point Monitoring
+###---0,30 00-23 * * * /u01/app/oracle/aetna/scripts/check_archlog_free_space.ksh /u03
+#############################################################################
+#Gather Stats
+###---00 17 * * 0 /u01/app/oracle/aetna/db_mgmt/analyze/analyze_all.ksh DPPRD01
+###---59 00 * * * /u01/app/oracle/aetna/db_mgmt/analyze/analyze_sjt_tables.ksh DPPRD01
+#############################################################################
+#PURGE ARCHIVE LOGS
+###---00 06,11,17,22 * * * /u01/app/oracle/aetna/scripts/purge_archive_logs.ksh DPPRD0
+1 /u03/oracle/DPPRD01/Archive
+#############################################################################
+#HOT BACKUP
+###---13 23 * * 0-6 /u01/app/oracle/aetna/db_mgmt/backup/hot_backup.ksh DPPRD01
+#############################################################################
+#VERIFY DATABASES ARE UP
+###---0,20,40 * * * * /u01/app/oracle/aetna/scripts/verify_db_is_up.ksh DPPRD01
+###---0,20,40 * * * 0-5 /u01/app/oracle/aetna/scripts/verify_db_is_up.ksh DPPRD02
+###---0,20,40 12-23 * * 6 /u01/app/oracle/aetna/scripts/verify_db_is_up.ksh DPPRD02
+#############################################################################
+#Stop/Start DataBase Control
+###---45 05 * * 6 /u01/app/oracle/tls/stop_dbconsole.ksh DPPRD02
+###---00 13 * * 6 /u01/app/oracle/tls/start_dbconsole.ksh DPPRD02
+#############################################################################
+#DPPRD02 Database Refresh
+###---50 05 *  *  6 /u01/app/oracle/admin/DPPRD02/autoimp/export_security_tables_b4_db
+refresh.ksh
+###---11 06 *  *  6 /u01/app/oracle/admin/DPPRD02/autoimp/auto_import.ksh 1
+#############################################################################
+#Copy Crontab
+###---00 05 * * * crontab -l > /u01/app/oracle/crontab.lst
+#############################################################################
+#Rename Trace Files in $UDUMP Directory
+###---00 19 * * * /usr/local/oracle/aetna/scripts/udump_trc_rename.ksh DPPRD01 > /usr/
+local/oracle/aetna/db_admin/db_DPPRD01/log/DPPRD01_udump_trc_rename.out 2>&1
+###---05 19 * * * /usr/local/oracle/aetna/scripts/udump_trc_rename.ksh DPPRD02 > /usr/
+local/oracle/aetna/db_admin/db_DPPRD02/log/DPPRD02_udump_trc_rename.out 2>&1
+#############################################################################
+#Monitor File System Space For MP's U01-U10 and /backup
+###---30 07 * * * /u01/app/oracle/aetna/db_mgmt/monitor/chk_unix_fs_space.ksh 2 Proble
+m
+###---00 12 * * * /u01/app/oracle/aetna/db_mgmt/monitor/chk_unix_fs_space.ksh 2 Proble
+m
+###---32 07 * * * /u01/app/oracle/aetna/db_mgmt/monitor/chk_unix_fs_space.ksh 4 Warnin
+g
+#############################################################################
+#TableSpace Space Reports
+###---30 07 * * * /u01/app/oracle/tls/space_usage.ksh DPPRD01 > /dev/null
+###---35 07 * * * /u01/app/oracle/aetna/db_mgmt/space/spacechk.ksh DPPRD01 >/dev/null
+###---30 04 * * * /u01/app/oracle/tls/space_usage.ksh DPPRD02 > /dev/null
+###---35 04 * * * /u01/app/oracle/aetna/db_mgmt/space/spacechk.ksh DPPRD02 >/dev/null
+#############################################################################
+#Check For Stolen Undo Pages
+###---20 05 * * * /u01/app/oracle/tls/check_undots.ksh DPPRD01 > /dev/null
+###---25 05 * * * /u01/app/oracle/tls/check_undots.ksh DPPRD02 > /dev/null
+#############################################################################
+#Check Undo Space Usage
+###---00 07 * * * /u01/app/oracle/tls/get_undo_space_usage.ksh DPPRD01 > /dev/null
+###---00 06 * * * /u01/app/oracle/tls/get_undo_space_usage.ksh DPPRD02 > /dev/null
+#############################################################################
+#StatsPack Snap
+###---05,35 0-23 * * * /u01/app/oracle/aetna/db_mgmt/monitor/stats_snap.ksh DPPRD01
+###---10,40 0-23 * * * /u01/app/oracle/aetna/db_mgmt/monitor/stats_snap.ksh DPPRD02
+#############################################################################
+#Statspack purge for data older than 42 days
+###---00 03 * * * /u01/app/oracle/aetna/db_mgmt/monitor/stats_pack_purge.ksh DPPRD01 >
+ /dev/null
+###---05 03 * * * /u01/app/oracle/aetna/db_mgmt/monitor/stats_pack_purge.ksh DPPRD02 >
+ /dev/null
+#############################################################################
+#Move $BDUMP/filtered_err file to prevent errors from occurring
+#05 05 1 3,6,9,12 * /u01/app/oracle/aetna/scripts/move_filtered_err_file.ksh
+#############################################################################
+#Remove ora*.aud (connect internal audit logs) older than 14 days
+###---20 07 * * 1-5 /u01/app/oracle/aetna/scripts/ora_aud_maint.ksh +14
+#############################################################################
+#Extract Special Permissions - Output Will Be Used By Security Script
+###---00 05 * * 0 /u01/app/oracle/aetna/db_mgmt/extsecur/ext_spcl_permissions.ksh DPPR
+D01 > /dev/null 2>&1
+###---00 03 * * 6 /u01/app/oracle/aetna/db_mgmt/extsecur/ext_spcl_permissions.ksh DPPR
+D02 > /dev/null 2>&1
+#############################################################################
+#Collect TableSpace Space Information
+###---02 05 1 * * /u01/app/oracle/aetna/db_mgmt/space/collect_ts_space_info.ksh
+#############################################################################
+#Check AIX Error Log For Reported Errors
+###---00,20,40 00-23 * * 0-6 /u01/app/oracle/tls/ckaixlog.ksh > /u01/app/oracle/tls/ck
+aixlog.lst
+#############################################################################
+#Rename Listener Log
+###---30 04 1 * * /u01/app/oracle/aetna/scripts/rename_listener_log.ksh
+#############################################################################
+
+
+
+
+*****************************************************************************************************************************************
+############################################################
+Steps to complete after to UNIX network domain switch
+############################################################
+
+----------------AETNAPROD------------------------------------
+
+1. Verify ssh login under aId user
+2. Verify su - oracle
+3. Veify oracle defualt group make sure it belong to dba 
+
+   Verify hostname make sure it says aetnaprod.aetna.com
+   
+   id and cd $ORACLE_HOME ls -altr
+
+4. *** Startup database
+
+    
+      sqlplus
+      startup
+
+     
+
+
+5.    cd $ORACLE_HOME/network/admin
+      
+      listener.ora and tnsnames.ora
+      remove any add.net references
+
+
+
+6. *** Startup each  Listener
+     
+         lsnrctl stop  wkabprod
+         lsnrctl stop  wkabprod2
+         lsnrctl stop  wkabprod3
+         lsnrctl stop  wkabprod4
+
+
+7. ## Change wkab10 and beneng password to schemaname_SID
+
+      
+      sqlplus
+      alter user wkab10 identified by wscirmnap8t;
+      alter user beneng identified by bakrtmqex3p;
+
+     
+  
+
+
+
+
+8. ## Test remote/client connection to each database from Laptop/PC
+
+
+9. ## Test any DBlink  pointing to corresponding PeopleSoft  database
+
+     Login to WKABPROD
+     select 1 from dual@DPPRD01.WORLD;
+
+
+
+10. ## Modify oratab to add Y for autostartup
+
+11. ## Enable cron jobs
+       
+       cd /tmp
+       crontab crontab.current 
+
+----------------BORAW1S------------------------------------
+1. Verify ssh login under aId user
+2. Verify su - oracle
+3. Veify oracle defualt group make sure it belong to dba
+   Verify hostname make sure it says boraw1s.aetna.com
+   
+   id and cd $ORACLE_HOME ls -altr
+
+4. *** Startup database
+
+     
+      sqlplus
+      startup
+
+     
+5.    cd $ORACLE_HOME/network/admin
+      
+      listener.ora and tnsnames.ora
+      remove any add.net references
+
+
+
+6. *** Startup Listener
+     
+         lsnrctl 
+         start
+
+
+7. ## Change wkab10 and beneng password to schemaname_SID
+
+      
+      sqlplus
+      alter user wkab10 identified by wkab10_wkabstrs;
+      alter user beneng identified by beneng_wkabstrs;
+
+     
+8. ## Change db_domain parameter to remove world
+
+
+    
+      sqlplus
+      ALTER SYSTEM SET db_domain='' SCOPE=SPFILE;
+      shutdown immediate;
+      startup;
+      Change local tnsname entry get rid off .world from SERVICE_NAME
+      Test connection from my PC
+      If any issues try next
+
+
+      ALTER SYSTEM SET SERVICE_NAME='' SCOPE=SPFILE;
+      or
+      ALTER SYSTEM SET SERVICE_NAME='wkabstrs' SCOPE=SPFILE;
+      shutdown immediate;
+      startup;     
+
+
+
+
+
+9. ## Test remote/client connection to each database from Laptop/PC
+
+
+
+10. ## Test any DBlinks from each database pointing to corresponding PeopleSoft QA database
+
+     Login to WKABQA1, WKABQA2 and WKABQA3
+     select 1 from dual@DPDEV89.WORLD;
+
+11. ## Modify oratab to add Y for autostartup
+
+12. ## Enable cron jobs
+
+
+----------------SPNODE45------------------------------------
+
+(get instructions from Tom)
+
+
+1. Verify ssh login under aId user
+2. Verify su - oracle
+3. Veify oracle defualt group make sure it belong to dba
+   
+   id and cd $ORACLE_HOME ls -altr
+
+ *** ssh to spnode45
+        su - oracle
+             Weluv10g 
+
+        DPPRD01
+
+    Start Database
+
+    sqlplus
+    startup
+
+4.    cd $ORACLE_HOME/network/admin
+      
+      listener.ora and tnsnames.ora
+      remove any add.net references
+
+
+5. *** Start listener
+   
+   lsnrctl 
+   set current_listener DPPRD01
+   start
+   
+   
+6.  *** Start dbconsole
+    emctl stop dbconsole 
+
+
+7.    *** ssh to spnode45
+        su - oracle
+             Weluv10g 
+
+        DPPRD02
+
+8. ****Start Database
+    sqlplus
+    startup
+
+9. ***
+   cd $ORACLE_HOME/network/admin
+      
+    listener.ora and tnsnames.ora
+      remove any add.net references
+
+
+10. *** Start listener
+   
+   lsnrctl 
+   set current_listener DPPRD02
+   start
+   
+   
+11.  *** Start dbconsole
+    emctl stop dbconsole 
+
+
+
+12. ## Test remote/client connection to each database from Laptop/PC
+       Connect ot DPPRD01 and DPPRD02 via DBArtisan or SQLPlus from desktop
+
+
+
+11. ## Modify oratab to add Y for autostartup
+
+12. ## Enable cron jobs
+
+
+############################################################
+Post migration steps
+
+
+----AETNAPROD-----
+
+1. ## Test any DBlinks 
+
+     Login to WKABPROD
+
+     select 1 from dual@DPPRD01;
+
+
+-------SPNODE45----
+1. ## Test DBlinks 
+  Login to DPPRD01
+select 1 from dual@WKABPROD.WORLD;
+
+
+------FLORADEV ---
+ Shutdown wkabtrn database
+ stop listener
+
+------WKABUAT-----
+startup WKABTRG1 database
+start listener

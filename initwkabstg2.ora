@@ -1,0 +1,109 @@
+##############################################################################
+# Copyright (c) 1991, 2001, 2002 by Oracle Corporation
+##############################################################################
+ 
+###########################################
+# Archive
+###########################################
+log_archive_dest_1='LOCATION=/workability2/wkabstg2/oraarch'
+log_archive_format=%t_%s.dbf
+log_archive_start=false
+ 
+###########################################
+# Cache and I/O
+###########################################
+db_block_size=8192
+db_cache_size=2097152000
+db_file_multiblock_read_count=16
+ 
+###########################################
+# Cursors and Library Cache
+###########################################
+open_cursors=300
+ 
+###########################################
+# Database Identification
+###########################################
+db_domain=world
+db_name=wkabstg2
+ 
+###########################################
+# Diagnostics and Statistics
+###########################################
+background_dump_dest=/workability2/wkabstg2/oracle/admin/bdump
+core_dump_dest=/workability2/wkabstg2/oracle/admin/cdump
+timed_statistics=TRUE
+user_dump_dest=/workability2/wkabstg2/oracle/admin/udump
+ 
+###########################################
+# File Configuration
+###########################################
+control_files=("/workability2/wkabstg2/oracle/oradata/control01.ctl", "/workability2/wkabstg2/oracle/oradata/control02.ctl", "/workability2/wkabstg2/oracle/oradata/control03.ctl")
+ 
+###########################################
+# Instance Identification
+###########################################
+instance_name=wkabstg2
+ 
+###########################################
+# Job Queues
+###########################################
+job_queue_processes=10
+ 
+###########################################
+# MTS
+###########################################
+#dispatchers="(PROTOCOL=TCP) (SERVICE=wkabqa2XDB)"
+ 
+###########################################
+# Miscellaneous
+###########################################
+aq_tm_processes=1
+compatible=9.2.0.0.0
+ 
+###########################################
+# Optimizer
+###########################################
+hash_join_enabled=TRUE
+query_rewrite_enabled=FALSE
+star_transformation_enabled=FALSE
+ 
+###########################################
+# Pools
+###########################################
+java_pool_size=183500800
+large_pool_size=83886080
+shared_pool_size=956301312
+ 
+###########################################
+# Processes and Sessions
+###########################################
+processes=150
+ 
+###########################################
+# Redo Log and Recovery
+###########################################
+fast_start_mttr_target=300
+ 
+###########################################
+# Security and Auditing
+###########################################
+remote_login_passwordfile=EXCLUSIVE
+ 
+###########################################
+# Sort, Hash Joins, Bitmap Indexes
+###########################################
+pga_aggregate_target=629145600
+sort_area_size=524288
+workarea_size_policy=auto
+ 
+###########################################
+# System Managed Undo and Rollback Segments
+###########################################
+undo_management=AUTO
+undo_retention=10800
+undo_tablespace=UNDOTBS1
+
+db_file_name_convert='/boraw1qu207/oradata/wkabqa3/','/workability2/wkabstg2/oracle/oradata/' ,'/boraw1qu208/oradata/wkabqa3/','/workability2/wkabstg2/oracle/oradata/','/boraw1qu209/oradata/wkabqa3/','/workability2/wkabstg2/oracle/oradata/','/boraw1qu210/oradata/wkabqa3/','/workability2/wkabstg2/oracle/oradata/','/boraw1qu211/oradata/wkabqa3/','/workability2/wkabstg2/oracle/oradata/'
+log_file_name_convert='/boraw1qu207/oradata/wkabqa3/','/workability2/wkabstg2/oracle/oradata/' ,'/boraw1qu208/oradata/wkabqa3/','/workability2/wkabstg2/oracle/oradata/'
+ 

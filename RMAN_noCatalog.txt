@@ -1,0 +1,17 @@
+When running backup with CATALOG and Catalog database is not available.
+
+Do following first:
+
+crosscheck backup;
+crosscheck archivelog all;
+crosscheck backup of controlfile;
+
+or
+
+crosscheck backup 
+
+then run backup without RMAN (use control file)
+
+Once Catalog is available run: resync catalog command.
+
+!!!double check syntactis for all comands above.

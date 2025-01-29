@@ -1,0 +1,6 @@
+Region     DataRep D/b                Workability D/b
+------     --------------             ---------------
+Dev        drdv01                      wkabdev2
+QES        DRQES1                      wkabqa3
+UAT        DRQA01                      wkabstg2
+Prod       DR02                        wkabprod
