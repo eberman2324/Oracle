@@ -1,0 +1,205 @@
+- name: Echo adding database to OEM
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nAddiong database target to OEM........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add AET DB OEM target
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.shell: |
+    {{ oracle_base }}/product/emcli/emcli add_target \
+    -name="{{ db_unique_name }}" \
+    -host="{{ ansible_hostname }}.aetna.com" -type="oracle_database" \
+    -credentials="UserName:dbsnmp;password:drugs2gogo;Role:normal" \
+    -properties="SID:{{ db_name }};Port:{{ db_port }};OracleHome:{{ oracle_home }};\
+    MachineName:{{ ansible_hostname }}.aetna.com" -groups="Unassigned:composite"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 255
+    - command_result.rc != 220
+    - command_result.rc != 25
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add AET DB OEM Comment
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Comment:Standard Build"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 8
+    - command_result.rc != 255
+    - command_result.rc != 220
+    - command_result.rc != 25
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add AET DB OEM contact
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Contact:(Oracle DBA - HCB)"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 8
+    - command_result.rc != 255
+    - command_result.rc != 220
+    - command_result.rc != 25
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add PBM DB OEM target
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.shell: |
+    {{ oracle_base }}/product/emcli/emcli add_target -name="{{ db_unique_name }}" \
+    -host="{{ ansible_hostname }}.{{ ansible_domain }}" -type="oracle_database" \
+    -credentials="UserName:dbsnmp;password:drugs2gogo;Role:normal" \
+    -properties="SID:{{ db_name }};Port:{{ db_port }};OracleHome:{{ oracle_home }};\
+    MachineName:{{ ansible_hostname }}.{{ ansible_domain }};udtp_1:NULL;udtp_2:NULL;udtp_3:NULL;udtp_4:NULL;udtp_5:ISUP"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add PBM DB OEM comment
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Comment:Standard Build"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 8
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add PBM DB OEM contact
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Contact:(Oracle DBA - {{ lob }})"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 8
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add RETAIL DB OEM target
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli add_target
+    -name="{{ db_unique_name }}"
+    -host="{{ ansible_hostname }}.{{ ansible_domain }}" -type="oracle_database"
+    -credentials="UserName:dbsnmp;password:drugs2gogo;Role:normal"
+    -properties="SID:{{ db_name }};Port:{{ db_port }};OracleHome:{{ oracle_home }};MachineName:{{ ansible_hostname }}.{{ ansible_domain }}"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add RETAIL DB OEM comment
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Comment:Standard Build"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 8
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add RETAIL DB OEM contact
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Contact:(Oracle DBA - {{ lob }})"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 8
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Echo OEM add complete
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nDB addition to OEM complete." >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"

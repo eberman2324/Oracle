@@ -1,0 +1,35 @@
+- name: Fetch old DBIDs
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select unique database_id from DBA_AUDIT_MGMT_LAST_ARCH_TS minus select dbid from v\$database;
+    EOF
+  register: dbid_list
+  changed_when: "dbid_list.rc == 0"
+  environment:
+    LOGFILE: "{{ log_file }}"
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+
+- name: Drop audit snapshots
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba >> $LOGFILE <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    whenever sqlerror exit failure 1
+    exec DBMS_AUDIT_MGMT.CLEAR_LAST_ARCHIVE_TIMESTAMP(AUDIT_TRAIL_TYPE =>DBMS_AUDIT_MGMT.AUDIT_TRAIL_AUD_STD,DATABASE_ID=>{{ item }});
+    exec DBMS_AUDIT_MGMT.CLEAR_LAST_ARCHIVE_TIMESTAMP(AUDIT_TRAIL_TYPE =>DBMS_AUDIT_MGMT.AUDIT_TRAIL_OS,DATABASE_ID=>{{ item }});
+    prompt
+    prompt Audit Trail Snapshot complete.
+    exit;
+    EOF
+  register: drop_audit_snaps
+  changed_when: "drop_audit_snaps.rc == 0"
+  environment:
+    LOGFILE: "{{ log_file }}"
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  with_items: "{{ dbid_list.stdout_lines }}"

@@ -1,0 +1,39 @@
+- name: Fetch free huge pages
+  remote_user: "{{ root_user }}"
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.shell: "set -o pipefail && grep HugePages_Free /proc/meminfo | awk ' {print $2} ' | xargs"
+  register: free_huge_pages
+  changed_when: "free_huge_pages.rc == 0"
+
+- name: Echo end create standby db to logfile.
+  when:
+    - free_huge_pages.stdout | int * 2097152 < sga_size | int
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nInsufficient huge pages allocated on {{ ansible_hostname }} " >> {{ log_file }}
+    echo -e "\nPlease ensure there are sufficint huge pages allocated for a {{ sga_size }} SGA"\
+            " before retrying the clone db playbook" >> {{ log_file }}
+    echo -e "\nCurrent huge pages free: {{ free_huge_pages.stdout }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Fail when inadequate huge pages free
+  when:
+    - free_huge_pages.stdout | int * 2097152 < sga_size | int
+  ansible.builtin.fail:
+    msg:
+      - 'Oracle database clone failed!'
+      - 'Insufficient free huge pages'
+      - 'Huge Pages Available: {{ free_huge_pages.stdout }}'
+  tags:
+    - db_prereq
+
+- name: Echo continue create standby db to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nSufficient huge pages allocated on {{ ansible_hostname }} continuing with duplicate..... " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"

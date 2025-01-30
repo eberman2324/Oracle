@@ -1,0 +1,22 @@
+- name: Update awr
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba >> $LOGFILE <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    whenever sqlerror exit failure 1
+    prompt
+    prompt Removing AWR snap shots for old DBIDs.......
+    @remove_old_awr_dbids.sql
+    EXECUTE DBMS_WORKLOAD_REPOSITORY.MODIFY_SNAPSHOT_SETTINGS(retention => 43200);
+    prompt
+    prompt AWR update complete
+    exit;
+    EOF
+  register: awr_update
+  changed_when: "awr_update.rc == 0"
+  environment:
+    LOGFILE: "{{ log_file }}"
+    SQLPATH: "{{ oracle_base }}/local/sql"
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"

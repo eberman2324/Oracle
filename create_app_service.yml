@@ -1,0 +1,108 @@
+- name: Fetch current services
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo >> $LOGFILE
+    echo Removing old DB services and creating new servives and startup trigger............ >> $LOGFILE
+    echo >> $LOGFILE
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    whenever sqlerror exit failure 1
+    select name from dba_services where name not like 'SYS%'  and name not like '%{{ ansible_hostname }}%';
+    EOF
+  register: services
+  changed_when: "services.rc == 0"
+  environment:
+    LOGFILE: "{{ log_file }}"
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+
+- name: Fetch active services
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    whenever sqlerror exit failure 1
+    select name from v\$active_services where name not like 'SYS%'  and name not like '%{{ ansible_hostname }}%';
+    EOF
+  register: active_services
+  changed_when: "active_services.rc == 0"
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+
+- name: Stop active services
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba >> $LOGFILE <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    whenever sqlerror exit failure 1
+    exec dbms_service.stop_service('{{ item }}');
+    EOF
+  register: stop_services
+  changed_when: "stop_services.rc == 0"
+  environment:
+    LOGFILE: "{{ log_file }}"
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  with_items: "{{ active_services.stdout_lines }}"
+
+- name: Drop old services
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba >> $LOGFILE <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    whenever sqlerror exit failure 1
+    exec dbms_service.delete_service('{{ item }}');
+    EOF
+  register: drop_services
+  changed_when: "drop_services.rc == 0"
+  environment:
+    LOGFILE: "{{ log_file }}"
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  with_items: "{{ services.stdout_lines }}"
+
+- name: Create new service and startup trigger
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/sqlplus -s / as sysdba >> $LOGFILE <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    whenever sqlerror exit failure 1
+    exec dbms_service.create_service( -
+    SERVICE_NAME => '{{ db_name }}_APP', -
+    NETWORK_NAME => '{{ db_name }}_APP', -
+    FAILOVER_METHOD => 'BASIC', -
+    FAILOVER_TYPE => 'SELECT', -
+    FAILOVER_RETRIES => 180, -
+    FAILOVER_DELAY => 1);
+    exec dbms_service.start_service('{{ db_name }}_APP', '{{ db_name }}');
+    CREATE OR REPLACE TRIGGER StartDgServices after startup on database
+    DECLARE
+      db_role VARCHAR(30);
+      db_open_mode VARCHAR(30);
+    BEGIN
+      execute immediate ' ALTER SYSTEM SET SERVICE_NAMES='' '' ';
+      SELECT DATABASE_ROLE, OPEN_MODE INTO db_role, db_open_mode FROM V\$DATABASE;
+      IF db_role = 'PRIMARY'
+      THEN DBMS_SERVICE.START_SERVICE('{{ db_name }}_APP');
+      END IF;
+      --IF db_role = 'PHYSICAL STANDBY' AND db_open_mode LIKE 'READ ONLY%'
+      --      THEN DBMS_SERVICE.START_SERVICE('{{ db_name }}_RPT');
+      --END IF;
+    END;
+    /
+    prompt
+    prompt New servives and startup trigger create complete
+    prompt
+    EOF
+  register: create_service
+  changed_when: "create_service.rc == 0"
+  environment:
+    LOGFILE: "{{ log_file }}"
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"

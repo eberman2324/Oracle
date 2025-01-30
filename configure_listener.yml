@@ -1,0 +1,284 @@
+- name: Echo start listener config
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nConfiguring listener named {{ listener_name }}........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Check if db_port  is available
+  when: listener_name != "listener"
+  become: true
+  ansible.builtin.shell: set -o pipefail &&/bin/netstat -tln |  grep ":{{ db_port }} " | sed -e 's/.*\///'
+  register:
+    netstat_result
+  failed_when: netstat_result.rc == 0
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Add db ipc to default listener
+  when: listener_name == "listener"
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.lineinfile:
+    path: "{{ grid_home }}/network/admin/listener.ora"
+    line: '      (ADDRESS = (PROTOCOL = IPC)(KEY = {{ db_name }}_IPC))'
+    insertafter: DESCRIPTION =*
+    backup: true
+  tags:
+    - db_listener
+
+- name: Add port to default listener
+  when:
+    - listener_name == "listener"
+    - db_port | int != 1521
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.lineinfile:
+    path: "{{ grid_home }}/network/admin/listener.ora"
+    line: '      (ADDRESS = (PROTOCOL = TCP)(HOST = {{ ansible_hostname }})(PORT = {{ db_port }}))'
+    insertafter: DESCRIPTION =*
+    backup: true
+  tags:
+    - db_listener
+
+- name: Add db sid to default listener.ora
+  when: listener_name == "listener"
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.blockinfile:
+    path: "{{ grid_home }}/network/admin/listener.ora"
+    block: |3
+          (SID_DESC =
+            (ORACLE_HOME = {{ oracle_home }})
+            (SID_NAME = {{ db_name }})
+          )
+    insertbefore: SID_DESC =*
+    backup: true
+    marker_begin: "{{ db_name }} Begin"
+    marker_end: "{{ db_name }} End"
+  tags:
+    - db_listener
+
+- name: Setup custom listener.ora
+  when: listener_name != "listener"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.template:
+    src: listener.ora.j2
+    dest: "{{ oracle_home }}/network/admin/listener.ora"
+    owner: oracle
+    group: dba
+    mode: "0755"
+  tags:
+    - db_listener
+
+- name: Echo complete listener config
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nLinster configuration for  listener named {{ listener_name }} is complete........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Echo tnsnames config
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nAdding tnsnames.ora entries........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Create tnsnames.ora
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ oracle_home }}/network/admin/tnsnames.ora"
+    owner: "{{ oracle_user }}"
+    state: touch
+    group: "{{ oracle_install_group }}"
+    mode: "0775"
+  tags:
+    - db_listener
+
+- name: Add db to tnsnames.ora
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.blockinfile:
+    path: "{{ oracle_home }}/network/admin/tnsnames.ora"
+    block: |
+      {{ db_unique_name }} =
+        (DESCRIPTION =
+           (ADDRESS = (PROTOCOL = IPC)(HOST = {{ ansible_hostname }})(KEY = {{ db_name }}))
+           (ADDRESS = (PROTOCOL = TCP)(HOST = {{ ansible_hostname }}.{{ ansible_domain }})(PORT = {{ db_port }}))
+           (CONNECT_DATA =
+              (SERVER = DEDICATED)
+              (SID = {{ db_name }})
+           )
+        )
+      {{ source_db_unique_name.stdout }} =
+        (DESCRIPTION =
+           (ADDRESS = (PROTOCOL = IPC)(HOST = {{ source_host }})(KEY = {{ source_db_name }}))
+           (ADDRESS = (PROTOCOL = TCP)(HOST = {{ source_host }}.{{ ansible_domain }})(PORT = {{ source_db_port }}))
+           (CONNECT_DATA =
+              (SERVER = DEDICATED)
+              (SID = {{ source_db_name }})
+           )
+        )
+    backup: true
+    marker_begin: "{{ db_name }} Begin"
+    marker_end: "{{ db_name }} End"
+  tags:
+    - db_listener
+
+- name: Create remote tnsnames.ora
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.file:
+    path: "{{ source_oracle_home }}/network/admin/tnsnames.ora"
+    owner: "{{ oracle_user }}"
+    state: touch
+    group: "{{ osdba_group }}"
+    mode: "0775"
+  delegate_to: "{{ source_host }}"
+  tags:
+    - db_listener
+
+- name: Add db to remote tnsnames.ora
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.blockinfile:
+    path: "{{ source_oracle_home }}/network/admin/tnsnames.ora"
+    block: |
+      {{ db_unique_name }} =
+        (DESCRIPTION =
+           (ADDRESS = (PROTOCOL = IPC)(HOST = {{ ansible_hostname }})(KEY = {{ db_name }}))
+           (ADDRESS = (PROTOCOL = TCP)(HOST = {{ ansible_hostname }}.{{ ansible_domain }})(PORT = {{ db_port }}))
+           (CONNECT_DATA =
+              (SERVER = DEDICATED)
+              (SID = {{ db_name }})
+           )
+        )
+      {{ source_db_unique_name.stdout }} =
+        (DESCRIPTION =
+           (ADDRESS = (PROTOCOL = IPC)(HOST = {{ source_host }})(KEY = {{ source_db_name }}))
+           (ADDRESS = (PROTOCOL = TCP)(HOST = {{ source_host }}.{{ ansible_domain }})(PORT = {{ source_db_port }}))
+           (CONNECT_DATA =
+              (SERVER = DEDICATED)
+              (SID = {{ source_db_name }})
+           )
+        )
+    backup: true
+    marker_begin: "{{ db_name }} Begin"
+    marker_end: "{{ db_name }} End"
+  delegate_to: "{{ source_host }}"
+  tags:
+    - db_listener
+
+- name: Echo end tnsnames config
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\n tnsnames.ora config complete........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Echo srvctl config
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nConfiguration srvctl for listener named {{ listener_name }}........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Update default listener srvctl
+  when: listener_name == "listener"
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.command: >
+    $ORACLE_HOME/bin/srvctl modify listener -l listener -endpoints 'TCP:1521/IPC:{{ db_name }}_IPC'
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    LD_LIBRARY_PATH: "{{ grid_home }}/lib"
+  register: add_default_port
+  failed_when:
+    - "'PRCN-2060 : Duplicated listener protocol value' not in add_default_port.stdout"
+    - "add_default_port.rc !=0"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+  tags:
+    - db_listener
+
+- name: Update default listener srvctl with new port
+  when:
+    - listener_name == "listener"
+    - db_port | int != 1521
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.command: >
+    $ORACLE_HOME/bin/srvctl modify listener -l listener -endpoints 'TCP:1521/TCP:{{ db_port }}/IPC:{{ db_name }}_IPC'
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    LD_LIBRARY_PATH: "{{ grid_home }}/lib"
+  register: add_non_default_port
+  failed_when:
+    - "'PRCN-2060 : Duplicated listener protocol value' not in add_default_port.stdout"
+    - "add_non_default_port.rc !=0"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+  tags:
+    - db_listener
+
+- name: Bounce listener
+  when: listener_name == "listener"
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.command: >
+    $ORACLE_HOME/bin/srvctl {{ item }} listener -l listener
+  with_items:
+    - stop
+    - start
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    LD_LIBRARY_PATH: "{{ grid_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+  tags:
+    - db_listener
+
+- name: Add custom listener srvctl
+  when: listener_name != "listener"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >
+    $ORACLE_HOME/bin/srvctl add listener -l {{ listener_name }} -oraclehome {{ oracle_home }} -endpoints 'TCP:{{ db_port }}/IPC:{{ db_name }}_IPC'
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+  tags:
+    - db_listener
+
+- name: Start custom listener
+  when: listener_name != "listener"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >
+    $ORACLE_HOME/bin/srvctl start listener -l {{ listener_name }}
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+  tags:
+    - db_listener
+
+- name: Echo end srvctl config
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nsrvctl configuration for listener named {{ listener_name }} complete continuing with clone........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"

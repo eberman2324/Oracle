@@ -1,0 +1,65 @@
+- name: Echo srvctl add db
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nAdding DB to HAS........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Register Database with HAS
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/srvctl add database -db {{ db_unique_name }} -oraclehome {{ oracle_home }}
+    -spfile {{ oracle_home }}/dbs/spfile{{ db_name }}.ora -instance {{ db_name }}
+    -diskgroup "{{ data_dg | regex_replace('[+]') }},{{ redo1_dg | regex_replace('[+]') }},{{ redo2_dg | regex_replace('[+]') }}"
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Set TNSADMIN in HAS
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/srvctl setenv database -db {{ db_unique_name }} -env 'TNS_ADMIN={{ oracle_home }}/network/admin'
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Stop  database
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF >> {{ log_file }}
+    set  echo on ver off pages 0 linesize 180 trims on head off feed off
+    shutdown immediate;
+    EOF
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Echo srvctl config
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nDB add to HAS complete." >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Start database with HAS
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    {{ oracle_home }}/bin/srvctl start database -db {{ db_unique_name }}
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
