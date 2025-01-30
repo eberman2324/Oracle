@@ -1,0 +1,342 @@
+1. Install Oracle DBMS software (Oracle Home)
+
+2. Pre Create basic $ORACLE_HOME/dbs/initHEPYGOLD.ora (obtain from vendor or create your own with basics)
+
+
+
+3. Pre Create dir for database files
+
+
+4. Add following into /etc/oratab
+
+HEPYGOLD:/oradb/app/oracle/product/19.22.0/db_1:N
+
+ . oraenv
+HEPYGOLD
+
+4. Pre Create Create_HEPYGOLD.sql (get more info from vendor or create your own)
+
+
+4. Create DB
+
+cd /oradb/app/oracle/admin/HEPYGOLD/create
+
+ . oraenv
+HEPYGOLD
+
+sqlplus / as sysdba
+
+@Create_HEPYGOLD.sql 
+
+
+5. Run Post DB create scripts below
+
+@$ORACLE_HOME/rdbms/admin/catalog.sql;
+
+@$ORACLE_HOME/rdbms/admin/catproc.sql;
+
+@$ORACLE_HOME/sqlplus/admin/pupbld.sql
+
+6. Setup and create listener.
+
+
+cd $ORACLE_HOME/network/admin
+
+
+
+Update listener.ora file
+netstat -an|grep 1735
+
+
+netstat -an|grep 1522
+netstat -an|grep 1523
+netstat -an|grep 1524
+
+
+HEPYGOLD =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+  )
+
+SID_LIST_HEPYGOLD =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = HEPYGOLD)
+      (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = HEPYGOLD)
+    )
+  )
+
+
+
+
+
+
+Update server and local tnsnames.ora file:
+
+HEPYGOLD, HEPYGOLD.WORLD =
+ (description_list =
+  (DESCRIPTION = 
+   (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+   (CONNECT_DATA = (SID = HEPYGOLD))
+  )
+ )
+
+
+HEPYGOLD, HEPYGOLD.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+      )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = HEPYGOLD)
+    )
+  )
+
+
+HEPYGOLD, HEPYGOLD.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+      )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = HEPYGOLD)
+    )
+  )
+
+
+
+VHEP_MSK, VHEP_MSK.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1523))
+      )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = VHEP_MSK)
+    )
+  )
+
+VHEP_SRC, VHEP_SRC.WORLD =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 154))
+      )
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SID = VHEP_SRC)
+    )
+  )
+
+
+
+
+
+
+
+set current_listener VHEP_MSK
+lsnrctl start VHEP_MSK
+lsnrctl status VHEP_MSK
+lsnrctl stop VHEP_MSK
+
+
+set current_listener VHEP_SRC
+lsnrctl start VHEP_SRC
+lsnrctl status VHEP_SRC
+lsnrctl stop VHEP_SRC
+
+
+6. create spfile from pfile;
+
+bounce db
+
+
+7. Create Users Tbl and DBA user account
+
+CREATE TABLESPACE USERS
+    DATAFILE '/oradb/app/oracle/admin/HEPYGOLD/data/users1.dbf' SIZE 5M AUTOEXTEND ON NEXT 1280K MAXSIZE UNLIMITED
+    SEGMENT SPACE MANAGEMENT AUTO
+/
+
+
+-- HEPYGOLD
+CREATE USER A236120 IDENTIFIED BY "Locked#99999"
+    DEFAULT TABLESPACE USERS
+    TEMPORARY TABLESPACE TEMP
+    PROFILE DEFAULT
+    ACCOUNT UNLOCK
+/
+
+GRANT UNLIMITED TABLESPACE TO A236120;
+GRANT DBA TO A236120;
+GRANT CONNECT TO A236120;
+ALTER USER A236120 DEFAULT ROLE DBA;
+
+-- VHEP_MSK anbd VHEP_SRC
+ALTER  USER A236120
+IDENTIFIED BY "Dec09#2024"
+/
+
+
+ORA-00603: ORACLE server session terminated by fatal error
+ORA-00020: maximum number of processes () exceeded
+
+alter system set processes=6300 scope=spfile;
+
+bounce db
+
+User: DPOC/Nov13#2024
+
+OS account:
+delphix/123delphix
+
+
+
+!! make chages for cloning Virtual to Physcial
+alter system set db_recovery_file_dest_size = 2G scope=both; 
+
+orapwd file=orapwVHEP_V2P password=Locked#99999 entries=20;
+
+!!! As of now starting database only from Delphix console
+
+sqlplus sys/Locked#99999@VHEP_V2P as sysdba
+
+
+!! Mark's version of tnsnames.ora entry one DB connects by service name and other by SID
+
+VHEP_MSK, VHEP_MSK.WORLD =
+(description_list =
+  (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+   (CONNECT_DATA = (SERVICE_NAME = VHEP_MSK))
+  )
+)
+
+VHEP_SRC, VHEP_SRC.WORLD =
+(description_list =
+  (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+   (CONNECT_DATA = (SID = VHEP_SRC))
+  )
+)
+
+
+!! My version both connecting via service name
+
+
+VHEP_MSK, VHEP_MSK.WORLD =
+(description_list =
+  (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+   (CONNECT_DATA = (SERVICE_NAME = VHEP_MSK))
+  )
+)
+
+VHEP_SRC, VHEP_SRC.WORLD =
+(description_list =
+  (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+   (CONNECT_DATA = (SERVICE_NAME = VHEP_SRC))
+  )
+)
+
+
+*********************************************************************************************************************************
+
+In Delphix we have Retention policies that allow us to define for how long we want to keep archive log files  https://cd.delphix.com/docs/latest/policies
+
+
+***********************************************************************************************************************************
+
+Just to add more insight to the minor issues we had last week to enable archive log mode to a Virtual database when its initially configured to have archive log mode disabled.
+ 
+Recreating the database to switch from archive log mode disabled to enabled is the easiest option from the Delphix point of view but its not the only one.
+ 
+Switching from archivelog mode disabled to enabled can also be done following Oracle standard process but there is one privilege that drives how can it be done:
+ 
+-If the Delphix OS user had write access to the dbs folder in the Oracle home at the time of provisioning the VDB, the VDB can be shutdown/startup manually using sqlplus without any problem since Delphix will place an init file inside the dbs folder.
+-If the Delphix OS user had no write access to the dbs folder in the Oracle home at the time of provisioning the VDB, you can follow the procedure listed here (manually starting a VDB)  https://cd.delphix.com/docs/latest/manually-starting-a-vdb
+ 
+All Delphix VDBs can be managed both through sqlplus and the GUI console . The recommendation is to use the GUI console because it controls both the Oracle DB processes and storage layer(filesystems) but you can use sqlplus for maintenance activities that require manual shutdown/startup.
+
+
+***************************************************************************************************************************************
+You don’t have to rebuild the VDB from Delphix, but we need to create an init file inside the $ORACLE_HOME/dbs folder with this line only:
+
+spfile=<location of the spfile>
+
+
+To find the spfile location, you can do the following:
+
+-Look for the NFS share where spfile is located  you can execute  df -h|grep -i VHEP_V2P|grep -i datafile
+            Example:
+          [oracle@gi-ce83-ora19900-tgt dbs]$ df -h |grep -i vtest|grep -i datafile
+10.43.51.177:/domain0/oracle_db_container-10/oracle_timeflow-11/datafile   20G  1.1G   19G   6% /mnt/provision/VTEST3/datafile
+[oracle@gi-ce83-ora19900-tgt dbs]$
+-List files inside that NFS share and locate the spfile 
+                Example:
+          [oracle@gi-ce83-ora19900-tgt dbs]$ cd /mnt/provision/VTEST3/datafile
+[oracle@gi-ce83-ora19900-tgt datafile]$ ls -lrth
+total 12K
+drwxr-x---. 3 oracle oinstall    3 Jan  2 13:42 u01
+-rw-r-----. 1 oracle oinstall    0 Jan  2 13:42 sqlnet.ora
+-rw-r-----. 1 oracle oinstall 1.1K Jan  2 13:42 source_init.ora
+-rw-r-----. 1 oracle oinstall  982 Jan  2 13:42 init.ora.rename
+-rw-r-----. 1 oracle oinstall  981 Jan  2 13:42 init.ora.recovery
+-rw-r-----. 1 oracle oinstall  879 Jan  2 13:42 init.ora.createControlfile
+-rw-r-----. 1 oracle oinstall  754 Jan  2 13:42 init.ora
+-rw-r-----. 1 oracle oinstall    0 Jan  2 13:42 includedParameters.ora
+drwxr-x---. 3 oracle oinstall    3 Jan  2 13:43 VTEST3
+-rw-r-----. 1 oracle oinstall 3.5K Jan  2  2025 spfile.ora
+[oracle@gi-ce83-ora19900-tgt datafile]$
+-Go to dbs folder inside ORACLE_HOME and create an init file with a single line specifying the spfile found in previous 2 steps.
+                Example:
+[oracle@gi-ce83-ora19900-tgt datafile]$ cd $ORACLE_HOME
+[oracle@gi-ce83-ora19900-tgt dbhome_1]$ cd dbs
+[oracle@gi-ce83-ora19900-tgt dbs]$ vi initVTEST3.ora
+[oracle@gi-ce83-ora19900-tgt dbs]$ cat initVTEST3.ora
+spfile=/mnt/provision/VTEST3/datafile/spfile.ora
+[oracle@gi-ce83-ora19900-tgt dbs]$
+-Now, we can shutdown and startup the VDB manually:
+                Example:
+[oracle@gi-ce83-ora19900-tgt dbs]$ sqlplus / as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Jan 2 13:48:49 2025
+Version 19.9.0.0.0
+
+Copyright (c) 1982, 2020, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.9.0.0.0
+
+SQL>
+SQL> shutdown immediate
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount
+ORACLE instance started.
+
+Total System Global Area 1073737800 bytes
+Fixed Size              8904776 bytes
+Variable Size         620756992 bytes
+Database Buffers      436207616 bytes
+Redo Buffers            7868416 bytes
+Database mounted.
+SQL> quit
+
+Feel free to let us know if you have any questions or comments.
+
+Thanks and regards.
+
+ 	Carlos Cuellar | Principal Sales Engineer, Delphix
+Perforce Software
+M: +14756191631
+Visit us on: LinkedIn | Twitter/X | Facebook | YouTube
+
+
+

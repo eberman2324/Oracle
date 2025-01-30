@@ -1,0 +1,49 @@
+-- original
+HEPYGOLD =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1522))
+  )
+
+SID_LIST_HEPYGOLD =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = HEPYGOLD)
+      (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = HEPYGOLD)
+    )
+  )
+
+
+-- my version with dedicated listeners
+VHEP_MSK =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1523))
+  )
+
+SID_LIST_VHEP_MSK =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = VHEP_MSK)
+      (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = VHEP_MSK)
+    )
+  )
+
+
+
+VHEP_SRC =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = xDELDBW01D.aetna.com)(PORT = 1524))
+  )
+
+SID_LIST_VHEP_SRC =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = VHEP_SRC)
+      (ORACLE_HOME = /oradb/app/oracle/product/19.22.0/db_1)
+      (SID_NAME = VHEP_SRC)
+    )
+  )
+
+
+
