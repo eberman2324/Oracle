@@ -1,0 +1,14 @@
+- name: Backup source archivelogs
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    {{ source_oracle_home }}/bin/rman target / <<EOF
+    backup archivelog all;
+    EOF
+  environment:
+    ORACLE_HOME: "{{ source_oracle_home }}"
+    ORACLE_SID: "{{ source_db_name }}"
+    LD_LIBRARY_PATH: "{{ source_oracle_home }}/lib"
+  delegate_to: "{{ source_host }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
