@@ -1,0 +1,132 @@
+- name: Echo is checking source database status to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nChecking the state of source db {{ source_db_name }} on {{ source_host }}.... " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Fetch source archivelog mode
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select log_mode from v\$database;
+    EOF
+  environment:
+    ORACLE_HOME: "{{ source_oracle_home }}"
+    ORACLE_SID: "{{ source_db_name }}"
+  register: archivelog_mode
+  delegate_to: "{{ source_host }}"
+  changed_when: "archivelog_mode.rc == 0"
+
+- name: Echo source database down to logfile.
+  when:
+    - archivelog_mode.stdout is search ('ORACLE not available')
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nSource db {{ source_db_name }} on {{ source_host }} is down" >> {{ log_file }}
+    echo -e "Ensure source db {{ source_db_name }} on {{ source_host }} is up before cloning DB" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Fail when source database is not up
+  when:
+    - archivelog_mode.stdout is search ('ORACLE not available')
+  ansible.builtin.fail:
+    msg:
+      - 'Source database is not up and available'
+      - 'Ensure source database is up prior to cloning the database'
+
+- name: Echo source database archivelog mode to logfile.
+  when:
+    - archivelog_mode.stdout != 'ARCHIVELOG'
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nSource db {{ source_db_name }} on {{ source_host }} is not is archivelog mode" >> {{ log_file }}
+    echo -e "Ensure source db {{ source_db_name }} on {{ source_host }} is in archivelog mode before cloning db" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Fail when source database is not in archive log mode
+  when:
+    - archivelog_mode.stdout != 'ARCHIVELOG'
+  ansible.builtin.fail:
+    msg:
+      - 'Source database is not in archivelog mode'
+      - 'Ensure source database is in archivelog mode prior to cloning the database'
+
+- name: Echo source database is up and in archivelog mode to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nSource db {{ source_db_name }} on {{ source_host }} is up and in archivelog mode continuing with clone......" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Check if database is a container
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select cdb from v\$DATABASE;
+    EOF
+  register: is_cdb
+  changed_when: "is_cdb.rc == 0"
+  environment:
+    ORACLE_HOME: "{{ source_oracle_home }}"
+    ORACLE_SID: "{{ source_db_name }}"
+  delegate_to: "{{ source_host }}"
+
+- name: Fetch source db_unique_name
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    SELECT sys_context('USERENV','DB_UNIQUE_NAME') AS DB_Unique__Name from dual;
+    EOF
+  register: source_db_unique_name
+  changed_when: "source_db_unique_name.rc == 0"
+  environment:
+    ORACLE_HOME: "{{ source_oracle_home }}"
+    ORACLE_SID: "{{ source_db_name }}"
+  delegate_to: "{{ source_host }}"
+
+- name: Fetch source REDO disk group names
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select distinct regexp_substr(member,'[^/]+', 1) dg_name from v\$logfile order by dg_name;
+    EOF
+  register: source_redo_log_groups
+  environment:
+    ORACLE_HOME: "{{ source_oracle_home }}"
+    ORACLE_SID: "{{ source_db_name }}"
+  delegate_to: "{{ source_host }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Echo is container db to logfile.
+  when: is_cdb.stdout == "YES"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nDB {{ source_db_name }} has been identified as a container " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Echo is not container db to logfile.
+  when: is_cdb.stdout == "NO"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nDB {{ source_db_name }} has been identified as a non-container " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"

@@ -1,0 +1,76 @@
+- name: Fetch current log group
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select group# from v\$log where status='CURRENT';
+    EOF
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  register: current_log_group
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Alter redolog blocksize
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    export PATH=$PATH:$ORACLE_HOME/bin
+    echo " " >> $LOGFILE
+    echo "Re-creating REDO log groups with 4k block size.............." >> $LOGFILE
+    set -o pipefail && echo "shutdown immediate;" | sqlplus / as sysdba >> $LOGFILE
+    set -o pipefail && echo "startup;" | sqlplus / as sysdba >> $LOGFILE
+    set -o pipefail && \
+    echo "alter database add logfile group 3 ('${STD_REDO1_DG}','${STD_REDO2_DG}') SIZE ${LOG_SIZE}M blocksize 4096;" | sqlplus / as sysdba >> $LOGFILE
+
+    if [ "${CURRENT_DG}" -eq "1" ]; then
+      set -o pipefail && echo "alter database drop logfile group 2;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && \
+      echo "alter database add logfile group 2 ('${STD_REDO1_DG}','${STD_REDO2_DG}') SIZE ${LOG_SIZE}M blocksize 4096;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && echo "alter system switch logfile;" | sqlplus / as sysdba  >> $LOGFILE
+      set -o pipefail && echo "shutdown immediate;" | sqlplus / as sysdba  >> $LOGFILE
+      set -o pipefail && echo "startup;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && echo "alter database drop logfile group 1;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && \
+      echo "alter database add logfile group 1 ('${STD_REDO1_DG}','${STD_REDO2_DG}') SIZE ${LOG_SIZE}M blocksize 4096;" | sqlplus / as sysdba >> $LOGFILE
+    elif [ "${CURRENT_DG}" -eq "2" ]; then
+      set -o pipefail && echo "alter database drop logfile group 1;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && \
+      echo "alter database add logfile group 1 ('${STD_REDO1_DG}','${STD_REDO2_DG}') SIZE ${LOG_SIZE}M blocksize 4096;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && echo "alter system switch logfile;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && echo "shutdown immediate;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && echo "startup;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && echo "alter database drop logfile group 2;" | sqlplus / as sysdba >> $LOGFILE
+      set -o pipefail && \
+      echo "alter database add logfile group 2 ('${STD_REDO1_DG}','${STD_REDO2_DG}') SIZE ${LOG_SIZE}M blocksize 4096;" | sqlplus / as sysdba >> $LOGFILE
+    else
+      echo "Invalid Current log group returned" >> $LOGFILE
+      exit 1
+    fi
+
+    for ((i=4;i<=LOG_COUNT;i++));
+      do
+        set -o pipefail && \
+        echo "alter database add logfile group ${i} ('${STD_REDO1_DG}','${STD_REDO2_DG}') SIZE ${LOG_SIZE}M blocksize 4096;" | sqlplus / as sysdba
+     done
+
+    echo "REDO log re-creation complete" >> $LOGFILE
+    echo "RDOO log configuration is as follows:" >> $LOGFILE
+    set -o pipefail && echo "select group#, bytes, blocksize from v\$log;" | sqlplus -s / as sysdba | tee -a $LOGFILE
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+    LOGFILE: "{{ log_file }}"
+    STD_REDO1_DG: "{{ redo1_dg }}"
+    STD_REDO2_DG: "{{ redo2_dg }}"
+    LOG_SIZE: "{{ log_size }}"
+    LOG_COUNT: "{{ log_count }}"
+    CURRENT_DG: "{{ current_log_group.stdout }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
