@@ -1,0 +1,117 @@
+- name: Display pre kill user sessions  message
+  when: inventory_hostname in groups['dbservers']
+  remote_user: "{{ root_user }}"
+  ansible.builtin.debug:
+    msg:
+      - 'Kill user sessions started for Single Instance at {{ ansible_date_time.iso8601 }}:'
+
+- name: Set instance name if db_name is provided
+  when:
+    - instance_name is not defined
+    - db_name is defined
+  ansible.builtin.set_fact:
+    instance_name: "{{ db_name }}"
+
+- name: Fail when missing parameters
+  ansible.builtin.fail:
+    msg: "Variable '{{ item }}' is not defined, please ensure '{{ item }}' is included in extra-vars when selecting the kill user sessions action "
+  when:
+    - item is not defined
+  with_items:
+    - instance_name
+
+- name: Set non-pluggable variables
+  when: pdb_name is not defined
+  ansible.builtin.set_fact:
+    log_file: "{{ oracle_base }}/local/logs/kill_user_sessions_{{ instance_name }}_{{ ansible_date_time.iso8601 }}.out"
+    lst_name: "{{ instance_name }}"
+
+- name: Set pluggable variables
+  when: pdb_name is defined
+  ansible.builtin.set_fact:
+    log_file: "{{ oracle_base }}/local/logs/kill_user_sessions_{{ instance_name }}_{{ pdb_name }}_{{ ansible_date_time.iso8601 }}.out"
+    lst_name: "{{ pdb_name }}"
+
+- name: Create kill user in progress file
+  become: true
+  ansible.builtin.file:
+    path: "{{ stage_directory }}/oracle_setup_status_kill_user_sessions_{{ lst_name }}_in_prgress"
+    state: touch
+    mode: "0700"
+
+- name: Echo begin kill user sessioins to logfile
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "Start kill user sessione that are not a member of database role INDESTRUCTIBLE_USERS_DURING_DEVOPS_IMPLEMENTATIONS"\
+    " on {{ ansible_hostname }} at {{ ansible_date_time.iso8601 }} using ansible automation\n" > {{ log_file }}
+  args:
+    removes: "{{ stage_directory }}/oracle_setup_status_kill_user_sessions_{{ lst_name }}_in_prgress"
+
+- name: Fetch oracle home
+  ansible.builtin.import_tasks: fetch_oracle_home.yml
+
+- name: Fetch db_name parameters
+  ansible.builtin.import_tasks: fetch_db_name_parameters.yml
+
+- name: Check state of database
+  ansible.builtin.import_tasks: check_db_state.yml
+
+- name: Fetch standby database info
+  ansible.builtin.import_tasks: fetch_standby_databases.yml
+
+- name: Fetch standby servers
+  when: standby_count.stdout | int > 0
+  ansible.builtin.include_tasks: fetch_standby_servers.yml
+  with_items: "{{ standby_databases.stdout_lines }}"
+
+- name: Set standby servers when no standby databases
+  when: standby_count.stdout | int == 0
+  ansible.builtin.set_fact:
+    standby_server_list: "'dummy'"
+
+- name: Convert standby server list to a string
+  when: standby_count.stdout | int > 0
+  ansible.builtin.set_fact:
+    standby_server_list: "{{ standby_servers | join(',') }}"
+
+- name: List server string
+  ansible.builtin.debug:
+    msg: "server string: {{ standby_server_list }}"
+
+- name: Fail when missing pdb name
+  ansible.builtin.fail:
+    msg:
+      - "Variable pdb_name is not defined and the instance is a container, please ensure pdb_name is included in extra-vars"
+      - "when selecting the kill user sessions action for a pdb "
+  when:
+    - is_cdb.stdout == 'YES'
+    - pdb_name is not defined
+
+- name: Kill non-pluggable user session
+  when: pdb_name is not defined
+  ansible.builtin.include_tasks: kill_db_user_sessions.yml
+
+- name: Kill pluggable user accounts
+  when: pdb_name is defined
+  ansible.builtin.include_tasks: kill_pdb_user_sessions.yml
+
+- name: Echo end kill user sessions to logfile
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nComplete kill user sessions that are not a member of database role INDESTRUCTIBLE_USERS_DURING_DEVOPS_IMPLEMENTATIONS "\
+    "on {{ ansible_hostname }} at {{ ansible_date_time.iso8601 }} using ansible automation" >> {{ log_file }}
+  args:
+    removes: "{{ stage_directory }}/oracle_setup_status_kill_user_sessions_{{ lst_name }}_in_prgress"
+
+- name: Create kill user success file
+  become: true
+  ansible.builtin.file:
+    path: "{{ stage_directory }}/oracle_setup_status_kill_user_sessions_{{ lst_name }}_in_prgress"
+    state: absent
+
+- name: Display post kill user sessions message
+  ansible.builtin.debug:
+    msg:
+      - 'Completed kill user sessions for Single Instance at {{ ansible_date_time.iso8601 }}:'

@@ -1,0 +1,92 @@
+- name: Check if PDB exits and is open
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    {{ oracle_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select  open_mode from v\$pdbs where name = '{{ pdb_name }}';
+    EOF
+  register: pdb_status
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ instance_name }}"
+  failed_when: "'READ WRITE' not in pdb_status.stdout"
+  args:
+    removes: "{{ stage_directory }}/oracle_setup_status_kill_user_sessions_{{ lst_name }}_in_prgress"
+
+- name: Fetch user sessions to kill
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    {{ oracle_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 200 trims on head off feed off
+    alter session set container={{ pdb_name }};
+    col osuser              format a10 trunc
+    col username            format a10 trunc
+    col program             format a30 trunc
+    col sid_serial          format a38 trunc
+    col sqlid               format a16 trunc
+    col prev_sqlid          format a16 trunc
+    col machine             format a25 trunc
+    col module              format a25 trunc
+    col action              format a25 trunc
+    select /*+ leading(s) */
+    'alter system kill session '''||cast(s.sid||','||s.serial# as varchar2(13)) ||'''   ' as sid_serial,
+    ' /* ',
+    decode(s.type, 'USER', s.username, s.username) as username,
+    s.osuser as osuser,
+    s.sql_id as sqlid,
+    s.prev_sql_id as prev_sqlid,
+    s.machine as machine,
+    s.module as module,
+    s.action as action,
+    '*/ ;'
+    from gv\$session s,
+    gv\$process p,
+    gv\$px_session pxs,
+    audit_actions aa
+    where s.paddr = p.addr
+    and s.inst_id = p.inst_id
+    and s.saddr = pxs.saddr (+)
+    and s.inst_id = pxs.inst_id (+)
+    and s.command = aa.action
+    and s.type <> 'BACKGROUND'
+    and s.event not in ('jobq slave wait', 'rdbms ipc message')
+    and s.event not like 'Streams AQ:%'
+    and s.username not in (select grantee from dba_role_privs where  granted_role = 'INDESTRUCTIBLE_USERS_DURING_DEVOPS_IMPLEMENTATIONS')
+    and s.username not in (select username from dba_users where oracle_maintained = 'Y')
+    and s.machine not like '%{{ ansible_hostname }}%'
+    and s.machine not in ( {{ standby_server_list }} )
+    and s.con_id <> '0'
+    order by
+    s.module desc,
+    s.last_call_et,
+    s.username,
+    decode(pxs.qcsid, null, s.sid, pxs.qcsid);
+    EOF
+  register: sessions_to_kill
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ instance_name }}"
+  args:
+    removes: "{{ stage_directory }}/oracle_setup_status_kill_user_sessions_{{ lst_name }}_in_prgress"
+
+- name: Kill user sessions
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    {{ oracle_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set echo on
+    spool {{ log_file }} append
+    prompt {{ kill_stmnt }};
+    {{ kill_stmnt }}
+    spool off
+    EOF
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ instance_name }}"
+  with_items: "{{ sessions_to_kill.stdout_lines }}"
+  loop_control:
+    loop_var: kill_stmnt
+  args:
+    removes: "{{ stage_directory }}/oracle_setup_status_kill_user_sessions_{{ lst_name }}_in_prgress"
