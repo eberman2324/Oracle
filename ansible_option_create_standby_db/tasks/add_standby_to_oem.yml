@@ -1,0 +1,162 @@
+- name: Echo adding standby database to OEM
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nAddiong standby database target to OEM........" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add AET Standby DB  OEM target
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.shell: |
+    {{ oracle_base }}/product/emcli/emcli add_target \
+    -name="{{ db_unique_name }}" \
+    -host="{{ ansible_hostname }}.aetna.com" -type="oracle_database" \
+    -credentials="UserName:sys;password:{{ syspass }};Role:sysdba" \
+    -properties="SID:{{ db_name }};Port:{{ db_port }};OracleHome:{{ oracle_home }};\
+    MachineName:{{ ansible_hostname }}.aetna.com" -groups="Unassigned:composite"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add AET Standby DB OEM Comment
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Comment:Standard Build"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add AET Standby DB OEM contact
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Contact:(Oracle DBA - HCB)"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add PBM Standby DB OEM target
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.shell: |
+    {{ oracle_base }}/product/emcli/emcli add_target -name="{{ db_unique_name }}" \
+    -host="{{ ansible_hostname }}.{{ ansible_domain }}" -type="oracle_database" \
+    -credentials="UserName:sys;password:{{ syspass }};Role:sysdba" \
+    -properties="SID:{{ db_name }};Port:{{ db_port }};OracleHome:{{ oracle_home }};\
+    MachineName:{{ ansible_hostname }}.{{ ansible_domain }};udtp_1:NULL;udtp_2:NULL;udtp_3:NULL;udtp_4:NULL;udtp_5:ISUP"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add PBM Standby DB OEM comment
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Comment:Standard Build"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add PBM Standby DB OEM contact
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Contact:(Oracle DBA - {{ lob }})"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add RETAIL Standby DB OEM target
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli add_target
+    -name="{{ db_unique_name }}"
+    -host="{{ ansible_hostname }}.{{ ansible_domain }}" -type="oracle_database"
+    -credentials="UserName:sys;password:{{ syspass }};Role:sysdba"
+    -properties="SID:{{ db_name }};Port:{{ db_port }};OracleHome:{{ oracle_home }};MachineName:{{ ansible_hostname }}.{{ ansible_domain }}"
+  register: command_result
+  failed_when:
+    - command_result.rc != 0
+    - command_result.rc != 6
+    - command_result.rc != 255
+    - command_result.rc != 220
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add RETAIL Standby DB OEM comment
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Comment:Standard Build"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Add RETAIL Standby DB OEM contact
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ db_unique_name }}:oracle_database:Contact:(Oracle DBA - {{ lob }})"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ db_name }}_successful"
+
+- name: Echo OEM add complete
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nStandby DB addition to OEM complete." >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"

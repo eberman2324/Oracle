@@ -1,0 +1,137 @@
+- name: Echo is checking primary database status to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nChecking the state of primary db {{ db_name }} on {{ primary_host }}.... " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fetch primary archivelog mode
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select log_mode from v\$database;
+    EOF
+  environment:
+    ORACLE_HOME: "{{ primary_oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  register: archivelog_mode
+  delegate_to: "{{ primary_host }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+  tags:
+    - db_prereq
+
+- name: Echo primary database downto logfile.
+  when:
+    - archivelog_mode.stdout is search ('ORACLE not available')
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\niPprimary db {{ db_name }} on {{ primary_host }} is down" >> {{ log_file }}
+    echo -e "Ensure Pprimary db {{ db_name }} on {{ primary_host }} is up before creating standby" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fail when primary database is not up
+  when:
+    - archivelog_mode.stdout is search ('ORACLE not available')
+  ansible.builtin.fail:
+    msg:
+      - 'Primary database is not up and available'
+      - 'Ensure primary database is up prior to createing the standby database'
+
+- name: Echo primary database down to logfile.
+  when:
+    - archivelog_mode.stdout != 'ARCHIVELOG'
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nPrimary db {{ db_name }} on {{ primary_host }} is not is archivelog mode" >> {{ log_file }}
+    echo -e "Ensure Pprimary db {{ db_name }} on {{ primary_host }} is in archivelog mode before creating standby" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fail when primary database is not in archive log mode
+  when:
+    - archivelog_mode.stdout != 'ARCHIVELOG'
+  ansible.builtin.fail:
+    msg:
+      - 'Primary database is not in archivelog mode'
+      - 'Ensure primary database is in archivelog mode prior to createing the standby database'
+
+- name: Echo primary database is up and in archivelog mode to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nPrimary db {{ db_name }} on {{ primary_host }} is up and in archivelog mode continuing with clone......" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Check if database is a container
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select cdb from v\$DATABASE;
+    EOF
+  register: is_cdb
+  environment:
+    ORACLE_HOME: "{{ primary_oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  delegate_to: "{{ primary_host }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fetch number of standby databases
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select count(*) from v\$DATAGUARD_CONFIG where dest_role<>'PRIMARY DATABASE';
+    EOF
+  register: standby_database_count
+  environment:
+    ORACLE_HOME: "{{ primary_oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  delegate_to: "{{ primary_host }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fetch primary db_unique_name
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && $ORACLE_HOME/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    SELECT sys_context('USERENV','DB_UNIQUE_NAME') AS DB_Unique__Name from dual;
+    EOF
+  register: primary_db_unique_name
+  environment:
+    ORACLE_HOME: "{{ primary_oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+  delegate_to: "{{ primary_host }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Echo is container db to logfile.
+  when: is_cdb.stdout == "YES"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nDB {{ db_name }} has been identified as a container " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Echo is not container db to logfile.
+  when: is_cdb.stdout == "NO"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nDB {{ db_name }} has been identified as a non-container " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"

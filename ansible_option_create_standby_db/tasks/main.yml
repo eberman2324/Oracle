@@ -1,0 +1,163 @@
+- name: Check state of primary database
+  ansible.builtin.import_tasks: check_primary_db_state.yml
+
+- name: Display pre create standby db  message
+  ansible.builtin.debug:
+    msg:
+      - 'Oracle Create Standby Database {{ db_unique_name }} from {{ primary_db_unique_name.stdout }} started at {{ ansible_date_time.iso8601 }}:'
+
+- name: Echo begin create standby db to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "Start Create Standby DB of {{ primary_db_unique_name.stdout }} "\
+    "on {{ ansible_hostname }} at {{ ansible_date_time.iso8601 }} using ansible automation" > {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fetch GI home
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: set -o pipefail && grep ^$"+ASM:" /etc/oratab | awk -F':' ' {print $2} '
+  register: gi_home_result
+  changed_when: "gi_home_result.rc == 0"
+
+- name: Set variable grid_home
+  ansible.builtin.set_fact:
+    grid_home: "{{ gi_home_result.stdout }}"
+
+- name: Set listener name
+  when: is_cdb.stdout == "YES"
+  ansible.builtin.set_fact:
+    listener_name: "listener"
+
+- name: Validate application ID
+  ansible.builtin.include_role:
+    name: ans_ent_update_cmdb_role
+  vars:
+    business_application_id: "{{ application_id }}"
+    cmdb_api_action: validate_app_id
+
+- name: Check huge pages
+  ansible.builtin.import_tasks: check_huge_pages.yml
+
+- name: Check available space
+  ansible.builtin.import_tasks: check_available_space.yml
+
+- name: Setup ssh trust
+  ansible.builtin.import_tasks: setup_ssh_trust.yml
+
+- name: Prep primary db
+  ansible.builtin.import_tasks: prep_primary_db.yml
+
+- name: Backup primary archivelogs
+  when: duplicate_type == "tape"
+  ansible.builtin.import_tasks: backup_primary_archive_logs.yml
+
+- name: Build active duplicate commands
+  when: duplicate_type == "active"
+  ansible.builtin.import_tasks: build_active_duplicate_rman_cmds.yml
+
+- name: Build tape duplicate commands
+  when: duplicate_type == "tape"
+  ansible.builtin.import_tasks: build_tape_duplicate_rman_cmds.yml
+
+- name: Build disk duplicate commands
+  when: duplicate_type == "disk"
+  ansible.builtin.import_tasks: build_disk_duplicate_rman_cmds.yml
+
+- name: Configure listener
+  ansible.builtin.import_tasks: configure_listener.yml
+
+- name: Start instance for clone
+  ansible.builtin.import_tasks: start_instance_for_clone.yml
+
+- name: Register storage unit in ddboost when tape clone
+  when: duplicate_type == "tape"
+  ansible.builtin.import_tasks: register_storage_unit.yml
+
+- name: Suspend primary database OEM Jobs
+  when:
+    - lob == "HCB"
+    - duplicate_type == "active"
+  ansible.builtin.import_tasks: suspend_oem_jobs.yml
+
+- name: Backup primary archivelogs
+  when: duplicate_type == "tape"
+  ansible.builtin.import_tasks: backup_primary_archive_logs.yml
+
+- name: Execute rman
+  ansible.builtin.import_tasks: execute_rman.yml
+
+- name: Resume primary database OEM Jobs
+  when:
+    - lob == "HCB"
+    - duplicate_type == "active"
+  ansible.builtin.import_tasks: resume_oem_jobs.yml
+
+- name: Set file mgmt to automatic
+  ansible.builtin.import_tasks: set_file_mgmt.yml
+
+- name: Configure db in has
+  ansible.builtin.import_tasks: configure_db_in_has.yml
+
+- name: Configure DG broker
+  ansible.builtin.import_tasks: configure_dg_broker.yml
+
+- name: Add standby db to OEM
+  ansible.builtin.import_tasks: add_standby_to_oem.yml
+
+- name: Schedule OEM purge jobs
+  ansible.builtin.import_tasks: schedule_oem_purge_jobs.yml
+
+- name: Configure RMAN archive log delete policies
+  ansible.builtin.import_tasks: configure_rman_archive_log_delete_policies.yml
+
+- name: Create oracle_home symbolic link
+  become: true
+  ansible.builtin.file:
+    src: "{{ oracle_home }}"
+    dest: "{{ oracle_base }}/admin/{{ db_name }}/oracle_home"
+    state: link
+    owner: "{{ oracle_user }}"
+    group: "{{ oracle_install_group }}"
+    mode: "0775"
+
+- name: Echo end create standby db to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nCreate Standby DB of {{ primary_db_unique_name.stdout }} complete "\
+    "on {{ ansible_hostname }} at {{ ansible_date_time.iso8601 }} using ansible automation" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Create standby db success file
+  become: true
+  ansible.builtin.file:
+    path: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+    state: touch
+    mode: "0700"
+
+- name: Call CMDB Role for non-pluggable
+  when: is_cdb.stdout == "NO"
+  ansible.builtin.include_role:
+    name: update_cmdb_role
+    tasks_from: main.yml
+  vars:
+    action_type: create_db
+
+- name: Call CMDB Role for cdb
+  when: is_cdb.stdout == "YES"
+  ansible.builtin.include_role:
+    name: update_cmdb_role
+    tasks_from: main.yml
+  vars:
+    action_type: create_cdb
+    cdb_name: "{{ db_name }}"
+    cdb_port: "{{ db_port }}"
+
+- name: Display post create standby db  message
+  ansible.builtin.debug:
+    msg:
+      - 'Oracle Create Standby Database {{ db_unique_name }} from {{ primary_db_unique_name.stdout }} complete at {{ ansible_date_time.iso8601 }}:'

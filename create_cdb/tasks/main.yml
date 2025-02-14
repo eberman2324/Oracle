@@ -1,0 +1,821 @@
+- name: Fail when required parameters are not provided
+  ansible.builtin.fail:
+    msg: "Variable '{{ item }}' is not defined, please ensure '{{ item }}' is included in extra-vars when selecting the create cdb action "
+  when: item not in vars
+  with_items:
+    - storage_unit
+    - backup_host
+    - application_id
+
+- name: Validate application ID
+  ansible.builtin.include_role:
+    name: ans_ent_update_cmdb_role
+  vars:
+    business_application_id: "{{ application_id }}"
+    cmdb_api_action: validate_app_id
+
+- name: Get latest db release installed when not defined
+  when:
+    - db_release is undefined
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+     cd $ORACLE_BASE/product
+     set -o pipefail &&
+     ls -d *.*.*/db* | sort -r | cut -d / -f1 | head -1
+  environment:
+    ORACLE_BASE: "{{ oracle_base }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_pre_cdb_name_successful"
+  register: default_release
+
+- name: Set db_release to latest available when not defined
+  when:
+    - db_release is undefined
+  ansible.builtin.set_fact:
+    db_release: "{{ default_release.stdout }}"
+
+- name: Set prod pbm and retail
+  when:
+    - lob != "HCB"
+    - ansible_hostname[:9] == "p"
+  ansible.builtin.set_fact:
+    cdb_env: P
+
+- name: Set non-prod pbm and retail
+  when:
+    - lob != "HCB"
+    - ansible_hostname[:9] != "p"
+  ansible.builtin.set_fact:
+    cdb_env: N
+
+- name: Set prod HCB
+  when:
+    - lob == "HCB"
+    - ansible_hostname[:-1] == "p"
+  ansible.builtin.set_fact:
+    cdb_env: P
+
+- name: Set non-prod HCB
+  when:
+    - lob == "HCB"
+    - ansible_hostname[:-1] != "p"
+  ansible.builtin.set_fact:
+    cdb_env: N
+
+- name: Fetch number of CDBs contained on VM
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && cat /etc/oratab | grep C{{ db_release.split('.')[0] }}{{ lob[:0] }} | wc -l
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_pre_cdb_name_successful"
+  register: number_of_cdbs
+  failed_when: number_of_cdbs.rc > 1
+
+- name: Set cdb_seq
+  ansible.builtin.set_fact:
+    cdb_seq: "0{{ number_of_cdbs.stdout }}"
+
+- name: Display pre cdb create message
+  ansible.builtin.debug:
+    msg:
+      - 'Oracle Container Database {{ db_release }} Creation started for Single Instance at {{ ansible_date_time.iso8601 }}:'
+
+- name: Fetch GI home
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: set -o pipefail && grep ^$"+ASM:" /etc/oratab | awk -F':' ' {print $2} '
+  register: gi_home_result
+  changed_when: "gi_home_result.rc == 0"
+
+- name: Set variable grid_home
+  ansible.builtin.set_fact:
+    grid_home: "{{ gi_home_result.stdout }}"
+
+- name: Fetch free space for data
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ grid_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select round(free_mb,-1) from v\$asm_diskgroup where name='{{ data_dg_name }}';
+    EOF
+  register: free_data
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    ORACLE_SID: "+ASM"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_prereq
+
+- name: Fetch free space for redo1
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ grid_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select round(free_mb,-1) from v\$asm_diskgroup where name='{{ redo1_dg_name }}';
+    EOF
+  register: free_redo1
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    ORACLE_SID: "+ASM"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_prereq
+
+- name: Fetch free space for redo2
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ grid_home }}/bin/sqlplus -s / as sysdba <<EOF
+    set  echo off ver off pages 0 linesize 180 trims on head off feed off
+    select round(free_mb,-1) from v\$asm_diskgroup where name='{{ redo2_dg_name }}';
+    EOF
+  register: free_redo2
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    ORACLE_SID: "+ASM"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_prereq
+
+- name: Fetch free huge pages
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.shell: "set -o pipefail && grep HugePages_Free /proc/meminfo | awk ' {print $2} ' | xargs"
+  register: free_huge_pages
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_prereq
+
+- name: Fail when inadequate huge pages free
+  when:
+    - free_huge_pages.stdout | int < 512
+  ansible.builtin.fail:
+    msg:
+      - 'Oracle Container database creation failed!'
+      - 'Insufficient free huge pages'
+  tags:
+    - cdb_prereq
+
+- name: Set sga size fact
+  ansible.builtin.set_fact:
+    sga_size_mb: "{{ (free_huge_pages.stdout | int / 512) | int * 1024 }} "
+  tags:
+    - cdb_prereq
+
+- name: Display huge pages availble
+  remote_user: "{{ root_user }}"
+  ansible.builtin.debug:
+    msg:
+      - 'Huge Pages Available: {{ free_huge_pages.stdout }}'
+      - 'CDB SGA size will be set to {{ sga_size_mb }}mb'
+  tags:
+    - cdb_prereq
+
+- name: Fail when inadequate data dg space
+  when:
+    - free_data.stdout | int < 6000
+  ansible.builtin.fail:
+    msg:
+      - 'Oracle Container database creation failed!'
+      - 'Insufficient free space avaialble in {{ data_dg }}'
+  tags:
+    - cdb_prereq
+
+- name: Fail when inadequate redo1 dg space
+  when:
+    - free_redo1.stdout | int < 500
+  ansible.builtin.fail:
+    msg:
+      - 'Oracle Container database creation failed!'
+      - 'Insufficient free space avaialble in {{ redo1_dg }}'
+  tags:
+    - cdb_prereq
+
+- name: Fail when inadequate redo2 dg space
+  when:
+    - free_redo1.stdout | int < 500
+  ansible.builtin.fail:
+    msg:
+      - 'Oracle Container database creation failed!'
+      - 'Insufficient free space avaialble in {{ redo2_dg }}'
+  tags:
+    - cdb_prereq
+
+- name: Download CDB rman backup files for Linux
+  when:
+    - ansible_system == 'Linux'
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ repo_url }}/linux/CDB{{ db_release.split('.')[0] }}C_bkup.tar.gz"
+    dest: "{{ stage_directory }}/CDB{{ db_release.split('.')[0] }}C_bkup.tar.gz"
+    tmp_dest: "{{ stage_directory }}/tmp"
+    mode: "0775"
+    group: dba
+    force: false
+    owner: oracle
+
+- name: Download CDB rman backup files for AIX
+  when:
+    - ansible_system == 'AIX'
+  become: true
+  ansible.builtin.get_url:
+    url: "{{ repo_url }}/aix/CDB{{ db_release.split('.')[0] }}C_bkup.tar.gz"
+    dest: "{{ stage_directory }}/CDB{{ db_release.split('.')[0] }}C_bkup.tar.gz"
+    tmp_dest: "{{ stage_directory }}/tmp"
+    mode: "0755"
+    group: dba
+    owner: oracle
+    force: true
+    validate_certs: false
+
+- name: Cleanup old CDB backup directory
+  when: inventory_hostname in groups['dbservers']
+  become: true
+  ansible.builtin.file:
+    path: "{{ stage_directory }}/CDB{{ db_release.split('.')[0] }}C }}"
+    state: absent
+
+- name: Unpack CDB bkup to the target server
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.unarchive:
+    src: "{{ stage_directory }}/CDB{{ db_release.split('.')[0] }}C_bkup.tar.gz"
+    dest: "{{ stage_directory }}"
+    remote_src: true
+  tags:
+    - cdb_unpackcdbbkup
+
+- name: Create admin directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ oracle_base }}/admin/{{ cdb_name }}/{{ item }}"
+    state: directory
+    owner: "{{ oracle_user }}"
+    group: "{{ oracle_install_group }}"
+    mode: "0775"
+  with_items:
+    - rman
+    - sql
+  tags:
+    - cdb_admindirs
+
+- name: Create audit dump dest
+  become: true
+  ansible.builtin.file:
+    path: "{{ admp_dest }}/{{ cdb_name }}/adump"
+    state: directory
+    owner: "{{ oracle_user }}"
+    group: "{{ oracle_install_group }}"
+    mode: "0775"
+  tags:
+    - cdb_admp
+
+- name: Setup Oracle Database rman commands
+  become: true
+  ansible.builtin.template:
+    src: duplicate_cdb.rman.j2
+    dest: "{{ oracle_base }}/admin/{{ cdb_name }}/rman/duplicate_cdb.rman"
+    owner: oracle
+    group: dba
+    mode: "0755"
+  tags:
+    - db_setrmancmds
+
+- name: Setup init for clone pfile
+  become: true
+  ansible.builtin.template:
+    src: init_for_clone.pfile.j2
+    dest: "{{ oracle_home }}/dbs/init_for_clone.pfile"
+    owner: oracle
+    group: dba
+    mode: "0755"
+  tags:
+    - db_setrmancmds
+
+- name: Setup redo log blksize change sql
+  become: true
+  ansible.builtin.template:
+    src: alter_logfile_group_blksz.sql.j2
+    dest: "{{ oracle_base }}/admin/{{ cdb_name }}/sql/alter_logfile_group_blksz.sql"
+    owner: oracle
+    group: dba
+    mode: "0755"
+  tags:
+    - db_setrmancmds
+
+- name: Create CDB pwfile
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: "$ORACLE_HOME/bin/orapwd file='$ORACLE_HOME/dbs/orapw{{ cdb_name }}' password={{ lookup('env', 'CDB_SYS_PASS') }} entries=10"
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - CDB_createpwfile
+
+- name: Startup database for clone
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && echo 'startup nomount pfile={{ oracle_home }}/dbs/init_for_clone.pfile' | {{ oracle_home }}/bin/sqlplus / as sysdba
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_startdb
+
+- name: Clone database
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/rman auxiliary / cmdfile={{ oracle_base }}/admin/{{ cdb_name }}/rman/duplicate_cdb.rman
+    log={{ oracle_base }}/admin/{{ cdb_name }}/rman/duplicate_{{ cdb_name }}.log
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_clone
+
+- name: Alter redolog blocksize
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && echo exit | {{ oracle_home }}/bin/sqlplus / as sysdba @{{ oracle_base }}/admin/{{ cdb_name }}/sql/alter_logfile_group_blksz.sql
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_fixblksize
+
+- name: Startup database for patching
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: "set -o pipefail && echo 'shutdown immediate; startup;alter pluggable database all open;' | {{ oracle_home }}/bin/sqlplus / as sysdba "
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_patchdb
+
+- name: Patch DB
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: "{{ oracle_home }}/OPatch/datapatch -verbose"
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_patchdb
+
+- name: Shutdown database after patching
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: "set -o pipefail && echo 'shutdown immediate' | {{ oracle_home }}/bin/sqlplus / as sysdba "
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    ORACLE_BASE: "{{ oracle_base }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_patchdb
+
+- name: Add cdb ipc to listener.ora
+  become: true
+  ansible.builtin.lineinfile:
+    path: "{{ grid_home }}/network/admin/listener.ora"
+    line: '      (ADDRESS = (PROTOCOL = IPC)(KEY = {{ cdb_name }}_IPC))'
+    insertafter: DESCRIPTION =*
+    backup: true
+  tags:
+    - cdb_configlsnr
+
+
+- name: Add cdb sid to listener.ora
+  become: true
+  ansible.builtin.blockinfile:
+    path: "{{ grid_home }}/network/admin/listener.ora"
+    block: |3
+          (SID_DESC =
+            (ORACLE_HOME = {{ oracle_home }})
+            (SID_NAME = {{ cdb_name }})
+            (ENVS="TNS_ADMIN={{ oracle_home }}/network/admin")
+          )
+    insertbefore: SID_DESC =*
+    backup: true
+    marker_begin: "{{ cdb_name }} Begin"
+    marker_end: "{{ cdb_name }} End"
+  tags:
+    - cdb_configlsnrt
+
+- name: Create tnsnames.ora
+  become: true
+  ansible.builtin.file:
+    path: "{{ oracle_home }}/network/admin/tnsnames.ora"
+    owner: "{{ oracle_user }}"
+    state: touch
+    group: "{{ oracle_install_group }}"
+    mode: "0775"
+  tags:
+    - cdb_configlsnr
+
+- name: Add cdb to tnsnames.ora
+  become: true
+  ansible.builtin.blockinfile:
+    path: "{{ oracle_home }}/network/admin/tnsnames.ora"
+    block: |
+         {{ cdb_name }}_{{ ansible_hostname }} =
+           (DESCRIPTION =
+             (ADDRESS = (PROTOCOL = IPC)(HOST = {{ ansible_hostname }})(KEY = {{ cdb_name }}))
+             (ADDRESS = (PROTOCOL = TCP)(HOST = {{ ansible_hostname }}.{{ ansible_domain }})(PORT = 1521))
+             (CONNECT_DATA =
+               (SERVER = DEDICATED)
+               (SID = {{ cdb_name }})
+             )
+           )
+    backup: true
+    marker_begin: "{{ cdb_name }} Begin"
+    marker_end: "{{ cdb_name }} End"
+  tags:
+    - cdb_configlsnr
+
+- name: Update listener srvctl
+  when: inventory_hostname in groups['dbservers']
+  remote_user: "{{ root_user }}"
+  become_user: "{{ grid_user }}"
+  become: true
+  ansible.builtin.command: "{{ grid_home }}/bin/srvctl modify listener -l listener -endpoints 'TCP:1521/IPC:{{ cdb_name }}_IPC' "
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    LD_LIBRARY_PATH: "{{ grid_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_configlsnr
+
+- name: Bounce listener
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: "{{ oracle_home }}/bin/srvctl {{ item }} listener -l listener"
+  with_items:
+    - stop
+    - start
+  environment:
+    ORACLE_HOME: "{{ grid_home }}"
+    LD_LIBRARY_PATH: "{{ grid_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_configlsnr
+
+- name: Register Database with HAS
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/srvctl add database -db {{ cdb_name }}_{{ ansible_hostname }} -oraclehome {{ oracle_home }}
+    -spfile {{ oracle_home }}/dbs/spfile{{ cdb_name }}.ora -instance {{ cdb_name }}
+    -diskgroup "{{ data_dg | regex_replace('[+]') }},{{ redo1_dg | regex_replace('[+]') }},{{ redo2_dg | regex_replace('[+]') }}"
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_registerdb
+
+- name: Set TNSADMIN in HAS
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/srvctl setenv database -db {{ cdb_name }}_{{ ansible_hostname }} -env 'TNS_ADMIN={{ oracle_home }}/network/admin'
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_registerdb
+
+- name: Start database with HAS
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: "{{ oracle_home }}/bin/srvctl start database -db {{ cdb_name }}_{{ ansible_hostname }}"
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_registerdb
+
+- name: Remove AWR data for old DBIDs
+  when: inventory_hostname in groups['dbservers']
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && echo exit | {{ oracle_home }}/bin/sqlplus / as sysdba @{{ oracle_base }}/local/sql/remove_old_awr_dbids.sql
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_fixawr
+
+- name: Set AWR retention to 30 days
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && echo 'EXECUTE DBMS_WORKLOAD_REPOSITORY.MODIFY_SNAPSHOT_SETTINGS(retention => 43200);' | {{ oracle_home }}/bin/sqlplus / as sysdba
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_fixawr
+
+- name: Enable Block Change Tracking
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: "set -o pipefail && echo 'ALTER DATABASE ENABLE BLOCK CHANGE TRACKING;' | {{ oracle_home }}/bin/sqlplus / as sysdba"
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_bct
+
+- name: Add AET CDB OEM target
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.shell: |
+    {{ oracle_base }}/product/emcli/emcli add_target \
+    -name="{{ cdb_name }}_{{ ansible_hostname }}" \
+    -host="{{ ansible_hostname }}.aetna.com" -type="oracle_database" \
+    -credentials="UserName:dbsnmp;password:drugs2gogo;Role:normal" \
+    -properties="SID:{{ cdb_name }};Port:1521;OracleHome:{{ oracle_home }};\
+    MachineName:{{ ansible_hostname }}.aetna.com" -groups="Unassigned:composite"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  register: add_oem_result
+  changed_when: "add_oem_result.rc == 0"
+  failed_when:
+    - "add_oem_result.rc != 0"
+    - "add_oem_result.rc != 6"
+
+- name: Add AET CDB OEM Comment
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ cdb_name }}_{{ ansible_hostname }}:oracle_database:Comment:Standard Build"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_addoem
+
+- name: Add AET CDB OEM contact
+  when:
+    - lob == "HCB"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ cdb_name }}_{{ ansible_hostname }}:oracle_database:Contact:(Oracle DBA - HCB)"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_addoem
+
+- name: Add PBM CDB OEM target
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.shell: |
+    {{ oracle_base }}/product/emcli/emcli add_target -name="{{ cdb_name }}_{{ ansible_hostname }}" \
+    -host="{{ ansible_hostname }}.{{ ansible_domain }}" -type="oracle_database" \
+    -credentials="UserName:dbsnmp;password:drugs2gogo;Role:normal" \
+    -properties="SID:{{ cdb_name }};Port:1521;OracleHome:{{ oracle_home }};\
+    MachineName:{{ ansible_hostname }}.{{ ansible_domain }};udtp_1:NULL;udtp_2:NULL;udtp_3:NULL;udtp_4:NULL;udtp_5:ISUP"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  register: add_oem_result
+  changed_when: "add_oem_result.rc == 0"
+  failed_when:
+    - "add_oem_result.rc != 0"
+    - "add_oem_result.rc != 6"
+
+- name: Add PBM CDB OEM comment
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ cdb_name }}_{{ ansible_hostname }}:oracle_database:Comment:Standard Build"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_addoem
+
+- name: Add PBM CDB OEM contact
+  when:
+    - lob == "PBM"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ cdb_name }}_{{ ansible_hostname }}:oracle_database:Contact:(Oracle DBA - {{ lob }})"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_addoem
+
+- name: Add RETAIL CDB OEM target
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli add_target
+    -name="{{ cdb_name }}_{{ ansible_hostname }}"
+    -host="{{ ansible_hostname }}.{{ ansible_domain }}" -type="oracle_database"
+    -credentials="UserName:dbsnmp;password:drugs2gogo;Role:normal"
+    -properties="SID:{{ cdb_name }};Port:1521;OracleHome:{{ oracle_home }};MachineName:{{ ansible_hostname }}.{{ ansible_domain }}"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  register: add_oem_result
+  changed_when: "add_oem_result.rc == 0"
+  failed_when:
+    - "add_oem_result.rc != 0"
+    - "add_oem_result.rc != 6"
+
+- name: Add RETAIL CDB OEM comment
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ cdb_name }}_{{ ansible_hostname }}:oracle_database:Comment:Standard Build"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_addoem
+
+- name: Add RETAIL CDB OEM contact
+  when:
+    - lob == "RETAIL"
+  become: true
+  become_user: "{{ oracle_user }}"
+  ansible.builtin.command: |
+    {{ oracle_base }}/product/emcli/emcli set_target_property_value
+    -property_records="{{ cdb_name }}_{{ ansible_hostname }}:oracle_database:Contact:(Oracle DBA - {{ lob }})"
+  environment:
+    JAVA_HOME: "{{ grid_home }}/jdk"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_addoem
+
+- name: Create oracle_home symbolic link
+  become: true
+  ansible.builtin.file:
+    src: "{{ oracle_home }}"
+    dest: "{{ oracle_base }}/admin/{{ cdb_name }}/oracle_home"
+    state: link
+    owner: "{{ oracle_user }}"
+    group: "{{ oracle_install_group }}"
+    mode: "0775"
+  tags:
+    - cdb_registerdb
+
+- name: Setup rman config commands
+  become: true
+  ansible.builtin.template:
+    src: configure.rman.j2
+    dest: "{{ oracle_base }}/admin/{{ cdb_name }}/rman/configure.rman"
+    owner: oracle
+    group: dba
+    mode: "0755"
+
+- name: Configure RMAN
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/rman target / cmdfile={{ oracle_base }}/admin/{{ cdb_name }}/rman/configure.rman
+    log={{ oracle_base }}/admin/{{ cdb_name }}/rman/configure_{{ cdb_name }}.log
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+
+- name: Create recovery catalog
+  when:
+    - ansible_domain is search("aetna")
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: "{{ oracle_base }}/local/scripts/create_rcat.sh {{ cdb_name }}"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+  tags:
+    - cdb_bct
+
+- name: Set logfile name
+  ansible.builtin.set_fact:
+    log_file: "{{ oracle_base }}/local/logs/schedule_PURGE_AND_TRIM_LOGS_{{ cdb_name }}_{{ ansible_hostname }}_{{ ansible_date_time.iso8601 }}"
+
+- name: Schedule log purge and trim OEM Job
+  when: lob == "HCB"
+  become_user: "{{ oracle_user }}"
+  become: true
+  schedule_log_file_purge:
+    ORACLE_BASE: "{{ oracle_base }}"
+    ORACLE_SID: "{{ cdb_name }}"
+    SERVER_NAME: "{{ ansible_hostname }}"
+    DB_UNIQUE_NAME: "{{ cdb_name }}_{{ ansible_hostname }}"
+    LOGFILE: "{{ log_file }}"
+    JAVA_HOME: "{{ oracle_home }}/jdk"
+  register: oem_purge_job_status
+  tags:
+    - oem_job
+
+- name: List oem purge job status
+  ansible.builtin.debug:
+    var: oem_purge_job_status.msg
+
+- name: Create cdb success file
+  become: true
+  ansible.builtin.file:
+    path: "{{ stage_directory }}/oracle_setup_status_create_{{ cdb_name }}_successful"
+    state: touch
+    mode: "0700"
+
+- name: Call CMDB Role
+  ansible.builtin.include_role:
+    name: update_cmdb_role
+    tasks_from: main.yml
+  vars:
+    action_type: create_cdb
+
+- name: Display post cdb message
+  ansible.builtin.debug:
+    msg:
+      - 'Completed CDB creation for Single Instance at {{ ansible_date_time.iso8601 }}:'

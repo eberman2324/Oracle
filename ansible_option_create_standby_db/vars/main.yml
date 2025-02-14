@@ -1,0 +1,6 @@
+data_dg_name: "{{ data_dg | replace('+', '') }}"
+redo1_dg_name: "{{ redo1_dg | replace('+', '') }}"
+redo2_dg_name: "{{ redo2_dg | replace('+', '') }}"
+db_port: 1521
+rman_channel_count: 4
+duplicate_type: active

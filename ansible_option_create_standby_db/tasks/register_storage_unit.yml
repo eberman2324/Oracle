@@ -1,0 +1,43 @@
+- name: Echo register storage unit to logfile.
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nRegistering storage unit in ddboost..... " >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Register storage unit
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    set -o pipefail && {{ oracle_home }}/bin/rman target / <<EOF | tee -a {{ log_file }}
+    run {
+    allocate channel dd01 type 'sbt_tape' parms 'SBT_LIBRARY={{ rman_agent_home }}/lib/libddobk.so,
+    ENV=(BACKUP_HOST={{ backup_host }},RMAN_AGENT_HOME={{ rman_agent_home }})';
+    send 'set username ddboost_ora password ddb00st servername {{ backup_host }} storageunit {{ storage_unit }}';
+    release channel dd01;
+    }
+    EOF
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+    TNS_ADMIN: "{{ oracle_home }}/network/admin"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  register: register_storage_unit
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Echo RMAN duplicate failed to logfile.
+  when: register_storage_unit.rc != 0
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nDDBOOST setup failed" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fail when rman is unsuccessful
+  when: register_storage_unit.rc != 0
+  ansible.builtin.fail:
+    msg:
+      - 'DDBOOST storage unit registration  failed !!'

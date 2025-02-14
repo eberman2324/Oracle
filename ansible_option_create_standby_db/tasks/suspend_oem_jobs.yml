@@ -1,0 +1,16 @@
+- name: Suspend OEM Jobs
+  become_user: "{{ oracle_user }}"
+  become: true
+  change_oem_job_status:
+    ORACLE_BASE: "{{ primary_oracle_base }}"
+    ORACLE_SID: "{{ db_name }}"
+    SERVER_NAME: "{{ primary_host }}"
+    ACTION: "suspend"
+    LOGFILE: "{{ log_file }}"
+    JAVA_HOME: "{{ primary_oracle_home }}/jdk"
+  register: oem_status
+  delegate_to: "{{ primary_host }}"
+
+- name: List oem job status
+  ansible.builtin.debug:
+    var: oem_status.msg

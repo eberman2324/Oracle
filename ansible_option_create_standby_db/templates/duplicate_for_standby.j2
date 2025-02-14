@@ -1,0 +1,25 @@
+duplicate target database for standby
+from active database
+section size 32g
+spfile
+set db_unique_name='{{db_name}}_{{ansible_hostname}}'
+set control_files='{{redo1_dg}}','{{redo2_dg}}','{{data_dg}}'
+set log_archive_dest_1='location={{archive_log_dg}}'
+set db_create_online_log_dest_1='{{redo1_dg}}'
+set db_create_online_log_dest_2='{{redo2_dg}}'
+set db_create_file_dest='{{data_dg}}'
+set db_recovery_file_dest='{{fra_dg}}'
+set log_file_name_convert '{{src_redo1_dg}}','{{redo1_dg}}','{{src_redo2_dg}}','{{redo2_dg}}'
+set local_listener='(DESCRIPTION=(ADDRESS=(PROTOCOL=IPC)(KEY={{db_name}}_IPC)))'
+set audit_file_dest='{{admp_dest}}/{{db_name}}/adump'
+set log_archive_dest_2=' '
+set log_archive_dest_3=' '
+set log_archive_dest_4=' '
+set log_archive_dest_5=' '
+set log_archive_dest_6=' '
+set db_file_name_convert  '{{src_data_dg}}','{{data_dg}}'
+set db_create_file_dest='{{data_dg}}'
+set "_disk_sector_size_override"='true'
+nofilenamecheck
+;
+}

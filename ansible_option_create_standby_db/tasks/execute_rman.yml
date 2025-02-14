@@ -1,0 +1,87 @@
+- name: Clone database from active database
+  when: duplicate_type == "active"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/rman target sys/{{ syspass }}@{{ primary_db_unique_name.stdout }}
+    auxiliary sys/{{ syspass }}@{{ db_unique_name }}
+    cmdfile={{ oracle_base }}/admin/{{ db_name }}/rman/duplicate_{{ db_name }}_for_standby.rman
+    log={{ oracle_base }}/admin/{{ db_name }}/rman/duplicate_{{ db_name }}_for_standby.log
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+    TNS_ADMIN: "{{ oracle_home }}/network/admin"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Clone database from tape backup
+  when: duplicate_type == "tape"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/rman target sys/{{ syspass }}@{{ primary_db_unique_name.stdout }}
+    auxiliary sys/{{ syspass }}@{{ db_unique_name }} catalog {{ db_name }}/{{ rcatpass }}@{{ rcat_instance }}
+    cmdfile={{ oracle_base }}/admin/{{ db_name }}/rman/duplicate_{{ db_name }}_for_standby.rman
+    log={{ oracle_base }}/admin/{{ db_name }}/rman/duplicate_{{ db_name }}_for_standby.log
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+    TNS_ADMIN: "{{ oracle_home }}/network/admin"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Clone database from disk backup
+  when: duplicate_type == "disk"
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.command: >-
+    {{ oracle_home }}/bin/rman
+    auxiliary /
+    cmdfile={{ oracle_base }}/admin/{{ db_name }}/rman/duplicate_{{ db_name }}_for_standby.rman
+    log={{ oracle_base }}/admin/{{ db_name }}/rman/duplicate_{{ db_name }}_for_standby.log
+  environment:
+    ORACLE_HOME: "{{ oracle_home }}"
+    ORACLE_SID: "{{ db_name }}"
+    TNS_ADMIN: "{{ oracle_home }}/network/admin"
+    LD_LIBRARY_PATH: "{{ oracle_home }}/lib"
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Include duplicate log in job log
+  become_user: "{{ oracle_user }}"
+  become: true
+  register: rman_duplicate
+  ansible.builtin.shell: >-
+    cat {{ oracle_base }}/admin/{{ db_name }}/rman/duplicate_{{ db_name }}_for_standby.log >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Echo RMAN duplicate complete to logfile.
+  when:
+    - rman_duplicate.rc == 0
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nRMAN duplicate complete" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Echo RMAN duplicate failed to logfile.
+  when:
+    - rman_duplicate.rc != 0
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nRMAN duplicate Failed" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_create_standby_db_{{ db_name }}_successful"
+
+- name: Fail when rman is unsuccessful
+  when:
+    - primary_data_dg_list | length != standby_data_dg_list | length
+    - rman_duplicate.rc != 0
+  ansible.builtin.fail:
+    msg:
+      - 'RMAN Duplicate failed !!'
