@@ -1,0 +1,46 @@
+
+run {
+
+ALLOCATE CHANNEL d1 TYPE DISK;
+ALLOCATE AUXILIARY CHANNEL a1 TYPE DISK;
+
+ALLOCATE CHANNEL d2 TYPE DISK;
+ALLOCATE AUXILIARY CHANNEL a2 TYPE DISK;
+
+ALLOCATE CHANNEL d3 TYPE DISK;
+ALLOCATE AUXILIARY CHANNEL a3 TYPE DISK;
+
+ALLOCATE CHANNEL d4 TYPE DISK;
+ALLOCATE AUXILIARY CHANNEL a4 TYPE DISK;
+
+duplicate target database for standby
+from active database
+section size 32g
+spfile
+set db_unique_name='HECVSTS_xhecvdbw01s'
+set control_files='+REDO1','+REDO2','+DATA1'
+set log_archive_dest_1='location=+ARCH'
+set db_create_online_log_dest_1='+REDO1'
+set db_create_online_log_dest_2='+REDO2'
+set db_create_file_dest='+DATA1'
+set db_recovery_file_dest=' +FRA'
+set log_file_name_convert '+REDOA_01','+REDO1',
+'+REDOB_01','+REDO2'
+set db_file_name_convert '+DATA_01','+DATA1'
+set local_listener='(DESCRIPTION=(ADDRESS=(PROTOCOL=IPC)(KEY=HECVSTS_IPC)))'
+set audit_file_dest='/oraadump/HECVSTS/adump'
+set diagnostic_dest='/oradb/app/oracle'
+set log_archive_dest_2=' '
+set log_archive_dest_3=' '
+set log_archive_dest_4=' '
+set log_archive_dest_5=' '
+set log_archive_dest_6=' '
+set cluster_database='false'
+set sga_target='12884901888'
+set sga_max_size='12884901888'
+set "_disk_sector_size_override"='true'
+reset dg_broker_config_file1
+reset dg_broker_config_file2
+nofilenamecheck;
+}
+
