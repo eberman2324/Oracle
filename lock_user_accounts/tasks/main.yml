@@ -1,0 +1,95 @@
+- name: Display pre lock user accounts message
+  when: inventory_hostname in groups['dbservers']
+  remote_user: "{{ root_user }}"
+  ansible.builtin.debug:
+    msg:
+      - 'Lock user accounts started for Single Instance at {{ ansible_date_time.iso8601 }}:'
+
+- name: Set instance name if db_name is provided
+  when:
+    - instance_name is not defined
+    - db_name is defined
+  ansible.builtin.set_fact:
+    instance_name: "{{ db_name }}"
+
+- name: Fail when missing parameters
+  ansible.builtin.fail:
+    msg: "Variable '{{ item }}' is not defined, please ensure '{{ item }}' is included in extra-vars when selecting the lock user accounts action "
+  when:
+    - item is not defined
+  with_items:
+    - instance_name
+
+- name: Set non-pluggable variables
+  when: pdb_name is not defined
+  ansible.builtin.set_fact:
+    log_file: "{{ oracle_base }}/local/logs/lock_user_accounts_{{ instance_name }}_{{ ansible_date_time.iso8601 }}.out"
+    lst_name: "{{ instance_name }}"
+
+- name: Set pluggable variables
+  when: pdb_name is defined
+  ansible.builtin.set_fact:
+    log_file: "{{ oracle_base }}/local/logs/lock_user_accounts_{{ instance_name }}_{{ pdb_name }}_{{ ansible_date_time.iso8601 }}.out"
+    lst_name: "{{ pdb_name }}"
+
+- name: Echo begin lock user accounts to logfile
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "Start lock user accounts that are not a member of database role USERS_TO_REMAIN_UNLOCKED_DURING_DEVOPS_IMPLEMENTATIONS"\
+    " on {{ ansible_hostname }} at {{ ansible_date_time.iso8601 }} using ansible automation\n" > {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_lock_user_accounts_{{ lst_name }}_successful"
+
+- name: Fetch oracle home
+  ansible.builtin.import_tasks: fetch_oracle_home.yml
+
+- name: Fetch db_name parameters
+  ansible.builtin.import_tasks: fetch_db_name_parameters.yml
+
+- name: Check state of database
+  ansible.builtin.import_tasks: check_db_state.yml
+
+- name: Fail when missing pdb name
+  ansible.builtin.fail:
+    msg:
+      - "Variable pdb_name is not defined and the instance is a container, please ensure pdb_name is included in extra-vars"
+      - "when selecting the lock user account action for a pdb "
+  when:
+    - is_cdb.stdout == 'YES'
+    - pdb_name is not defined
+
+- name: Lock non-pluggable user accounts
+  when: pdb_name is not defined
+  ansible.builtin.include_tasks: lock_db_user_accounts.yml
+
+- name: Lock pluggable user accounts
+  when: pdb_name is defined
+  ansible.builtin.include_tasks: lock_pdb_user_accounts.yml
+
+- name: Echo end lock user accounts to logfile
+  become_user: "{{ oracle_user }}"
+  become: true
+  ansible.builtin.shell: |
+    echo -e "\nComplete lock user accounts that are not a member of database role USERS_TO_REMAIN_UNLOCKED_DURING_DEVOPS_IMPLEMENTATIONS "\
+    "on {{ ansible_hostname }} at {{ ansible_date_time.iso8601 }} using ansible automation" >> {{ log_file }}
+  args:
+    creates: "{{ stage_directory }}/oracle_setup_status_lock_user_accounts_{{ lst_name }}_successful"
+
+- name: Create lock user success file
+  become: true
+  ansible.builtin.file:
+    path: "{{ stage_directory }}/oracle_setup_status_lock_user_accounts_{{ lst_name }}_successful"
+    state: touch
+    mode: "0700"
+
+- name: Remove users to lock sql
+  become: true
+  ansible.builtin.file:
+    path: "{{ stage_directory }}/{{ lst_name }}_users_to_lock.sql"
+    state: absent
+
+- name: Display post lock user accounts message
+  ansible.builtin.debug:
+    msg:
+      - 'Completed lock user accounts for Single Instance at {{ ansible_date_time.iso8601 }}:'

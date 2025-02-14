@@ -1,0 +1,10 @@
+declare
+v_name v$database.name%type;
+v_open_mode v$database.open_mode%type;
+
+begin
+select NAME,OPEN_MODE into v_name,v_open_mode from v$database where NAME='{{ db_name }}' and open_mode='READ WRITE';
+exception
+when no_data_found then dbms_output.put_line('ERROR....Invalid DB name or DB is not OPEN');
+end;
+/
